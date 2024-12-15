@@ -150,7 +150,11 @@ namespace dagbase
     {
         if (_own)
         {
+#if LUA_VERSION_RELEASE_NUM>=50406
             lua_closethread(_thread, nullptr);
+#else
+			lua_resetthread(_thread);
+#endif			
             _thread = nullptr;
         }
     }
