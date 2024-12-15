@@ -1,7 +1,7 @@
 #ifndef __ERROR_HANDLER_H__
 #define __ERROR_HANDLER_H__
 
-#include "config/Export.h"
+#include "config/DagBaseExport.h"
 
 #include "util/errod.h"
 

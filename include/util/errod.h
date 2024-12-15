@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config/Export.h"
+#include "config/DagBaseExport.h"
 
 #include <cstdarg>
 #include <cstdio>
