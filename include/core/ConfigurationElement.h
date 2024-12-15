@@ -6,12 +6,18 @@
 
 #include "config/DagBaseExport.h"
 
+extern "C" {
+#include <lua.h>
+}
+
 #include <string>
 #include <variant>
 #include <cstdint>
 #include <vector>
 #include <optional>
 #include <functional>
+
+struct lua_State;
 
 namespace dagbase
 {
