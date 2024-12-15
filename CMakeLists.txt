@@ -42,7 +42,7 @@ SOURCE_GROUP(
 SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterface.cpp src/core/ConfigurationElement.cpp src/util/errod.cpp src/util/ErrorHandler.cpp )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
-TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
+TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
 TARGET_LINK_LIBRARIES( dagbase ${LUA_LIBRARIES})
 
