@@ -21,8 +21,6 @@ extern "C" {
 
 namespace dagbase
 {
-    class ErrorHandler;
-
     class DAGBASE_API Function
     {
     public:
@@ -404,6 +402,7 @@ namespace dagbase
             NoError,
             ScriptNotFound,
             FailedToExecute,
+            InvalidArgument,
             NumErrors
         };
     public:
@@ -412,13 +411,13 @@ namespace dagbase
             _own(true),
             _errod(&_errors[NoError])
         {
-            _lua = luaL_newstate();
-            luaL_openlibs(_lua);
+            _thread = luaL_newstate();
+            luaL_openlibs(_thread);
         }
 
         explicit Lua(lua_State *L, bool own)
             :
-            _lua(L),
+            _thread(L),
             _own(own),
             _errod(&_errors[NoError])
         {
@@ -429,25 +428,25 @@ namespace dagbase
         {
             if (_own)
             {
-                lua_close(_lua);
+                lua_close(_thread);
             }
         }
 
         lua_State * get()
         {
-            return _lua;
+            return _thread;
         }
 
         void eval(const char* code)
         {
             if (code != nullptr)
             {
-                int errod = luaL_dostring(_lua,code);
+                int errod = luaL_dostring(_thread,code);
 
                 if (errod != 0)
                 {
                     std::ostringstream& str = raiseError(FailedToExecute);
-                    str << '\"' << code << "\":" << lua_tostring(_lua, -1);
+                    str << '\"' << code << "\":" << lua_tostring(_thread, -1);
 
                     std::cerr << str.str() << '\n';
                 }
@@ -463,12 +462,12 @@ namespace dagbase
                 return;
             }
 
-            int errod = luaL_dofile(_lua, filename);
+            int errod = luaL_dofile(_thread, filename);
 
             if (errod != 0)
             {
                 auto& str = raiseError(FailedToExecute);
-                str <<  '\"' << filename << "\":" << lua_tostring(_lua,-1);
+                str <<  '\"' << filename << "\":" << lua_tostring(_thread,-1);
                 std::cerr << str.str() << '\n';
             }
         }
@@ -493,45 +492,16 @@ namespace dagbase
 
         bool tableExists(const char* name) const
         {
-            lua_getglobal(_lua, name);
-            bool exists = lua_istable(_lua,1);
-            lua_pop(_lua,1);
+            lua_getglobal(_thread, name);
+            bool exists = lua_istable(_thread,1);
+            lua_pop(_thread,1);
             return exists;
         }
         
         Table tableForName(const char* name)
         {
-            return Table::global(_lua,name);
+            return Table::global(_thread,name);
         }
-    private:
-        lua_State * _lua;
-        bool _own;
-        ErrorDescriptor * _errod;
-        std::ostringstream _errorStr;
-        static ErrorDescriptor _errors[NumErrors+1];
-    };
-
-    class DAGBASE_API Coroutine
-    {
-    public:
-        //! @constructor From a parent thread.
-        //! @param[in] lua The parent of the new thread.
-        //! @param[in] function The name of the function to be run in the new thread.
-        //! @param[in] errorHandler The place to report errors.
-        Coroutine(lua_State* lua, const char* function, ErrorHandler& errorHandler);
-        ~Coroutine();
-
-        lua_State* thread()
-        {
-            return _thread;
-        }
-
-        int                         resume(ErrorHandler& errorHandler, int numArgs = 0, int* numResults=nullptr);
-
-        //! Named constructor for an existing thread.
-        static Coroutine            fromExistingThread(lua_State* existingThread);
-        //! Named constructor if there is a function on the top of the stack
-        static Coroutine*           fromFunction(lua_State* lua);
 
         //! Get an integer at the specified 1-based index.
         int                         integer(int index)
@@ -550,6 +520,30 @@ namespace dagbase
         {
             return lua_touserdata(_thread, index);
         }
+    protected:
+        lua_State* _thread;
+    private:
+        bool _own;
+        const ErrorDescriptor * _errod;
+        std::ostringstream _errorStr;
+        static const ErrorDescriptor _errors[NumErrors+1];
+    };
+
+    class DAGBASE_API Coroutine : public Lua
+    {
+    public:
+        //! @constructor From a parent thread.
+        //! @param[in] lua The parent of the new thread.
+        //! @param[in] function The name of the function to be run in the new thread.
+        Coroutine(lua_State* lua, const char* function);
+        ~Coroutine();
+
+        int                         resume(int numArgs = 0, int* numResults=nullptr);
+
+        //! Named constructor for an existing thread.
+        static Coroutine            fromExistingThread(lua_State* existingThread);
+        //! Named constructor if there is a function on the top of the stack
+        static Coroutine*           fromFunction(lua_State* lua);
 
         int func() const
         {
@@ -559,7 +553,6 @@ namespace dagbase
         Coroutine(lua_State* existingThread);
         Coroutine(lua_State* existingThread, int ref);
     public:
-        lua_State* _thread;
         int _funcRef{ LUA_NOREF };
     };
 

@@ -50,7 +50,7 @@ namespace dagbase
         }
     }
 
-    ErrorDescriptor Lua::_errors[Lua::NumErrors+1]=
+    const ErrorDescriptor Lua::_errors[Lua::NumErrors+1]=
     {
         {
             NoError,
@@ -68,15 +68,20 @@ namespace dagbase
             "The script failed to execute with error:"
         },
         {
+            InvalidArgument,
+            "InvalidArgument",
+            "An invalid argument was supplied:"
+        },
+        {
             NumErrors,
             "UnknownError",
             "An unknown error"
         }
     };
     
-    Coroutine::Coroutine(lua_State* lua, const char* function, ErrorHandler& errorHandler)
+    Coroutine::Coroutine(lua_State* lua, const char* function)
         :
-        _thread(0)
+        Lua()
     {
         SIM_REQUIRE("lua exists", lua != 0);
         SIM_REQUIRE("function name exists", function != 0);
@@ -87,8 +92,7 @@ namespace dagbase
         {
             // Clean up the nil.
             lua_pop(_thread, 1);
-            errorHandler.raiseError(InvalidArgument, "Could not create lua thread for '%s'", function);
-
+            raiseError(InvalidArgument);
             return;
         }
         SIM_ENSURE("Thread created", lua_isthread(lua, -1));
@@ -129,14 +133,14 @@ namespace dagbase
 
     Coroutine::Coroutine(lua_State* existingThread)
         :
-        _thread(existingThread)
+        Lua(existingThread,false)
     {
         SIM_ENSURE("Valid reference to existing thread", _thread == existingThread);
     }
     
     Coroutine::Coroutine(lua_State* existingThread, int ref)
         :
-        _thread(existingThread),
+        Lua(existingThread,false),
         _funcRef(ref)
     {
         SIM_ENSURE("Valid reference to existing thread", _thread == existingThread);
@@ -147,7 +151,7 @@ namespace dagbase
         _thread = reinterpret_cast<lua_State*>(~0LL);
     }
 
-    int Coroutine::resume(dagbase::ErrorHandler& errorHandler, int numArgs, int* numResults)
+    int Coroutine::resume(int numArgs, int* numResults)
     {
         //      SIM_REQUIRE( "Main function at top of stack", lua_isfunction( _thread, -1 ) );
 #if LUA_VERSION_NUM == 501

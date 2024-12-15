@@ -9,6 +9,17 @@ SET( CMAKE_CXX_EXTENSIONS OFF )
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 FIND_PACKAGE(Lua 5.4)
+include(FetchContent)
+FetchContent_Declare(googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG main)
+FetchContent_Declare(googlebenchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG main) # need main for benchmark::benchmark
+
+FetchContent_MakeAvailable(
+        googletest
+        googlebenchmark)
 
 SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/ErrorHandler.h include/util/dbc.h
 )
@@ -73,6 +84,8 @@ CHECK_INCLUDE_FILE_CXX( sstream HAVE_STD_SSTREAM DOC "")
 CHECK_INCLUDE_FILE_CXX( stdexcept HAVE_STD_EXCEPT )
 
 CONFIGURE_FILE( include/config/config.h.in ${PROJECT_BINARY_DIR}/include/config/config.h )
+SUBDIRS( src/apps/DagBaseTest )
+
 IF ( UNIX AND NOT APPLE )
 CONFIGURE_FILE( etc/setup.sh.in ${PROJECT_BINARY_DIR}/etc/setup.sh )
 ELSEIF ( APPLE )
