@@ -85,24 +85,14 @@ namespace dagbase
     {
         SIM_REQUIRE("lua exists", lua != 0);
         SIM_REQUIRE("function name exists", function != 0);
-        _thread = lua_newthread(lua);
-        lua_getglobal(_thread, function);
-        bool isFunction = lua_isfunction(_thread, -1);
-        if (isFunction == false)
-        {
-            // Clean up the nil.
-            lua_pop(_thread, 1);
-            raiseError(InvalidArgument);
-            return;
-        }
         SIM_ENSURE("Thread created", lua_isthread(lua, -1));
     }
 
-    Coroutine Coroutine::fromExistingThread(lua_State* existingThread)
+    Coroutine* Coroutine::fromExistingThread(lua_State* existingThread)
     {
         SIM_REQUIRE("existingThread is valid", existingThread != 0);
 
-        return Coroutine(existingThread);
+        return new Coroutine(existingThread);
     }
 
     Coroutine* Coroutine::fromFunction(lua_State* lua)
@@ -112,15 +102,10 @@ namespace dagbase
             Coroutine* retval = nullptr;
             int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
             lua_State* thread = lua_newthread(lua);
-            lua_rawgeti(thread, LUA_REGISTRYINDEX, ref);
-            if (lua_isfunction(thread, -1))
-            {
-                return new Coroutine(thread, ref);
-            }
-            else
-            {
-                std::cerr << "Expected function, got " << lua_typename(thread, -1) << '\n';
-            }
+            // We are not going to use the thread straight away.
+            lua_pop(lua, 1);
+//            lua_rawgeti(thread, LUA_REGISTRYINDEX, ref);
+            return new Coroutine(thread, ref, true);
         }
         else
         {
@@ -131,16 +116,31 @@ namespace dagbase
         return nullptr;
     }
 
-    Coroutine::Coroutine(lua_State* existingThread)
+    Coroutine* Coroutine::fromNamedFunction(lua_State* lua, const char* function)
+    {
+        lua_State* thread = lua_newthread(lua);
+        lua_getglobal(thread, function);
+        bool isFunction = lua_isfunction(thread, -1);
+        if (isFunction == false)
+        {
+            // Clean up the nil.
+            lua_pop(thread, 1);
+            return nullptr;
+        }
+
+        return new Coroutine(thread, true);
+    }
+
+    Coroutine::Coroutine(lua_State* existingThread, bool own)
         :
-        Lua(existingThread,false)
+        Lua(existingThread,own)
     {
         SIM_ENSURE("Valid reference to existing thread", _thread == existingThread);
     }
     
-    Coroutine::Coroutine(lua_State* existingThread, int ref)
+    Coroutine::Coroutine(lua_State* existingThread, int ref, bool own)
         :
-        Lua(existingThread,false),
+        Lua(existingThread,own),
         _funcRef(ref)
     {
         SIM_ENSURE("Valid reference to existing thread", _thread == existingThread);
@@ -148,7 +148,11 @@ namespace dagbase
 
     Coroutine::~Coroutine()
     {
-        _thread = reinterpret_cast<lua_State*>(~0LL);
+        if (_own)
+        {
+            lua_closethread(_thread, nullptr);
+            _thread = nullptr;
+        }
     }
 
     int Coroutine::resume(int numArgs, int* numResults)
@@ -165,5 +169,20 @@ namespace dagbase
 #endif
 
         return reasonCode;
+    }
+    BalancedStackGuard::BalancedStackGuard(lua_State* lua)
+        :
+        _lua(lua)
+    {
+        _oldTop = lua_gettop(_lua);
+    }
+
+    BalancedStackGuard::~BalancedStackGuard()
+    {
+        if (lua_gettop(_lua) != _oldTop)
+        {
+            std::cerr << "Warning team:BalancedStackGuard::dtor:Expected " << _oldTop << " items, got:\n";
+            printStack(_lua);
+        }
     }
 }

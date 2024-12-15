@@ -21,6 +21,16 @@ extern "C" {
 
 namespace dagbase
 {
+    class DAGBASE_API BalancedStackGuard
+    {
+    public:
+        BalancedStackGuard(lua_State* lua);
+
+        ~BalancedStackGuard();
+    private:
+        lua_State* _lua{ nullptr };
+        int _oldTop{ 0 };
+    };
     class DAGBASE_API Function
     {
     public:
@@ -426,7 +436,7 @@ namespace dagbase
 
         ~Lua()
         {
-            if (_own)
+            if (_own && _thread != nullptr)
             {
                 lua_close(_thread);
             }
@@ -521,9 +531,9 @@ namespace dagbase
             return lua_touserdata(_thread, index);
         }
     protected:
-        lua_State* _thread;
+        lua_State* _thread{ nullptr };
+        bool _own{ false };
     private:
-        bool _own;
         const ErrorDescriptor * _errod;
         std::ostringstream _errorStr;
         static const ErrorDescriptor _errors[NumErrors+1];
@@ -541,17 +551,18 @@ namespace dagbase
         int                         resume(int numArgs = 0, int* numResults=nullptr);
 
         //! Named constructor for an existing thread.
-        static Coroutine            fromExistingThread(lua_State* existingThread);
+        static Coroutine*           fromExistingThread(lua_State* existingThread);
         //! Named constructor if there is a function on the top of the stack
         static Coroutine*           fromFunction(lua_State* lua);
+        static Coroutine*           fromNamedFunction(lua_State* lua, const char* function);
 
         int func() const
         {
             return _funcRef;
         }
     private:
-        Coroutine(lua_State* existingThread);
-        Coroutine(lua_State* existingThread, int ref);
+        Coroutine(lua_State* existingThread, bool own=false);
+        Coroutine(lua_State* existingThread, int ref, bool own=false);
     public:
         int _funcRef{ LUA_NOREF };
     };
