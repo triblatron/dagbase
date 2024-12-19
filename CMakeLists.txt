@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(
         googletest
         googlebenchmark)
 
-SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/ErrorHandler.h include/util/dbc.h
+SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/ErrorHandler.h include/util/dbc.h include/util/Searchable.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
