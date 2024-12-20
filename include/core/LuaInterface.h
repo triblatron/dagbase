@@ -92,6 +92,12 @@ namespace dagbase
             while (lua_next(_lua, -2) != 0)
             {
                 int resultCode = std::invoke(f, _lua, level);
+                if (resultCode != 0)
+                {
+                    // Pop the key and the value.
+                    lua_pop(_lua, 2);
+                    return resultCode;
+                }
                 if (lua_istable(_lua, -1))
                 {
                     resultCode = (*this)(f, level+1);
@@ -184,10 +190,10 @@ namespace dagbase
             return _lua;
         }
 
-        [[nodiscard]] int length() const
+        lua_Integer length() const
         {
             lua_len(_lua, -1);
-            int len = lua_tointeger(_lua, -1);
+            lua_Integer len = lua_tointeger(_lua, -1);
             lua_pop(_lua, 1);
 
             return len;
@@ -260,13 +266,13 @@ namespace dagbase
             }
         }
 
-        int integer(int i, int defaultValue)
+        lua_Integer integer(int i, lua_Integer defaultValue)
         {
             lua_pushinteger(_lua, i);
             lua_rawget(_lua, -2);
             if (lua_isinteger(_lua, -1))
             {
-                int val = lua_tointeger(_lua, -1);
+                lua_Integer val = lua_tointeger(_lua, -1);
                 lua_pop(_lua, 1);
                 return val;
             }
@@ -277,13 +283,13 @@ namespace dagbase
             }
         }
 
-        int integerForNameOrDefault(const char * key, int defaultValue=0)
+        lua_Integer integer(const char * key, lua_Integer defaultValue=0)
         {
             lua_pushstring(_lua, key);
             lua_rawget(_lua, -2);
             if ( lua_isinteger(_lua, -1))
             {
-                int val = lua_tointeger(_lua, -1);
+                lua_Integer val = lua_tointeger(_lua, -1);
 
                 lua_pop(_lua, 1);
                 return val;
