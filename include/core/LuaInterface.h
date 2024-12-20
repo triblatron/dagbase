@@ -16,7 +16,6 @@ extern "C" {
 #include <iostream>
 #include <cassert>
 #include <sstream>
-#include <type_traits>
 #include <functional>
 
 namespace dagbase
@@ -24,7 +23,7 @@ namespace dagbase
     class DAGBASE_API BalancedStackGuard
     {
     public:
-        BalancedStackGuard(lua_State* lua);
+        explicit BalancedStackGuard(lua_State* lua);
 
         ~BalancedStackGuard();
     private:
@@ -190,6 +189,10 @@ namespace dagbase
             return _lua;
         }
 
+        /**
+         *
+         * @return The length of this Table, equivalent to #t in Lua.
+         */
         lua_Integer length() const
         {
             lua_len(_lua, -1);
@@ -199,7 +202,7 @@ namespace dagbase
             return len;
         }
 
-        bool isTable(const char * name)
+        bool isTable(const char * name) const
         {
             lua_pushstring(_lua, name);
             lua_rawget(_lua, -2);
@@ -220,7 +223,7 @@ namespace dagbase
             return {_lua, index};
         }
 
-        double number(int i, double defaultValue=0.0)
+        double numberForIndexOrDefault(int i, double defaultValue=0.0)
         {
             lua_pushinteger(_lua, i);
             lua_rawget(_lua, -2);
@@ -236,15 +239,6 @@ namespace dagbase
                 lua_pop(_lua, 1);
                 return defaultValue;
             }
-        }
-
-        //! \return A number at the given string index.
-        double numberForName(const char* index)
-        {
-            lua_getfield(_lua, -1, index);
-            double value = lua_tonumber(_lua, -1);
-            lua_pop(_lua, 1);
-            return value;
         }
 
         double numberForNameOrDefault(const char *key, double defaultValue=0.0)
@@ -266,7 +260,7 @@ namespace dagbase
             }
         }
 
-        lua_Integer integer(int i, lua_Integer defaultValue)
+        lua_Integer integerForIndexOrDefault(int i, lua_Integer defaultValue)
         {
             lua_pushinteger(_lua, i);
             lua_rawget(_lua, -2);
@@ -283,7 +277,7 @@ namespace dagbase
             }
         }
 
-        lua_Integer integer(const char * key, lua_Integer defaultValue=0)
+        lua_Integer integerForNameOrDefault(const char * key, lua_Integer defaultValue=0)
         {
             lua_pushstring(_lua, key);
             lua_rawget(_lua, -2);
@@ -302,7 +296,7 @@ namespace dagbase
             }
         }
 
-        const char * string(int i, const char * defaultValue="")
+        const char * stringForIndexOrDefault(int i, const char * defaultValue="")
         {
             lua_pushinteger(_lua, i);
             lua_rawget(_lua, -2);
@@ -340,7 +334,7 @@ namespace dagbase
             }
         }
 
-        bool boolean(int i, bool defaultValue=false)
+        bool booleanForIndexOrDefault(int i, bool defaultValue=false)
         {
             lua_pushinteger(_lua, i);
             lua_rawget(_lua, -2);
@@ -567,7 +561,7 @@ namespace dagbase
             return _funcRef;
         }
     private:
-        Coroutine(lua_State* existingThread, bool own=false);
+        explicit Coroutine(lua_State* existingThread, bool own=false);
         Coroutine(lua_State* existingThread, int ref, bool own=false);
     public:
         int _funcRef{ LUA_NOREF };
