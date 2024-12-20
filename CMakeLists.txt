@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(
         googletest
         googlebenchmark)
 
-SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/ErrorHandler.h include/util/dbc.h include/util/Searchable.h include/util/PrettyPrinter.h
+SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/dbc.h include/util/Searchable.h include/util/PrettyPrinter.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -39,7 +39,7 @@ SOURCE_GROUP(
     FILES ${GENERATED_HEADERS}
 )
 
-SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterface.cpp src/core/ConfigurationElement.cpp src/util/errod.cpp src/util/ErrorHandler.cpp src/util/PrettyPrinter.cpp )
+SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterface.cpp src/core/ConfigurationElement.cpp src/util/errod.cpp src/util/PrettyPrinter.cpp )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})

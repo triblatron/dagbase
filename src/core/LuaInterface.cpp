@@ -2,7 +2,6 @@
 
 #include "core/LuaInterface.h"
 #include "util/dbc.h"
-#include "util/ErrorHandler.h"
 
 namespace dagbase
 {
