@@ -4,7 +4,7 @@
 #include <utility>
 #include <algorithm>
 
-namespace dagui
+namespace dagbase
 {
 	template <typename Key, typename Value>
 	class VectorMap
@@ -13,6 +13,7 @@ namespace dagui
 		typedef std::pair<Key, Value> value_type;
 		typedef std::vector<value_type> container;
 		typedef typename container::iterator iterator;
+		typedef typename container::const_iterator const_iterator;
 		struct Compare
 		{
 			bool operator()(const value_type& op1, const value_type& op2) const
@@ -59,7 +60,36 @@ namespace dagui
 
 		iterator find(const Key& key)
 		{
-			return std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
+			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
+			if (it != _map.end())
+			{
+				if (it->first == key)
+				{
+					return it;
+				}
+				else
+				{
+					return end();
+				}
+			}
+			return it;
+		}
+
+		const_iterator find(const Key& key) const
+		{
+			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
+			if (it != _map.end())
+			{
+				if (it->first == key)
+				{
+					return it;
+				}
+				else
+				{
+					return end();
+				}
+			}
+			return it;
 		}
 
         iterator begin()
@@ -67,7 +97,17 @@ namespace dagui
             return _map.begin();
         }
 
+		const_iterator begin() const
+		{
+			return _map.begin();
+		}
+
 		iterator end()
+		{
+			return _map.end();
+		}
+
+		const_iterator end() const
 		{
 			return _map.end();
 		}
