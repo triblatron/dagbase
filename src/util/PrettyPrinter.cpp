@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-namespace dag
+namespace dagbase
 {
-    dag::PrettyPrinter & PrettyPrinter::println(const std::string & line)
+    PrettyPrinter & PrettyPrinter::println(const std::string & line)
     {
         printIndent();
         _str << line << '\n';
@@ -14,7 +14,7 @@ namespace dag
         return *this;
     }
 
-    dag::PrettyPrinter & PrettyPrinter::printIndent()
+    PrettyPrinter & PrettyPrinter::printIndent()
     {
         for (int i=0; i<_indent; ++i)
         {

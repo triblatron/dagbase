@@ -5,7 +5,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace dag
+namespace dagbase
 {
     //! \class PrettyPrinter
     //! An aid to debugging node graphs
@@ -23,7 +23,7 @@ namespace dag
         }
 
         //! Increase indentation by one.
-        dag::PrettyPrinter & indent()
+        PrettyPrinter & indent()
         {
             _indent++;
 
@@ -31,7 +31,7 @@ namespace dag
         }
 
         //! Decrease indentation by one.
-        dag::PrettyPrinter & outdent()
+        PrettyPrinter & outdent()
         {
             _indent--;
 
@@ -51,9 +51,9 @@ namespace dag
         }
 
         //! Print a line indented by the indentation level * tabSize spaces.
-        dag::PrettyPrinter & println(const std::string & line);
+        PrettyPrinter & println(const std::string & line);
 
-        dag::PrettyPrinter & printIndent();
+        PrettyPrinter & printIndent();
 
         std::ostream & str()
         {
