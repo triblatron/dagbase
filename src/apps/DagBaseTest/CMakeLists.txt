@@ -1,4 +1,5 @@
-ADD_EXECUTABLE( DagBaseTest ConfigurationElementTest.cpp LuaTest.cpp )
+ADD_EXECUTABLE( DagBaseTest ConfigurationElementTest.cpp LuaTest.cpp
+        VectorMapTest.h)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)
