@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-Base utility library for [dag](github.com/dag) and [dagui](github.com/dagui)
+Base utility library for [dag](https://github.com/dag) and [dagui](https://github.com/dagui)
 
 Supports the following functionality:
 
