@@ -34,6 +34,16 @@ namespace dagbase
             TYPE_STRING
         };
         using ValueType = std::optional<std::variant<bool, lua_Integer, double, std::string>>;
+        enum RelOp
+        {
+            RELOP_UNKNOWN,
+            RELOP_EQ,
+            RELOP_NE,
+            RELOP_LT,
+            RELOP_LE,
+            RELOP_GT,
+            RELOP_GE
+        };
     public:
         explicit ConfigurationElement(std::string name);
 		
