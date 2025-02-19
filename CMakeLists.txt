@@ -21,7 +21,13 @@ FetchContent_MakeAvailable(
         googletest
         googlebenchmark)
 
-SET( ALL_PUBLIC_HEADERS include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/dbc.h include/util/Searchable.h include/util/PrettyPrinter.h
+SET( ALL_PUBLIC_HEADERS include/core/Class.h include/core/MetaClass.h include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/dbc.h include/util/Searchable.h include/util/PrettyPrinter.h
+include/core/ByteBuffer.h
+include/io/Stream.h
+include/io/InputStream.h
+include/io/OutputStream.h
+include/io/MemoryInputStream.h
+include/io/MemoryOutputStream.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -39,7 +45,15 @@ SOURCE_GROUP(
     FILES ${GENERATED_HEADERS}
 )
 
-SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterface.cpp src/core/ConfigurationElement.cpp src/util/errod.cpp src/util/PrettyPrinter.cpp )
+SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterface.cpp src/core/ConfigurationElement.cpp src/util/errod.cpp src/util/PrettyPrinter.cpp
+src/core/Class.cpp
+src/core/MetaClass.cpp
+src/core/ByteBuffer.cpp
+src/io/InputStream.cpp
+src/io/OutputStream.cpp
+src/io/MemoryInputStream.cpp
+src/io/MemoryOutputStream.cpp
+ )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
