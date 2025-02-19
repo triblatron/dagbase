@@ -8,6 +8,7 @@
 
 #include "core/ConfigurationElement.h"
 #include <string_view>
+#include <cstring>
 
 namespace dagbase
 {
