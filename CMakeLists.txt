@@ -28,6 +28,11 @@ include/io/InputStream.h
 include/io/OutputStream.h
 include/io/MemoryInputStream.h
 include/io/MemoryOutputStream.h
+        include/io/StreamFormat.h
+        include/io/BinaryFormat.h
+        include/io/BackingStore.h
+        include/io/TextFormat.h
+        include/io/MemoryBackingStore.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -53,7 +58,9 @@ src/io/InputStream.cpp
 src/io/OutputStream.cpp
 src/io/MemoryInputStream.cpp
 src/io/MemoryOutputStream.cpp
- )
+        src/io/TextFormat.cpp
+        src/io/MemoryBackingStore.cpp
+)
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})

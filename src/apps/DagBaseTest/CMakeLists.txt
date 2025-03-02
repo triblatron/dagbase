@@ -1,5 +1,6 @@
 ADD_EXECUTABLE( DagBaseTest ConfigurationElementTest.cpp LuaTest.cpp
-        VectorMapTest.h)
+        VectorMapTest.h
+        StreamTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)
