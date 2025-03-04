@@ -22,9 +22,9 @@ namespace dagbase
     public:
         virtual ~StreamFormat() = default;
 
-        virtual void writeUInt32(BackingStore& store, std::string_view fieldName, std::uint32_t value) = 0;
+        virtual void writeUInt32(BackingStore& store, std::uint32_t value) = 0;
 
-        virtual void readUInt32(BackingStore& store, std::string *fieldName, std::uint32_t* value) = 0;
+        virtual void readUInt32(BackingStore& store, std::uint32_t* value) = 0;
     };
 }
 #endif //STREAMFORMAT_H

@@ -14,8 +14,8 @@ namespace dagbase
     class DAGBASE_API BinaryFormat : public StreamFormat
     {
     public:
-        void writeUInt32(BackingStore& store, std::string_view fieldName, std::uint32_t value) override;
-        void readUInt32(BackingStore& store, std::string *fieldName, std::uint32_t *value) override;
+        void writeUInt32(BackingStore& store, std::uint32_t value) override;
+        void readUInt32(BackingStore& store, std::uint32_t *value) override;
     };
 }
 #endif //BINARYFORMAT_H

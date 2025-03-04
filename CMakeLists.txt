@@ -60,6 +60,7 @@ src/io/MemoryInputStream.cpp
 src/io/MemoryOutputStream.cpp
         src/io/TextFormat.cpp
         src/io/MemoryBackingStore.cpp
+        src/io/BinaryFormat.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
