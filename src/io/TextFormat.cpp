@@ -7,6 +7,7 @@
 #include "io/TextFormat.h"
 #include "io/BackingStore.h"
 #include "util/PrettyPrinter.h"
+#include "core/Class.h"
 
 #include <sstream>
 
@@ -33,5 +34,24 @@ namespace dagbase
 
         if (value)
             *value = temp;
+    }
+
+    void TextFormat::writeObject(BackingStore& store, Class* obj)
+    {
+        std::ostringstream str;
+        obj->writeToStream(str);
+        std::string strValue = str.str();
+        store.put(reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.size());
+    }
+
+    void TextFormat::readObject(BackingStore& store, Class* obj)
+    {
+        std::string input;
+
+        store.get(input, '\n');
+
+        std::istringstream str(input);
+        if (obj)
+            obj->readFromStream(str);
     }
 }

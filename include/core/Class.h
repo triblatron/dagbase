@@ -34,6 +34,10 @@ namespace dagbase
         std::ostringstream & raiseError(int code);
 
         std::string errorMessage() const;
+
+        virtual void writeToStream(std::ostream& str) const;
+
+        virtual void readFromStream(std::istream& str);
     private:
         MetaClass* _metaClass{nullptr};
         Error _errod{Error::NoError};

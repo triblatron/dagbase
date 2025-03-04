@@ -16,6 +16,7 @@
 namespace dagbase
 {
     class BackingStore;
+    class Class;
 
     class DAGBASE_API StreamFormat
     {
@@ -25,6 +26,10 @@ namespace dagbase
         virtual void writeUInt32(BackingStore& store, std::uint32_t value) = 0;
 
         virtual void readUInt32(BackingStore& store, std::uint32_t* value) = 0;
+
+        virtual void writeObject(BackingStore& store, Class* obj) = 0;
+
+        virtual void readObject(BackingStore& store, Class* obj) = 0;
     };
 }
 #endif //STREAMFORMAT_H

@@ -16,6 +16,9 @@ namespace dagbase
     public:
         void writeUInt32(BackingStore& store, std::uint32_t value) override;
         void readUInt32(BackingStore& store, std::uint32_t *value) override;
+
+        void writeObject(BackingStore& store, Class* obj) override;
+        void readObject(BackingStore& store, Class* obj) override;
     };
 }
 #endif //BINARYFORMAT_H

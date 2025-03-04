@@ -28,4 +28,12 @@ namespace dagbase
         if (value)
             *value = buffer.value;
     }
+
+    void BinaryFormat::writeObject(BackingStore& store, Class* obj)
+    {
+    }
+
+    void BinaryFormat::readObject(BackingStore& store, Class* obj)
+    {
+    }
 }

@@ -36,6 +36,33 @@ namespace dagbase
             return {};
     }
 
+    void Class::writeToStream(std::ostream& str) const
+    {
+        str << "Class { errod: " << _errod << " }";
+    }
+
+    void Class::readFromStream(std::istream& str)
+    {
+        std::string className;
+        str >> className;
+        if (className!="Class")
+            return;
+        char temp;
+        str >> temp;
+        if (temp!='{')
+            return;
+        std::string fieldName;
+        str >> fieldName;
+        if (fieldName!="errod:")
+            return;
+        int errod;
+        str >> errod;
+        _errod = Error(errod);
+        str >> temp;
+        if (temp!='}')
+            return;
+    }
+
     // void Class::setField( size_t index, lua_Integer value )
     // {
     //     _fields[index]->setValue(value);
