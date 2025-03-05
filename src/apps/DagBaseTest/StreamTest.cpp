@@ -126,5 +126,6 @@ TEST_P(StreamFormat_testObject, testRoundTrip)
 }
 
 INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testObject, ::testing::Values(
-    std::make_tuple("TextFormat", 42)
+    std::make_tuple("TextFormat", 42),
+    std::make_tuple("BinaryFormat", 42)
     ));
