@@ -51,13 +51,13 @@ namespace dagbase
         }
     }
 
-    void TextFormat::writeUInt32(BackingStore& store, std::uint32_t value)
+    void TextFormat::writeUInt32(std::uint32_t value)
     {
         if (_ostr)
             (*_ostr) << value << '\n';
     }
 
-    void TextFormat::readUInt32(BackingStore& store, std::uint32_t* value)
+    void TextFormat::readUInt32(std::uint32_t* value)
     {
         if (_istr && value)
         {
@@ -65,18 +65,18 @@ namespace dagbase
         }
     }
 
-    void TextFormat::writeString(BackingStore& store, std::string_view value)
+    void TextFormat::writeString(std::string_view value)
     {
         (*_ostr) << value;
     }
 
-    void TextFormat::readString(BackingStore& store, std::string* value)
+    void TextFormat::readString(std::string* value)
     {
         if (value)
             (*_istr) >> (*value);
     }
 
-    void TextFormat::writeField(BackingStore& store, const char* fieldName)
+    void TextFormat::writeField(const char* fieldName)
     {
         if (_ostr)
         {
@@ -84,7 +84,7 @@ namespace dagbase
         }
     }
 
-    void TextFormat::readField(BackingStore& store, std::string* fieldName)
+    void TextFormat::readField(std::string* fieldName)
     {
         if (_istr && fieldName)
         {
@@ -95,24 +95,25 @@ namespace dagbase
         }
     }
 
-    void TextFormat::writeObject(BackingStore& store, Class* obj)
+    void TextFormat::writeObject(Class* obj)
     {
-        obj->writeToStream(store, *this);
+        if (_store)
+            obj->writeToStream(*this);
     }
 
-    void TextFormat::readObject(BackingStore& store, Class* obj)
+    void TextFormat::readObject(Class* obj)
     {
-        if (_istr && obj)
-            obj->readFromStream(store, *this);
+        if (_store && obj)
+            obj->readFromStream(*this);
     }
 
-    void TextFormat::writeHeader(BackingStore& store, const char* className)
+    void TextFormat::writeHeader(const char* className)
     {
         if (_ostr)
             (*_ostr) << className << " { ";
     }
 
-    void TextFormat::readHeader(BackingStore& store, std::string* className)
+    void TextFormat::readHeader(std::string* className)
     {
         if (_istr && className)
         {
@@ -123,13 +124,13 @@ namespace dagbase
         }
     }
 
-    void TextFormat::writeFooter(BackingStore& store)
+    void TextFormat::writeFooter()
     {
         if (_ostr)
             (*_ostr) << " } ";
     }
 
-    void TextFormat::readFooter(BackingStore& store)
+    void TextFormat::readFooter()
     {
         if (_istr)
         {

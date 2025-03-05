@@ -36,20 +36,20 @@ namespace dagbase
             return {};
     }
 
-    void Class::writeToStream(BackingStore& store, StreamFormat& format) const
+    void Class::writeToStream(StreamFormat& format) const
     {
         // str << "Class { errod: " << _errod << " }";
-        format.writeHeader(store, "Class");
-        format.writeField(store, "errod");
-        format.writeUInt32(store, _errod);
-        format.writeFooter(store);
+        format.writeHeader("Class");
+        format.writeField("errod");
+        format.writeUInt32(_errod);
+        format.writeFooter();
     }
 
-    void Class::readFromStream(BackingStore& store, StreamFormat& format)
+    void Class::readFromStream(StreamFormat& format)
     {
 
         std::string className;
-        format.readHeader(store, &className);
+        format.readHeader(&className);
 
         if (className!="Class")
             return;
@@ -58,19 +58,19 @@ namespace dagbase
         // if (temp!='{')
         //     return;
         std::string fieldName;
-        format.readField(store, &fieldName);
+        format.readField(&fieldName);
         // str >> fieldName;
         if (fieldName!="errod")
             return;
         std::uint32_t errod;
         // str >> errod;
-        format.readUInt32(store, &errod);
+        format.readUInt32(&errod);
 
         _errod = Error(errod);
         // str >> temp;
         // if (temp!='}')
         //     return;
-        format.readFooter(store);
+        format.readFooter();
     }
 
     // void Class::setField( size_t index, lua_Integer value )

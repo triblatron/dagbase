@@ -48,9 +48,9 @@ namespace dagbase
 
         std::string errorMessage() const;
 
-        virtual void writeToStream(BackingStore& store, StreamFormat& str) const;
+        virtual void writeToStream(StreamFormat& str) const;
 
-        virtual void readFromStream(BackingStore& store, StreamFormat& str);
+        virtual void readFromStream(StreamFormat& str);
     private:
         MetaClass* _metaClass{nullptr};
         Error _errod{Error::NoError};

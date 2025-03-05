@@ -36,29 +36,29 @@ namespace dagbase
 
         virtual void flush() = 0;
 
-        virtual void writeUInt32(BackingStore& store, std::uint32_t value) = 0;
+        virtual void writeUInt32(std::uint32_t value) = 0;
 
-        virtual void readUInt32(BackingStore& store, std::uint32_t* value) = 0;
+        virtual void readUInt32(std::uint32_t* value) = 0;
 
-        virtual void writeString(BackingStore& store, std::string_view value) = 0;
+        virtual void writeString(std::string_view value) = 0;
 
-        virtual void readString(BackingStore& store, std::string* value) = 0;
+        virtual void readString(std::string* value) = 0;
 
-        virtual void writeField(BackingStore& store, const char* fieldName) = 0;
+        virtual void writeField(const char* fieldName) = 0;
 
-        virtual void readField(BackingStore& store, std::string* fieldName) = 0;
+        virtual void readField(std::string* fieldName) = 0;
 
-        virtual void writeObject(BackingStore& store, Class* obj) = 0;
+        virtual void writeObject(Class* obj) = 0;
 
-        virtual void readObject(BackingStore& store, Class* obj) = 0;
+        virtual void readObject(Class* obj) = 0;
 
-        virtual void writeHeader(BackingStore& store, const char* className) = 0;
+        virtual void writeHeader(const char* className) = 0;
 
-        virtual void readHeader(BackingStore& store, std::string* className) = 0;
+        virtual void readHeader(std::string* className) = 0;
 
-        virtual void writeFooter(BackingStore& store) = 0;
+        virtual void writeFooter() = 0;
 
-        virtual void readFooter(BackingStore& store) = 0;
+        virtual void readFooter() = 0;
     };
 }
 #endif //STREAMFORMAT_H

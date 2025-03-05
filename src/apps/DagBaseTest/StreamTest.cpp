@@ -30,12 +30,12 @@ TEST_P(StreamFormat_testUInt32, testRoundTrip)
         sut = new dagbase::BinaryFormat(&backingStore);
     ASSERT_NE(nullptr, sut);
     sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
-    sut->writeUInt32(backingStore, value);
+    sut->writeUInt32(value);
     sut->flush();
     sut->setMode(dagbase::StreamFormat::MODE_INPUT);
     backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
     std::uint32_t actualValue{0};
-    sut->readUInt32(backingStore, &actualValue);
+    sut->readUInt32(&actualValue);
     EXPECT_EQ(value, actualValue);
 }
 
@@ -58,28 +58,28 @@ struct TestObject : public dagbase::Class
         return "TestObject";
     }
 
-    void writeToStream(dagbase::BackingStore& store, dagbase::StreamFormat& format) const override
+    void writeToStream(dagbase::StreamFormat& format) const override
     {
-        format.writeHeader(store, "TestObject");
-        Class::writeToStream(store, format);
-        format.writeField(store, "value");// << value << " }\n";
-        format.writeUInt32(store, value);
-        format.writeFooter(store);
+        format.writeHeader("TestObject");
+        Class::writeToStream(format);
+        format.writeField("value");// << value << " }\n";
+        format.writeUInt32(value);
+        format.writeFooter();
     }
 
-    void readFromStream(dagbase::BackingStore& store, dagbase::StreamFormat& format) override
+    void readFromStream(dagbase::StreamFormat& format) override
     {
         std::string className;
-        format.readHeader(store, &className);
+        format.readHeader(&className);
         if (className != "TestObject")
             return;
-        Class::readFromStream(store, format);
+        Class::readFromStream(format);
         std::string fieldName;
-        format.readField(store, &fieldName);
+        format.readField(&fieldName);
         if (fieldName != "value")
             return;
-        format.readUInt32(store, &value);
-        format.readFooter(store);
+        format.readUInt32(&value);
+        format.readFooter();
         // std::string className;
         //
         // str >> className;
@@ -116,12 +116,12 @@ TEST_P(StreamFormat_testObject, testRoundTrip)
     sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
     TestObject obj;
     obj.value = value;
-    sut->writeObject(backingStore, &obj);
+    sut->writeObject(&obj);
     sut->flush();
     backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
     sut->setMode(dagbase::StreamFormat::MODE_INPUT);
     TestObject actualObj;
-    sut->readObject(backingStore, &actualObj);
+    sut->readObject(&actualObj);
     EXPECT_EQ(value, actualObj.value);
 }
 
