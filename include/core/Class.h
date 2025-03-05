@@ -7,6 +7,14 @@
 #include <iosfwd>
 #include <string>
 
+#include "io/StreamFormat.h"
+
+namespace dagbase
+{
+    class BackingStore;
+    class StreamFormat;
+}
+
 namespace dagbase
 {
     class MetaClass;
@@ -31,13 +39,18 @@ namespace dagbase
         }
         virtual ~Class();
 
+        virtual const char* className() const
+        {
+            return "Class";
+        }
+
         std::ostringstream & raiseError(int code);
 
         std::string errorMessage() const;
 
-        virtual void writeToStream(std::ostream& str) const;
+        virtual void writeToStream(BackingStore& store, StreamFormat& str) const;
 
-        virtual void readFromStream(std::istream& str);
+        virtual void readFromStream(BackingStore& store, StreamFormat& str);
     private:
         MetaClass* _metaClass{nullptr};
         Error _errod{Error::NoError};

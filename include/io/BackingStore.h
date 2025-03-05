@@ -51,6 +51,8 @@ namespace dagbase
         virtual void get(unsigned char* buffer, std::size_t bufferSize) = 0;
 
         virtual void get(std::string& buffer, unsigned char delim) = 0;
+
+        virtual const unsigned char* buffer() const = 0;
     private:
         Mode _mode{0x0};
     };

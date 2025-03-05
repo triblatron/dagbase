@@ -63,6 +63,11 @@ namespace dagbase
 
             return *this;
         }
+
+        BufferType::value_type const* buffer() const
+        {
+            return _buf.data();
+        }
     private:
         BufferType _buf;
         BufferType::difference_type _position{0};

@@ -8,50 +8,133 @@
 #include "io/BackingStore.h"
 #include "util/PrettyPrinter.h"
 #include "core/Class.h"
+#include "io/BackingStore.h"
 
 #include <sstream>
 
 namespace dagbase
 {
+    TextFormat::TextFormat(BackingStore* store)
+        :
+    _store(store)
+    {
+        // Do nothing.
+    }
+
+    void TextFormat::setMode(Mode mode)
+    {
+        switch (mode)
+        {
+        case MODE_INPUT:
+            {
+                if (_store)
+                {
+                    std::string buffer;
+                    _istr = new std::istringstream((const char*)_store->buffer());
+                }
+            }
+            break;
+        case MODE_OUTPUT:
+            _ostr = new std::ostringstream();
+            break;
+        case MODE_UNKNOWN:
+            break;
+        }
+    }
+
+    void TextFormat::flush()
+    {
+        if (_store && _ostr)
+        {
+            std::string strValue = _ostr->str();
+            _store->put(reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.size());
+        }
+    }
+
     void TextFormat::writeUInt32(BackingStore& store, std::uint32_t value)
     {
-        std::ostringstream str;
-
-        str << value << '\n';
-        std::string strValue = str.str();
-        store.put(reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.size());
+        if (_ostr)
+            (*_ostr) << value << '\n';
     }
 
     void TextFormat::readUInt32(BackingStore& store, std::uint32_t* value)
     {
-        std::string input;
-        std::uint32_t temp{0};
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
 
-        store.get(input, '\n');
+    void TextFormat::writeString(BackingStore& store, std::string_view value)
+    {
+        (*_ostr) << value;
+    }
 
-        std::istringstream str(input);
-        str >> temp;
-
+    void TextFormat::readString(BackingStore& store, std::string* value)
+    {
         if (value)
-            *value = temp;
+            (*_istr) >> (*value);
+    }
+
+    void TextFormat::writeField(BackingStore& store, const char* fieldName)
+    {
+        if (_ostr)
+        {
+            (*_ostr) << fieldName << " : ";
+        }
+    }
+
+    void TextFormat::readField(BackingStore& store, std::string* fieldName)
+    {
+        if (_istr && fieldName)
+        {
+            (*_istr) >> (*fieldName);
+            char temp;
+            // Should be " : "
+            (*_istr) >> temp;
+        }
     }
 
     void TextFormat::writeObject(BackingStore& store, Class* obj)
     {
-        std::ostringstream str;
-        obj->writeToStream(str);
-        std::string strValue = str.str();
-        store.put(reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.size());
+        obj->writeToStream(store, *this);
     }
 
     void TextFormat::readObject(BackingStore& store, Class* obj)
     {
-        std::string input;
+        if (_istr && obj)
+            obj->readFromStream(store, *this);
+    }
 
-        store.get(input, '\n');
+    void TextFormat::writeHeader(BackingStore& store, const char* className)
+    {
+        if (_ostr)
+            (*_ostr) << className << " { ";
+    }
 
-        std::istringstream str(input);
-        if (obj)
-            obj->readFromStream(str);
+    void TextFormat::readHeader(BackingStore& store, std::string* className)
+    {
+        if (_istr && className)
+        {
+            (*_istr) >> (*className);
+            std::string temp;
+            // Should be " { "
+            (*_istr) >> temp;
+        }
+    }
+
+    void TextFormat::writeFooter(BackingStore& store)
+    {
+        if (_ostr)
+            (*_ostr) << " } ";
+    }
+
+    void TextFormat::readFooter(BackingStore& store)
+    {
+        if (_istr)
+        {
+            std::string temp;
+            (*_istr) >> temp;
+        }
     }
 }

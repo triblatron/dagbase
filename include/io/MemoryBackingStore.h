@@ -37,6 +37,11 @@ namespace dagbase
         void get(std::string& buffer, unsigned char delim) override;
         void get(unsigned char* buffer, std::size_t bufferSize) override;
         void put(const unsigned char* buffer, std::size_t bufferSize) override;
+        const unsigned char* buffer() const override
+        {
+            return  _buffer.buffer();
+        }
+
     private:
         ByteBuffer _buffer;
     };

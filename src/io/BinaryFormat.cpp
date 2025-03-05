@@ -14,6 +14,17 @@ union BufferUInt32
 
 namespace dagbase
 {
+    BinaryFormat::BinaryFormat(BackingStore* store)
+        :
+    _store(store)
+    {
+        // Do nothing.
+    }
+
+    void BinaryFormat::flush()
+    {
+    }
+
     void BinaryFormat::writeUInt32(BackingStore& store, std::uint32_t value)
     {
         BufferUInt32 buffer;
@@ -29,11 +40,43 @@ namespace dagbase
             *value = buffer.value;
     }
 
+    void BinaryFormat::writeString(BackingStore& store, std::string_view value)
+    {
+    }
+
+    void BinaryFormat::readString(BackingStore& store, std::string* value)
+    {
+    }
+
+    void BinaryFormat::writeField(BackingStore& store, const char* fieldName)
+    {
+    }
+
+    void BinaryFormat::readField(BackingStore& store, std::string* fieldName)
+    {
+    }
+
     void BinaryFormat::writeObject(BackingStore& store, Class* obj)
     {
     }
 
     void BinaryFormat::readObject(BackingStore& store, Class* obj)
+    {
+    }
+
+    void BinaryFormat::writeHeader(BackingStore& store, const char* className)
+    {
+    }
+
+    void BinaryFormat::readHeader(BackingStore& store, std::string* className)
+    {
+    }
+
+    void BinaryFormat::writeFooter(BackingStore& store)
+    {
+    }
+
+    void BinaryFormat::readFooter(BackingStore& store)
     {
     }
 }
