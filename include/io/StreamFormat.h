@@ -6,8 +6,6 @@
 #ifndef STREAMFORMAT_H
 #define STREAMFORMAT_H
 
-#include <__fwd/string_view.h>
-
 #include "config/DagBaseExport.h"
 
 #include <string_view>

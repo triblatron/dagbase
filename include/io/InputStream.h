@@ -8,6 +8,7 @@
 
 #include "Stream.h"
 #include <vector>
+#include <string>
 
 namespace dagbase
 {

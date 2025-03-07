@@ -10,9 +10,9 @@
 #include "config/DagBaseExport.h"
 
 #include <cstdint>
-
 #include <cstddef>
 #include <vector>
+#include <string>
 
 namespace dagbase
 {
