@@ -10,6 +10,7 @@
 
 #include <string_view>
 #include <string>
+#include <cstdint>
 
 namespace dagbase
 {
