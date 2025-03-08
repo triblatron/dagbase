@@ -76,7 +76,7 @@ namespace dagbase
         template<typename T>
         T* readRef(ObjId* id)
         {
-            read(id);
+            readUInt32(id);
 
             if (*id != 0)
             {
@@ -128,6 +128,29 @@ namespace dagbase
         }
 
         InputStream& read(std::string* value);
+
+        virtual InputStream& readHeader(std::string* className)
+        {
+            // Do nothing.
+            return *this;
+        }
+
+        virtual InputStream& readField(std::string* fieldName)
+        {
+            // Do nothing.
+            return *this;
+        }
+
+        virtual InputStream& readUInt32(std::uint32_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readFooter()
+        {
+            // Do nothing.
+            return *this;
+        }
     private:
         using PtrArray = std::vector<Ref>;
         PtrArray _ptrLookup;

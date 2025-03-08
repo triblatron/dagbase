@@ -14,6 +14,7 @@
 #include "io/OutputStream.h"
 #include "io/Stream.h"
 #include "io/TextFormat.h"
+#include "io/FormatAgnosticInputStream.h"
 
 class StreamFormat_testUInt32 : public ::testing::TestWithParam<std::tuple<std::string_view, std::uint32_t>>
 {
@@ -162,7 +163,22 @@ INSTANTIATE_TEST_SUITE_P(TextFormat, TextFormat_testOutput, ::testing::Values(
 struct TestNode
 {
     TestNode* parent{nullptr};
+    std::uint32_t i{0};
 
+    TestNode() = default;
+
+    TestNode(dagbase::InputStream& str)
+    {
+        std::string className;
+        str.readHeader(&className);
+        std::string fieldName;
+        str.readField(&fieldName);
+        dagbase::Stream::ObjId id{0};
+        parent = str.readRef<TestNode>(&id);
+        str.readField(&fieldName);
+        str.readUInt32(&i);
+        str.readFooter();
+    }
     void write(dagbase::OutputStream& str) const
     {
         str.writeHeader("TestNode");
@@ -171,6 +187,8 @@ struct TestNode
         {
             parent->write(str);
         }
+        str.writeField("i");
+        str.writeUInt32(i);
         str.writeFooter();
     }
 };
@@ -180,7 +198,7 @@ class OutputStream_testOutput : public ::testing::TestWithParam<std::tuple<std::
 
 };
 
-TEST(OututStream, testOutput)
+TEST(OutputStream, testOutput)
 {
     TestNode node1;
     TestNode node2;
@@ -195,9 +213,59 @@ TEST(OututStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n  }\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n  }\n  i : 0\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);
     EXPECT_EQ(output, actualOutput);
 }
+
+class FormatAgnosticOutputToInput_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string_view>>
+{
+
+};
+
+TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
+{
+    auto formatClass = std::get<0>(GetParam());
+    dagbase::StreamFormat* format = nullptr;
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (formatClass == "TextFormat")
+    {
+        format = new dagbase::TextFormat(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        format = new dagbase::BinaryFormat(&store);
+    }
+    ASSERT_NE(nullptr, format);
+    format->setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    dagbase::FormatAgnosticOutputStream sut;
+    sut.setFormat(format);
+    sut.setBackingStore(&store);
+    TestNode node1;
+    node1.i = 3141;
+    TestNode node2;
+    node2.i = 42;
+    node2.parent = &node1;
+    if (sut.writeRef(&node2))
+    {
+        node2.write(sut);
+    }
+    format->flush();
+    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::FormatAgnosticInputStream istr;
+    format->setMode(dagbase::StreamFormat::MODE_INPUT);
+    istr.setFormat(format);
+    istr.setBackingStore(&store);
+    dagbase::Stream::ObjId id{~0U};
+    auto actual = (istr.readRef<TestNode>(&id));
+    ASSERT_NE(nullptr, actual);
+    ASSERT_NE(nullptr, actual->parent);
+    EXPECT_EQ(42, actual->i);
+    EXPECT_EQ(3141, actual->parent->i);
+}
+
+INSTANTIATE_TEST_SUITE_P(FormatAgnosticInputStream, FormatAgnosticOutputToInput_testRoundTrip, ::testing::Values(
+    std::make_tuple("TextFormat")
+    ));
