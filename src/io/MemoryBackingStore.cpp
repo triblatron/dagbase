@@ -6,6 +6,8 @@
 
 #include "io/MemoryBackingStore.h"
 
+#include <algorithm>
+
 namespace dagbase
 {
     MemoryBackingStore::MemoryBackingStore(Mode mode)
