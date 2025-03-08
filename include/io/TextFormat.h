@@ -15,6 +15,8 @@
 
 namespace dagbase
 {
+    class DebugPrinter;
+
     class DAGBASE_API TextFormat : public StreamFormat
     {
     public:
@@ -51,6 +53,7 @@ namespace dagbase
         BackingStore* _store{nullptr};
         std::ostringstream* _ostr{nullptr};
         std::istringstream* _istr{nullptr};
+        DebugPrinter* _printer{nullptr};
     };
 }
 

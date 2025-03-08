@@ -28,11 +28,12 @@ include/io/InputStream.h
 include/io/OutputStream.h
 include/io/MemoryInputStream.h
 include/io/MemoryOutputStream.h
-        include/io/StreamFormat.h
-        include/io/BinaryFormat.h
-        include/io/BackingStore.h
-        include/io/TextFormat.h
-        include/io/MemoryBackingStore.h
+include/io/StreamFormat.h
+include/io/BinaryFormat.h
+include/io/BackingStore.h
+include/io/TextFormat.h
+include/io/MemoryBackingStore.h
+include/util/DebugPrinter.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -58,9 +59,10 @@ src/io/InputStream.cpp
 src/io/OutputStream.cpp
 src/io/MemoryInputStream.cpp
 src/io/MemoryOutputStream.cpp
-        src/io/TextFormat.cpp
-        src/io/MemoryBackingStore.cpp
-        src/io/BinaryFormat.cpp
+src/io/TextFormat.cpp
+src/io/MemoryBackingStore.cpp
+src/io/BinaryFormat.cpp
+src/util/DebugPrinter.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})

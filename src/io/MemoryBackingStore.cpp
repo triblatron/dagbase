@@ -27,6 +27,12 @@ namespace dagbase
         }
     }
 
+    void MemoryBackingStore::get(std::string& buffer)
+    {
+        if (buffer.size()>=_buffer.size())
+            std::copy_n(_buffer.begin(), buffer.size(), buffer.data());
+    }
+
     void MemoryBackingStore::get(unsigned char* buffer, std::size_t bufferSize)
     {
         _buffer.get(buffer, bufferSize);

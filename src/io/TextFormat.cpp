@@ -9,7 +9,7 @@
 #include "util/PrettyPrinter.h"
 #include "core/Class.h"
 #include "io/BackingStore.h"
-
+#include "util/DebugPrinter.h"
 #include <sstream>
 
 namespace dagbase
@@ -35,7 +35,12 @@ namespace dagbase
             }
             break;
         case MODE_OUTPUT:
-            _ostr = new std::ostringstream();
+            if (!_ostr)
+            {
+                _ostr = new std::ostringstream();
+                _printer = new DebugPrinter();
+                _printer->setStr(_ostr);
+            }
             break;
         case MODE_UNKNOWN:
             break;
@@ -53,8 +58,8 @@ namespace dagbase
 
     void TextFormat::writeUInt32(std::uint32_t value)
     {
-        if (_ostr)
-            (*_ostr) << value << '\n';
+        if (_printer)
+            _printer->print(value).print("\n");
     }
 
     void TextFormat::readUInt32(std::uint32_t* value)
@@ -67,7 +72,8 @@ namespace dagbase
 
     void TextFormat::writeString(std::string_view value)
     {
-        (*_ostr) << value;
+        if (_printer)
+            _printer->print(value).print("\n");
     }
 
     void TextFormat::readString(std::string* value)
@@ -78,9 +84,11 @@ namespace dagbase
 
     void TextFormat::writeField(const char* fieldName)
     {
-        if (_ostr)
+        if (_printer)
         {
-            (*_ostr) << fieldName << " : ";
+            _printer->printIndent();
+            _printer->print(fieldName).print(" : ");
+            //(*_ostr) << fieldName << " : ";
         }
     }
 
@@ -97,20 +105,25 @@ namespace dagbase
 
     void TextFormat::writeObject(Class* obj)
     {
-        if (_store)
+        if (_printer)
             obj->writeToStream(*this);
     }
 
     void TextFormat::readObject(Class* obj)
     {
-        if (_store && obj)
+        if (_istr && obj)
             obj->readFromStream(*this);
     }
 
     void TextFormat::writeHeader(const char* className)
     {
-        if (_ostr)
-            (*_ostr) << className << " { ";
+        if (_printer)
+        {
+            _printer->println(className);
+            _printer->println("{");
+            _printer->indent();
+        }
+            //(*_ostr) << className << " { ";
     }
 
     void TextFormat::readHeader(std::string* className)
@@ -126,8 +139,12 @@ namespace dagbase
 
     void TextFormat::writeFooter()
     {
-        if (_ostr)
-            (*_ostr) << " } ";
+        if (_printer)
+        {
+            _printer->outdent();
+            _printer->println("}");
+        }
+           // (*_ostr) << " } ";
     }
 
     void TextFormat::readFooter()

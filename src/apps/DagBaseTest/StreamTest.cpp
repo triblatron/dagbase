@@ -129,3 +129,30 @@ INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testObject, ::testing::Value
     std::make_tuple("TextFormat", 42),
     std::make_tuple("BinaryFormat", 42)
     ));
+
+class TextFormat_testOutput : public ::testing::TestWithParam<std::tuple<std::string_view>>
+{
+
+};
+
+TEST_P(TextFormat_testOutput, testOutput)
+{
+    auto output = std::get<0>(GetParam());
+    dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    dagbase::TextFormat* sut = new dagbase::TextFormat(&backingStore);
+    sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    TestObject obj;
+    obj.value = 42;
+    sut->writeObject(&obj);
+    sut->flush();
+    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    sut->setMode(dagbase::StreamFormat::MODE_INPUT);
+    std::string actualOutput;
+    actualOutput.resize(backingStore.numBytesAvailable());
+    backingStore.get(actualOutput);
+    EXPECT_EQ(output, actualOutput);
+}
+
+INSTANTIATE_TEST_SUITE_P(TextFormat, TextFormat_testOutput, ::testing::Values(
+    std::make_tuple("TestObject\n{\n  Class\n  {\n    errod : 0\n  }\n  value : 42\n}\n")
+    ));

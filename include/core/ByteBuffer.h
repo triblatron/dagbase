@@ -68,6 +68,31 @@ namespace dagbase
         {
             return _buf.data();
         }
+
+        BufferType::iterator begin()
+        {
+            return _buf.begin();
+        }
+
+        BufferType::const_iterator begin() const
+        {
+            return _buf.begin();
+        }
+
+        BufferType::iterator end()
+        {
+            return _buf.end();
+        }
+
+        BufferType::const_iterator end() const
+        {
+            return _buf.end();
+        }
+
+        std::size_t size() const
+        {
+            return _buf.size();
+        }
     private:
         BufferType _buf;
         BufferType::difference_type _position{0};
