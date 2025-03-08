@@ -267,5 +267,6 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
 }
 
 INSTANTIATE_TEST_SUITE_P(FormatAgnosticInputStream, FormatAgnosticOutputToInput_testRoundTrip, ::testing::Values(
-    std::make_tuple("TextFormat")
+    std::make_tuple("TextFormat"),
+    std::make_tuple("BinaryFormat")
     ));
