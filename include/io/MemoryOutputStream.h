@@ -19,6 +19,12 @@ namespace dagbase
         explicit MemoryOutputStream(ByteBuffer* buf);
 
         OutputStream& writeBuf(const value_type* buf, std::size_t len) override;
+
+        OutputStream& writeUInt32(std::uint32_t value) override
+        {
+            writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(uint32_t));
+            return *this;
+        }
     private:
         ByteBuffer* _buf{nullptr};
     };

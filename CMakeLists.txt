@@ -34,6 +34,7 @@ include/io/BackingStore.h
 include/io/TextFormat.h
 include/io/MemoryBackingStore.h
 include/util/DebugPrinter.h
+        include/io/FormatAgnosticOutputStream.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -63,6 +64,7 @@ src/io/TextFormat.cpp
 src/io/MemoryBackingStore.cpp
 src/io/BinaryFormat.cpp
 src/util/DebugPrinter.cpp
+        src/io/FormatAgnosticOutputStream.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})

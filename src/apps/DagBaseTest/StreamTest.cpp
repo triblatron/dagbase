@@ -9,7 +9,9 @@
 
 #include "core/Class.h"
 #include "io/BinaryFormat.h"
+#include "io/FormatAgnosticOutputStream.h"
 #include "io/MemoryBackingStore.h"
+#include "io/OutputStream.h"
 #include "io/Stream.h"
 #include "io/TextFormat.h"
 
@@ -156,3 +158,46 @@ TEST_P(TextFormat_testOutput, testOutput)
 INSTANTIATE_TEST_SUITE_P(TextFormat, TextFormat_testOutput, ::testing::Values(
     std::make_tuple("TestObject\n{\n  Class\n  {\n    errod : 0\n  }\n  value : 42\n}\n")
     ));
+
+struct TestNode
+{
+    TestNode* parent{nullptr};
+
+    void write(dagbase::OutputStream& str) const
+    {
+        str.writeHeader("TestNode");
+        str.writeField("parent");
+        if (str.writeRef(parent))
+        {
+            parent->write(str);
+        }
+        str.writeFooter();
+    }
+};
+
+class OutputStream_testOutput : public ::testing::TestWithParam<std::tuple<std::string_view>>
+{
+
+};
+
+TEST(OututStream, testOutput)
+{
+    TestNode node1;
+    TestNode node2;
+    node2.parent = &node1;
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+
+    dagbase::TextFormat format(&store);
+    format.setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    dagbase::FormatAgnosticOutputStream sut;
+    sut.setFormat(&format);
+    sut.setBackingStore(&store);
+    node2.write(sut);
+    format.flush();
+
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n  }\n}\n";
+    std::string actualOutput;
+    actualOutput.resize(store.numBytesAvailable());
+    store.get(actualOutput);
+    EXPECT_EQ(output, actualOutput);
+}

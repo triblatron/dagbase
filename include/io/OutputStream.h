@@ -33,20 +33,20 @@ namespace dagbase
             {
                 if (auto it=_idLookup.find(ptr); it!=_idLookup.end())
                 {
-                    write(it->second);
+                    writeUInt32(it->second);
                     return false;
                 }
                 else
                 {
                     std::size_t id = _idLookup.size() + 1;
                     _idLookup.insert(PtrToIdMap::value_type(ptr, id));
-                    write(id);
+                    writeUInt32(id);
                     return true;
                 }
             }
             else
             {
-                write(ObjId(0));
+                writeUInt32(ObjId(0));
                 return false;
             }
         }
@@ -59,8 +59,28 @@ namespace dagbase
             return writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(T));
         }
 
+        virtual OutputStream& writeUInt32(std::uint32_t value) = 0;
+
         //! Write a string which requires special encoding because it is not a primitive type.
         OutputStream& write(std::string const& value);
+
+        virtual OutputStream& writeHeader(std::string_view className)
+        {
+            // Do nothing.
+            return *this;
+        }
+
+        virtual OutputStream& writeFooter()
+        {
+            // Do nothing.
+            return *this;
+        }
+
+        virtual OutputStream& writeField(std::string_view name)
+        {
+            // Do nothing.
+            return *this;
+        }
     private:
         typedef std::map<void*, ObjId> PtrToIdMap;
         PtrToIdMap _idLookup;

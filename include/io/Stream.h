@@ -15,7 +15,7 @@ namespace dagbase
     {
     public:
         typedef std::uint8_t value_type;
-        typedef std::size_t ObjId;
+        typedef std::uint32_t ObjId;
         typedef void* Ref;
     public:
         virtual ~Stream() = default;
