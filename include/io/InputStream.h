@@ -31,7 +31,7 @@ namespace dagbase
         T* readRef(const char*baseClassName, ClassLibrary& nodeLib)
         {
             ObjId id;
-            read(&id);
+            readUInt32(&id);
 
             if (id != 0)
             {
@@ -53,7 +53,7 @@ namespace dagbase
 
         Ref readRef(ObjId* id)
         {
-            read(id);
+            readUInt32(id);
 
             if (*id != 0)
             {
