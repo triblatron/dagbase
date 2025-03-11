@@ -25,6 +25,12 @@ namespace dagbase
             writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(uint32_t));
             return *this;
         }
+
+        OutputStream& writeDouble(double value) override
+        {
+            writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(double));
+            return *this;
+        }
     private:
         ByteBuffer* _buf{nullptr};
     };

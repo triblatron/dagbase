@@ -47,6 +47,37 @@ INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testUInt32, ::testing::Value
     std::make_tuple("BinaryFormat", 42)
     ));
 
+class StreamFormat_testDouble : public ::testing::TestWithParam<std::tuple<std::string_view, double>>
+{
+
+};
+
+TEST_P(StreamFormat_testDouble, testRoundTrip)
+{
+    auto className = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+    dagbase::StreamFormat* sut = nullptr;
+    dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (className == "TextFormat")
+        sut = new dagbase::TextFormat(&backingStore);
+    else if (className == "BinaryFormat")
+        sut = new dagbase::BinaryFormat(&backingStore);
+    ASSERT_NE(nullptr, sut);
+    sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    sut->writeDouble(value);
+    sut->flush();
+    sut->setMode(dagbase::StreamFormat::MODE_INPUT);
+    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    double actualValue{0};
+    sut->readDouble(&actualValue);
+    EXPECT_EQ(value, actualValue);
+}
+
+INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testDouble, ::testing::Values(
+    std::make_tuple("TextFormat", 3.142),
+    std::make_tuple("BinaryFormat", 3.142)
+    ));
+
 class StreamFormat_testString : public ::testing::TestWithParam<std::tuple<std::string_view, const char*, bool>>
 {
 
@@ -222,6 +253,7 @@ struct TestNode
         str.readUInt32(&numChildren);
         children.reserve(numChildren);
         str.readField(&fieldName);
+        str.readHeader(&className);
         for (std::uint32_t i = 0; i < numChildren; ++i)
         {
             dagbase::Stream::ObjId childId{0};
@@ -229,6 +261,7 @@ struct TestNode
             if (TestNode* child=str.readRef<TestNode>(&childId); child)
                 children.push_back(child);
         }
+        str.readFooter();
         str.readFooter();
     }
     void write(dagbase::OutputStream& str) const
@@ -246,11 +279,13 @@ struct TestNode
         str.writeField("numChildren");
         str.writeUInt32(children.size());
         str.writeField("children");
+        str.writeHeader("ChildrenArray");
         for (auto child : children)
         {
             if (str.writeRef(child))
                 child->write(str);
         }
+        str.writeFooter();
         str.writeFooter();
     }
 };
@@ -276,7 +311,7 @@ TEST(OutputStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n  }\n  i : 0\n  s : \"test\"\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);

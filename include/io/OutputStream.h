@@ -64,6 +64,8 @@ namespace dagbase
         //! Write a string which requires special encoding because it is not a primitive type.
         virtual OutputStream& writeString(std::string const& value, bool quoted);
 
+        virtual OutputStream& writeDouble(double value) = 0;
+
         virtual OutputStream& writeHeader(std::string_view className)
         {
             // Do nothing.

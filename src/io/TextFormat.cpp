@@ -68,11 +68,27 @@ namespace dagbase
         }
     }
 
+    void TextFormat::writeDouble(double value)
+    {
+        if (_printer)
+            _printer->print(value).print("\n");
+    }
+
+    void TextFormat::readDouble(double* value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
     void TextFormat::writeString(std::string_view value, bool quoted)
     {
         if (_printer)
             if (quoted)
+            {
                 _printer->print('\"').print(value).print("\"\n");
+            }
             else
             {
                 _printer->print(value).print("\n");
@@ -82,6 +98,7 @@ namespace dagbase
     void TextFormat::readString(std::string* value, bool quoted)
     {
         if (_istr && value)
+        {
             if (quoted)
             {
                 char q='\0';
@@ -100,6 +117,7 @@ namespace dagbase
             {
                 (*_istr) >> (*value);
             }
+        }
     }
 
     void TextFormat::writeField(const char* fieldName)

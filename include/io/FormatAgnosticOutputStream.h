@@ -31,6 +31,8 @@ namespace dagbase
 
         OutputStream& writeUInt32(std::uint32_t value) override;
 
+        OutputStream& writeDouble(double value) override;
+
         OutputStream& writeString(const std::string& value, bool quoted) override;
 
         OutputStream& writeHeader(std::string_view className) override;

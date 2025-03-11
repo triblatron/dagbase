@@ -39,6 +39,10 @@ namespace dagbase
 
         virtual void readUInt32(std::uint32_t* value) = 0;
 
+        virtual void writeDouble(double value) = 0;
+
+        virtual void readDouble(double* value) = 0;
+
         virtual void writeString(std::string_view value, bool quoted) = 0;
 
         virtual void readString(std::string* value, bool quoted) = 0;
