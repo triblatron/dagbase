@@ -6,9 +6,7 @@
 
 #include "io/TextFormat.h"
 #include "io/BackingStore.h"
-#include "util/PrettyPrinter.h"
 #include "core/Class.h"
-#include "io/BackingStore.h"
 #include "util/DebugPrinter.h"
 #include <sstream>
 
@@ -76,7 +74,9 @@ namespace dagbase
             if (quoted)
                 _printer->print('\"').print(value).print("\"\n");
             else
+            {
                 _printer->print(value).print("\n");
+            }
     }
 
     void TextFormat::readString(std::string* value, bool quoted)
@@ -97,7 +97,9 @@ namespace dagbase
                 }
             }
             else
+            {
                 (*_istr) >> (*value);
+            }
     }
 
     void TextFormat::writeField(const char* fieldName)

@@ -199,11 +199,14 @@ struct TestNode
     TestNode* parent{nullptr};
     std::uint32_t i{0};
     std::string s{};
+    using ChildArray = std::vector<TestNode*>;
+    ChildArray children{};
 
     TestNode() = default;
 
     TestNode(dagbase::InputStream& str)
     {
+        str.addObj(this);
         std::string className;
         str.readHeader(&className);
         std::string fieldName;
@@ -214,6 +217,18 @@ struct TestNode
         str.readUInt32(&i);
         str.readField(&fieldName);
         str.readString(&s, true);
+        std::uint32_t numChildren{0};
+        str.readField(&fieldName);
+        str.readUInt32(&numChildren);
+        children.reserve(numChildren);
+        str.readField(&fieldName);
+        for (std::uint32_t i = 0; i < numChildren; ++i)
+        {
+            dagbase::Stream::ObjId childId{0};
+
+            if (TestNode* child=str.readRef<TestNode>(&childId); child)
+                children.push_back(child);
+        }
         str.readFooter();
     }
     void write(dagbase::OutputStream& str) const
@@ -228,6 +243,14 @@ struct TestNode
         str.writeUInt32(i);
         str.writeField("s");
         str.writeString(s, true);
+        str.writeField("numChildren");
+        str.writeUInt32(children.size());
+        str.writeField("children");
+        for (auto child : children)
+        {
+            if (str.writeRef(child))
+                child->write(str);
+        }
         str.writeFooter();
     }
 };
@@ -288,6 +311,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
     TestNode node2;
     node2.i = 42;
     node2.parent = &node1;
+    node1.children.push_back(&node2);
     if (sut.writeRef(&node2))
     {
         node2.write(sut);
