@@ -62,7 +62,7 @@ namespace dagbase
         virtual OutputStream& writeUInt32(std::uint32_t value) = 0;
 
         //! Write a string which requires special encoding because it is not a primitive type.
-        OutputStream& write(std::string const& value);
+        virtual OutputStream& writeString(std::string const& value, bool quoted);
 
         virtual OutputStream& writeHeader(std::string_view className)
         {

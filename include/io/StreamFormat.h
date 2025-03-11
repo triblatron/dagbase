@@ -39,9 +39,9 @@ namespace dagbase
 
         virtual void readUInt32(std::uint32_t* value) = 0;
 
-        virtual void writeString(std::string_view value) = 0;
+        virtual void writeString(std::string_view value, bool quoted) = 0;
 
-        virtual void readString(std::string* value) = 0;
+        virtual void readString(std::string* value, bool quoted) = 0;
 
         virtual void writeField(const char* fieldName) = 0;
 

@@ -48,6 +48,16 @@ namespace dagbase
         return *this;
     }
 
+    InputStream & FormatAgnosticInputStream::readString(std::string *value, bool quoted)
+    {
+        if (_format)
+        {
+            _format->readString(value, quoted);
+        }
+
+        return *this;
+    }
+
     InputStream& FormatAgnosticInputStream::readFooter()
     {
         if (_format)

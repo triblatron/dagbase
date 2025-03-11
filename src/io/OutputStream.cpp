@@ -7,7 +7,7 @@
 
 namespace dagbase
 {
-    OutputStream &OutputStream::write(const std::string & value)
+    OutputStream &OutputStream::writeString(const std::string & value, bool quoted)
     {
         write(value.length());
         writeBuf(reinterpret_cast<const value_type *>(value.data()), value.length());

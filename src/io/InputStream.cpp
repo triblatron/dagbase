@@ -8,7 +8,7 @@
 namespace dagbase
 {
 
-    InputStream &InputStream::read(std::string *value)
+    InputStream &InputStream::readString(std::string *value, bool quoted)
     {
         size_t len = 0;
         read(&len);

@@ -47,6 +47,40 @@ INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testUInt32, ::testing::Value
     std::make_tuple("BinaryFormat", 42)
     ));
 
+class StreamFormat_testString : public ::testing::TestWithParam<std::tuple<std::string_view, const char*, bool>>
+{
+
+};
+
+TEST_P(StreamFormat_testString, testRoundTrip)
+{
+    auto className = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+    auto quoted = std::get<2>(GetParam());
+    dagbase::StreamFormat* sut = nullptr;
+    dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (className == "TextFormat")
+        sut = new dagbase::TextFormat(&backingStore);
+    else if (className == "BinaryFormat")
+        sut = new dagbase::BinaryFormat(&backingStore);
+    ASSERT_NE(nullptr, sut);
+    sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    sut->writeString(value, quoted);
+    sut->flush();
+    sut->setMode(dagbase::StreamFormat::MODE_INPUT);
+    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    std::string actualValue{};
+    sut->readString(&actualValue, quoted);
+    EXPECT_EQ(value, actualValue);
+}
+
+INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testString, ::testing::Values(
+    std::make_tuple("TextFormat", "test", false),
+    std::make_tuple("TextFormat", "test", true),
+    std::make_tuple("BinaryFormat", "test", false),
+    std::make_tuple("BinaryFormat", "test", true)
+    ));
+
 class StreamFormat_testObject : public ::testing::TestWithParam<std::tuple<std::string_view, std::uint32_t>>
 {
 
@@ -164,6 +198,7 @@ struct TestNode
 {
     TestNode* parent{nullptr};
     std::uint32_t i{0};
+    std::string s{};
 
     TestNode() = default;
 
@@ -177,6 +212,8 @@ struct TestNode
         parent = str.readRef<TestNode>(&id);
         str.readField(&fieldName);
         str.readUInt32(&i);
+        str.readField(&fieldName);
+        str.readString(&s, true);
         str.readFooter();
     }
     void write(dagbase::OutputStream& str) const
@@ -189,6 +226,8 @@ struct TestNode
         }
         str.writeField("i");
         str.writeUInt32(i);
+        str.writeField("s");
+        str.writeString(s, true);
         str.writeFooter();
     }
 };
@@ -203,6 +242,7 @@ TEST(OutputStream, testOutput)
     TestNode node1;
     TestNode node2;
     node2.parent = &node1;
+    node2.s = "test";
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
 
     dagbase::TextFormat format(&store);
@@ -213,7 +253,7 @@ TEST(OutputStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n  }\n  i : 0\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n  }\n  i : 0\n  s : \"test\"\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);

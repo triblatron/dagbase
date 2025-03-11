@@ -28,6 +28,14 @@ namespace dagbase
         return *this;
     }
 
+    OutputStream & FormatAgnosticOutputStream::writeString(const std::string &value, bool quoted)
+    {
+        if (_format)
+            _format->writeString(value, quoted);
+
+        return *this;
+    }
+
     OutputStream& FormatAgnosticOutputStream::writeHeader(std::string_view className)
     {
         if (_format)

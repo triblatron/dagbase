@@ -127,7 +127,7 @@ namespace dagbase
             _ptrLookup[_lastReadId-1] = ref;
         }
 
-        InputStream& read(std::string* value);
+        virtual InputStream& readString(std::string* value, bool quoted);
 
         virtual InputStream& readHeader(std::string* className)
         {

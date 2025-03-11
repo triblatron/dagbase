@@ -70,16 +70,34 @@ namespace dagbase
         }
     }
 
-    void TextFormat::writeString(std::string_view value)
+    void TextFormat::writeString(std::string_view value, bool quoted)
     {
         if (_printer)
-            _printer->print(value).print("\n");
+            if (quoted)
+                _printer->print('\"').print(value).print("\"\n");
+            else
+                _printer->print(value).print("\n");
     }
 
-    void TextFormat::readString(std::string* value)
+    void TextFormat::readString(std::string* value, bool quoted)
     {
-        if (value)
-            (*_istr) >> (*value);
+        if (_istr && value)
+            if (quoted)
+            {
+                char q='\0';
+                (*_istr) >> q;
+                if (q!='\"')
+                    return;
+                char c='\0';
+                (*_istr) >> c;
+                while ((*_istr) && c != '\"')
+                {
+                    (*value) += c;
+                    (*_istr) >> c;
+                }
+            }
+            else
+                (*_istr) >> (*value);
     }
 
     void TextFormat::writeField(const char* fieldName)

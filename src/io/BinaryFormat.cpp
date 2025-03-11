@@ -48,7 +48,7 @@ namespace dagbase
         }
     }
 
-    void BinaryFormat::writeString(std::string_view value)
+    void BinaryFormat::writeString(std::string_view value, bool quoted)
     {
         if (_store)
         {
@@ -57,7 +57,7 @@ namespace dagbase
         }
     }
 
-    void BinaryFormat::readString(std::string* value)
+    void BinaryFormat::readString(std::string* value, bool quoted)
     {
         if (_store && value)
         {
@@ -70,14 +70,14 @@ namespace dagbase
 
     void BinaryFormat::writeField(const char* fieldName)
     {
-        writeString(fieldName);
+        writeString(fieldName, false);
     }
 
     void BinaryFormat::readField(std::string* fieldName)
     {
         if (_store && fieldName)
         {
-            readString(fieldName);
+            readString(fieldName, false);
         }
     }
 
@@ -101,7 +101,7 @@ namespace dagbase
     {
         if (_store && className)
         {
-            writeString(className);
+            writeString(className, false);
         }
     }
 
@@ -109,7 +109,7 @@ namespace dagbase
     {
         if (_store && className)
         {
-            readString(className);
+            readString(className, false);
         }
     }
 

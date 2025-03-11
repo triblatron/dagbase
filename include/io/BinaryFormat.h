@@ -31,8 +31,8 @@ namespace dagbase
         void writeUInt32(std::uint32_t value) override;
         void readUInt32(std::uint32_t *value) override;
 
-        void writeString(std::string_view value) override;
-        void readString(std::string* value) override;
+        void writeString(std::string_view value, bool quoted) override;
+        void readString(std::string* value, bool quoted) override;
 
         void writeField(const char* fieldName) override;
         void readField(std::string* fieldName) override;

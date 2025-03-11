@@ -41,6 +41,8 @@ namespace dagbase
 
         InputStream& readUInt32(std::uint32_t* value) override;
 
+        InputStream& readString(std::string* value, bool quoted) override;
+
         InputStream& readFooter() override;
     private:
         StreamFormat* _format{ nullptr };
