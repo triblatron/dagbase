@@ -51,6 +51,10 @@ namespace dagbase
 
         virtual void readString(std::string* value, bool quoted) = 0;
 
+        virtual void writeBool(bool value) = 0;
+
+        virtual void readBool(bool* value) = 0;
+
         virtual void writeField(const char* fieldName) = 0;
 
         virtual void readField(std::string* fieldName) = 0;

@@ -8,7 +8,9 @@
 
 #include <iosfwd>
 #include <cstdint>
+#include <ios>
 #include <string>
+#include <iomanip>
 
 namespace dagbase
 {
@@ -38,7 +40,7 @@ namespace dagbase
         {
             if (_str!=nullptr)
             {
-                (*_str) << value;
+                (*_str) << std::boolalpha << value;
             }
 
             return *this;

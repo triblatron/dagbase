@@ -40,6 +40,9 @@ namespace dagbase
         void writeString(std::string_view value, bool quoted) override;
         void readString(std::string* value, bool quoted) override;
 
+        void writeBool(bool value) override;
+        void readBool(bool* value) override;
+
         void writeField(const char* fieldName) override;
         void readField(std::string* fieldName) override;
 

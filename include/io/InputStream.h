@@ -153,6 +153,11 @@ namespace dagbase
             return read(value);
         }
 
+        virtual InputStream& readBool(bool* value)
+        {
+            return read(value);
+        }
+
         virtual InputStream& readDouble(double* value)
         {
             return read(value);

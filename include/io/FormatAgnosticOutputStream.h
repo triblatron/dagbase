@@ -35,6 +35,8 @@ namespace dagbase
 
         OutputStream& writeInt64(std::int64_t value) override;
 
+        OutputStream& writeBool(bool value) override;
+
         OutputStream& writeDouble(double value) override;
 
         OutputStream& writeString(const std::string& value, bool quoted) override;

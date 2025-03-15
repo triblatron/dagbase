@@ -78,6 +78,8 @@ namespace dagbase
 
         virtual OutputStream& writeInt64(std::int64_t value) = 0;
 
+        virtual OutputStream& writeBool(bool value) = 0;
+
         virtual OutputStream& writeHeader(std::string_view className)
         {
             // Do nothing.

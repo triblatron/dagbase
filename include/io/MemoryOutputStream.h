@@ -36,6 +36,14 @@ namespace dagbase
         OutputStream& writeDouble(double value) override
         {
             writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(double));
+
+            return *this;
+        }
+
+        OutputStream& writeBool(bool value) override
+        {
+            writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(bool));
+
             return *this;
         }
     private:

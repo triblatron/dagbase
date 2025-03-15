@@ -136,6 +136,22 @@ namespace dagbase
         }
     }
 
+    void TextFormat::writeBool(bool value)
+    {
+        if (_printer)
+        {
+            _printer->print(value).print("\n");
+        }
+    }
+
+    void TextFormat::readBool(bool* value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> std::boolalpha >> *value;
+        }
+    }
+
     void TextFormat::writeField(const char* fieldName)
     {
         if (_printer)

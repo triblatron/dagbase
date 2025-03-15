@@ -39,13 +39,20 @@ namespace dagbase
                     *value = stringValue;
                     break;
                 }
-            // case ConfigurationElement::TYPE_BOOL:
-            //     {
-            //         bool boolValue{false};
-            //         readBool(&boolValue);
-            //         *value = boolValue;
-            //         break;
-            //     }
+            case ConfigurationElement::TYPE_BOOL:
+                {
+                    bool boolValue{false};
+                    readBool(&boolValue);
+                    *value = boolValue;
+                    break;
+                }
+            case ConfigurationElement::TYPE_INTEGER:
+                {
+                    int64_t int64Value{0};
+                    readInt64(&int64Value);
+                    *value = int64Value;
+                    break;
+                }
             }
         }
 
@@ -86,6 +93,16 @@ namespace dagbase
         if (_format)
         {
             _format->readInt64(value);
+        }
+
+        return *this;
+    }
+
+    InputStream& FormatAgnosticInputStream::readBool(bool* value)
+    {
+        if (_format)
+        {
+            _format->readBool(value);
         }
 
         return *this;

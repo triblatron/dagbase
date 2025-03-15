@@ -45,6 +45,8 @@ namespace dagbase
 
         InputStream& readInt64(int64_t* value) override;
 
+        InputStream& readBool(bool* value) override;
+
         InputStream& readDouble(double* value) override;
 
         InputStream& readString(std::string* value, bool quoted) override;

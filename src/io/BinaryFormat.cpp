@@ -122,6 +122,22 @@ namespace dagbase
         }
     }
 
+    void BinaryFormat::writeBool(bool value)
+    {
+        if (_store)
+        {
+            _store->put(reinterpret_cast<const unsigned char*>(&value), sizeof(bool));
+        }
+    }
+
+    void BinaryFormat::readBool(bool* value)
+    {
+        if (_store && value)
+        {
+            _store->get(reinterpret_cast<unsigned char*>(value), sizeof(bool));
+        }
+    }
+
     void BinaryFormat::writeField(const char* fieldName)
     {
         writeString(fieldName, false);

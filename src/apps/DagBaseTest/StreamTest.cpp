@@ -232,7 +232,8 @@ struct TestNode
     std::string s{};
     using ChildArray = std::vector<TestNode*>;
     ChildArray children{};
-
+    bool b{false};
+    dagbase::ConfigurationElement::ValueType value{};
     TestNode() = default;
 
     TestNode(dagbase::InputStream& str)
@@ -248,6 +249,10 @@ struct TestNode
         str.readUInt32(&i);
         str.readField(&fieldName);
         str.readString(&s, true);
+        str.readField(&fieldName);
+        str.readBool(&b);
+        str.readField(&fieldName);
+        str.read(&value);
         std::uint32_t numChildren{0};
         str.readField(&fieldName);
         str.readUInt32(&numChildren);
@@ -276,6 +281,10 @@ struct TestNode
         str.writeUInt32(i);
         str.writeField("s");
         str.writeString(s, true);
+        str.writeField("b");
+        str.writeBool(b);
+        str.writeField("value");
+        str.write(value);
         str.writeField("numChildren");
         str.writeUInt32(children.size());
         str.writeField("children");
@@ -301,6 +310,9 @@ TEST(OutputStream, testOutput)
     TestNode node2;
     node2.parent = &node1;
     node2.s = "test";
+    node2.b = true;
+    node1.value = 2.0;
+    node2.value = 1.0;
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
 
     dagbase::TextFormat format(&store);
@@ -311,7 +323,7 @@ TEST(OutputStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : 2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : 1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);

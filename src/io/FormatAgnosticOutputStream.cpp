@@ -32,6 +32,12 @@ namespace dagbase
             case ConfigurationElement::TYPE_STRING:
                 writeString(std::get<std::string>(value.value()),true);
                 break;
+            case ConfigurationElement::TYPE_BOOL:
+                writeBool(std::get<bool>(value.value()));
+                break;
+            case ConfigurationElement::TYPE_INTEGER:
+                writeInt64(std::get<int64_t>(value.value()));
+                break;
             }
         }
 
@@ -52,6 +58,14 @@ namespace dagbase
         {
             _format->writeInt64(value);
         }
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeBool(bool value)
+    {
+        if (_format)
+            _format->writeBool(value);
 
         return *this;
     }
