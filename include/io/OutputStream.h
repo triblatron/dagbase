@@ -11,6 +11,8 @@
 #include <map>
 #include <string>
 
+#include "core/ConfigurationElement.h"
+
 namespace dagbase
 {
     //! \class OutputStream
@@ -59,12 +61,22 @@ namespace dagbase
             return writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(T));
         }
 
+        virtual OutputStream& write(dagbase::ConfigurationElement::ValueType value)
+        {
+            if (value.has_value())
+                return write(value.value());
+
+            return *this;
+        }
+
         virtual OutputStream& writeUInt32(std::uint32_t value) = 0;
 
         //! Write a string which requires special encoding because it is not a primitive type.
         virtual OutputStream& writeString(std::string const& value, bool quoted);
 
         virtual OutputStream& writeDouble(double value) = 0;
+
+        virtual OutputStream& writeInt64(std::int64_t value) = 0;
 
         virtual OutputStream& writeHeader(std::string_view className)
         {

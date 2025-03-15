@@ -26,6 +26,13 @@ namespace dagbase
             return *this;
         }
 
+        OutputStream& writeInt64(std::int64_t value) override
+        {
+            write(value);
+
+            return *this;
+        }
+
         OutputStream& writeDouble(double value) override
         {
             writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(double));

@@ -68,6 +68,20 @@ namespace dagbase
         }
     }
 
+    void TextFormat::writeInt64(std::int64_t value)
+    {
+        if (_printer)
+            _printer->print(value).print("\n");
+    }
+
+    void TextFormat::readInt64(std::int64_t* value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
     void TextFormat::writeDouble(double value)
     {
         if (_printer)
@@ -85,6 +99,7 @@ namespace dagbase
     void TextFormat::writeString(std::string_view value, bool quoted)
     {
         if (_printer)
+        {
             if (quoted)
             {
                 _printer->print('\"').print(value).print("\"\n");
@@ -93,6 +108,7 @@ namespace dagbase
             {
                 _printer->print(value).print("\n");
             }
+        }
     }
 
     void TextFormat::readString(std::string* value, bool quoted)

@@ -29,7 +29,11 @@ namespace dagbase
 
         OutputStream& writeBuf(const value_type* buf, std::size_t len) override;
 
+        OutputStream& write(ConfigurationElement::ValueType value) override;
+
         OutputStream& writeUInt32(std::uint32_t value) override;
+
+        OutputStream& writeInt64(std::int64_t value) override;
 
         OutputStream& writeDouble(double value) override;
 

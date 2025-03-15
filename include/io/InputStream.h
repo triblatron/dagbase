@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+#include "core/ConfigurationElement.h"
+
 namespace dagbase
 {
     //! Input stream that supports reading arbitrary objects encoded as integer identifiers
@@ -144,6 +146,22 @@ namespace dagbase
         virtual InputStream& readUInt32(std::uint32_t* value)
         {
             return read(value);
+        }
+
+        virtual InputStream& readInt64(int64_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readDouble(double* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& read(dagbase::ConfigurationElement::ValueType* value)
+        {
+            read(&value->value());
+            return *this;
         }
 
         virtual InputStream& readFooter()

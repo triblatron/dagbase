@@ -31,6 +31,9 @@ namespace dagbase
         void writeUInt32(std::uint32_t value) override;
         void readUInt32(std::uint32_t *value) override;
 
+        void writeInt64(std::int64_t value) override;
+        void readInt64(std::int64_t* value) override;
+
         void writeDouble(double value) override;
         void readDouble(double* value) override;
 

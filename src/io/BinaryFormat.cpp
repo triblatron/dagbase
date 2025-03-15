@@ -20,6 +20,12 @@ union BufferDouble
     std::uint8_t bytes[sizeof(value)];
 };
 
+union BufferInt64
+{
+    std::int64_t value;
+    std::uint8_t bytes[sizeof(value)];
+};
+
 namespace dagbase
 {
     BinaryFormat::BinaryFormat(BackingStore* store)
@@ -48,6 +54,27 @@ namespace dagbase
         if (_store)
         {
             BufferUInt32 buffer;
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                *value = buffer.value;
+        }
+    }
+
+    void BinaryFormat::writeInt64(std::int64_t value)
+    {
+        if (_store)
+        {
+            BufferInt64 buffer;
+            buffer.value = value;
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readInt64(std::int64_t* value)
+    {
+        if (_store)
+        {
+            BufferInt64 buffer;
             _store->get(buffer.bytes, sizeof(buffer.bytes));
             if (value)
                 *value = buffer.value;

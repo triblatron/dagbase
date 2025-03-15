@@ -19,6 +19,30 @@ namespace dagbase
         return *this;
     }
 
+    InputStream& FormatAgnosticInputStream::read(ConfigurationElement::ValueType* value)
+    {
+        if (_format && value && value->has_value())
+        {
+            switch (value->value().index())
+            {
+            case ConfigurationElement::TYPE_DOUBLE:
+                {
+                    double doubleValue{0.0};
+                    readDouble(&doubleValue);
+                }
+                break;
+            case ConfigurationElement::TYPE_STRING:
+                {
+                    std::string stringValue;
+                    readString(&stringValue, true);
+                }
+                break;
+            }
+        }
+
+        return *this;
+    }
+
     InputStream& FormatAgnosticInputStream::readHeader(std::string* className)
     {
         if (_format)
@@ -43,6 +67,26 @@ namespace dagbase
         if (_format)
         {
             _format->readUInt32(value);
+        }
+
+        return *this;
+    }
+
+    InputStream& FormatAgnosticInputStream::readInt64(std::int64_t* value)
+    {
+        if (_format)
+        {
+            _format->readInt64(value);
+        }
+
+        return *this;
+    }
+
+    InputStream& FormatAgnosticInputStream::readDouble(double* value)
+    {
+        if (_format)
+        {
+            _format->readDouble(value);
         }
 
         return *this;

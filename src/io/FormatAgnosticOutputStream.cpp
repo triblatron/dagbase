@@ -20,10 +20,38 @@ namespace dagbase
         return *this;
     }
 
+    OutputStream& FormatAgnosticOutputStream::write(ConfigurationElement::ValueType value)
+    {
+        if (_format && value.has_value())
+        {
+            switch (value->index())
+            {
+            case ConfigurationElement::TYPE_DOUBLE:
+                writeDouble(std::get<double>(value.value()));
+                break;
+            case ConfigurationElement::TYPE_STRING:
+                writeString(std::get<std::string>(value.value()),true);
+                break;
+            }
+        }
+
+        return *this;
+    }
+
     OutputStream& FormatAgnosticOutputStream::writeUInt32(std::uint32_t value)
     {
         if (_format)
             _format->writeUInt32(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeInt64(std::int64_t value)
+    {
+        if (_format)
+        {
+            _format->writeInt64(value);
+        }
 
         return *this;
     }

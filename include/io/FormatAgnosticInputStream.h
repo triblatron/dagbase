@@ -35,11 +35,17 @@ namespace dagbase
 
         InputStream& readBuf(value_type* buf, std::size_t len) override;
 
+        InputStream& read(ConfigurationElement::ValueType* value) override;
+
         InputStream& readHeader(std::string* className) override;
 
         InputStream& readField(std::string* fieldName) override;
 
         InputStream& readUInt32(std::uint32_t* value) override;
+
+        InputStream& readInt64(int64_t* value) override;
+
+        InputStream& readDouble(double* value) override;
 
         InputStream& readString(std::string* value, bool quoted) override;
 
