@@ -66,6 +66,8 @@ namespace dagbase
         virtual void writeFooter() = 0;
 
         virtual void readFooter() = 0;
+
+        virtual void debug() = 0;
     };
 }
 #endif //STREAMFORMAT_H

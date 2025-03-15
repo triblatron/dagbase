@@ -29,12 +29,14 @@ namespace dagbase
                 {
                     double doubleValue{0.0};
                     readDouble(&doubleValue);
+                    *value = doubleValue;
                 }
                 break;
             case ConfigurationElement::TYPE_STRING:
                 {
                     std::string stringValue;
                     readString(&stringValue, true);
+                    *value = stringValue;
                 }
                 break;
             }

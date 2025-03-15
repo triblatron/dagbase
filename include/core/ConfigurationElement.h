@@ -140,6 +140,20 @@ namespace dagbase
                 return defaultValue;
             }
         }
+
+        template <typename T>
+        T as() const
+		{
+		    if (_value.has_value())
+		    {
+		        return std::get<T>(_value.value());
+		    }
+		    else
+		    {
+		        return T();
+		    }
+		}
+
         ConfigurationElement* findElement(std::string_view path);
         
         std::size_t numChildren() const

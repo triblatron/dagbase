@@ -174,4 +174,9 @@ namespace dagbase
     void BinaryFormat::readFooter()
     {
     }
+
+    void BinaryFormat::debug()
+    {
+        // Do nothing.
+    }
 }

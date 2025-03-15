@@ -209,4 +209,12 @@ namespace dagbase
             (*_istr) >> temp;
         }
     }
+
+    void TextFormat::debug()
+    {
+        if (_ostr)
+        {
+            std::cout << _ostr->str() << std::endl;
+        }
+    }
 }

@@ -51,6 +51,8 @@ namespace dagbase
 
         void writeFooter() override;
         void readFooter() override;
+
+        void debug() override;
     private:
         Mode _mode{MODE_UNKNOWN};
         BackingStore* _store{nullptr};
