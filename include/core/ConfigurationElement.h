@@ -33,7 +33,7 @@ namespace dagbase
             TYPE_DOUBLE,
             TYPE_STRING
         };
-        using ValueType = std::optional<std::variant<bool, lua_Integer, double, std::string>>;
+        using ValueType = std::optional<std::variant<bool, std::int64_t, double, std::string>>;
         enum RelOp
         {
             RELOP_UNKNOWN,
