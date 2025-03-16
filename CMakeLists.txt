@@ -26,8 +26,6 @@ include/core/ByteBuffer.h
 include/io/Stream.h
 include/io/InputStream.h
 include/io/OutputStream.h
-include/io/MemoryInputStream.h
-include/io/MemoryOutputStream.h
 include/io/StreamFormat.h
 include/io/BinaryFormat.h
 include/io/BackingStore.h
@@ -59,8 +57,6 @@ src/core/MetaClass.cpp
 src/core/ByteBuffer.cpp
 src/io/InputStream.cpp
 src/io/OutputStream.cpp
-src/io/MemoryInputStream.cpp
-src/io/MemoryOutputStream.cpp
 src/io/TextFormat.cpp
 src/io/MemoryBackingStore.cpp
 src/io/BinaryFormat.cpp
