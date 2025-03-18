@@ -23,6 +23,8 @@ namespace dagbase
     class DAGBASE_API FormatAgnosticInputStream : public InputStream
     {
     public:
+        FormatAgnosticInputStream(StreamFormat* format, BackingStore* store);
+
         void setFormat(StreamFormat* format)
         {
             _format = format;

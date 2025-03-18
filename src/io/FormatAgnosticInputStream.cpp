@@ -10,6 +10,22 @@
 
 namespace dagbase
 {
+    FormatAgnosticInputStream::FormatAgnosticInputStream(StreamFormat* format, BackingStore* store)
+        :
+    _format(format),
+    _backingStore(store)
+    {
+        if (_backingStore)
+        {
+            _backingStore->setMode(BackingStore::MODE_INPUT_BIT);
+        }
+
+        if (_format)
+        {
+            _format->setMode(StreamFormat::MODE_INPUT);
+        }
+    }
+
     InputStream& FormatAgnosticInputStream::readBuf(value_type* buf, std::size_t len)
     {
         if (_backingStore)

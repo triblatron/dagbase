@@ -317,9 +317,7 @@ TEST(OutputStream, testOutput)
 
     dagbase::TextFormat format(&store);
     format.setMode(dagbase::StreamFormat::MODE_OUTPUT);
-    dagbase::FormatAgnosticOutputStream sut;
-    sut.setFormat(&format);
-    sut.setBackingStore(&store);
+    dagbase::FormatAgnosticOutputStream sut(&format, &store);
     node2.write(sut);
     format.flush();
 
@@ -349,8 +347,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
         format = new dagbase::BinaryFormat(&store);
     }
     ASSERT_NE(nullptr, format);
-    format->setMode(dagbase::StreamFormat::MODE_OUTPUT);
-    dagbase::FormatAgnosticOutputStream sut;
+    dagbase::FormatAgnosticOutputStream sut(format, &store);
     sut.setFormat(format);
     sut.setBackingStore(&store);
     TestNode node1;
@@ -364,11 +361,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
         node2.write(sut);
     }
     format->flush();
-    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
-    dagbase::FormatAgnosticInputStream istr;
-    format->setMode(dagbase::StreamFormat::MODE_INPUT);
-    istr.setFormat(format);
-    istr.setBackingStore(&store);
+    dagbase::FormatAgnosticInputStream istr(format, &store);
     dagbase::Stream::ObjId id{~0U};
     auto actual = (istr.readRef<TestNode>(&id));
     ASSERT_NE(nullptr, actual);
