@@ -3,6 +3,8 @@
 //
 
 #include "util/VectorMap.h"
+#include "core/LuaInterface.h"
+#include "core/ConfigurationElement.h"
 
 #include <gtest/gtest.h>
 

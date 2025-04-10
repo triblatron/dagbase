@@ -15,7 +15,7 @@ namespace dagbase
     class DAGBASE_API FormatAgnosticOutputStream : public dagbase::OutputStream
     {
     public:
-        FormatAgnosticOutputStream() = default;
+        FormatAgnosticOutputStream(StreamFormat* format, BackingStore* store);
 
         void setFormat(StreamFormat* format)
         {
