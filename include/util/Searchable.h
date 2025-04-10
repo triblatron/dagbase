@@ -89,4 +89,21 @@ namespace dagbase
 
 		return {};
 	}
+
+	template<typename Map>
+	ConfigurationElement::ValueType findMap(std::string_view path, const Map& obj)
+    {
+    	if (!path.empty())
+    	{
+    		auto dotPos = path.find('.');
+    		if (dotPos < path.length() - 1)
+    		{
+    			std::string key;
+    			key = path.substr(0, dotPos);
+    			if (auto it=obj.find(key); it!=obj.end())
+    				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+    		}
+    	}
+
+    }
 }

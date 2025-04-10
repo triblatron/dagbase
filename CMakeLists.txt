@@ -36,6 +36,7 @@ include/io/MemoryBackingStore.h
 include/util/DebugPrinter.h
         include/io/FormatAgnosticOutputStream.h
         include/io/FormatAgnosticInputStream.h
+        include/util/SearchableMap.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
