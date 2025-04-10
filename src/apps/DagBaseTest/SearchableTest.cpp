@@ -80,5 +80,5 @@ TEST_P(SearchableMap_testFind, testExpectedResult)
 }
 
 INSTANTIATE_TEST_SUITE_P(SearchableMap, SearchableMap_testFind, ::testing::Values(
-    std::make_tuple("data/tests/Searchable/SearchableMap_oneElement.lua", "lookup.foo", std::int64_t(1), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple("data/tests/Searchable/SearchableMap_oneElement.lua", "lookup.test.foo", std::int64_t(1), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
