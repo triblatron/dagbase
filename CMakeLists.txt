@@ -35,6 +35,7 @@ include/util/DebugPrinter.h
         include/io/FormatAgnosticOutputStream.h
         include/io/FormatAgnosticInputStream.h
         include/util/SearchableMap.h
+        include/core/Atom.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -64,6 +65,7 @@ src/io/BinaryFormat.cpp
 src/util/DebugPrinter.cpp
         src/io/FormatAgnosticOutputStream.cpp
         src/io/FormatAgnosticInputStream.cpp
+        src/core/Atom.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
