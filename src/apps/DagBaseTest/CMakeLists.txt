@@ -2,7 +2,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         VectorMapTest.cpp
         StreamTest.cpp
         SearchableTest.cpp
-        AtomTest.cpp)
+        AtomTest.cpp
+        DynamicVisitorTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)

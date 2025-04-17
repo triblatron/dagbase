@@ -17,13 +17,21 @@ namespace dagbase
     public:
         Atom() = default;
 
-        static Atom intern(const std::string& name);
+        static Atom intern(std::string name);
 
         Atom(const Atom& other)
         {
             _value = other._value;
         }
 
+        Atom& operator=(const Atom& rhs)
+        {
+            if (this!=&rhs)
+            {
+                _value = rhs._value;
+            }
+            return *this;
+        }
         bool operator==(const Atom& rhs) const
         {
             return _value == rhs._value;
@@ -36,7 +44,14 @@ namespace dagbase
 
         bool operator<(const Atom& rhs) const
         {
-            return std::strcmp(_value,rhs._value);
+            if (_value && rhs._value)
+                return std::strcmp(_value,rhs._value)<0;
+            return false;
+        }
+
+        static void reset()
+        {
+            _atoms.clear();
         }
     private:
         explicit Atom(const char* str);

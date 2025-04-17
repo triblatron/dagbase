@@ -10,7 +10,7 @@ namespace dagbase
 {
     Atom::AtomMap Atom::_atoms;
 
-    Atom Atom::intern(const std::string& name)
+    Atom Atom::intern(std::string name)
     {
         auto it = _atoms.find(name);
         if (it == _atoms.end())
