@@ -33,6 +33,11 @@ namespace dagbase
         {
             return _value != rhs._value;
         }
+
+        bool operator<(const Atom& rhs) const
+        {
+            return std::strcmp(_value,rhs._value);
+        }
     private:
         explicit Atom(const char* str);
         const char* _value{nullptr};
