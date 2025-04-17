@@ -17,7 +17,7 @@ namespace dagbase
     {
     public:
         using Handler=std::function<void(BaseClass&)>;
-        using HandlerMap=std::map<std::string,Handler>;
+        using HandlerMap=VectorMap<Atom,Handler>;
     public:
         void visit(BaseClass& obj)
         {
@@ -29,7 +29,7 @@ namespace dagbase
             }
         }
 
-        Handler findHandler(std::string name)
+        Handler findHandler(Atom name)
         {
             if (auto it=_handlers.find(name); it!=_handlers.end())
             {
@@ -37,13 +37,11 @@ namespace dagbase
             }
             return {};
         }
-        void registerHandler(std::string name, Handler handler)
+        void registerHandler(Atom name, Handler handler)
         {
             _handlers.insert(std::make_pair(name,handler));
-            //_ints.insert(std::make_pair(1,handler));
         }
     private:
         HandlerMap _handlers;
-        std::map<int,int> _ints;
     };
 }

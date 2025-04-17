@@ -95,6 +95,7 @@ TEST_P(VectorMap_testFind, testFind)
 }
 
 INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testFind, ::testing::Values(
+	std::make_tuple("root = { elements={ }, search=1 }", false),
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1 }", true),
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4 }", false),
 	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2 }", false)

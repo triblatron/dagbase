@@ -26,10 +26,10 @@ struct TestClass
         // Do nothing.
     }
 
-    std::string typeName() const
+    dagbase::Atom typeName() const
     {
-//        return dagbase::Atom::intern("TestObject");
-        return "TestObject";
+        return dagbase::Atom::intern("TestClass");
+//        return "TestObject";
     }
 
     void accept(dagbase::DynamicVisitor<TestClass>& visitor)
@@ -40,13 +40,12 @@ struct TestClass
 
 TEST(DynamicVisitor_testVisit, testExpectedCall)
 {
-//    dagbase::Atom::reset();
+    dagbase::Atom::reset();
     dagbase::DynamicVisitor<TestClass> sut;
     TestClass obj;
     sut.registerHandler(obj.typeName(), [](TestClass& obj) {
         obj.numCalls++;
     });
-//    sut.registerHandler("TestObject",1);
     obj.accept(sut);
     EXPECT_EQ(1,obj.numCalls);
 }
