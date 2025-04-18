@@ -15,6 +15,7 @@
 #include "io/Stream.h"
 #include "io/TextFormat.h"
 #include "io/FormatAgnosticInputStream.h"
+#include "TestObject.h"
 
 class StreamFormat_testUInt32 : public ::testing::TestWithParam<std::tuple<std::string_view, std::uint32_t>>
 {
@@ -115,58 +116,6 @@ INSTANTIATE_TEST_SUITE_P(StreamFormat, StreamFormat_testString, ::testing::Value
 class StreamFormat_testObject : public ::testing::TestWithParam<std::tuple<std::string_view, std::uint32_t>>
 {
 
-};
-
-struct TestObject : public dagbase::Class
-{
-    std::uint32_t value{0};
-
-    const char* className() const override
-    {
-        return "TestObject";
-    }
-
-    void writeToStream(dagbase::StreamFormat& format) const override
-    {
-        format.writeHeader("TestObject");
-        Class::writeToStream(format);
-        format.writeField("value");// << value << " }\n";
-        format.writeUInt32(value);
-        format.writeFooter();
-    }
-
-    void readFromStream(dagbase::StreamFormat& format) override
-    {
-        std::string className;
-        format.readHeader(&className);
-        if (className != "TestObject")
-            return;
-        Class::readFromStream(format);
-        std::string fieldName;
-        format.readField(&fieldName);
-        if (fieldName != "value")
-            return;
-        format.readUInt32(&value);
-        format.readFooter();
-        // std::string className;
-        //
-        // str >> className;
-        // if (className!="TestObject")
-        //     return;
-        // char temp;
-        // str >> temp;
-        // if (temp!='{')
-        //     return;
-        // Class::readFromStream(str);
-        // std::string fieldName;
-        // str >> fieldName;
-        // if (fieldName!="value:")
-        //     return;
-        // str >> value;
-        // str >> temp;
-        // if (temp!='}')
-        //     return;
-    }
 };
 
 TEST_P(StreamFormat_testObject, testRoundTrip)
