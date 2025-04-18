@@ -37,6 +37,7 @@ include/util/DebugPrinter.h
         include/util/SearchableMap.h
         include/core/Atom.h
         include/core/DynamicVisitor.h
+        include/util/SearchableArray.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

@@ -32,6 +32,12 @@ namespace dagbase
             }
             return *this;
         }
+
+        bool operator==(const char* other) const
+        {
+            return _value && other && std::strcmp(_value, other) == 0;
+        }
+
         bool operator==(const Atom& rhs) const
         {
             return _value == rhs._value;
