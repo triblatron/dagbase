@@ -199,5 +199,5 @@ namespace dagbase
 
 }
 
-std::ostream& operator<<(std::ostream& str, dagbase::ConfigurationElement::ValueType value);
+std::ostream DAGBASE_API & operator<<(std::ostream& str, dagbase::ConfigurationElement::ValueType value);
 
