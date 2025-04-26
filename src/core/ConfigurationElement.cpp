@@ -289,3 +289,23 @@ namespace dagbase
 		}
 	}
 }
+
+std::ostream &operator<<(std::ostream &str, dagbase::ConfigurationElement::ValueType value)
+{
+    switch (value->index())
+    {
+        case dagbase::ConfigurationElement::TYPE_INTEGER:
+            str << std::get<dagbase::ConfigurationElement::TYPE_INTEGER>(value.value());
+            break;
+        case dagbase::ConfigurationElement::TYPE_BOOL:
+            str << std::get<dagbase::ConfigurationElement::TYPE_BOOL>(value.value());
+            break;
+        case dagbase::ConfigurationElement::TYPE_DOUBLE:
+            str << std::get<dagbase::ConfigurationElement::TYPE_DOUBLE>(value.value());
+            break;
+        case dagbase::ConfigurationElement::TYPE_STRING:
+            str << std::get<dagbase::ConfigurationElement::TYPE_STRING>(value.value());
+            break;
+    }
+    return str;
+}

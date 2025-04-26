@@ -5,7 +5,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         AtomTest.cpp
         DynamicVisitorTest.cpp
         TestObject.h
-        TestClass.h)
+        TestClass.h
+        SnippetTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)

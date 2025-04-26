@@ -16,6 +16,7 @@ extern "C" {
 #include <vector>
 #include <optional>
 #include <functional>
+#include <iosfwd>
 
 struct lua_State;
 
@@ -77,6 +78,11 @@ namespace dagbase
         const std::string& name() const
         {
             return _name;
+        }
+
+        ValueType value() const
+        {
+            return _value;
         }
 
         void addChild(ConfigurationElement* child)
@@ -190,4 +196,8 @@ namespace dagbase
         using Children = std::vector<ConfigurationElement*>;
         Children _children;
     };
+
 }
+
+std::ostream& operator<<(std::ostream& str, dagbase::ConfigurationElement::ValueType value);
+

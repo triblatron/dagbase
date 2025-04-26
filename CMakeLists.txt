@@ -38,6 +38,7 @@ include/util/DebugPrinter.h
         include/core/Atom.h
         include/core/DynamicVisitor.h
         include/util/SearchableArray.h
+        include/core/Snippet.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -68,6 +69,7 @@ src/util/DebugPrinter.cpp
         src/io/FormatAgnosticOutputStream.cpp
         src/io/FormatAgnosticInputStream.cpp
         src/core/Atom.cpp
+        src/core/Snippet.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
