@@ -33,7 +33,9 @@ TEST_P(MetaProperty_testConfigure, testExpectedValues)
 
 INSTANTIATE_TEST_SUITE_P(MetaProperty, MetaProperty_testConfigure, ::testing::Values(
         std::make_tuple("data/tests/MetaProperty/NoSemantic.lua", "dataType", "DATATYPE_STRING", 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/MetaProperty/NoSemantic.lua", "format", "FORMAT_NONE", 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/MetaProperty/NoSemantic.lua", "format", "FORMAT_NONE", 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/MetaProperty/Colour.lua", "dataType", "DATATYPE_STRING", 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/MetaProperty/Colour.lua", "format", "FORMAT_COLOUR", 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
 
 class MetaPropertyDataType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::MetaProperty::DataType>>

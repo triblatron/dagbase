@@ -1,11 +1,8 @@
 root=
 {
-	colour=
-	{
-		dataType="DATATYPE_STRING",
-		format="FORMAT_COLOUR",
-		parser="parseColour",
-		validator="isValidColour",
-		defaultValue="transparent",
-	}
+	dataType="DATATYPE_STRING",
+	format="FORMAT_COLOUR",
+	parser="parseColour",
+	validator="isValidColour",
+	defaultValue="transparent",
 }
