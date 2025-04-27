@@ -19,9 +19,25 @@ namespace dagbase
 
         static Atom intern(std::string name);
 
+        std::size_t length() const
+        {
+            return _length;
+        }
+
+        char operator[](std::size_t index) const
+        {
+            if (_value && index<_length)
+            {
+                 return _value[index];
+            }
+
+            return EOF;
+        }
+
         Atom(const Atom& other)
         {
             _value = other._value;
+            _length = other._length;
         }
 
         Atom& operator=(const Atom& rhs)
@@ -29,6 +45,7 @@ namespace dagbase
             if (this!=&rhs)
             {
                 _value = rhs._value;
+                _length = rhs._length;
             }
             return *this;
         }
@@ -62,6 +79,7 @@ namespace dagbase
     private:
         explicit Atom(const char* str);
         const char* _value{nullptr};
+        std::size_t _length{0};
         using AtomMap = std::unordered_map<std::string, Atom>;
         static AtomMap _atoms;
     };

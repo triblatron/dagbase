@@ -29,6 +29,9 @@ namespace dagbase
         :
     _value(str)
     {
-        // Do nothing.
+        if (_value)
+        {
+            _length = std::strlen(_value);
+        }
     }
 }

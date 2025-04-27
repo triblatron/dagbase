@@ -11,8 +11,6 @@ namespace dagbase
     std::string Snippet::interpolate()
     {
         std::string output;
-        std::string open = "{{";
-        std::string close = "}}";
         State state = STATE_INITIAL;
         std::size_t openIndex = 0;
         std::size_t closeIndex = 0;
@@ -23,29 +21,29 @@ namespace dagbase
             switch (state)
             {
                 case STATE_INITIAL:
-                    if (openIndex<open.length() && c!=open[openIndex])
+                    if (openIndex<_open.length() && c!=_open[openIndex])
                     {
                         output += c;
                     }
-                    else if (openIndex<open.length() && c==open[openIndex])
+                    else if (openIndex<_open.length() && c==_open[openIndex])
                     {
                         ++openIndex;
                     }
-                    if (openIndex==open.length())
+                    if (openIndex==_open.length())
                     {
                         state = STATE_FOUND_OPEN;
                     }
                     break;
                 case STATE_FOUND_OPEN:
-                    if (closeIndex<close.length() && c!=close[closeIndex])
+                    if (closeIndex<_close.length() && c!=_close[closeIndex])
                     {
                         symbol += c;
                     }
-                    else if (closeIndex<close.length() && c==close[closeIndex])
+                    else if (closeIndex<_close.length() && c==_close[closeIndex])
                     {
                         ++closeIndex;
                     }
-                    if (closeIndex==close.length())
+                    if (closeIndex==_close.length())
                     {
                         output += resolve(symbol);
                         openIndex = 0;
@@ -69,6 +67,16 @@ namespace dagbase
         if (auto element=config.findElement("input"); element)
         {
             _input = element->asString();
+        }
+
+        if (auto element = config.findElement("open"); element)
+        {
+            _open = Atom::intern(element->asString());
+        }
+
+        if (auto element = config.findElement("close"); element)
+        {
+            _close = Atom::intern(element->asString());
         }
     }
 }

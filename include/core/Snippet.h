@@ -5,6 +5,7 @@
 #pragma once
 
 #include "config/DagBaseExport.h"
+#include "core/Atom.h"
 
 #include <string>
 
@@ -39,5 +40,7 @@ namespace dagbase
         std::string interpolate();
     private:
         std::string _input;
+        Atom _open;
+        Atom _close;
     };
 }

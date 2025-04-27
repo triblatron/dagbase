@@ -26,7 +26,7 @@ public:
             return std::string();
         });
     }
-    void configure(dagbase::ConfigurationElement& config)
+    void configure(dagbase::ConfigurationElement& config) override
     {
         dagbase::Snippet::configure(config);
         if (auto element=config.findElement("variables"); element)
