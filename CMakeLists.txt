@@ -41,6 +41,10 @@ include/util/DebugPrinter.h
         include/core/Snippet.h
         include/core/MetaProperty.h
         include/util/enums.h
+        include/core/Variant.h
+        include/core/Colour.h
+        include/core/PropertyFormat.h
+        include/core/Vec2.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -73,6 +77,9 @@ src/util/DebugPrinter.cpp
         src/core/Atom.cpp
         src/core/Snippet.cpp
         src/core/MetaProperty.cpp
+        src/core/Colour.cpp
+        src/core/Variant.cpp
+        src/core/Vec2.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
