@@ -62,28 +62,6 @@ namespace dagbase
             return _value < other._value;
         }
 
-//        Variant& operator=(bool value)
-//        {
-//            _value = value;
-//
-//            return *this;
-//        }
-//
-//        Variant& operator=(double value)
-//        {
-//            _value = value;
-//        }
-
-        Variant& operator=(const Variant& other)
-        {
-            if (&other!=this)
-            {
-                _value=other._value;
-            }
-
-            return *this;
-        }
-
         int64_t asInteger(std::int64_t defaultValue=0) const
         {
             if (_value.has_value() && _value->index() == TYPE_INTEGER)
