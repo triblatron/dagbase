@@ -20,7 +20,7 @@ public:
             if (auto it=_lookup.find(name); it!=_lookup.end())
             {
                 std::ostringstream str;
-                str << it->second.value();
+                str << it->second;
                 return str.str();
             }
             return std::string();

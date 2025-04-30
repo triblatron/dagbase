@@ -217,7 +217,7 @@ namespace dagbase
                     }
                     else if (lua_isboolean(lua, -1))
                     {
-                        child = new ConfigurationElement(index, bool(lua_toboolean(lua, -1)));
+                        child = new ConfigurationElement(index, Variant(bool(lua_toboolean(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isstring(lua, -1))
@@ -248,7 +248,7 @@ namespace dagbase
                     }
                     else if (lua_isboolean(lua, -1))
                     {
-                        child = new ConfigurationElement(name, bool(lua_toboolean(lua, -1)));
+                        child = new ConfigurationElement(name, Variant(bool(lua_toboolean(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isstring(lua, -1))
@@ -288,24 +288,4 @@ namespace dagbase
 			}
 		}
 	}
-}
-
-std::ostream &operator<<(std::ostream &str, dagbase::ConfigurationElement::ValueType value)
-{
-    switch (value->index())
-    {
-        case dagbase::ConfigurationElement::TYPE_INTEGER:
-            str << std::get<dagbase::ConfigurationElement::TYPE_INTEGER>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_BOOL:
-            str << std::get<dagbase::ConfigurationElement::TYPE_BOOL>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_DOUBLE:
-            str << std::get<dagbase::ConfigurationElement::TYPE_DOUBLE>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_STRING:
-            str << std::get<dagbase::ConfigurationElement::TYPE_STRING>(value.value());
-            break;
-    }
-    return str;
 }

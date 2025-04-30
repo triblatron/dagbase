@@ -6,6 +6,8 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Variant.h"
+
 extern "C" {
 #include <lua.h>
 }
@@ -27,14 +29,14 @@ namespace dagbase
     class DAGBASE_API ConfigurationElement
     {
     public:
-        enum Type
-        {
-            TYPE_BOOL,
-            TYPE_INTEGER,
-            TYPE_DOUBLE,
-            TYPE_STRING
-        };
-        using ValueType = std::optional<std::variant<bool, std::int64_t, double, std::string>>;
+//        enum Type
+//        {
+//            TYPE_BOOL,
+//            TYPE_INTEGER,
+//            TYPE_DOUBLE,
+//            TYPE_STRING
+//        };
+        using ValueType = Variant;//std::optional<std::variant<bool, std::int64_t, double, std::string>>;
         enum RelOp
         {
             RELOP_UNKNOWN,
@@ -48,7 +50,7 @@ namespace dagbase
     public:
         explicit ConfigurationElement(std::string name);
 		
-        ConfigurationElement(std::string name, ValueType::value_type value)
+        ConfigurationElement(std::string name, ValueType value)
         :
         _name(std::move(name)),
         _value(value)
@@ -56,7 +58,7 @@ namespace dagbase
             // Do nothing.
         }
 
-        ConfigurationElement(std::int64_t index, ValueType::value_type value)
+        ConfigurationElement(std::int64_t index, ValueType value)
         :
         _index(index),
         _value(value)
@@ -101,63 +103,68 @@ namespace dagbase
 
         std::int64_t asInteger(int64_t defaultValue=0) const
         {
-            if (_value.has_value() && _value->index() == TYPE_INTEGER)
-            {
-                return std::get<TYPE_INTEGER>(_value.value());
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return _value.asInteger(defaultValue);
+//            if (_value.has_value() && _value->index() == TYPE_INTEGER)
+//            {
+//                return std::get<TYPE_INTEGER>(_value.value());
+//            }
+//            else
+//            {
+//                return defaultValue;
+//            }
         }
 
         double asDouble(double defaultValue=0.0) const
         {
-            if (_value.has_value() && _value->index()==TYPE_DOUBLE)
-            {
-                return std::get<TYPE_DOUBLE>(_value.value());
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return _value.asDouble(defaultValue);
+//            if (_value.has_value() && _value->index()==TYPE_DOUBLE)
+//            {
+//                return std::get<TYPE_DOUBLE>(_value.value());
+//            }
+//            else
+//            {
+//                return defaultValue;
+//            }
         }
 
         bool asBool(bool defaultValue=false) const
         {
-            if (_value.has_value() && _value->index()==TYPE_BOOL)
-            {
-                return std::get<TYPE_BOOL>(_value.value());
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return _value.asBool(defaultValue);
+//            if (_value.has_value() && _value->index()==TYPE_BOOL)
+//            {
+//                return std::get<TYPE_BOOL>(_value.value());
+//            }
+//            else
+//            {
+//                return defaultValue;
+//            }
         }
 
         std::string asString(std::string defaultValue="") const
         {
-            if (_value.has_value() && _value->index()==TYPE_STRING)
-            {
-                return std::get<TYPE_STRING>(_value.value());
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return _value.asString(defaultValue);
+//            if (_value.has_value() && _value->index()==TYPE_STRING)
+//            {
+//                return std::get<TYPE_STRING>(_value.value());
+//            }
+//            else
+//            {
+//                return defaultValue;
+//            }
         }
 
         template <typename T>
         T as() const
 		{
-		    if (_value.has_value())
-		    {
-		        return std::get<T>(_value.value());
-		    }
-		    else
-		    {
-		        return T();
-		    }
+            return _value.as<T>();
+//		    if (_value.has_value())
+//		    {
+//		        return std::get<T>(_value.value());
+//		    }
+//		    else
+//		    {
+//		        return T();
+//		    }
 		}
 
         ConfigurationElement* findElement(std::string_view path);
@@ -198,6 +205,4 @@ namespace dagbase
     };
 
 }
-
-std::ostream& operator<<(std::ostream& str, dagbase::ConfigurationElement::ValueType value);
 

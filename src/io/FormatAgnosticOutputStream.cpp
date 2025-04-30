@@ -39,19 +39,19 @@ namespace dagbase
     {
         if (_format && value.has_value())
         {
-            switch (value->index())
+            switch (value.index())
             {
-            case ConfigurationElement::TYPE_DOUBLE:
-                writeDouble(std::get<double>(value.value()));
+            case Variant::TYPE_DOUBLE:
+                writeDouble(value.asDouble());
                 break;
-            case ConfigurationElement::TYPE_STRING:
-                writeString(std::get<std::string>(value.value()),true);
+            case Variant::TYPE_STRING:
+                writeString(value.asString(),true);
                 break;
-            case ConfigurationElement::TYPE_BOOL:
-                writeBool(std::get<bool>(value.value()));
+            case Variant::TYPE_BOOL:
+                writeBool(value.asBool());
                 break;
-            case ConfigurationElement::TYPE_INTEGER:
-                writeInt64(std::get<int64_t>(value.value()));
+            case Variant::TYPE_INTEGER:
+                writeInt64(value.asInteger());
                 break;
             }
         }

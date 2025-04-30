@@ -5,6 +5,7 @@
 #include "config/config.h"
 
 #include "core/Variant.h"
+#include <iostream>
 
 namespace dagbase
 {
@@ -15,18 +16,18 @@ namespace dagbase
         {
             switch (_value->index())
             {
-                case INDEX_INT:
-                    return std::to_string(std::get<INDEX_INT>(_value.value()));
-                case INDEX_DOUBLE:
-                    return std::to_string(std::get<INDEX_DOUBLE>(_value.value()));
-                case INDEX_BOOL:
-                    return std::to_string(std::get<INDEX_BOOL>(_value.value()));
-                case INDEX_STRING:
-                    return std::get<INDEX_STRING>(_value.value());
-                case INDEX_COLOUR:
-                    return to_string(std::get<INDEX_COLOUR>(_value.value()));
-                case INDEX_VEC2:
-                    return to_string(std::get<INDEX_VEC2>(_value.value()));
+                case TYPE_INTEGER:
+                    return std::to_string(std::get<TYPE_INTEGER>(_value.value()));
+                case TYPE_DOUBLE:
+                    return std::to_string(std::get<TYPE_DOUBLE>(_value.value()));
+                case TYPE_BOOL:
+                    return std::to_string(std::get<TYPE_BOOL>(_value.value()));
+                case TYPE_STRING:
+                    return std::get<TYPE_STRING>(_value.value());
+                case TYPE_COLOUR:
+                    return to_string(std::get<TYPE_COLOUR>(_value.value()));
+                case TYPE_VEC2:
+                    return to_string(std::get<TYPE_VEC2>(_value.value()));
             }
         }
 
@@ -74,4 +75,30 @@ namespace dagbase
     {
         // Do nothing.
     }
+}
+
+std::ostream &operator<<(std::ostream &str, dagbase::Variant value)
+{
+    switch (value.index())
+    {
+        case dagbase::Variant::TYPE_INTEGER:
+            str << value.asInteger();
+            break;
+        case dagbase::Variant::TYPE_BOOL:
+            str << bool(value.asBool());
+            break;
+        case dagbase::Variant::TYPE_DOUBLE:
+            str << value.asDouble();
+            break;
+        case dagbase::Variant::TYPE_STRING:
+            str << value.asString();
+            break;
+        case dagbase::Variant::TYPE_COLOUR:
+            str << dagbase::to_string(value.asColour());
+            break;
+        case dagbase::Variant::TYPE_VEC2:
+            str << dagbase::to_string(value.asVec2());
+            break;
+    }
+    return str;
 }
