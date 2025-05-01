@@ -33,6 +33,16 @@ namespace dagbase
             }
         }
 
+        void setOpen(Atom open)
+        {
+            _open = open;
+        }
+
+        void setClose(Atom close)
+        {
+            _close = close;
+        }
+
         virtual void configure(ConfigurationElement& config);
 
         virtual std::string resolve(const std::string& name) = 0;
