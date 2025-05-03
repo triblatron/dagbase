@@ -9,7 +9,7 @@
 namespace dagbase
 {
 
-    Variant PropertyBinding::interpolate(PropertyBinding::ResolveFunc resolve)
+    Variant PropertyBinding::interpolate(Atom open, Atom close, PropertyBinding::ResolveFunc resolve)
     {
         Variant output;
         State state = STATE_INITIAL;
@@ -22,29 +22,29 @@ namespace dagbase
             switch (state)
             {
                 case STATE_INITIAL:
-                    if (openIndex<_open.length() && c!=_open[openIndex])
+                    if (openIndex<open.length() && c!=open[openIndex])
                     {
                         //output += c;
                     }
-                    else if (openIndex<_open.length() && c==_open[openIndex])
+                    else if (openIndex<open.length() && c==open[openIndex])
                     {
                         ++openIndex;
                     }
-                    if (openIndex==_open.length())
+                    if (openIndex==open.length())
                     {
                         state = STATE_FOUND_OPEN;
                     }
                     break;
                 case STATE_FOUND_OPEN:
-                    if (closeIndex<_close.length() && c!=_close[closeIndex])
+                    if (closeIndex<close.length() && c!=close[closeIndex])
                     {
                         symbol += c;
                     }
-                    else if (closeIndex<_close.length() && c==_close[closeIndex])
+                    else if (closeIndex<close.length() && c==close[closeIndex])
                     {
                         ++closeIndex;
                     }
-                    if (closeIndex==_close.length())
+                    if (closeIndex==close.length())
                     {
                         output = resolve(symbol);
                         openIndex = 0;

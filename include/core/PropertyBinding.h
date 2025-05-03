@@ -33,20 +33,8 @@ namespace dagbase
                 _input = input;
         }
 
-        void setOpen(Atom open)
-        {
-            _open = open;
-        }
-
-        void setClose(Atom close)
-        {
-            _close = close;
-        }
-
-        Variant interpolate(ResolveFunc resolve);
+        Variant interpolate(Atom open, Atom close, ResolveFunc resolve);
     private:
         std::string _input;
-        Atom _open;
-        Atom _close;
     };
 }
