@@ -253,7 +253,14 @@ namespace dagbase
                     }
                     else if (lua_isstring(lua, -1))
                     {
-                        child = new ConfigurationElement(name, std::string(lua_tostring(lua, -1)));
+                        Vec2 vec;
+                        bool isVec2 = Vec2::parse(lua_tostring(lua, -1), &vec);
+                        if (isVec2)
+                        {
+                            child = new ConfigurationElement(name, Variant(vec));
+                        }
+                        else
+                            child = new ConfigurationElement(name, std::string(lua_tostring(lua, -1)));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_istable(lua, -1))

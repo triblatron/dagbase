@@ -44,6 +44,8 @@ namespace dagbase
         {
             return *this > other || *this == other;
         }
+
+        static bool parse(std::string_view str, Vec2* value);
     };
 
     std::string to_string(const Vec2& vec);

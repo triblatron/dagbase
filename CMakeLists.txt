@@ -45,6 +45,7 @@ include/util/DebugPrinter.h
         include/core/Colour.h
         include/core/PropertyFormat.h
         include/core/Vec2.h
+        include/core/PropertyBinding.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -80,6 +81,7 @@ src/util/DebugPrinter.cpp
         src/core/Colour.cpp
         src/core/Variant.cpp
         src/core/Vec2.cpp
+        src/core/PropertyBinding.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
