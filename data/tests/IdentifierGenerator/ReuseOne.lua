@@ -1,0 +1,17 @@
+root=
+{
+	{
+		cmd="generate",
+		count=1,
+		expectedId=0
+	},
+	{
+		cmd="release",
+		expectedId=0,
+	},
+	{
+		cmd="generate",
+		count=1,
+		expectedId=0
+	}
+}
