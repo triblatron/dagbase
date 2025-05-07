@@ -2,6 +2,8 @@
 // Created by Tony Horrobin on 06/05/2025.
 //
 
+#pragma once
+
 #include "config/DagBaseExport.h"
 
 #include <cstdint>
