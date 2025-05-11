@@ -16,6 +16,7 @@ namespace dagbase
     {
     public:
         using Identifier=std::uint32_t;
+        static constexpr Identifier INVALID_ID=~0;
         using RecycleQueue=std::queue<Identifier>;
     public:
         Identifier generate();
