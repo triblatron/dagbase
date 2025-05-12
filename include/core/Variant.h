@@ -20,7 +20,7 @@ namespace dagbase
     {
     public:
         using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2>>;
-        using value_type = ValueType::value_type;
+        using InnerType = ValueType::value_type;
 
         enum Index : std::uint32_t
         {

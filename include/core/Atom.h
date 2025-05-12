@@ -32,6 +32,11 @@ namespace dagbase
             return _length;
         }
 
+        bool empty() const
+        {
+            return _length==0;
+        }
+
         char operator[](std::size_t index) const
         {
             if (_value && index<_length)
@@ -106,6 +111,14 @@ namespace std
 {
     template<>
     struct hash<dagbase::Atom>
+    {
+        size_t operator()(const dagbase::Atom& key) const
+        {
+            return hash<const char*>{}(key.value());
+        }
+    };
+    template<>
+    struct hash<const dagbase::Atom>
     {
         size_t operator()(const dagbase::Atom& key) const
         {
