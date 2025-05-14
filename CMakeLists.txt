@@ -47,6 +47,9 @@ include/util/DebugPrinter.h
         include/core/Vec2.h
         include/core/PropertyBinding.h
         include/core/IdentifierGenerator.h
+        include/core/BaseDimension.h
+        include/core/Dimension.h
+        include/core/Unit.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -84,6 +87,8 @@ src/util/DebugPrinter.cpp
         src/core/Vec2.cpp
         src/core/PropertyBinding.cpp
         src/core/IdentifierGenerator.cpp
+        src/core/Dimension.cpp
+        src/core/Unit.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
