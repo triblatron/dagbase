@@ -14,12 +14,12 @@ namespace dagbase
     {
         //int powers[BaseDimension::NUM_BASE_DIMENSIONS] {};
         const char* symbol;
+        static constexpr const char* LENGTH{"L"};
+        static constexpr const char* MASS{"M"};
+        static constexpr const char* TIME{"T"};
+        static constexpr const char* SPEED{"LT^-1"};
+        static constexpr const char* ACCELERATION{ "LT^-2"};
+        static constexpr const char* JERK{"LT^-3"};
     };
 
-    extern constexpr DAGBASE_API Dimension LENGTH{"L"};
-    extern constexpr DAGBASE_API Dimension MASS{"M"};
-    extern constexpr DAGBASE_API Dimension TIME{"T"};
-    extern constexpr DAGBASE_API Dimension SPEED{"LT^-1"};
-    extern constexpr DAGBASE_API Dimension ACCELERATION{ "LT^-2"};
-    extern constexpr DAGBASE_API Dimension JERK{"LT^-3"};
 }
