@@ -86,12 +86,12 @@ namespace dagbase
         allUnits.emplace(METREPERSECONDCUBED.symbol, METREPERSECONDCUBED);
         allUnits.emplace(MILEPERHOUR.symbol, MILEPERHOUR);
         allUnits.emplace("mph", MILEPERHOUR);
-        allUnits.emplace("kph", KILOMETERPERHOUR);
+        allUnits.emplace("kph", KILOMETREPERHOUR);
         allUnits.emplace("m/s", METREPERSECOND);
         allUnits.emplace("m/s/s",METREPERSECONDSQUARED);
         allUnits.emplace("m/s/s/s",METREPERSECONDCUBED);
         allUnits.emplace(KILOGRAM.symbol, KILOGRAM);
-        allUnits.emplace(KILOMETERPERHOUR.symbol, KILOMETERPERHOUR);
+        allUnits.emplace(KILOMETREPERHOUR.symbol, KILOMETREPERHOUR);
         allUnits.emplace(PIXEL.symbol, PIXEL);
     }
 }
