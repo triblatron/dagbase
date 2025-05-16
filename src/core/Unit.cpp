@@ -53,12 +53,23 @@ namespace dagbase
         }
     }
 
-    void Unit::convert(double sourceValue, Unit sourceUnit, Unit destUnit, double *destValue)
+    Unit::ConversionResult Unit::convert(double sourceValue, Unit sourceUnit, Unit destUnit, double *destValue)
     {
         if (destValue)
         {
-            *destValue = sourceValue * sourceUnit.toSI / destUnit.toSI;
+            if (sourceUnit.dimension && destUnit.dimension && std::strcmp(sourceUnit.dimension, destUnit.dimension) == 0)
+            {
+                *destValue = sourceValue * sourceUnit.toSI / destUnit.toSI;
+                return CONV_OK;
+            }
+            else
+            {
+                *destValue = 0.0;
+                return CONV_INCOMPATIBLE_DIMS;
+            }
         }
+
+        return CONV_NO_OUTPUT;
     }
 
     Unit::RegisterUnits Unit::registration;

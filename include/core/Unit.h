@@ -25,6 +25,13 @@ namespace dagbase
             PARSE_POWER_VALUE
         };
 
+        enum ConversionResult : std::uint32_t
+        {
+            CONV_OK,
+            CONV_NO_OUTPUT,
+            CONV_INCOMPATIBLE_DIMS
+        };
+
         const char* dimension{nullptr};
         double toSI{0.0};
         const char* symbol;
@@ -38,7 +45,7 @@ namespace dagbase
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 
-        static void convert(double sourceValue, Unit sourceUnit, Unit destUnit, double* destValue);
+        static ConversionResult convert(double sourceValue, Unit sourceUnit, Unit destUnit, double* destValue);
 
         static std::map<std::string_view, Unit> allUnits;
 

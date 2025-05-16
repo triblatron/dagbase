@@ -35,7 +35,7 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParse, ::testing::Values(
         std::make_tuple("2.0 kph", 2.0, dagbase::KILOMETERPERHOUR)
         ));
 
-class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double>>
+class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>
 {
 
 };
@@ -46,12 +46,16 @@ TEST_P(Unit_testConvert, testExpectedValue)
     auto sourceUnit = std::get<1>(GetParam());
     auto destUnit = std::get<2>(GetParam());
     auto destValue = std::get<3>(GetParam());
+    auto result = std::get<4>(GetParam());
     double actualValue=0.0;
-    dagbase::Unit::convert(sourceValue, sourceUnit, destUnit, &actualValue);
+    auto actualResult = dagbase::Unit::convert(sourceValue, sourceUnit, destUnit, &actualValue);
+    EXPECT_EQ(result, actualResult);
     EXPECT_NEAR(destValue, actualValue, 1e-3);
 }
 
 INSTANTIATE_TEST_SUITE_P(Unit, Unit_testConvert, ::testing::Values(
-        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::METREPERSECOND, 13.411),
-        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::KILOMETERPERHOUR, 48.28)
+        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::METREPERSECOND, 13.411, dagbase::Unit::CONV_OK),
+        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::KILOMETERPERHOUR, 48.28, dagbase::Unit::CONV_OK),
+        std::make_tuple(48.28, dagbase::KILOMETERPERHOUR, dagbase::METREPERSECOND, 13.411, dagbase::Unit::CONV_OK),
+        std::make_tuple(48.28, dagbase::KILOMETERPERHOUR, dagbase::METRE, 0.0, dagbase::Unit::CONV_INCOMPATIBLE_DIMS)
         ));
