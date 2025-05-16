@@ -9,33 +9,58 @@
 #include "core/Dimension.h"
 
 #include <cstring>
+#include <map>
+#include <string_view>
 
 namespace dagbase
 {
     struct DAGBASE_API Unit
     {
+        enum ParseState : std::uint32_t
+        {
+            PARSE_INITIAL,
+            PARSE_SYMBOL,
+            PARSE_POWER_RAISE,
+            PARSE_POWER_SIGN,
+            PARSE_POWER_VALUE
+        };
+
         const char* dimension{nullptr};
         double toSI{0.0};
         const char* symbol;
 
         bool operator==(const Unit& other) const
         {
-            return strcmp(dimension,other.dimension)==0 &&
+            return dimension && other.dimension && std::strcmp(dimension,other.dimension)==0 &&
                 toSI==other.toSI &&
-                strcmp(symbol,other.symbol)==0;
+                symbol && other.symbol && strcmp(symbol,other.symbol)==0;
         }
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
+
+        static std::map<std::string_view, Unit> allUnits;
+
+        struct RegisterUnits
+        {
+            RegisterUnits();
+        };
+
+        static RegisterUnits registration;
     };
 
+    extern constexpr DAGBASE_API Unit NONE = {Dimension::NONE, 1.0, ""};
     extern constexpr DAGBASE_API Unit METRE = {Dimension::LENGTH, 1.0, "m"};
     extern constexpr DAGBASE_API Unit YARD = {Dimension::LENGTH, 1.0/1.09361, "yd"};
+    extern constexpr DAGBASE_API Unit MILE= {Dimension::LENGTH, 1609.344, "mi"};
     extern constexpr DAGBASE_API Unit KILOGRAM = { Dimension::MASS, 1.0, "kg"};
     extern constexpr DAGBASE_API Unit SECOND = {Dimension::TIME, 1.0, "s"};
     extern constexpr DAGBASE_API Unit HOUR={Dimension::TIME, 60.0, "h"};
     extern constexpr DAGBASE_API Unit METREPERSECOND{ Dimension::SPEED, 1.0, "ms^-1"};
-    extern constexpr DAGBASE_API Unit MILEPERHOUR{ Dimension::SPEED, 1.0/2.2377, "mph"};
-    extern constexpr DAGBASE_API Unit KILOMETERPERHOUR{ Dimension::SPEED, 1.0/3.6, "kph"};
+    extern constexpr DAGBASE_API Unit MILEPERHOUR{ Dimension::SPEED, 1.0/2.2377, "mih^-1"};
+    extern constexpr DAGBASE_API Unit KILOMETERPERHOUR{ Dimension::SPEED, 1.0/3.6, "kmh^-1"};
     extern constexpr DAGBASE_API Unit METREPERSECONDSQUARED{Dimension::ACCELERATION, 1.0, "ms^-2"};
     extern constexpr DAGBASE_API Unit METREPERSECONDCUBED{Dimension::JERK, 1.0, "ms^-3"};
+    extern constexpr DAGBASE_API Unit PIXEL{ Dimension::LENGTH, 1.0, "px"};
+
+
 }

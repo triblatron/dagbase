@@ -14,6 +14,7 @@ namespace dagbase
     {
         //int powers[BaseDimension::NUM_BASE_DIMENSIONS] {};
         const char* symbol;
+        static constexpr const char* NONE{""};
         static constexpr const char* LENGTH{"L"};
         static constexpr const char* MASS{"M"};
         static constexpr const char* TIME{"T"};
