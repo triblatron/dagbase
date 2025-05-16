@@ -53,6 +53,14 @@ namespace dagbase
         }
     }
 
+    void Unit::convert(double sourceValue, Unit sourceUnit, Unit destUnit, double *destValue)
+    {
+        if (destValue)
+        {
+            *destValue = sourceValue * sourceUnit.toSI / destUnit.toSI;
+        }
+    }
+
     Unit::RegisterUnits Unit::registration;
 
     Unit::RegisterUnits::RegisterUnits()
