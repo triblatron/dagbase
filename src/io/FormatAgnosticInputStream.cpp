@@ -66,7 +66,7 @@ namespace dagbase
                 {
                     int64_t int64Value{0};
                     readInt64(&int64Value);
-                    *value = int64Value;
+                    *value = Variant(int64Value);
                     break;
                 }
             }

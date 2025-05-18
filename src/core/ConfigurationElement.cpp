@@ -207,7 +207,7 @@ namespace dagbase
                     
                     if (lua_isinteger(lua, -1))
                     {
-                        child = new ConfigurationElement(index, lua_tointeger(lua, -1));
+                        child = new ConfigurationElement(index, Variant(std::int64_t(lua_tointeger(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isnumber(lua, -1))
@@ -238,7 +238,7 @@ namespace dagbase
                     std::string name = lua_tostring(lua, -2);
                     if (lua_isinteger(lua, -1))
                     {
-                        child = new ConfigurationElement(name, lua_tointeger(lua, -1));
+                        child = new ConfigurationElement(name, Variant(std::int64_t(lua_tointeger(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isnumber(lua, -1))
@@ -296,7 +296,7 @@ namespace dagbase
 		}
 	}
 
-    ConfigurationElement *ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, float *value)
+    void ConfigurationElement::readConfig(ConfigurationElement& config, const char* name, float* value)
     {
         if (value)
             if (auto element=config.findElement(name); element)
@@ -305,8 +305,8 @@ namespace dagbase
             }
     }
 
-    ConfigurationElement *
-    ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::string *value)
+    void ConfigurationElement::readConfig(ConfigurationElement& config, const char* name,
+                                          std::string* value)
     {
         if (value)
             if (auto element=config.findElement(name); element)

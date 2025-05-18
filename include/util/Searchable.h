@@ -23,7 +23,7 @@ namespace dagbase
 	{
 		if (path == key)
 		{
-			return value;
+			return Variant(value);
 		}
 
 		return {};

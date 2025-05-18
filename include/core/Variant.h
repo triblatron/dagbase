@@ -34,7 +34,7 @@ namespace dagbase
     public:
         Variant() = default;
 
-        Variant(std::int64_t intValue);
+        explicit Variant(std::int64_t intValue);
 
         Variant(double value);
 

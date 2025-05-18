@@ -186,8 +186,8 @@ namespace dagbase
 
         void eachChild(std::function<bool (ConfigurationElement&)> f);
 
-        static ConfigurationElement* readConfig(ConfigurationElement& config, const char* name, float* value);
-        static ConfigurationElement* readConfig(ConfigurationElement& config, const char* name, std::string* value);
+        static void readConfig(ConfigurationElement& config, const char* name, float* value);
+        static void readConfig(ConfigurationElement& config, const char* name, std::string* value);
     private:
         void setParent(ConfigurationElement* parent)
         {
