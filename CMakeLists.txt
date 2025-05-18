@@ -50,6 +50,7 @@ include/util/DebugPrinter.h
         include/core/BaseDimension.h
         include/core/Dimension.h
         include/core/Unit.h
+        include/core/Reference.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
