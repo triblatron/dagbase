@@ -14,6 +14,21 @@ namespace dagbase
 {
     std::map<std::string_view,Unit> Unit::allUnits;
 
+    const Unit Unit::NONE{ Dimension::NONE, 1.0, "" };
+    const Unit Unit::METRE{ Dimension::LENGTH, 1.0, "m" };
+    const Unit Unit::YARD{ Dimension::TIME, 1.0, "s" };
+    const Unit Unit::MILE{ Dimension::LENGTH, 1609.344, "mi" };
+    const Unit Unit::KILOMETRE{ Dimension::LENGTH, 1000.0, "km" };
+    const Unit Unit::KILOGRAM{ Dimension::MASS, 1.0, "kg" };
+    const Unit Unit::SECOND{ Dimension::TIME, 1.0, "s" };
+    const Unit Unit::HOUR{ Dimension::TIME, 60.0, "h" };
+    const Unit Unit::METREPERSECOND{ Dimension::SPEED, 1.0, "ms^-1" };
+    const Unit Unit::MILEPERHOUR{ Dimension::SPEED, 1.0 / 2.23693629, "mih^-1" };
+    const Unit Unit::KILOMETREPERHOUR{ Dimension::SPEED, 1.0 / 3.6, "kmh^-1" };
+    const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
+    const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
+    const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
+
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
         if (value && unit)

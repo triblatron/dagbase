@@ -32,9 +32,9 @@ namespace dagbase
             CONV_INCOMPATIBLE_DIMS
         };
 
-        const char* dimension{nullptr};
-        double toSI{0.0};
-        const char* symbol;
+        const char* dimension{ nullptr };
+        double toSI{ 0.0 };
+        const char* symbol{ nullptr };
 
         bool operator==(const Unit& other) const
         {
@@ -42,6 +42,21 @@ namespace dagbase
                 toSI==other.toSI &&
                 symbol && other.symbol && strcmp(symbol,other.symbol)==0;
         }
+
+        static const Unit NONE;//{ Dimension::NONE, 1.0, "" };
+        static const Unit METRE;// = { Dimension::LENGTH, 1.0, "m" };
+        static const Unit YARD;// = { Dimension::LENGTH, 1.0 / 1.09361, "yd" };
+        static const Unit MILE;// = { Dimension::LENGTH, 1609.344, "mi" };
+        static const Unit KILOMETRE;// = { Dimension::LENGTH, 1000.0, "km" };
+        static const Unit KILOGRAM;// = { Dimension::MASS, 1.0, "kg" };
+        static const Unit SECOND;// = { Dimension::TIME, 1.0, "s" };
+        static const Unit HOUR;// = { Dimension::TIME, 60.0, "h" };
+        static const Unit METREPERSECOND;// { Dimension::SPEED, 1.0, "ms^-1" };
+        static const Unit MILEPERHOUR;// { Dimension::SPEED, 1.0 / 2.23693629, "mih^-1" };
+        static const Unit KILOMETREPERHOUR;// { Dimension::SPEED, 1.0 / 3.6, "kmh^-1" };
+        static const Unit METREPERSECONDSQUARED;// { Dimension::ACCELERATION, 1.0, "ms^-2" };
+        static const Unit METREPERSECONDCUBED;// { Dimension::JERK, 1.0, "ms^-3" };
+        static const Unit PIXEL;// { Dimension::LENGTH, 1.0, "px" };
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 
@@ -56,21 +71,6 @@ namespace dagbase
 
         static RegisterUnits registration;
     };
-
-    extern constexpr DAGBASE_API Unit NONE = {Dimension::NONE, 1.0, ""};
-    extern constexpr DAGBASE_API Unit METRE = {Dimension::LENGTH, 1.0, "m"};
-    extern constexpr DAGBASE_API Unit YARD = {Dimension::LENGTH, 1.0/1.09361, "yd"};
-    extern constexpr DAGBASE_API Unit MILE= {Dimension::LENGTH, 1609.344, "mi"};
-    extern constexpr DAGBASE_API Unit KILOMETRE = {Dimension::LENGTH, 1000.0, "km"};
-    extern constexpr DAGBASE_API Unit KILOGRAM = { Dimension::MASS, 1.0, "kg"};
-    extern constexpr DAGBASE_API Unit SECOND = {Dimension::TIME, 1.0, "s"};
-    extern constexpr DAGBASE_API Unit HOUR={Dimension::TIME, 60.0, "h"};
-    extern constexpr DAGBASE_API Unit METREPERSECOND{ Dimension::SPEED, 1.0, "ms^-1"};
-    extern constexpr DAGBASE_API Unit MILEPERHOUR{ Dimension::SPEED, 1.0/2.23693629, "mih^-1"};
-    extern constexpr DAGBASE_API Unit KILOMETREPERHOUR{Dimension::SPEED, 1.0 / 3.6, "kmh^-1"};
-    extern constexpr DAGBASE_API Unit METREPERSECONDSQUARED{Dimension::ACCELERATION, 1.0, "ms^-2"};
-    extern constexpr DAGBASE_API Unit METREPERSECONDCUBED{Dimension::JERK, 1.0, "ms^-3"};
-    extern constexpr DAGBASE_API Unit PIXEL{ Dimension::LENGTH, 1.0, "px"};
 
 
 }

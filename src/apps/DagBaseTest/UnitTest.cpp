@@ -2,6 +2,8 @@
 // Created by Tony Horrobin on 14/05/2025.
 //
 
+#include "config/config.h"
+
 #include "core/Unit.h"
 
 #include <gtest/gtest.h>
@@ -25,14 +27,14 @@ TEST_P(Unit_testParse, testExpectedUnit)
 }
 
 INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParse, ::testing::Values(
-        std::make_tuple("", 0.0, dagbase::NONE),
-        std::make_tuple("1", 1.0, dagbase::NONE),
-        std::make_tuple("1s", 1.0, dagbase::SECOND),
-        std::make_tuple("1m", 1.0, dagbase::METRE),
-        std::make_tuple("1ms^-1", 1.0, dagbase::METREPERSECOND),
-        std::make_tuple("1mph", 1.0, dagbase::MILEPERHOUR),
-        std::make_tuple("1kph", 1.0, dagbase::KILOMETREPERHOUR),
-        std::make_tuple("2.0 kph", 2.0, dagbase::KILOMETREPERHOUR)
+        std::make_tuple("", 0.0, dagbase::Unit::NONE),
+        std::make_tuple("1", 1.0, dagbase::Unit::NONE),
+        std::make_tuple("1s", 1.0, dagbase::Unit::SECOND),
+        std::make_tuple("1m", 1.0, dagbase::Unit::METRE),
+        std::make_tuple("1ms^-1", 1.0, dagbase::Unit::METREPERSECOND),
+        std::make_tuple("1mph", 1.0, dagbase::Unit::MILEPERHOUR),
+        std::make_tuple("1kph", 1.0, dagbase::Unit::KILOMETREPERHOUR),
+        std::make_tuple("2.0 kph", 2.0, dagbase::Unit::KILOMETREPERHOUR)
         ));
 
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>
@@ -54,9 +56,9 @@ TEST_P(Unit_testConvert, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(Unit, Unit_testConvert, ::testing::Values(
-        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::METREPERSECOND, 13.411, dagbase::Unit::CONV_OK),
-        std::make_tuple(30.0, dagbase::MILEPERHOUR, dagbase::KILOMETREPERHOUR, 48.28, dagbase::Unit::CONV_OK),
-        std::make_tuple(48.28, dagbase::KILOMETREPERHOUR, dagbase::METREPERSECOND, 13.411, dagbase::Unit::CONV_OK),
-        std::make_tuple(48.28, dagbase::KILOMETREPERHOUR, dagbase::METRE, 0.0, dagbase::Unit::CONV_INCOMPATIBLE_DIMS),
-        std::make_tuple(1, dagbase::KILOMETRE, dagbase::METRE, 1000.0, dagbase::Unit::CONV_OK)
+        std::make_tuple(30.0, dagbase::Unit::MILEPERHOUR, dagbase::Unit::METREPERSECOND, 13.411, dagbase::Unit::Unit::CONV_OK),
+        std::make_tuple(30.0, dagbase::Unit::MILEPERHOUR, dagbase::Unit::KILOMETREPERHOUR, 48.28, dagbase::Unit::Unit::CONV_OK),
+        std::make_tuple(48.28, dagbase::Unit::KILOMETREPERHOUR, dagbase::Unit::METREPERSECOND, 13.411, dagbase::Unit::Unit::CONV_OK),
+        std::make_tuple(48.28, dagbase::Unit::KILOMETREPERHOUR, dagbase::Unit::METRE, 0.0, dagbase::Unit::Unit::CONV_INCOMPATIBLE_DIMS),
+        std::make_tuple(1, dagbase::Unit::KILOMETRE, dagbase::Unit::METRE, 1000.0, dagbase::Unit::Unit::CONV_OK)
         ));

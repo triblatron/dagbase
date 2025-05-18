@@ -159,4 +159,4 @@ namespace dagbase
     };
 }
 
-std::ostream& operator<<(std::ostream& str, dagbase::Variant value);
+std::ostream DAGBASE_API & operator<<(std::ostream& str, dagbase::Variant value);
