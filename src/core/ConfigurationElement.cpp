@@ -295,4 +295,23 @@ namespace dagbase
 			}
 		}
 	}
+
+    ConfigurationElement *ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, float *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = static_cast<float>(element->asDouble());
+            }
+    }
+
+    ConfigurationElement *
+    ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::string *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = element->asString();
+            }
+    }
 }
