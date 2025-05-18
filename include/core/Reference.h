@@ -36,6 +36,16 @@ namespace dagbase
             return nullptr;
         }
 
+        const Ref* ref() const
+        {
+            if (_ref.index()==1)
+            {
+                return std::get<1>(_ref);
+            }
+
+            return nullptr;
+        }
+
         std::string toString() const
         {
             switch (_ref.index())
