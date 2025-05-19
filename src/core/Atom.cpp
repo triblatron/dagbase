@@ -10,14 +10,12 @@ namespace dagbase
 {
     Atom::AtomMap Atom::_atoms;
 
-    Atom Atom::intern(std::string name)
+    Atom& Atom::intern(std::string name)
     {
         auto it = _atoms.find(name);
         if (it == _atoms.end())
         {
-            Atom atom(strdup(name.c_str()));
-            _atoms[name] = atom;
-            return atom;
+            return _atoms[name] = Atom(strdup(name.c_str()));
         }
         else
         {
@@ -29,6 +27,13 @@ namespace dagbase
         :
     _value(str)
     {
-        // Do nothing.
+        if (_value)
+        {
+            _length = std::strlen(_value);
+        }
+    }
+
+    Atom::~Atom()
+    {
     }
 }

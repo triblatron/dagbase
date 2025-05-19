@@ -1,0 +1,21 @@
+root=
+{
+	{
+		cmd="generate",
+		count=10,
+		expectedId=9
+	},
+	{
+		cmd="release",
+		expectedId=5,
+	},
+	{
+		cmd="release",
+		expectedId=9,
+	},
+	{
+		cmd="generate",
+		count=1,
+		expectedId=5
+	}
+}

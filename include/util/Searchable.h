@@ -7,6 +7,8 @@
 #include "config/DagBaseExport.h"
 
 #include "core/ConfigurationElement.h"
+#include "core/Atom.h"
+
 #include <string_view>
 #include <cstring>
 
@@ -21,7 +23,7 @@ namespace dagbase
 	{
 		if (path == key)
 		{
-			return value;
+			return Variant(value);
 		}
 
 		return {};
@@ -60,9 +62,9 @@ namespace dagbase
 
 	//! Find an element in an array type
 	//! \param[in] path : string_view The path that might start with a subscript [n] where n is an integer >= 0.
-	//! \note Array must implement value_type and size().
+	//! \note Array must implement InnerType and size().
 	//! It is typically std::vector which fulfills these requirements.
-	//! \note Array::value_type must implement find().
+	//! \note Array::InnerType must implement find().
 	//! \note We use std::invoke() to handle pointers and references uniformly.
 	//! \note We can avoid an initial string_view::find() because we are only interested in the first element of path.
 	template<typename Array>
@@ -101,6 +103,25 @@ namespace dagbase
     			std::string key;
     			key = path.substr(0, dotPos);
     			if (auto it=obj.find(key); it!=obj.end())
+    				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+    		}
+    	}
+
+    	return {};
+    }
+
+	template<typename Map>
+	ConfigurationElement::ValueType findMapFromAtom(std::string_view path, const Map& obj)
+    {
+    	if (!path.empty())
+    	{
+    		auto dotPos = path.find('.');
+    		if (dotPos < path.length() - 1)
+    		{
+    			std::string key;
+    			key = path.substr(0, dotPos);
+                Atom atom = Atom::intern(key);
+    			if (auto it=obj.find(atom); it!=obj.end())
     				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
     		}
     	}

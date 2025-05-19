@@ -20,13 +20,13 @@ public:
             if (auto it=_lookup.find(name); it!=_lookup.end())
             {
                 std::ostringstream str;
-                str << it->second.value();
+                str << it->second;
                 return str.str();
             }
             return std::string();
         });
     }
-    void configure(dagbase::ConfigurationElement& config)
+    void configure(dagbase::ConfigurationElement& config) override
     {
         dagbase::Snippet::configure(config);
         if (auto element=config.findElement("variables"); element)

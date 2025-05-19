@@ -8,7 +8,6 @@
 
 TEST(DynamicVisitor_testVisit, testExpectedCall)
 {
-    dagbase::Atom::reset();
     dagbase::DynamicVisitor<TestClass> sut;
     TestClass obj;
     sut.registerHandler(obj.typeName(), [](TestClass& obj) {
@@ -16,4 +15,5 @@ TEST(DynamicVisitor_testVisit, testExpectedCall)
     });
     obj.accept(sut);
     EXPECT_EQ(1,obj.numCalls);
+    dagbase::Atom::clear();
 }

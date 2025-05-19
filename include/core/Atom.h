@@ -9,6 +9,8 @@
 #include "config/DagBaseExport.h"
 
 #include <unordered_map>
+#include <algorithm>
+#include <cstring>
 
 namespace dagbase
 {
@@ -17,11 +19,39 @@ namespace dagbase
     public:
         Atom() = default;
 
-        static Atom intern(std::string name);
+        ~Atom();
+
+        static Atom& intern(std::string name);
+
+        const char* value() const
+        {
+            return _value;
+        }
+
+        std::size_t length() const
+        {
+            return _length;
+        }
+
+        bool empty() const
+        {
+            return _length==0;
+        }
+
+        char operator[](std::size_t index) const
+        {
+            if (_value && index<_length)
+            {
+                 return _value[index];
+            }
+
+            return EOF;
+        }
 
         Atom(const Atom& other)
         {
             _value = other._value;
+            _length = other._length;
         }
 
         Atom& operator=(const Atom& rhs)
@@ -29,6 +59,7 @@ namespace dagbase
             if (this!=&rhs)
             {
                 _value = rhs._value;
+                _length = rhs._length;
             }
             return *this;
         }
@@ -55,14 +86,44 @@ namespace dagbase
             return false;
         }
 
-        static void reset()
+        void destroy()
         {
+            if (_value)
+                std::free((void*)_value);
+        }
+
+        static void clear()
+        {
+            std::for_each(_atoms.begin(), _atoms.end(), [](AtomMap::value_type& value) {
+               value.second.destroy();
+            });
             _atoms.clear();
         }
     private:
         explicit Atom(const char* str);
         const char* _value{nullptr};
+        std::size_t _length{0};
         using AtomMap = std::unordered_map<std::string, Atom>;
         static AtomMap _atoms;
+    };
+}
+
+namespace std
+{
+    template<>
+    struct hash<dagbase::Atom>
+    {
+        size_t operator()(const dagbase::Atom& key) const
+        {
+            return hash<const char*>{}(key.value());
+        }
+    };
+    template<>
+    struct hash<const dagbase::Atom>
+    {
+        size_t operator()(const dagbase::Atom& key) const
+        {
+            return hash<const char*>{}(key.value());
+        }
     };
 }

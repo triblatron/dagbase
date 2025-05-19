@@ -37,6 +37,7 @@ namespace dagbase
             }
             return {};
         }
+
         void registerHandler(Atom name, Handler handler)
         {
             _handlers.insert(std::make_pair(name,handler));

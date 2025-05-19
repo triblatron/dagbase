@@ -39,6 +39,18 @@ include/util/DebugPrinter.h
         include/core/DynamicVisitor.h
         include/util/SearchableArray.h
         include/core/Snippet.h
+        include/core/MetaProperty.h
+        include/util/enums.h
+        include/core/Variant.h
+        include/core/Colour.h
+        include/core/PropertyFormat.h
+        include/core/Vec2.h
+        include/core/PropertyBinding.h
+        include/core/IdentifierGenerator.h
+        include/core/BaseDimension.h
+        include/core/Dimension.h
+        include/core/Unit.h
+        include/core/Reference.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -70,6 +82,14 @@ src/util/DebugPrinter.cpp
         src/io/FormatAgnosticInputStream.cpp
         src/core/Atom.cpp
         src/core/Snippet.cpp
+        src/core/MetaProperty.cpp
+        src/core/Colour.cpp
+        src/core/Variant.cpp
+        src/core/Vec2.cpp
+        src/core/PropertyBinding.cpp
+        src/core/IdentifierGenerator.cpp
+        src/core/Dimension.cpp
+        src/core/Unit.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})

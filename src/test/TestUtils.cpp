@@ -11,9 +11,9 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
     switch (op)
     {
     case dagbase::ConfigurationElement::RELOP_EQ:
-        if (expected->index() == dagbase::ConfigurationElement::TYPE_DOUBLE && actual->index() == dagbase::ConfigurationElement::TYPE_DOUBLE)
+        if (expected.value()->index() == dagbase::Variant::TYPE_DOUBLE && actual.value()->index() == dagbase::Variant::TYPE_DOUBLE)
         {
-            EXPECT_NEAR(std::get<double>(actual.value()), std::get<double>(expected.value()), tolerance);
+            EXPECT_NEAR(actual.asDouble(), expected.asDouble(), tolerance);
         }
         else if (expected.has_value() && actual.has_value())
         {
@@ -25,7 +25,7 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
         }
         break;
     case dagbase::ConfigurationElement::RELOP_NE:
-        EXPECT_NE(expected.value(), actual.value());
+        EXPECT_NE(expected, actual);
         break;
     case dagbase::ConfigurationElement::RELOP_LT:
         EXPECT_LT(actual.value(), expected.value());

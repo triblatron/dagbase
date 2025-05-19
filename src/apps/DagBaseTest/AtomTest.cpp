@@ -14,8 +14,9 @@ TEST(Atom, Atom_afterInterningTwoAtomsForTheSameStringCompareEqual)
     std::string s1 = "Hello World";
     std::string s2 = "Hello World";
 
-    auto a1 = dagbase::Atom::intern(s1);
-    auto a2 = dagbase::Atom::intern(s2);
+    auto & a1 = dagbase::Atom::intern(s1);
+    auto & a2 = dagbase::Atom::intern(s2);
 
     EXPECT_EQ(a1, a2);
+    dagbase::Atom::clear();
 }

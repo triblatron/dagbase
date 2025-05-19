@@ -2,6 +2,8 @@
 // Created by Tony Horrobin on 18/04/2025.
 //
 
+#pragma once
+
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
 

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "config/DagBaseExport.h"
+#include "core/Atom.h"
 
 #include <string>
 
@@ -32,6 +33,16 @@ namespace dagbase
             }
         }
 
+        void setOpen(Atom open)
+        {
+            _open = open;
+        }
+
+        void setClose(Atom close)
+        {
+            _close = close;
+        }
+
         virtual void configure(ConfigurationElement& config);
 
         virtual std::string resolve(const std::string& name) = 0;
@@ -39,5 +50,7 @@ namespace dagbase
         std::string interpolate();
     private:
         std::string _input;
+        Atom _open;
+        Atom _close;
     };
 }

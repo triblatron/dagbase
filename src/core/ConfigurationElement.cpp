@@ -207,7 +207,7 @@ namespace dagbase
                     
                     if (lua_isinteger(lua, -1))
                     {
-                        child = new ConfigurationElement(index, lua_tointeger(lua, -1));
+                        child = new ConfigurationElement(index, Variant(std::int64_t(lua_tointeger(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isnumber(lua, -1))
@@ -217,7 +217,7 @@ namespace dagbase
                     }
                     else if (lua_isboolean(lua, -1))
                     {
-                        child = new ConfigurationElement(index, bool(lua_toboolean(lua, -1)));
+                        child = new ConfigurationElement(index, Variant(bool(lua_toboolean(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isstring(lua, -1))
@@ -238,7 +238,7 @@ namespace dagbase
                     std::string name = lua_tostring(lua, -2);
                     if (lua_isinteger(lua, -1))
                     {
-                        child = new ConfigurationElement(name, lua_tointeger(lua, -1));
+                        child = new ConfigurationElement(name, Variant(std::int64_t(lua_tointeger(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isnumber(lua, -1))
@@ -248,12 +248,19 @@ namespace dagbase
                     }
                     else if (lua_isboolean(lua, -1))
                     {
-                        child = new ConfigurationElement(name, bool(lua_toboolean(lua, -1)));
+                        child = new ConfigurationElement(name, Variant(bool(lua_toboolean(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isstring(lua, -1))
                     {
-                        child = new ConfigurationElement(name, std::string(lua_tostring(lua, -1)));
+                        Vec2 vec;
+                        bool isVec2 = Vec2::parse(lua_tostring(lua, -1), &vec);
+                        if (isVec2)
+                        {
+                            child = new ConfigurationElement(name, Variant(vec));
+                        }
+                        else
+                            child = new ConfigurationElement(name, std::string(lua_tostring(lua, -1)));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_istable(lua, -1))
@@ -288,24 +295,23 @@ namespace dagbase
 			}
 		}
 	}
-}
 
-std::ostream &operator<<(std::ostream &str, dagbase::ConfigurationElement::ValueType value)
-{
-    switch (value->index())
+    void ConfigurationElement::readConfig(ConfigurationElement& config, const char* name, float* value)
     {
-        case dagbase::ConfigurationElement::TYPE_INTEGER:
-            str << std::get<dagbase::ConfigurationElement::TYPE_INTEGER>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_BOOL:
-            str << std::get<dagbase::ConfigurationElement::TYPE_BOOL>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_DOUBLE:
-            str << std::get<dagbase::ConfigurationElement::TYPE_DOUBLE>(value.value());
-            break;
-        case dagbase::ConfigurationElement::TYPE_STRING:
-            str << std::get<dagbase::ConfigurationElement::TYPE_STRING>(value.value());
-            break;
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = static_cast<float>(element->asDouble());
+            }
     }
-    return str;
+
+    void ConfigurationElement::readConfig(ConfigurationElement& config, const char* name,
+                                          std::string* value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = element->asString();
+            }
+    }
 }
