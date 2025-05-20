@@ -51,6 +51,8 @@ include/util/DebugPrinter.h
         include/core/Dimension.h
         include/core/Unit.h
         include/core/Reference.h
+        include/core/PropertyBag.h
+        include/core/PropertyBagFactory.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -90,6 +92,8 @@ src/util/DebugPrinter.cpp
         src/core/IdentifierGenerator.cpp
         src/core/Dimension.cpp
         src/core/Unit.cpp
+        src/core/PropertyBagFactory.cpp
+        src/core/PropertyBag.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
