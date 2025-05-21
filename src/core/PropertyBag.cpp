@@ -24,6 +24,13 @@ namespace dagbase
 
     void PropertyBag::configure(ConfigurationElement &config)
     {
+        if (auto element = config.findElement("dynamicProperties"); element)
+        {
+            element->eachChild([this](ConfigurationElement& child) {
+                _dynamicProps.emplace(Atom::intern(child.name()), child.value());
+                return true;
+            });
+        }
 
     }
 }

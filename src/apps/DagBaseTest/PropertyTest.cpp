@@ -99,10 +99,9 @@ struct TestProperties
 
     void configure(dagbase::ConfigurationElement& config)
     {
-        if (auto props = config.findElement("properties"); props) {
-            if (auto element = props->findElement("i"); element) {
-                i = element->asInteger();
-            }
+        if (auto element = config.findElement("i"); element)
+        {
+            i = element->asInteger();
         }
     }
 };
@@ -139,5 +138,6 @@ TEST_P(PropertyBag_testLookup, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(PropertyBag, PropertyBag_testLookup, ::testing::Values(
-        std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "i", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "i", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "spoo", true, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));

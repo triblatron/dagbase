@@ -49,7 +49,11 @@ namespace dagbase
 
         void configure(ConfigurationElement& config)
         {
-            _staticProps.configure(config);
+            if (auto props = config.findElement("staticProperties"); props)
+            {
+                _staticProps.configure(*props);
+            }
+            PropertyBag::configure(config);
         }
 
         T& properties()
