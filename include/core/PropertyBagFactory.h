@@ -7,6 +7,7 @@
 #include "config/DagBaseExport.h"
 
 #include <functional>
+#include <string>
 
 namespace dagbase
 {
