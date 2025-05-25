@@ -6,6 +6,8 @@
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
 #include "test/TestUtils.h"
+#include "core/PropertyBagFactory.h"
+#include "core/PropertyBag.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -78,4 +80,64 @@ INSTANTIATE_TEST_SUITE_P(MetaPropertyFormat, MetaPropertyFormat_testRoundTrip, :
         std::make_tuple("FORMAT_UNKNOWN", dagbase::MetaProperty::FORMAT_UNKNOWN),
         std::make_tuple("FORMAT_NONE", dagbase::MetaProperty::FORMAT_NONE),
         std::make_tuple("FORMAT_COLOUR", dagbase::MetaProperty::FORMAT_COLOUR)
+        ));
+
+struct TestProperties
+{
+    std::int64_t i{0};
+
+    dagbase::Variant property(std::string_view path) const
+    {
+        dagbase::Variant retval;
+
+        retval = dagbase::findEndpoint(path, "i", i);
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        if (auto element = config.findElement("i"); element)
+        {
+            i = element->asInteger();
+        }
+    }
+};
+
+class PropertyBag_testLookup : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
+{
+
+};
+
+TEST_P(PropertyBag_testLookup, testExpectedValue)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    dagbase::PropertyBagFactory factory;
+    dagbase::TemplatePropertyBag<TestProperties> *foo = new dagbase::TemplatePropertyBag<TestProperties>();
+    delete foo;
+    factory.setUnknownClassHandler([this](const std::string& className, dagbase::ConfigurationElement& config) {
+        if (className == "TestPropertyBag")
+        {
+            return static_cast<dagbase::PropertyBag*>(new   dagbase::TemplatePropertyBag<TestProperties>());
+        }
+        return (dagbase::PropertyBag*)nullptr;
+    });
+    auto sut = factory.create(*config);
+    ASSERT_NE(nullptr, sut);
+    auto path = std::get<1>(GetParam());
+    auto value = std::get<2>(GetParam());
+    auto tolerance = std::get<3>(GetParam());
+    auto op = std::get<4>(GetParam());
+    auto actualValue = sut->property(path);
+    assertComparison(value, actualValue, tolerance, op);
+}
+
+INSTANTIATE_TEST_SUITE_P(PropertyBag, PropertyBag_testLookup, ::testing::Values(
+        std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "i", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "spoo", true, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
