@@ -28,7 +28,7 @@ namespace dagbase
     const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
     const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
     const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
-    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%"};
+    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0};
     const Unit Unit::NEWTON{ Dimension::FORCE, 1.0, "N"};
 
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
@@ -92,7 +92,7 @@ namespace dagbase
                 {
                     ++endPtr;
                 }
-                if (*endPtr == '-' && *(endPtr+1) != '\0')
+                if ((*endPtr == '-' || *endPtr == '+') && *(endPtr+1) != '\0')
                 {
                     str = endPtr+1;
                     *maxValue = std::strtod(str, &endPtr);
@@ -102,14 +102,28 @@ namespace dagbase
                     }
                     else
                     {
-                        *unit = NONE;
+                        parseUnit(endPtr, unit);
+                        *maxValue = unit->maxValue;
                     }
                 }
                 else
                 {
-                    *maxValue = *minValue;
+                    if (*endPtr == '+' || *endPtr == '-')
+                    {
+                        *maxValue = std::numeric_limits<double>::infinity();
+                    }
+                    else
+                    {
+                        *maxValue = *minValue;
+                    }
                     parseUnit(endPtr, unit);
                 }
+            }
+            else
+            {
+                parseUnit(endPtr, unit);
+                *minValue = unit->minValue;
+                *maxValue = unit->maxValue;
             }
         }
     }

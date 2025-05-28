@@ -60,11 +60,20 @@ TEST_P(Unit_testParseRange, testExpectedRange)
 }
 
 INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParseRange, ::testing::Values(
+        std::make_tuple("", -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), dagbase::Unit::NONE),
+        std::make_tuple("%", 0.0, 100.0, dagbase::Unit::PERCENT),
         std::make_tuple("0-100%", 0.0, 100.0, dagbase::Unit::PERCENT),
+        std::make_tuple("0-%", 0.0, 100.0, dagbase::Unit::PERCENT),
+        std::make_tuple("0+%", 0.0, 100.0, dagbase::Unit::PERCENT),
         std::make_tuple("50N", 50.0, 50.0, dagbase::Unit::NEWTON),
         std::make_tuple("-5.0-5.0ms^-2", -5.0, 5.0, dagbase::Unit::METREPERSECONDSQUARED),
         std::make_tuple("-5.0--2.5ms^-2", -5.0, -2.5, dagbase::Unit::METREPERSECONDSQUARED),
-        std::make_tuple("-5.0 - -2.5 ms^-2", -5.0, -2.5, dagbase::Unit::METREPERSECONDSQUARED)
+        std::make_tuple("-5.0 - -2.5 ms^-2", -5.0, -2.5, dagbase::Unit::METREPERSECONDSQUARED),
+        std::make_tuple("18+", 18.0, std::numeric_limits<double>::infinity(), dagbase::Unit::NONE),
+        std::make_tuple("18+m", 18.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METRE),
+        std::make_tuple("18 + m", 18.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METRE),
+        std::make_tuple("0-m/s", 0.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METREPERSECOND),
+        std::make_tuple("0 - m/s", 0.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METREPERSECOND)
         ));
 
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>

@@ -35,6 +35,8 @@ namespace dagbase
         const char* dimension{ nullptr };
         double toSI{ 0.0 };
         const char* symbol{ nullptr };
+        double minValue{ -std::numeric_limits<double>::infinity() };
+        double maxValue={ std::numeric_limits<double>::infinity() };
 
         bool operator==(const Unit& other) const
         {
@@ -67,7 +69,7 @@ namespace dagbase
         static void parseUnit(const char* str, Unit* unit);
 
         static ConversionResult convert(double sourceValue, Unit sourceUnit, Unit destUnit, double* destValue);
-
+    private:
         static std::map<std::string_view, Unit> allUnits;
 
         struct RegisterUnits
@@ -77,6 +79,4 @@ namespace dagbase
 
         static RegisterUnits registration;
     };
-
-
 }
