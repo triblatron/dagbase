@@ -38,6 +38,31 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParse, ::testing::Values(
         std::make_tuple("100%", 100.0, dagbase::Unit::PERCENT)
         ));
 
+class Unit_testParseRange : public ::testing::TestWithParam<std::tuple<const char*, double, double, dagbase::Unit>>
+{
+
+};
+
+TEST_P(Unit_testParseRange, testExpectedRange)
+{
+    auto str = std::get<0>(GetParam());
+    auto minValue = std::get<1>(GetParam());
+    auto maxValue = std::get<2>(GetParam());
+    auto unit = std::get<3>(GetParam());
+
+    double actualMinValue=0.0;
+    double actualMaxValue=0.0;
+    dagbase::Unit actualUnit;
+    dagbase::Unit::parseRange(str, &actualMinValue, &actualMaxValue, &actualUnit);
+    EXPECT_EQ(minValue, actualMinValue);
+    EXPECT_EQ(maxValue, actualMaxValue);
+    EXPECT_EQ(unit, actualUnit);
+}
+
+INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParseRange, ::testing::Values(
+        std::make_tuple("0-100%", 0.0, 100.0, dagbase::Unit::PERCENT)
+        ));
+
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>
 {
 

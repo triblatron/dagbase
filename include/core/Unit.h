@@ -61,6 +61,10 @@ namespace dagbase
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 
+        static void parseRange(const char* str, double* minValue, double* maxValue, Unit* unit);
+
+        static void parseteUnit(const char* str, Unit* unit);
+
         static ConversionResult convert(double sourceValue, Unit sourceUnit, Unit destUnit, double* destValue);
 
         static std::map<std::string_view, Unit> allUnits;

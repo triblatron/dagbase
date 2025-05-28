@@ -38,19 +38,10 @@ namespace dagbase
             char* endPtr=nullptr;
             *value = strtod(str, &endPtr);
 
+            parseUnit(endPtr, unit);
             if (endPtr!=str)
             {
-                while (std::isspace(*endPtr))
-                    ++endPtr;
-                std::string_view rest = endPtr;
-                if (auto it=allUnits.find(rest); it!=allUnits.end())
-                {
-                    *unit = it->second;
-                }
-                else
-                {
-                    *unit = NONE;
-                }
+                parseUnit(endPtr, unit);
             }
             else
             {
@@ -86,6 +77,51 @@ namespace dagbase
         }
 
         return CONV_NO_OUTPUT;
+    }
+
+    void Unit::parseRange(const char *str, double *minValue, double *maxValue, Unit *unit)
+    {
+        if (minValue && maxValue && unit)
+        {
+            char* endPtr = nullptr;
+            *minValue = strtod(str, &endPtr);
+            if (endPtr != str)
+            {
+                while (std::isspace(*endPtr))
+                {
+                    ++endPtr;
+                }
+                if (*endPtr == '-' && *(endPtr+1) != '\0')
+                {
+                    str = endPtr+1;
+                    *maxValue = std::strtod(str, &endPtr);
+                    if (endPtr!=str)
+                    {
+                        parseUnit(endPtr, unit);
+                    }
+                    else
+                    {
+                        *unit = NONE;
+                    }
+
+                }
+            }
+        }
+    }
+
+    void Unit::parseUnit(const char *str, Unit *unit)
+    {
+        while (std::isspace(*str))
+            ++str;
+        std::string_view rest = str;
+        if (auto it=allUnits.find(rest); it!=allUnits.end())
+        {
+            *unit = it->second;
+        }
+        else
+        {
+            *unit = NONE;
+        }
     }
 
     Unit::RegisterUnits Unit::registration;
