@@ -28,6 +28,7 @@ namespace dagbase
     const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
     const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
     const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
+    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%"};
 
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
@@ -108,5 +109,6 @@ namespace dagbase
         allUnits.emplace(KILOGRAM.symbol, KILOGRAM);
         allUnits.emplace(KILOMETREPERHOUR.symbol, KILOMETREPERHOUR);
         allUnits.emplace(PIXEL.symbol, PIXEL);
+        allUnits.emplace(PERCENT.symbol, PERCENT);
     }
 }

@@ -34,7 +34,8 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParse, ::testing::Values(
         std::make_tuple("1ms^-1", 1.0, dagbase::Unit::METREPERSECOND),
         std::make_tuple("1mph", 1.0, dagbase::Unit::MILEPERHOUR),
         std::make_tuple("1kph", 1.0, dagbase::Unit::KILOMETREPERHOUR),
-        std::make_tuple("2.0 kph", 2.0, dagbase::Unit::KILOMETREPERHOUR)
+        std::make_tuple("2.0 kph", 2.0, dagbase::Unit::KILOMETREPERHOUR),
+        std::make_tuple("100%", 100.0, dagbase::Unit::PERCENT)
         ));
 
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>

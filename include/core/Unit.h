@@ -57,6 +57,7 @@ namespace dagbase
         static const Unit METREPERSECONDSQUARED;// { Dimension::ACCELERATION, 1.0, "ms^-2" };
         static const Unit METREPERSECONDCUBED;// { Dimension::JERK, 1.0, "ms^-3" };
         static const Unit PIXEL;// { Dimension::LENGTH, 1.0, "px" };
+        static const Unit PERCENT;
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 
