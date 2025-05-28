@@ -60,7 +60,11 @@ TEST_P(Unit_testParseRange, testExpectedRange)
 }
 
 INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParseRange, ::testing::Values(
-        std::make_tuple("0-100%", 0.0, 100.0, dagbase::Unit::PERCENT)
+        std::make_tuple("0-100%", 0.0, 100.0, dagbase::Unit::PERCENT),
+        std::make_tuple("50N", 50.0, 50.0, dagbase::Unit::NEWTON),
+        std::make_tuple("-5.0-5.0ms^-2", -5.0, 5.0, dagbase::Unit::METREPERSECONDSQUARED),
+        std::make_tuple("-5.0--2.5ms^-2", -5.0, -2.5, dagbase::Unit::METREPERSECONDSQUARED),
+        std::make_tuple("-5.0 - -2.5 ms^-2", -5.0, -2.5, dagbase::Unit::METREPERSECONDSQUARED)
         ));
 
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>

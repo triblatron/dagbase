@@ -29,6 +29,7 @@ namespace dagbase
     const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
     const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
     const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%"};
+    const Unit Unit::NEWTON{ Dimension::FORCE, 1.0, "N"};
 
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
@@ -103,7 +104,11 @@ namespace dagbase
                     {
                         *unit = NONE;
                     }
-
+                }
+                else
+                {
+                    *maxValue = *minValue;
+                    parseUnit(endPtr, unit);
                 }
             }
         }
@@ -146,5 +151,6 @@ namespace dagbase
         allUnits.emplace(KILOMETREPERHOUR.symbol, KILOMETREPERHOUR);
         allUnits.emplace(PIXEL.symbol, PIXEL);
         allUnits.emplace(PERCENT.symbol, PERCENT);
+        allUnits.emplace(NEWTON.symbol, NEWTON);
     }
 }

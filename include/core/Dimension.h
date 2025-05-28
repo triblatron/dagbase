@@ -21,6 +21,7 @@ namespace dagbase
         static constexpr const char* SPEED{"LT^-1"};
         static constexpr const char* ACCELERATION{ "LT^-2"};
         static constexpr const char* JERK{"LT^-3"};
+        static constexpr const char* FORCE{"MLT^-2"};
     };
 
 }
