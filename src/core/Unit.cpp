@@ -40,7 +40,6 @@ namespace dagbase
     {
         if (value && unit)
         {
-            ParseState state{PARSE_SYMBOL};
             char* endPtr=nullptr;
             *value = strtod(str, &endPtr);
 

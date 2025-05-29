@@ -17,15 +17,6 @@ namespace dagbase
 {
     struct DAGBASE_API Unit
     {
-        enum ParseState : std::uint32_t
-        {
-            PARSE_INITIAL,
-            PARSE_SYMBOL,
-            PARSE_POWER_RAISE,
-            PARSE_POWER_SIGN,
-            PARSE_POWER_VALUE
-        };
-
         enum WrapPolicy : std::uint32_t
         {
             //! Leave the out-of-bounds value alone
