@@ -11,6 +11,7 @@
 #include <cstring>
 #include <map>
 #include <string_view>
+#include <limits>
 
 namespace dagbase
 {
