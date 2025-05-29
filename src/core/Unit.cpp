@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 namespace dagbase
 {
