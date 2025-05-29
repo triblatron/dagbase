@@ -11,20 +11,12 @@
 #include <cstring>
 #include <map>
 #include <string_view>
+#include <limits>
 
 namespace dagbase
 {
     struct DAGBASE_API Unit
     {
-        enum ParseState : std::uint32_t
-        {
-            PARSE_INITIAL,
-            PARSE_SYMBOL,
-            PARSE_POWER_RAISE,
-            PARSE_POWER_SIGN,
-            PARSE_POWER_VALUE
-        };
-
         enum WrapPolicy : std::uint32_t
         {
             //! Leave the out-of-bounds value alone
@@ -55,7 +47,11 @@ namespace dagbase
         {
             return dimension && other.dimension && std::strcmp(dimension,other.dimension)==0 &&
                 toSI==other.toSI &&
-                symbol && other.symbol && strcmp(symbol,other.symbol)==0;
+                symbol && other.symbol &&
+                    strcmp(symbol,other.symbol)==0 &&
+                        minValue==other.minValue &&
+                            maxValue==other.maxValue &&
+                                wrapPolicy==other.wrapPolicy;
         }
 
         double wrap(double value) const;
