@@ -47,7 +47,11 @@ namespace dagbase
         {
             return dimension && other.dimension && std::strcmp(dimension,other.dimension)==0 &&
                 toSI==other.toSI &&
-                symbol && other.symbol && strcmp(symbol,other.symbol)==0;
+                symbol && other.symbol &&
+                    strcmp(symbol,other.symbol)==0 &&
+                        minValue==other.minValue &&
+                            maxValue==other.maxValue &&
+                                wrapPolicy==other.wrapPolicy;
         }
 
         double wrap(double value) const;
