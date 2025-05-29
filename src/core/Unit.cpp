@@ -28,8 +28,9 @@ namespace dagbase
     const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
     const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
     const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
-    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0};
+    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0, WRAP_SATURATE};
     const Unit Unit::NEWTON{ Dimension::FORCE, 1.0, "N"};
+    const Unit Unit::RADIAN{ Dimension::NONE, 1.0, "rad", 0.0, 2.0*M_PI, WRAP_CYCLE};
 
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
@@ -48,7 +49,7 @@ namespace dagbase
             {
                 *unit = NONE;
             }
-
+            *value = unit->wrap(*value);
 //                if (strcmp(endPtr, METRE.symbol)==0)
 //                {
 //                    *unit = METRE;
@@ -143,6 +144,22 @@ namespace dagbase
         }
     }
 
+    double Unit::wrap(double value) const
+    {
+        switch (wrapPolicy)
+        {
+            case WRAP_NONE:
+                return value;
+            case WRAP_SATURATE:
+                return std::clamp(value, minValue, maxValue);
+            case WRAP_DISCARD:
+                return 0.0;
+            case WRAP_CYCLE:
+                return std::fmod(value,maxValue);
+        }
+        return 0;
+    }
+
     Unit::RegisterUnits Unit::registration;
 
     Unit::RegisterUnits::RegisterUnits()
@@ -166,5 +183,6 @@ namespace dagbase
         allUnits.emplace(PIXEL.symbol, PIXEL);
         allUnits.emplace(PERCENT.symbol, PERCENT);
         allUnits.emplace(NEWTON.symbol, NEWTON);
+        allUnits.emplace( RADIAN.symbol, RADIAN);
     }
 }

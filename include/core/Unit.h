@@ -25,6 +25,18 @@ namespace dagbase
             PARSE_POWER_VALUE
         };
 
+        enum WrapPolicy : std::uint32_t
+        {
+            //! Leave the out-of-bounds value alone
+            WRAP_NONE,
+            //! Clamp to within bounds
+            WRAP_SATURATE,
+            //! Use modulo arithmetic to generate a value in range
+            WRAP_CYCLE,
+            //! Set the value to zero.
+            WRAP_DISCARD
+        };
+
         enum ConversionResult : std::uint32_t
         {
             CONV_OK,
@@ -37,6 +49,7 @@ namespace dagbase
         const char* symbol{ nullptr };
         double minValue{ -std::numeric_limits<double>::infinity() };
         double maxValue={ std::numeric_limits<double>::infinity() };
+        WrapPolicy wrapPolicy{WRAP_NONE};
 
         bool operator==(const Unit& other) const
         {
@@ -44,6 +57,8 @@ namespace dagbase
                 toSI==other.toSI &&
                 symbol && other.symbol && strcmp(symbol,other.symbol)==0;
         }
+
+        double wrap(double value) const;
 
         static const Unit NONE;//{ Dimension::NONE, 1.0, "" };
         static const Unit METRE;// = { Dimension::LENGTH, 1.0, "m" };
@@ -61,6 +76,7 @@ namespace dagbase
         static const Unit PIXEL;// { Dimension::LENGTH, 1.0, "px" };
         static const Unit PERCENT;
         static const Unit NEWTON;
+        static const Unit RADIAN;
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 
