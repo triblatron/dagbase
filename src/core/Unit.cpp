@@ -93,6 +93,8 @@ namespace dagbase
                     if (endPtr!=str)
                     {
                         parseUnit(endPtr, unit);
+                        *minValue = unit->wrap(*minValue);
+                        *maxValue = unit->wrap(*maxValue);
                     }
                     else
                     {
@@ -111,6 +113,8 @@ namespace dagbase
                         *maxValue = *minValue;
                     }
                     parseUnit(endPtr, unit);
+                    *minValue = unit->wrap(*minValue);
+                    *maxValue = unit->wrap(*maxValue);
                 }
             }
             else
