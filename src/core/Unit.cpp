@@ -52,15 +52,6 @@ namespace dagbase
                 *unit = NONE;
             }
             *value = unit->wrap(*value);
-//                if (strcmp(endPtr, METRE.symbol)==0)
-//                {
-//                    *unit = METRE;
-//                }
-//                else if (strcmp(endPtr, SECOND.symbol)==0)
-//                {
-//                    *unit = SECOND;
-//                }
-//            }
         }
     }
 

@@ -60,20 +60,20 @@ namespace dagbase
 
         double wrap(double value) const;
 
-        static const Unit NONE;//{ Dimension::NONE, 1.0, "" };
-        static const Unit METRE;// = { Dimension::LENGTH, 1.0, "m" };
-        static const Unit YARD;// = { Dimension::LENGTH, 1.0 / 1.09361, "yd" };
-        static const Unit MILE;// = { Dimension::LENGTH, 1609.344, "mi" };
-        static const Unit KILOMETRE;// = { Dimension::LENGTH, 1000.0, "km" };
-        static const Unit KILOGRAM;// = { Dimension::MASS, 1.0, "kg" };
-        static const Unit SECOND;// = { Dimension::TIME, 1.0, "s" };
-        static const Unit HOUR;// = { Dimension::TIME, 60.0, "h" };
-        static const Unit METREPERSECOND;// { Dimension::SPEED, 1.0, "ms^-1" };
-        static const Unit MILEPERHOUR;// { Dimension::SPEED, 1.0 / 2.23693629, "mih^-1" };
-        static const Unit KILOMETREPERHOUR;// { Dimension::SPEED, 1.0 / 3.6, "kmh^-1" };
-        static const Unit METREPERSECONDSQUARED;// { Dimension::ACCELERATION, 1.0, "ms^-2" };
-        static const Unit METREPERSECONDCUBED;// { Dimension::JERK, 1.0, "ms^-3" };
-        static const Unit PIXEL;// { Dimension::LENGTH, 1.0, "px" };
+        static const Unit NONE;
+        static const Unit METRE;
+        static const Unit YARD;
+        static const Unit MILE;
+        static const Unit KILOMETRE;
+        static const Unit KILOGRAM;
+        static const Unit SECOND;
+        static const Unit HOUR;
+        static const Unit METREPERSECOND;
+        static const Unit MILEPERHOUR;
+        static const Unit KILOMETREPERHOUR;
+        static const Unit METREPERSECONDSQUARED;
+        static const Unit METREPERSECONDCUBED;
+        static const Unit PIXEL;
         static const Unit PERCENT;
         static const Unit NEWTON;
         static const Unit RADIAN;
