@@ -7,6 +7,9 @@
 #include "core/Unit.h"
 
 #include <gtest/gtest.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cmath>
 
 class Unit_testParse : public ::testing::TestWithParam<std::tuple<const char*, double, dagbase::Unit>>
 {
