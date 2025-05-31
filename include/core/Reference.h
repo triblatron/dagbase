@@ -16,6 +16,15 @@ namespace dagbase
     class Reference
     {
     public:
+        Reference() = default;
+
+        explicit Reference(Identifier id)
+        :
+        _ref(id)
+        {
+            // Do nothing.
+        }
+
         void setId(Identifier id)
         {
             _ref = id;

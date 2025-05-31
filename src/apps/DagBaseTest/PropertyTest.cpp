@@ -123,7 +123,7 @@ TEST_P(PropertyBag_testLookup, testExpectedValue)
     factory.setUnknownClassHandler([this](const std::string& className, dagbase::ConfigurationElement& config) {
         if (className == "TestPropertyBag")
         {
-            return static_cast<dagbase::PropertyBag*>(new   dagbase::TemplatePropertyBag<TestProperties>());
+            return static_cast<dagbase::PropertyBag*>(new dagbase::TemplatePropertyBag<TestProperties>());
         }
         return (dagbase::PropertyBag*)nullptr;
     });
