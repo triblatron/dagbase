@@ -9,8 +9,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
+#if defined(_MSC_VER)
 #define _USE_MATH_DEFINES
 #include <math.h>
+#endif // _MSC_VER
 #include <cmath>
 #include <algorithm>
 
