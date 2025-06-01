@@ -6,7 +6,16 @@
 
 namespace dagbase
 {
-	template <typename Key, typename Value>
+    template<typename T1, typename T2>
+    struct Less
+    {
+        bool operator()(const std::pair<T1, T2>& op1, const std::pair<T1, T2>& op2) const
+        {
+            return op1.first < op2.first;
+        }
+    };
+
+	template <typename Key, typename Value, typename Compare=Less<Key,Value>, typename Equals=std::equal_to<Key>>
 	class VectorMap
 	{
 	public:
@@ -14,13 +23,6 @@ namespace dagbase
 		typedef std::vector<value_type> container;
 		typedef typename container::iterator iterator;
 		typedef typename container::const_iterator const_iterator;
-		struct Compare
-		{
-			bool operator()(const value_type& op1, const value_type& op2) const
-			{
-				return op1.first < op2.first;
-			}
-		};
 	public:
 		void reserve(typename container::size_type n)
 		{
@@ -63,7 +65,7 @@ namespace dagbase
 			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
 			if (it != _map.end())
 			{
-				if (it->first == key)
+				if (_eq(it->first, key))
 				{
 					return it;
 				}
@@ -80,7 +82,7 @@ namespace dagbase
 			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
 			if (it != _map.end())
 			{
-				if (it->first == key)
+				if (_eq(it->first, key))
 				{
 					return it;
 				}
@@ -114,5 +116,6 @@ namespace dagbase
 	private:
 		container _map;
 		Compare _cmp;
+        Equals _eq;
 	};
 }
