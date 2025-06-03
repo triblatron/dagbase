@@ -27,4 +27,23 @@ namespace dagbase
             return {};
         }
     };
+
+    template<typename Array>
+    class SearchablePrimitiveArray
+    {
+    public:
+        using value_type = typename Array::value_type;
+        Array a;
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findPrimitiveArray(path, a);
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
+    };
 }

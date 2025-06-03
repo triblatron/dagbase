@@ -92,6 +92,27 @@ namespace dagbase
 		return {};
 	}
 
+    template<typename Array>
+	dagbase::ConfigurationElement::ValueType findPrimitiveArray(std::string_view path, const Array& obj)
+	{
+		if (path.length()>1 && path[0]=='[')
+		{
+			std::size_t firstIndex = 1;
+			std::size_t index = 0;
+			char* endPtr = nullptr;
+			if (firstIndex < path.length())
+			{
+				index = strtoull(&path[firstIndex], &endPtr, 10);
+			}
+			if (index < obj.size() && endPtr && *endPtr==']')
+			{
+                return obj[index];
+			}
+		}
+
+		return {};
+	}
+
 	template<typename Map>
 	ConfigurationElement::ValueType findMap(std::string_view path, const Map& obj)
     {
