@@ -24,6 +24,7 @@ struct lua_State;
 
 namespace dagbase
 {
+    class Atom;
     class Lua;
 
     class DAGBASE_API ConfigurationElement
@@ -189,6 +190,7 @@ namespace dagbase
         static void readConfig(ConfigurationElement& config, const char* name, float* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::string* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::int32_t* value);
+        static void readConfig(ConfigurationElement& config, const char* name, Atom* value);
         template <typename Enum>
         static void readConfig(ConfigurationElement& config, const char* name, std::function<Enum(const char*)> parseEnum, Enum* value)
         {

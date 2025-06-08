@@ -6,6 +6,7 @@
 
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
+#include "core/Atom.h"
 
 #include <stack>
 #include <cstdlib>
@@ -322,6 +323,15 @@ namespace dagbase
             if (auto element=config.findElement(name); element)
             {
                 *value = element->asInteger();
+            }
+    }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Atom *value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                *value = Atom::intern(element->asString());
             }
     }
 }
