@@ -106,7 +106,7 @@ namespace dagbase
 			}
 			if (index < obj.size() && endPtr && *endPtr==']')
 			{
-                return obj[index];
+                return obj[index];//std::invoke(&std::remove_pointer_t<typename Array::value_type>::find, obj[index], path.substr(dotPos + 1));
 			}
 		}
 
