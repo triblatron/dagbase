@@ -12,7 +12,7 @@
 namespace dagbase
 {
     //! Avoid Windows linker barfage by not specifying DAGBASE_API here.
-    template<typename Identifier, typename Ref>
+    template<typename Identifier, typename Ref, typename Lookup>
     class Reference
     {
     public:
@@ -30,7 +30,7 @@ namespace dagbase
             _ref = id;
         }
 
-        void resolve(Ref* lookup)
+        void resolve(Lookup* lookup)
         {
             _ref = lookup->lookup(std::get<Identifier>(_ref));
         }
