@@ -43,6 +43,7 @@ namespace dagbase
     {
     public:
         using value_type = typename Map::value_type;
+        using mapped_type = typename Map::mapped_type;
     public:
         SearchableMapFromAtom() = default;
 
@@ -55,6 +56,14 @@ namespace dagbase
         // {
         //     return m.find(key);
         // }
+
+        mapped_type lookup(Map::key_type key)
+        {
+            if (auto it=m.find(key); it!=m.end())
+                return it->second;
+
+            return nullptr;
+        }
 
         dagbase::Variant find(std::string_view path) const
         {
