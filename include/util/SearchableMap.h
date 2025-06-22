@@ -57,7 +57,7 @@ namespace dagbase
         //     return m.find(key);
         // }
 
-        mapped_type lookup(Map::key_type key)
+        mapped_type lookup(typename Map::key_type key)
         {
             if (auto it=m.find(key); it!=m.end())
                 return it->second;
