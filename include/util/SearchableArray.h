@@ -16,6 +16,11 @@ namespace dagbase
         using value_type = typename Array::value_type;
         Array a;
 
+        std::size_t size() const
+        {
+            return a.size();
+        }
+
         ConfigurationElement::ValueType find(std::string_view path) const
         {
             ConfigurationElement::ValueType retval;
