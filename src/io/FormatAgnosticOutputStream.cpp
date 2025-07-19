@@ -53,6 +53,9 @@ namespace dagbase
             case Variant::TYPE_INTEGER:
                 writeInt64(value.asInteger());
                 break;
+            case Variant::TYPE_UINT:
+                writeUInt32(value.asUint32());
+                break;
             }
         }
 

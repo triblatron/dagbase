@@ -28,6 +28,8 @@ namespace dagbase
                     return to_string(std::get<TYPE_COLOUR>(_value.value()));
                 case TYPE_VEC2:
                     return to_string(std::get<TYPE_VEC2>(_value.value()));
+                case TYPE_UINT:
+                    return std::to_string(std::get<TYPE_UINT>(_value.value()));
             }
         }
 
@@ -75,6 +77,13 @@ namespace dagbase
     {
         // Do nothing.
     }
+
+    Variant::Variant(std::uint32_t value)
+    :
+    _value(value)
+    {
+        // Do nothing.
+    }
 }
 
 std::ostream &operator<<(std::ostream &str, dagbase::Variant value)
@@ -98,6 +107,9 @@ std::ostream &operator<<(std::ostream &str, dagbase::Variant value)
             break;
         case dagbase::Variant::TYPE_VEC2:
             str << dagbase::to_string(value.asVec2());
+            break;
+        case dagbase::Variant::TYPE_UINT:
+            str << value.asUint32();
             break;
     }
     return str;

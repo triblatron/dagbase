@@ -19,7 +19,7 @@ namespace dagbase
     class DAGBASE_API Variant
     {
     public:
-        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2>>;
+        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t>>;
         using InnerType = ValueType::value_type;
 
         enum Index : std::uint32_t
@@ -29,7 +29,8 @@ namespace dagbase
             TYPE_BOOL,
             TYPE_STRING,
             TYPE_COLOUR,
-            TYPE_VEC2
+            TYPE_VEC2,
+            TYPE_UINT
         };
     public:
         Variant() = default;
@@ -45,6 +46,8 @@ namespace dagbase
         explicit Variant(const Colour& value);
 
         explicit Variant(const Vec2& value);
+
+        explicit Variant(std::uint32_t value);
 
         //! Reject conversion from const char* to bool using SFINAE
         template <typename T,
@@ -106,6 +109,14 @@ namespace dagbase
         {
             if (_value.has_value() && _value->index() == TYPE_VEC2)
                 return std::get<TYPE_VEC2>(_value.value());
+            else
+                return defaultValue;
+        }
+
+        std::uint32_t asUint32(std::uint32_t defaultValue=0) const
+        {
+            if (_value.has_value() && _value->index() == TYPE_UINT)
+                return std::get<TYPE_UINT>(_value.value());
             else
                 return defaultValue;
         }
