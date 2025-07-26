@@ -190,6 +190,7 @@ namespace dagbase
         static void readConfig(ConfigurationElement& config, const char* name, float* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::string* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::int32_t* value);
+        static void readConfig(ConfigurationElement& config, const char* name, std::uint32_t* value);
         static void readConfig(ConfigurationElement& config, const char* name, Atom* value);
         template <typename Enum>
         static void readConfig(ConfigurationElement& config, const char* name, std::function<Enum(const char*)> parseEnum, Enum* value)
