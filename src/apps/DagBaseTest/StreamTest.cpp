@@ -213,7 +213,7 @@ struct TestNode
             dagbase::Stream::ObjId childId{0};
 
             if (TestNode* child=str.readRef<TestNode>(&childId); child)
-                children.push_back(child);
+                children.emplace_back(child);
         }
         str.readFooter();
         str.readFooter();
@@ -304,7 +304,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
     TestNode node2;
     node2.i = 42;
     node2.parent = &node1;
-    node1.children.push_back(&node2);
+    node1.children.emplace_back(&node2);
     if (sut.writeRef(&node2))
     {
         node2.write(sut);
