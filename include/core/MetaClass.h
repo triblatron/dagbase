@@ -11,6 +11,20 @@ namespace dagbase
     class MetaField;
     class MetaOperation;
 
+#define DAGBASE_PROPERTY(type, name, member, initialValue, setter, getter) \
+    public: \
+        void setter(type value)\
+        {\
+            member = value;\
+        }                                                    \
+                                                             \
+        type getter() const                                  \
+        {                                                    \
+            return member;                                   \
+        }                                                    \
+    private:                                                 \
+        type member{initialValue};
+
     class DAGBASE_API MetaClass
     {
     public:
