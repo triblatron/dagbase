@@ -31,6 +31,11 @@ namespace dagbase
 
             return {};
         }
+
+        bool operator==(const SearchableArray<Array>& other) const
+        {
+            return a == other.a;
+        }
     };
 
     template<typename Array>
