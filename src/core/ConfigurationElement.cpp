@@ -343,4 +343,13 @@ namespace dagbase
                 *value = std::uint32_t(element->asInteger());
             }
     }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, double *value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                *value = element->asDouble();
+            }
+    }
 }
