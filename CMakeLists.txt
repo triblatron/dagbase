@@ -53,6 +53,8 @@ include/util/DebugPrinter.h
         include/core/Reference.h
         include/core/PropertyBag.h
         include/core/PropertyBagFactory.h
+        include/util/TimeProvider.h
+        include/util/FakeTimeProvider.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -94,6 +96,7 @@ src/util/DebugPrinter.cpp
         src/core/Unit.cpp
         src/core/PropertyBagFactory.cpp
         src/core/PropertyBag.cpp
+        src/util/FakeTimeProvider.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
