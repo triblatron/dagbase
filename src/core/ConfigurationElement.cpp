@@ -352,4 +352,13 @@ namespace dagbase
                 *value = element->asDouble();
             }
     }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, bool *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = element->asBool();
+            }
+    }
 }

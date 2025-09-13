@@ -189,6 +189,7 @@ namespace dagbase
 
         static void readConfig(ConfigurationElement& config, const char* name, double* value);
         static void readConfig(ConfigurationElement& config, const char* name, float* value);
+        static void readConfig(ConfigurationElement& config, const char* name, bool* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::string* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::int32_t* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::uint32_t* value);
