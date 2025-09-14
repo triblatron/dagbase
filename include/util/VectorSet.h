@@ -95,7 +95,7 @@ namespace dagbase
                 if (!equalKey)
                 {
                     auto d = std::distance(_set.begin(), it);
-                    _set.emplace(it, value);
+                    _set.emplace(it, std::move(value));
                     return std::make_pair(_set.begin()+d, true);
                 }
                 else
@@ -105,7 +105,7 @@ namespace dagbase
             }
             else
             {
-                _set.emplace(it, value);
+                _set.emplace(it, std::move(value));
 
                 return std::make_pair(_set.end() - 1, true);
             }

@@ -52,9 +52,10 @@ public:
         for (auto insertion : _insertions)
         {
             auto p = insert(insertion);
+
             EXPECT_NE(_sut.end(), p.first);
-            EXPECT_EQ(insertion.inserted, p.second);
             EXPECT_EQ(p.first, _sut.find(insertion.value));
+            EXPECT_EQ(insertion.inserted, p.second);
         }
         EXPECT_EQ(_expectedSize, _sut.size());
     }
