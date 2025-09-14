@@ -223,7 +223,7 @@ namespace dagbase
 
                         item.configure(child);
 
-                        value->insert(item);
+                        value->emplace(item);
 
                         return true;
                     });
