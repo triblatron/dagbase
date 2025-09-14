@@ -99,7 +99,8 @@ src/util/DebugPrinter.cpp
         src/util/FakeTimeProvider.cpp
 )
 
-ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
+ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
+        include/util/VectorSet.h)
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
 TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES})
