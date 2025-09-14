@@ -218,6 +218,7 @@ namespace dagbase
             if (value)
                 if (auto element=config.findElement(name); element)
                 {
+                    value->reserve(element->numChildren());
                     element->eachChild([&value](ConfigurationElement& child) {
                         typename Associative::value_type item;
 
@@ -236,6 +237,7 @@ namespace dagbase
             if (value)
                 if (auto element=config.findElement(name); element)
                 {
+                    value->reserve(element->numChildren());
                     element->eachChild([&value](ConfigurationElement& child) {
                         typename Map::key_type key;
 
