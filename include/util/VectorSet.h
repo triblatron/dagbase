@@ -67,6 +67,34 @@ namespace dagbase
                 if (!equalKey)
                 {
                     auto d = std::distance(_set.begin(), it);
+                    _set.insert(it, value);
+                    return std::make_pair(_set.begin()+d, true);
+                }
+                else
+                {
+                    return std::make_pair(it, false);
+                }
+            }
+            else
+            {
+                _set.insert(it, value);
+
+                return std::make_pair(_set.end() - 1, true);
+            }
+        }
+
+        template<typename... Args>
+        std::pair<iterator, bool> emplace(Args&&... args)
+        {
+            Value value(std::forward<Args>(args)...);
+            auto it = std::lower_bound(_set.begin(), _set.end(), value, _cmp);
+            if (it != _set.end())
+            {
+                auto equalKey = *it==value;
+
+                if (!equalKey)
+                {
+                    auto d = std::distance(_set.begin(), it);
                     _set.emplace(it, value);
                     return std::make_pair(_set.begin()+d, true);
                 }
@@ -83,12 +111,13 @@ namespace dagbase
             }
         }
 
+
         const_iterator find(const Value& value) const
         {
-            auto it = std::lower_bound(_set.begin(), _set.end(), value_type(value, Value()), _cmp);
+            auto it = std::lower_bound(_set.begin(), _set.end(), value_type(value), _cmp);
             if (it != _set.end())
             {
-                if (_eq(it->first, value))
+                if (*it == value)
                 {
                     return it;
                 }
