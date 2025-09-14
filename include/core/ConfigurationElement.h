@@ -261,13 +261,13 @@ namespace dagbase
         }
         ConfigurationElement* findInChildren(std::string_view path);
         ConfigurationElement* findInArray(size_t index, std::string_view path);
-        ConfigurationElement* _parent{nullptr};
-        std::string _name;
-        std::int64_t _index{0};
         ValueType _value;
-        static ConfigurationElement* buildTree(Lua& lua);
         using Children = std::vector<ConfigurationElement*>;
         Children _children;
+        std::string _name;
+        ConfigurationElement* _parent{nullptr};
+        std::int64_t _index{0};
+        static ConfigurationElement* buildTree(Lua& lua);
     };
 
 }
