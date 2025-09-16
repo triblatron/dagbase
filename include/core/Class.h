@@ -52,8 +52,8 @@ namespace dagbase
 
         virtual void readFromStream(StreamFormat& str);
     private:
-        MetaClass* _metaClass{nullptr};
         Error _errod{Error::NoError};
+        MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };
     };
 }

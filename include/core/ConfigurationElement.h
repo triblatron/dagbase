@@ -267,8 +267,8 @@ namespace dagbase
         using Children = std::vector<ConfigurationElement*>;
         Children _children;
         std::string _name;
-        ConfigurationElement* _parent{nullptr};
         std::int64_t _index{0};
+        ConfigurationElement* _parent{nullptr};
         static ConfigurationElement* buildTree(Lua& lua);
     };
 

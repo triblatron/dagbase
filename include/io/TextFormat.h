@@ -60,11 +60,11 @@ namespace dagbase
 
         void debug() override;
     private:
-        Mode _mode{MODE_UNKNOWN};
         BackingStore* _store{nullptr};
         std::ostringstream* _ostr{nullptr};
         std::istringstream* _istr{nullptr};
         DebugPrinter* _printer{nullptr};
+        Mode _mode{MODE_UNKNOWN};
     };
 }
 
