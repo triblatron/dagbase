@@ -16,6 +16,9 @@
 
 namespace dagbase
 {
+    class OutputStream;
+    class InputStream;
+
     class DAGBASE_API Variant
     {
     public:
@@ -163,6 +166,10 @@ namespace dagbase
         {
             return _value != other._value;
         }
+
+        OutputStream& write(OutputStream& str) const;
+
+        InputStream& read(InputStream& str);
 
         std::string toString() const;
     private:

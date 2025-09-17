@@ -35,28 +35,11 @@ namespace dagbase
         return *this;
     }
 
-    OutputStream& FormatAgnosticOutputStream::write(ConfigurationElement::ValueType value)
+    OutputStream& FormatAgnosticOutputStream::write(Variant value)
     {
         if (_format && value.has_value())
         {
-            switch (value.index())
-            {
-            case Variant::TYPE_DOUBLE:
-                writeDouble(value.asDouble());
-                break;
-            case Variant::TYPE_STRING:
-                writeString(value.asString(),true);
-                break;
-            case Variant::TYPE_BOOL:
-                writeBool(value.asBool());
-                break;
-            case Variant::TYPE_INTEGER:
-                writeInt64(value.asInteger());
-                break;
-            case Variant::TYPE_UINT:
-                writeUInt32(value.asUint32());
-                break;
-            }
+            value.write(*this);
         }
 
         return *this;

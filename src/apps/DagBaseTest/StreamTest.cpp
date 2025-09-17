@@ -323,3 +323,39 @@ INSTANTIATE_TEST_SUITE_P(FormatAgnosticInputStream, FormatAgnosticOutputToInput_
     std::make_tuple("TextFormat"),
     std::make_tuple("BinaryFormat")
     ));
+
+class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant>>
+{
+
+};
+
+TEST_P(OutputStream_testWriteVariant, testExpectedValue)
+{
+    std::string formatClass = std::get<0>(GetParam());
+    dagbase::StreamFormat* format = nullptr;
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (formatClass == "TextFormat")
+    {
+        format = new dagbase::TextFormat(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        format = new dagbase::BinaryFormat(&store);
+    }
+    ASSERT_NE(nullptr, format);
+    dagbase::FormatAgnosticOutputStream sut(format, &store);
+    sut.setFormat(format);
+    sut.setBackingStore(&store);
+    auto value = std::get<1>(GetParam());
+    sut.write(value);
+    format->flush();
+    dagbase::FormatAgnosticInputStream istr(format, &store);
+    dagbase::Variant actualValue;
+    istr.read(&actualValue);
+    EXPECT_EQ(value, actualValue);
+}
+
+INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(
+        std::make_tuple("TextFormat", std::uint32_t{1}),
+        std::make_tuple("BinaryFormat", std::uint32_t{1})
+        ));

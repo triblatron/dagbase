@@ -5,6 +5,9 @@
 #include "config/config.h"
 
 #include "core/Variant.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
+
 #include <iostream>
 
 namespace dagbase
@@ -83,6 +86,90 @@ namespace dagbase
     _value(value)
     {
         // Do nothing.
+    }
+
+    OutputStream &Variant::write(OutputStream &str) const
+    {
+        str.writeBool(has_value());
+        if (has_value())
+        {
+            str.writeUInt32(_value->index());
+            switch (_value->index())
+            {
+                case Variant::TYPE_DOUBLE:
+                    str.write(asDouble());
+                    break;
+                case Variant::TYPE_STRING:
+                    str.writeString(asString(),true);
+                    break;
+                case Variant::TYPE_BOOL:
+                    str.writeBool(asBool());
+                    break;
+                case Variant::TYPE_INTEGER:
+                    str.writeInt64(asInteger());
+                    break;
+                case Variant::TYPE_UINT:
+                    str.writeUInt32(asUint32());
+                    break;
+            }
+
+        }
+
+        return str;
+    }
+
+    InputStream &Variant::read(InputStream &str)
+    {
+        bool hasValue{false};
+        str.readBool(&hasValue);
+        if (hasValue)
+        {
+            std::uint32_t type{0};
+            str.readUInt32(&type);
+            switch (type)
+            {
+                case Variant::TYPE_DOUBLE:
+                {
+                    double doubleValue{0.0};
+                    str.readDouble(&doubleValue);
+                    _value = doubleValue;
+                    break;
+                }
+                case Variant::TYPE_STRING:
+                {
+                    std::string stringValue;
+                    str.readString(&stringValue, true);
+                    _value = stringValue;
+                    break;
+                }
+                case Variant::TYPE_BOOL:
+                {
+                    bool boolValue{false};
+                    str.readBool(&boolValue);
+                    _value = boolValue;
+                    break;
+                }
+                case Variant::TYPE_INTEGER:
+                {
+                    int64_t int64Value{0};
+                    str.readInt64(&int64Value);
+                    _value = int64Value;
+                    break;
+                }
+                case Variant::TYPE_UINT:
+                {
+                    std::uint32_t uint32Value{0};
+                    str.readUInt32(&uint32Value);
+                    _value = uint32Value;
+                    break;
+                }
+                default:
+                    break;
+            }
+
+        }
+
+        return str;
     }
 }
 

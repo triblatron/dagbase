@@ -163,9 +163,8 @@ namespace dagbase
             return read(value);
         }
 
-        virtual InputStream& read(dagbase::ConfigurationElement::ValueType* value)
+        virtual InputStream& read(dagbase::Variant* value)
         {
-            read(&value->value());
             return *this;
         }
 

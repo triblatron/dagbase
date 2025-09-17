@@ -37,39 +37,9 @@ namespace dagbase
 
     InputStream& FormatAgnosticInputStream::read(ConfigurationElement::ValueType* value)
     {
-        if (_format && value && value->has_value())
+        if (_format)
         {
-            switch (value->value()->index())
-            {
-            case Variant::TYPE_DOUBLE:
-                {
-                    double doubleValue{0.0};
-                    readDouble(&doubleValue);
-                    *value = doubleValue;
-                    break;
-                }
-            case Variant::TYPE_STRING:
-                {
-                    std::string stringValue;
-                    readString(&stringValue, true);
-                    *value = stringValue;
-                    break;
-                }
-            case Variant::TYPE_BOOL:
-                {
-                    bool boolValue{false};
-                    readBool(&boolValue);
-                    *value = Variant(boolValue);
-                    break;
-                }
-            case Variant::TYPE_INTEGER:
-                {
-                    int64_t int64Value{0};
-                    readInt64(&int64Value);
-                    *value = Variant(int64Value);
-                    break;
-                }
-            }
+            value->read(*this);
         }
 
         return *this;
