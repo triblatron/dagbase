@@ -357,5 +357,13 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(
         std::make_tuple("TextFormat", std::uint32_t{1}),
-        std::make_tuple("BinaryFormat", std::uint32_t{1})
+        std::make_tuple("BinaryFormat", std::uint32_t{1}),
+        std::make_tuple("TextFormat", std::int64_t{-1}),
+        std::make_tuple("BinaryFormat", std::int64_t{-1}),
+        std::make_tuple("TextFormat", double{1.5}),
+        std::make_tuple("BinaryFormat", double{1.5}),
+        std::make_tuple("TextFormat", true),
+        std::make_tuple("BinaryFormat", true),
+        std::make_tuple("TextFormat", "test"),
+        std::make_tuple("BinaryFormat", "test")
         ));

@@ -97,7 +97,7 @@ namespace dagbase
             switch (_value->index())
             {
                 case Variant::TYPE_DOUBLE:
-                    str.write(asDouble());
+                    str.writeDouble(asDouble());
                     break;
                 case Variant::TYPE_STRING:
                     str.writeString(asString(),true);
