@@ -270,7 +270,7 @@ TEST(OutputStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : 2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : 1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : true\n1\n2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : true\n1\n1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);

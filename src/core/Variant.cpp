@@ -90,6 +90,7 @@ namespace dagbase
 
     OutputStream &Variant::write(OutputStream &str) const
     {
+        //str.writeHeader("Variant");
         str.writeBool(has_value());
         if (has_value())
         {
@@ -115,11 +116,15 @@ namespace dagbase
 
         }
 
+        //str.writeFooter();
+
         return str;
     }
 
     InputStream &Variant::read(InputStream &str)
     {
+//        std::string name;
+//        str.readHeader(&name);
         bool hasValue{false};
         str.readBool(&hasValue);
         if (hasValue)
@@ -169,6 +174,7 @@ namespace dagbase
 
         }
 
+        //str.readFooter();
         return str;
     }
 }

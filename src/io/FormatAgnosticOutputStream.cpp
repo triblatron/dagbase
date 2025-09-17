@@ -37,7 +37,7 @@ namespace dagbase
 
     OutputStream& FormatAgnosticOutputStream::write(Variant value)
     {
-        if (_format && value.has_value())
+        if (_format)
         {
             value.write(*this);
         }
