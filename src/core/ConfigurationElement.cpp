@@ -334,4 +334,31 @@ namespace dagbase
                 *value = Atom::intern(element->asString());
             }
     }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::uint32_t *value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                *value = std::uint32_t(element->asInteger());
+            }
+    }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, double *value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                *value = element->asDouble();
+            }
+    }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, bool *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = element->asBool();
+            }
+    }
 }

@@ -10,7 +10,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         PropertyTest.cpp
         VariantTest.cpp
         IdentifierGeneratorTest.cpp
-        UnitTest.cpp)
+        UnitTest.cpp
+        VectorSetTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)

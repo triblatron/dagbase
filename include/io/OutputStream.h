@@ -61,7 +61,7 @@ namespace dagbase
             return writeBuf(reinterpret_cast<const value_type*>(&value), sizeof(T));
         }
 
-        virtual OutputStream& write(dagbase::ConfigurationElement::ValueType value)
+        virtual OutputStream& write(Variant value)
         {
             if (value.has_value())
                 return write(value.value());

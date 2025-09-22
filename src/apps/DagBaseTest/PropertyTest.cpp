@@ -8,6 +8,7 @@
 #include "test/TestUtils.h"
 #include "core/PropertyBagFactory.h"
 #include "core/PropertyBag.h"
+#include "core/MetaClass.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -141,3 +142,15 @@ INSTANTIATE_TEST_SUITE_P(PropertyBag, PropertyBag_testLookup, ::testing::Values(
         std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "i", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/PropertyBag/TestProperties.lua", "spoo", true, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
+
+class TestObjectWithProperties
+{
+    DAGBASE_PROPERTY(int, foo, _foo, 0, setFoo, foo)
+};
+
+TEST(PropertyDecl, testReadWrite)
+{
+    TestObjectWithProperties sut;
+    sut.setFoo(1);
+    EXPECT_EQ(1, sut.foo());
+}

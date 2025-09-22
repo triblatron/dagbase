@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED( VERSION 3.28 )
+CMAKE_MINIMUM_REQUIRED( VERSION 3.22 )
 PROJECT(dagbase)
 
 cmake_policy(SET CMP0114 NEW)
@@ -53,6 +53,8 @@ include/util/DebugPrinter.h
         include/core/Reference.h
         include/core/PropertyBag.h
         include/core/PropertyBagFactory.h
+        include/util/TimeProvider.h
+        include/util/FakeTimeProvider.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -94,9 +96,11 @@ src/util/DebugPrinter.cpp
         src/core/Unit.cpp
         src/core/PropertyBagFactory.cpp
         src/core/PropertyBag.cpp
+        src/util/FakeTimeProvider.cpp
 )
 
-ADD_LIBRARY( dagbase SHARED ${dagbase_SRC})
+ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
+        include/util/VectorSet.h)
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
 TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES})

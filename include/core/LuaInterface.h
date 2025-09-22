@@ -58,8 +58,8 @@ namespace dagbase
             }
         }
     private:
-        lua_State * _lua;
-        bool _balance;
+        lua_State * _lua{nullptr};
+        bool _balance{false};
     };
 
     class DAGBASE_API TableTraversal

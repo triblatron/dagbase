@@ -5,6 +5,7 @@
 #include "util/VectorMap.h"
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
+#include "test/TestUtils.h"
 
 #include <gtest/gtest.h>
 
@@ -52,6 +53,92 @@ INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testInsert, ::testing::Values(
     std::make_tuple("root={ elements={ { 1, 1 }, { 1, 2 } }, results={ { true }, { false } } }", 1, 1),
     std::make_tuple("root={ elements={ { 3, 3 }, { 1, 1 }, { 2, 2 } }, results={ { true }, { true }, { true } } }", 1, 1)
 ));
+
+class VectorMapTestHelper
+{
+public:
+    using IntVectorMap = dagbase::VectorMap<int,int>;
+    struct Insertion
+    {
+        int key{0};
+        int value{0};
+        bool inserted{true};
+
+        void configure(dagbase::ConfigurationElement& config)
+        {
+            dagbase::ConfigurationElement::readConfig(config, "key", &key);
+            dagbase::ConfigurationElement::readConfig(config, "value", &value);
+            dagbase::ConfigurationElement::readConfig(config, "inserted", &inserted);
+        }
+    };
+public:
+    virtual ~VectorMapTestHelper() = default;
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        if (auto element=config.findElement("insertions"); element)
+        {
+            element->eachChild([this](dagbase::ConfigurationElement& child) {
+                Insertion insertion;
+
+                insertion.configure(child);
+
+                _insertions.emplace_back(insertion);
+
+                return true;
+            });
+        }
+    }
+
+    virtual std::pair<IntVectorMap::iterator,bool> insert(const Insertion& insertion) = 0;
+
+    void makeItSo()
+    {
+        for (auto& insertion : _insertions)
+        {
+            auto p = insert(insertion);
+
+            EXPECT_NE(_sut.end(), p.first);
+            EXPECT_EQ(insertion.inserted, p.second);
+            EXPECT_EQ(p.first, _sut.find(insertion.key));
+        }
+    }
+protected:
+    IntVectorMap _sut;
+private:
+    std::vector<Insertion> _insertions;
+};
+
+class VectorMap_testEmplace : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>, public VectorMapTestHelper
+{
+public:
+    std::pair<IntVectorMap::iterator, bool> insert(const Insertion& insertion)
+    {
+        return _sut.emplace(IntVectorMap::value_type (insertion.key, insertion.value));
+    }
+private:
+};
+
+TEST_P(VectorMap_testEmplace, testExpectedValue)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+    auto path = std::get<1>(GetParam());
+    auto value = std::get<2>(GetParam());
+    auto tolerance = std::get<3>(GetParam());
+    auto op = std::get<4>(GetParam());
+    auto actualValue = _sut.find(path);
+    assertComparison(value, actualValue, tolerance, op);
+}
+
+INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testEmplace, ::testing::Values(
+        std::make_tuple("data/tests/VectorMap/NoDuplicates.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VectorMap/OneDuplicate.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        ));
 
 TEST(VectorMap, testDuplicateKeysAreRejected)
 {

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/Variant.h"
+#include "util/Searchable.h"
+
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -20,9 +23,11 @@ namespace dagbase
 	{
 	public:
 		typedef std::pair<Key, Value> value_type;
+        typedef Key key_type;
 		typedef std::vector<value_type> container;
 		typedef typename container::iterator iterator;
 		typedef typename container::const_iterator const_iterator;
+        typedef typename container::size_type size_type;
 	public:
 		void reserve(typename container::size_type n)
 		{
@@ -44,7 +49,7 @@ namespace dagbase
 				if (!equalKey)
 				{
 					auto d = std::distance(_map.begin(), it);
-					_map.emplace(it, value);
+					_map.insert(it, value);
 					return std::make_pair(_map.begin()+d, true);
 				}
 				else
@@ -54,7 +59,34 @@ namespace dagbase
 			}
 			else
 			{				
-				_map.emplace(it, value);
+				_map.insert(it, value);
+
+				return std::make_pair(_map.end() - 1, true);
+			}
+		}
+        template<typename... Args>
+		std::pair<iterator, bool> emplace(Args&&... args)
+		{
+            auto temp = std::pair<Key,Value>(std::forward<Args>(args)...);
+			auto it = std::lower_bound(_map.begin(), _map.end(), temp, _cmp);
+			if (it != _map.end())
+			{
+				auto equalKey = it->first == temp.first;
+
+				if (!equalKey)
+				{
+					auto d = std::distance(_map.begin(), it);
+					_map.emplace(it, std::move(temp));
+					return std::make_pair(_map.begin()+d, true);
+				}
+				else
+				{
+					return std::make_pair(it, false);
+				}
+			}
+			else
+			{
+				_map.emplace(it, std::move(temp));
 
 				return std::make_pair(_map.end() - 1, true);
 			}
@@ -77,22 +109,6 @@ namespace dagbase
 			return it;
 		}
 
-		const_iterator find(const Key& key) const
-		{
-			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
-			if (it != _map.end())
-			{
-				if (_eq(it->first, key))
-				{
-					return it;
-				}
-				else
-				{
-					return end();
-				}
-			}
-			return it;
-		}
 
         iterator begin()
         {
@@ -113,6 +129,22 @@ namespace dagbase
 		{
 			return _map.end();
 		}
+
+        size_type size() const
+        {
+            return _map.size();
+        }
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findEndpoint(path, "size", std::uint32_t(size()));
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
 	private:
 		container _map;
 		Compare _cmp;

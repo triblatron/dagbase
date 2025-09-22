@@ -93,7 +93,7 @@ namespace dagbase
             if (child != nullptr)
             {
                 child->setParent(this);
-                _children.push_back(child);
+                _children.emplace_back(child);
             }
         }
 
@@ -187,9 +187,12 @@ namespace dagbase
 
         void eachChild(std::function<bool (ConfigurationElement&)> f);
 
+        static void readConfig(ConfigurationElement& config, const char* name, double* value);
         static void readConfig(ConfigurationElement& config, const char* name, float* value);
+        static void readConfig(ConfigurationElement& config, const char* name, bool* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::string* value);
         static void readConfig(ConfigurationElement& config, const char* name, std::int32_t* value);
+        static void readConfig(ConfigurationElement& config, const char* name, std::uint32_t* value);
         static void readConfig(ConfigurationElement& config, const char* name, Atom* value);
         template <typename Enum>
         static void readConfig(ConfigurationElement& config, const char* name, std::function<Enum(const char*)> parseEnum, Enum* value)
@@ -198,6 +201,56 @@ namespace dagbase
                 if (auto element=config.findElement(name); element)
                 {
                     *value = parseEnum(element->asString().c_str());
+                }
+        }
+        template<typename Obj>
+        static void readConfig(ConfigurationElement& config, const char* name, Obj* value)
+        {
+            if (value)
+                if (auto element=config.findElement(name); element)
+                {
+                    value->configure(*element);
+                }
+        }
+        template<typename Associative>
+        static void readConfigSet(ConfigurationElement& config, const char* name, Associative* value)
+        {
+            if (value)
+                if (auto element=config.findElement(name); element)
+                {
+                    value->reserve(element->numChildren());
+                    element->eachChild([&value](ConfigurationElement& child) {
+                        typename Associative::value_type item;
+
+                        item.configure(child);
+
+                        value->emplace(item);
+
+                        return true;
+                    });
+                }
+        }
+
+        template<typename Map>
+        static void readConfigMap(ConfigurationElement& config, const char* name, Map* value)
+        {
+            if (value)
+                if (auto element=config.findElement(name); element)
+                {
+                    value->reserve(element->numChildren());
+                    element->eachChild([&value](ConfigurationElement& child) {
+                        typename Map::key_type key;
+
+                        key.configure(child);
+
+                        typename Map::value_type::second_type mapped;
+
+                        mapped.configure(child);
+
+                        value->emplace(key, mapped);
+
+                        return true;
+                    });
                 }
         }
     private:
@@ -210,13 +263,13 @@ namespace dagbase
         }
         ConfigurationElement* findInChildren(std::string_view path);
         ConfigurationElement* findInArray(size_t index, std::string_view path);
-        ConfigurationElement* _parent{nullptr};
-        std::string _name;
-        std::int64_t _index{0};
         ValueType _value;
-        static ConfigurationElement* buildTree(Lua& lua);
         using Children = std::vector<ConfigurationElement*>;
         Children _children;
+        std::string _name;
+        std::int64_t _index{0};
+        ConfigurationElement* _parent{nullptr};
+        static ConfigurationElement* buildTree(Lua& lua);
     };
 
 }

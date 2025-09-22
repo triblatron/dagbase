@@ -12,6 +12,8 @@ namespace dagbase
     class SearchableMap
     {
     public:
+        using iterator = typename Map::iterator;
+        using const_iterator = typename Map::const_iterator;
         using value_type = typename Map::value_type;
     public:
         SearchableMap() = default;

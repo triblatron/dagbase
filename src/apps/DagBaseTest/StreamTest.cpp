@@ -213,7 +213,7 @@ struct TestNode
             dagbase::Stream::ObjId childId{0};
 
             if (TestNode* child=str.readRef<TestNode>(&childId); child)
-                children.push_back(child);
+                children.emplace_back(child);
         }
         str.readFooter();
         str.readFooter();
@@ -270,7 +270,7 @@ TEST(OutputStream, testOutput)
     node2.write(sut);
     format.flush();
 
-    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : 2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : 1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
+    std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : true\n1\n2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : true\n1\n1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
     store.get(actualOutput);
@@ -304,7 +304,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
     TestNode node2;
     node2.i = 42;
     node2.parent = &node1;
-    node1.children.push_back(&node2);
+    node1.children.emplace_back(&node2);
     if (sut.writeRef(&node2))
     {
         node2.write(sut);
@@ -323,3 +323,47 @@ INSTANTIATE_TEST_SUITE_P(FormatAgnosticInputStream, FormatAgnosticOutputToInput_
     std::make_tuple("TextFormat"),
     std::make_tuple("BinaryFormat")
     ));
+
+class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant>>
+{
+
+};
+
+TEST_P(OutputStream_testWriteVariant, testExpectedValue)
+{
+    std::string formatClass = std::get<0>(GetParam());
+    dagbase::StreamFormat* format = nullptr;
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (formatClass == "TextFormat")
+    {
+        format = new dagbase::TextFormat(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        format = new dagbase::BinaryFormat(&store);
+    }
+    ASSERT_NE(nullptr, format);
+    dagbase::FormatAgnosticOutputStream sut(format, &store);
+    sut.setFormat(format);
+    sut.setBackingStore(&store);
+    auto value = std::get<1>(GetParam());
+    sut.write(value);
+    format->flush();
+    dagbase::FormatAgnosticInputStream istr(format, &store);
+    dagbase::Variant actualValue;
+    istr.read(&actualValue);
+    EXPECT_EQ(value, actualValue);
+}
+
+INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(
+        std::make_tuple("TextFormat", std::uint32_t{1}),
+        std::make_tuple("BinaryFormat", std::uint32_t{1}),
+        std::make_tuple("TextFormat", std::int64_t{-1}),
+        std::make_tuple("BinaryFormat", std::int64_t{-1}),
+        std::make_tuple("TextFormat", double{1.5}),
+        std::make_tuple("BinaryFormat", double{1.5}),
+        std::make_tuple("TextFormat", true),
+        std::make_tuple("BinaryFormat", true),
+        std::make_tuple("TextFormat", "test"),
+        std::make_tuple("BinaryFormat", "test")
+        ));

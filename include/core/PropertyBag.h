@@ -47,7 +47,7 @@ namespace dagbase
             return {};
         }
 
-        void configure(ConfigurationElement& config)
+        void configure(ConfigurationElement& config) override
         {
             if (auto props = config.findElement("staticProperties"); props)
             {
