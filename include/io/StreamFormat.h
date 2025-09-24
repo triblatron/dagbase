@@ -35,6 +35,10 @@ namespace dagbase
 
         virtual void flush() = 0;
 
+        virtual void writeUInt8(std::uint8_t value) = 0;
+
+        virtual void readUInt8(std::uint8_t* value) = 0;
+
         virtual void writeUInt32(std::uint32_t value) = 0;
 
         virtual void readUInt32(std::uint32_t* value) = 0;

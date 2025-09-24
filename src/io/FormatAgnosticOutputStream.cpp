@@ -110,4 +110,12 @@ namespace dagbase
 
         return *this;
     }
+
+    OutputStream &FormatAgnosticOutputStream::writeUInt8(std::uint8_t value)
+    {
+        if (_format)
+            _format->writeUInt8(value);
+
+        return *this;
+    }
 }

@@ -69,6 +69,8 @@ namespace dagbase
             return *this;
         }
 
+        virtual OutputStream& writeUInt8(std::uint8_t value) = 0;
+
         virtual OutputStream& writeUInt32(std::uint32_t value) = 0;
 
         //! Write a string which requires special encoding because it is not a primitive type.

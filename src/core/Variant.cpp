@@ -94,7 +94,7 @@ namespace dagbase
         str.writeBool(has_value());
         if (has_value())
         {
-            str.writeUInt32(_value->index());
+            str.writeUInt8(std::uint8_t(_value->index()));
             switch (_value->index())
             {
                 case Variant::TYPE_DOUBLE:
@@ -129,8 +129,8 @@ namespace dagbase
         str.readBool(&hasValue);
         if (hasValue)
         {
-            std::uint32_t type{0};
-            str.readUInt32(&type);
+            std::uint8_t type{0};
+            str.readUInt8(&type);
             switch (type)
             {
                 case Variant::TYPE_DOUBLE:

@@ -123,4 +123,12 @@ namespace dagbase
 
         return *this;
     }
+
+    InputStream &FormatAgnosticInputStream::readUInt8(std::uint8_t *value)
+    {
+        if (_format)
+            _format->readUInt8(value);
+
+        return *this;
+    }
 }

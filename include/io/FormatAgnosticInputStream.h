@@ -43,6 +43,8 @@ namespace dagbase
 
         InputStream& readField(std::string* fieldName) override;
 
+        InputStream& readUInt8(std::uint8_t* value) override;
+
         InputStream& readUInt32(std::uint32_t* value) override;
 
         InputStream& readInt64(int64_t* value) override;
