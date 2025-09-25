@@ -7,6 +7,7 @@
 #include "core/Variant.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
+#include "util/Searchable.h"
 
 #include <iostream>
 
@@ -176,6 +177,17 @@ namespace dagbase
 
         //str.readFooter();
         return str;
+    }
+
+    Variant Variant::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "value", *this);
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 }
 

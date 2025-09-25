@@ -171,6 +171,8 @@ namespace dagbase
 
         InputStream& read(InputStream& str);
 
+        Variant find(std::string_view path) const;
+
         std::string toString() const;
     private:
         ValueType _value;
