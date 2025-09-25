@@ -55,6 +55,7 @@ include/util/DebugPrinter.h
         include/core/PropertyBagFactory.h
         include/util/TimeProvider.h
         include/util/FakeTimeProvider.h
+        include/util/MultiArray.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
