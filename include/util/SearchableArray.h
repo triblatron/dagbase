@@ -44,7 +44,17 @@ namespace dagbase
             return a.end();
         }
 
-        ConfigurationElement::ValueType find(std::string_view path) const
+        void configure(ConfigurationElement& config)
+        {
+            config.eachChild([this](ConfigurationElement& child) {
+                value_type value;
+                value.configure(child);
+                a.emplace_back(value);
+                return true;
+            });
+        }
+
+        Variant find(std::string_view path) const
         {
             ConfigurationElement::ValueType retval;
 
@@ -61,12 +71,21 @@ namespace dagbase
         }
     };
 
-    template<typename Array>
+    template<typename Array, typename ConfiguredType=typename Array::value_type>
     class SearchablePrimitiveArray
     {
     public:
         using value_type = typename Array::value_type;
         Array a;
+
+        void configure(ConfigurationElement& config)
+        {
+            config.eachChild([this](ConfigurationElement& child) {
+                const auto& value = child.as<ConfiguredType>();
+                a.emplace_back(value_type(value));
+                return true;
+            });
+        }
 
         Variant find(std::string_view path) const
         {

@@ -12,7 +12,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         IdentifierGeneratorTest.cpp
         UnitTest.cpp
         VectorSetTest.cpp
-        MultiArrayTest.cpp)
+        MultiArrayTest.cpp
+        RoundTripTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)

@@ -6,16 +6,23 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Colour.h"
+
 #include <string>
+#include <string_view>
 
 namespace dagbase
 {
+    class ConfigurationElement;
+
     struct DAGBASE_API Colour
     {
         float r{0.0f};
         float g{0.0f};
         float b{0.0f};
         float a{0.0f};
+
+        void configure(ConfigurationElement& config);
 
         bool operator==(const Colour& other) const
         {

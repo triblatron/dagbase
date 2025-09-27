@@ -8,6 +8,7 @@
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
 #include "util/Searchable.h"
+#include "util/enums.h"
 
 #include <iostream>
 
@@ -188,6 +189,36 @@ namespace dagbase
             return retval;
 
         return {};
+    }
+
+    const char *Variant::indexToString(Variant::Index value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(TYPE_INTEGER)
+            ENUM_NAME(TYPE_DOUBLE)
+            ENUM_NAME(TYPE_BOOL)
+            ENUM_NAME(TYPE_STRING)
+            ENUM_NAME(TYPE_COLOUR)
+            ENUM_NAME(TYPE_VEC2)
+            ENUM_NAME(TYPE_UINT)
+            ENUM_NAME(TYPE_UNKNOWN)
+        }
+
+        return "<error>";
+    }
+
+    Variant::Index Variant::parseIndex(const char *str)
+    {
+        TEST_ENUM(TYPE_INTEGER, str)
+        TEST_ENUM(TYPE_DOUBLE, str)
+        TEST_ENUM(TYPE_BOOL, str)
+        TEST_ENUM(TYPE_STRING, str)
+        TEST_ENUM(TYPE_COLOUR, str)
+        TEST_ENUM(TYPE_VEC2, str)
+        TEST_ENUM(TYPE_UINT, str)
+
+        return Variant::TYPE_UNKNOWN;
     }
 }
 

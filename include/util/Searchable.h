@@ -93,7 +93,7 @@ namespace dagbase
 	}
 
     template<typename Array>
-	dagbase::ConfigurationElement::ValueType findPrimitiveArray(std::string_view path, const Array& obj)
+	dagbase::Variant findPrimitiveArray(std::string_view path, const Array& obj)
 	{
 		if (path.length()>1 && path[0]=='[')
 		{
@@ -106,7 +106,7 @@ namespace dagbase
 			}
 			if (index < obj.size() && endPtr && *endPtr==']')
 			{
-                return obj[index];//std::invoke(&std::remove_pointer_t<typename Array::value_type>::find, obj[index], path.substr(dotPos + 1));
+                return Variant(obj[index]);
 			}
 		}
 

@@ -3,6 +3,11 @@
 //
 
 #include "core/Variant.h"
+#include "core/ConfigurationElement.h"
+#include "core/LuaInterface.h"
+#include "core/VariantArray.h"
+
+#include "test/TestUtils.h"
 
 #include <gtest/gtest.h>
 
@@ -152,3 +157,35 @@ INSTANTIATE_TEST_SUITE_P(Variant, Variant_testAsVec2, ::testing::Values(
         std::make_tuple(dagbase::Vec2{1.0f,1.0f}, dagbase::Vec2{1.0f,1.0f})
         ));
 
+class VariantArray_testConfigure : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
+{
+
+};
+
+TEST_P(VariantArray_testConfigure, testExpectedValue)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    dagbase::VariantArray sut;
+    sut.configure(*config);
+    auto path = std::get<1>(GetParam());
+    auto value = std::get<2>(GetParam());
+    auto tolerance = std::get<3>(GetParam());
+    auto op = std::get<4>(GetParam());
+    auto actualValue = sut.find(path);
+    assertComparison(value, actualValue, tolerance, op);
+}
+
+INSTANTIATE_TEST_SUITE_P(VariantArray, VariantArray_testConfigure, ::testing::Values(
+        std::make_tuple("data/tests/VariantArray/Int64.lua", "items[0]", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/Int64.lua", "items[1]", std::int64_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/Double.lua", "items[0]", 2.5, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/Bool.lua", "items[0]", false, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/Bool.lua", "items[1]", true, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/String.lua", "items[0]", std::string{"test1"}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+//        std::make_tuple("data/tests/VariantArray/Colour.lua", "items[0]", dagbase::Colour{0.1f, 0.2f, 0.4f, 1.0f}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/VariantArray/UInt32.lua", "items[0]", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VariantArray/UInt32.lua", "items[1]", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        ));
