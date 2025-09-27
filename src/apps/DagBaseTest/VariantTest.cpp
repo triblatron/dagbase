@@ -189,3 +189,25 @@ INSTANTIATE_TEST_SUITE_P(VariantArray, VariantArray_testConfigure, ::testing::Va
         std::make_tuple("data/tests/VariantArray/UInt32.lua", "items[0]", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/VariantArray/UInt32.lua", "items[1]", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
+
+class VariantArray_testEmplaceBack : public ::testing::TestWithParam<std::tuple<dagbase::Variant>>
+{
+
+};
+
+TEST_P(VariantArray_testEmplaceBack, testExpectedValue)
+{
+    auto value = std::get<0>(GetParam());
+    dagbase::VariantArray sut;
+    sut.emplace_back(value);
+    EXPECT_EQ(value, sut[0]);
+}
+
+INSTANTIATE_TEST_SUITE_P(VariantArray, VariantArray_testEmplaceBack, ::testing::Values(
+        std::make_tuple(std::int64_t{1}),
+        std::make_tuple(2.5),
+        std::make_tuple(std::string("test")),
+        std::make_tuple(false),
+        std::make_tuple(true),
+        std::make_tuple(std::uint32_t{2})
+        ));

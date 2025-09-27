@@ -9,6 +9,7 @@
 #include "core/Variant.h"
 #include "util/Searchable.h"
 #include "util/SearchableArray.h"
+#include "core/VariantArray.h"
 
 #include <vector>
 #include <string_view>
@@ -22,11 +23,11 @@ namespace dagbase
     public:
         void configure(ConfigurationElement& config);
 
-        void emplace_back(const std::vector<Variant> & a);
+        void emplace_back(const VariantArray & a);
 
         Variant find(std::string_view path) const;
     private:
-        using Arrays = SearchableArray<std::vector<SearchableArray<std::vector<Variant>>>>;
+        using Arrays = SearchableArray<std::vector<VariantArray>>;
         Arrays _arrays;
     };
 }

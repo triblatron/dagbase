@@ -54,7 +54,10 @@ TEST_P(DynamicMultiArray_testConfigure, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(DynamicMultiArray, DynamicMultiArray_testConfigure, ::testing::Values(
-        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[0].[0].value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[1].[0].value", 2.5, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[2].[0].value", std::string("test"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[0].items[0]", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[1].items[0]", 2.5, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[2].items[0]", std::string("test"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[3].items[0]", false, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[3].items[1]", true, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/DynamicMultiArray/MultipleArrays.lua", "arrays[4].items[0]", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));

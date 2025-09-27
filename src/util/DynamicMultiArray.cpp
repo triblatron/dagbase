@@ -16,12 +16,8 @@ namespace dagbase
             _arrays.a.reserve(element->numChildren());
             element->eachChild([this](dagbase::ConfigurationElement& child) {
                 Arrays::value_type a;
-                a.a.reserve(child.numChildren());
-                child.eachChild([this,&a](dagbase::ConfigurationElement& item) {
-                    a.a.emplace_back(item.value());
-
-                    return true;
-                });
+                a.reserve(child.numChildren());
+                a.configure(child);
                 _arrays.a.emplace_back(a);
 
                 return true;
@@ -29,11 +25,11 @@ namespace dagbase
         }
     }
 
-    void DynamicMultiArray::emplace_back(const std::vector<Variant> &input)
+    void DynamicMultiArray::emplace_back(const VariantArray &input)
     {
         std::size_t i=0;
         std::for_each(_arrays.begin(), _arrays.end(),[&input, &i](Arrays::value_type& a) {
-            a.a.emplace_back(input[i]);
+            a.emplace_back(input[i]);
             i++;
         });
     }

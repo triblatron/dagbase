@@ -129,4 +129,32 @@ namespace dagbase
         }
         return {};
     }
+
+    void VariantArray::reserve(std::size_t n)
+    {
+        switch (_value.index())
+        {
+            case Variant::TYPE_INTEGER:
+                std::get<ArrayOfInt64>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_DOUBLE:
+                std::get<ArrayOfDouble>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_STRING:
+                std::get<ArrayOfString>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_BOOL:
+                std::get<ArrayOfBool>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_COLOUR:
+                std::get<ArrayOfColour>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_VEC2:
+                std::get<ArrayOfVec2>(_value).a.reserve(n);
+                break;
+            case Variant::TYPE_UINT:
+                std::get<ArrayOfUInt32>(_value).a.reserve(n);
+                break;
+        }
+    }
 }
