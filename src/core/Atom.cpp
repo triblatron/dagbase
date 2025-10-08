@@ -5,6 +5,7 @@
 #include "config/config.h"
 
 #include "core/Atom.h"
+#include "core/ConfigurationElement.h"
 
 namespace dagbase
 {
@@ -35,5 +36,20 @@ namespace dagbase
 
     Atom::~Atom()
     {
+    }
+
+    void Atom::configure(ConfigurationElement &config)
+    {
+        auto name = config.asString();
+        auto it = _atoms.find(name);
+
+        if (it == _atoms.end())
+        {
+            _value = strdup(name.c_str());
+        }
+        else
+        {
+            _value = it->second._value;
+        }
     }
 }

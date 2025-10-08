@@ -212,6 +212,15 @@ namespace dagbase
                     value->configure(*element);
                 }
         }
+
+        static void readConfig(ConfigurationElement& config, const char* name, Variant* value)
+        {
+            if (value)
+                if (auto element = config.findElement(name); element)
+                {
+                    *value = element->value();
+                }
+        }
         template<typename Associative>
         static void readConfigSet(ConfigurationElement& config, const char* name, Associative* value)
         {
@@ -232,7 +241,7 @@ namespace dagbase
         }
 
         template<typename Map>
-        static void readConfigMap(ConfigurationElement& config, const char* name, Map* value)
+        static void readConfigVectorMap(ConfigurationElement& config, const char* name, Map* value)
         {
             if (value)
                 if (auto element=config.findElement(name); element)
@@ -248,6 +257,45 @@ namespace dagbase
                         mapped.configure(child);
 
                         value->emplace(key, mapped);
+
+                        return true;
+                    });
+                }
+        }
+
+        template<typename Map>
+        static void readConfigStdMap(ConfigurationElement& config, const char* name, Map* value)
+        {
+            if (value)
+                if (auto element=config.findElement(name); element)
+                {
+                    element->eachChild([&value](ConfigurationElement& child) {
+                        typename Map::key_type key;
+
+                        key.configure(child);
+
+                        typename Map::value_type::second_type mapped;
+
+                        mapped.configure(child);
+
+                        value->emplace(key, mapped);
+
+                        return true;
+                    });
+                }
+        }
+
+        template<typename Vector>
+        static void readConfigVector(ConfigurationElement& config, const char* name, Vector* value)
+        {
+            if (value)
+                if (auto element=config.findElement(name); element)
+                {
+                    element->eachChild([value](ConfigurationElement& child) {
+                        typename Vector::value_type entry;
+
+                        entry.configure(child);
+                        value->emplace_back(entry);
 
                         return true;
                     });

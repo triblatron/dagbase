@@ -14,6 +14,8 @@
 
 namespace dagbase
 {
+    class ConfigurationElement;
+
     class DAGBASE_API Atom
     {
     public:
@@ -22,6 +24,8 @@ namespace dagbase
         ~Atom();
 
         static Atom& intern(std::string name);
+
+        void configure(ConfigurationElement& config);
 
         const char* value() const
         {

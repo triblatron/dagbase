@@ -24,6 +24,7 @@ namespace dagbase
 	public:
 		typedef std::pair<Key, Value> value_type;
         typedef Key key_type;
+        typedef Value mapped_type;
 		typedef std::vector<value_type> container;
 		typedef typename container::iterator iterator;
 		typedef typename container::const_iterator const_iterator;
