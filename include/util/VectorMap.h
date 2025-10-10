@@ -110,6 +110,23 @@ namespace dagbase
 			return it;
 		}
 
+		const_iterator find(const Key& key) const
+		{
+			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
+			if (it != _map.end())
+			{
+				if (_eq(it->first, key))
+				{
+					return it;
+				}
+				else
+				{
+					return end();
+				}
+			}
+			return it;
+		}
+
 
         iterator begin()
         {
