@@ -30,7 +30,7 @@ namespace dagbase
 	}
 
 	//! Find a component in a path and forward to the next object in the chain.
-	//! \param[in] path : std::string_view The path with multiple components sepaarated by '.'.
+	//! \param[in] path : std::string_view The path with multiple components separated by '.'.
 	//! \oaram[in] key : const char* The key that might be the first component of the path.
 	//! \param[in] obj : Ref The receiver for the call to find().
 	//! \note Type Ref must implement find().
@@ -39,7 +39,7 @@ namespace dagbase
 	//! \note We use std::invoke() to handle pointers and references uniformly.
 	template<typename Ref>
 	auto findInternal(std::string_view path, const char* key, const Ref& obj) ->
-		dagbase::ConfigurationElement::ValueType
+		dagbase::Variant
 	{
 		auto pos = path.compare(0, std::strlen(key), key);
 

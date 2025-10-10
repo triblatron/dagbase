@@ -93,7 +93,7 @@ namespace dagbase
 			}
 		}
 
-		iterator find(const Key& key)
+		iterator find(const key_type& key)
 		{
 			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
 			if (it != _map.end())
@@ -110,7 +110,7 @@ namespace dagbase
 			return it;
 		}
 
-		const_iterator find(const Key& key) const
+		const_iterator find(const key_type& key) const
 		{
 			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
 			if (it != _map.end())
@@ -126,7 +126,6 @@ namespace dagbase
 			}
 			return it;
 		}
-
 
         iterator begin()
         {
