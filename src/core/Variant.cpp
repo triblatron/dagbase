@@ -222,7 +222,7 @@ namespace dagbase
     }
 }
 
-std::ostream &operator<<(std::ostream &str, dagbase::Variant value)
+std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
 {
     switch (value.index())
     {

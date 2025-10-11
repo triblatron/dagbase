@@ -121,7 +121,7 @@ namespace dagbase
     		auto dotPos = path.find('.');
     		if (dotPos < path.length() - 1)
     		{
-    			std::string key;
+    			typename Map::key_type key;
     			key = path.substr(0, dotPos);
     			if (auto it=obj.find(key); it!=obj.end())
     				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
@@ -144,6 +144,31 @@ namespace dagbase
                 Atom atom = Atom::intern(key);
     			if (auto it=obj.find(atom); it!=obj.end())
     				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+    		}
+    	}
+
+    	return {};
+    }
+
+	template<typename Map>
+	ConfigurationElement::ValueType findMapFromAtomPair(std::string_view path, const Map& obj)
+    {
+    	if (!path.empty())
+    	{
+    		auto dotPos = path.find('.');
+    		if (dotPos < path.length() - 1)
+    		{
+    			typename Map::key_type key;
+
+                key.first = Atom::intern(std::string(path.substr(0,dotPos)));
+                path = path.substr(dotPos+1);
+                dotPos = path.find('.');
+                if (dotPos < path.length()-1)
+                {
+                    key.second = Atom::intern(std::string(path.substr(0,dotPos)));
+                    if (auto it=obj.find(key); it!=obj.end())
+                        return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+                }
     		}
     	}
 

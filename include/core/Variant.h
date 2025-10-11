@@ -13,6 +13,7 @@
 #include <variant>
 #include <cstdint>
 #include <string>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -184,4 +185,5 @@ namespace dagbase
     };
 }
 
-std::ostream DAGBASE_API & operator<<(std::ostream& str, dagbase::Variant value);
+std::ostream DAGBASE_API & operator<<(std::ostream& str, const dagbase::Variant& value);
+//std::string to_string(dagbase::Variant value);

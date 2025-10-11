@@ -25,6 +25,8 @@ namespace dagbase
 
         static Atom& intern(std::string name);
 
+//        static Atom& intern(std::string_view name);
+
         void configure(ConfigurationElement& config);
 
         const char* value() const

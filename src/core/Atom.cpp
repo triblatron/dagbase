@@ -52,4 +52,17 @@ namespace dagbase
             _value = it->second._value;
         }
     }
+
+//    Atom &Atom::intern(std::string_view name)
+//    {
+//        auto it = _atoms.find(name);
+//        if (it == _atoms.end())
+//        {
+//            return _atoms[name] = Atom(strndup(name.data(),name.length()));
+//        }
+//        else
+//        {
+//            return it->second;
+//        }
+//    }
 }
