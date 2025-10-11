@@ -47,13 +47,16 @@ namespace dagbase
 		{
 			auto dotPos = path.find('.');
 			auto subPos = path.find('[');
+            // We need the static_cast<> to resolve a potential overload of find() in a SearchableMap
+            // The double std::remove_pointer_t is required to treat pointers and references uniformly in both the
+            // signature of the intended overload and its address.
 			if (subPos != std::string_view::npos && subPos < dotPos)
 			{
-				return std::invoke(&std::remove_pointer_t<Ref>::find, obj, path.substr(subPos));
+				return std::invoke(static_cast<dagbase::Variant(std::remove_pointer_t<Ref>::*)(std::string_view)const>(&std::remove_pointer_t<Ref>::find), obj, path.substr(subPos));
 			}
 			if (dotPos < path.length() - 1)
 			{
-				return std::invoke(&std::remove_pointer_t<Ref>::find, obj, path.substr(dotPos + 1));
+				return std::invoke(static_cast<dagbase::Variant(std::remove_pointer_t<Ref>::*)(std::string_view)const>(&std::remove_pointer_t<Ref>::find), obj, path.substr(dotPos + 1));
 			}
 		}
 

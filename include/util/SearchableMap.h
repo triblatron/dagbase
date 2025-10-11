@@ -52,6 +52,13 @@ namespace dagbase
         Map m;
     };
 
+    //! A wrapper for a map of type Map, adding a find(std::string_view) to participate in attribute resolution.
+    //! \note We don't provide wrappers for find(const key_type&) because of a conflict with the above
+    //! This causes overload resolution to fail in findInternal() and requires an ugly cast to avoid compiler errors.
+    //! Instead, we expose the underlying map as a public member variable and require client code to access it to get
+    //! usual begin(), end(), find() etc.
+    //! \note We provide types for the value, key and mapped types of the underlying container, assuming it
+    //! exposes them.
     template<typename Map>
     class SearchableMapFromAtom
     {
@@ -59,6 +66,8 @@ namespace dagbase
         using value_type = typename Map::value_type;
         using key_type = typename Map::key_type;
         using mapped_type = typename Map::mapped_type;
+        using iterator = typename Map::iterator;
+        using const_iterator = typename Map::const_iterator;
     public:
         SearchableMapFromAtom() = default;
 
@@ -78,7 +87,8 @@ namespace dagbase
             return m.emplace(std::forward<Args>(args)...);
         }
 
-        mapped_type lookup(typename Map::key_type key)
+        //! \note Assumes mapped_type is a pointer.
+        mapped_type lookup(const typename Map::key_type& key)
         {
             if (auto it=m.find(key); it!=m.end())
                 return it->second;
