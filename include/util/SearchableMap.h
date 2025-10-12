@@ -71,11 +71,21 @@ namespace dagbase
     public:
         SearchableMapFromAtom() = default;
 
+        //! \return The number of elements in the underlying Map
         std::size_t size() const
         {
             return m.size();
         }
 
+        //! \note Assumes that Map is a vector-like class such as VectorMap
+        //! \return m.capacity()
+        std::size_t capacity() const
+        {
+            return m.capacity();
+        }
+
+        //! Allocate memory for n elements so that capacity() >= n
+        //! \note Assumes mapped_type is a vector-like class such as VectorMap
         void reserve(std::size_t n)
         {
             m.reserve(n);
@@ -88,7 +98,7 @@ namespace dagbase
         }
 
         //! \note Assumes mapped_type is a pointer.
-        mapped_type lookup(const typename Map::key_type& key)
+        mapped_type lookup(const key_type& key)
         {
             if (auto it=m.find(key); it!=m.end())
                 return it->second;
@@ -135,7 +145,8 @@ namespace dagbase
             return m.emplace(std::forward<Args>(args)...);
         }
 
-        mapped_type lookup(typename Map::key_type key)
+        //! \note Assumes mapped_type is a pointer
+        mapped_type lookup(const key_type& key)
         {
             if (auto it=m.find(key); it!=m.end())
                 return it->second;
