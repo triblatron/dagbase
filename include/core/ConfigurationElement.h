@@ -53,16 +53,16 @@ namespace dagbase
 		
         ConfigurationElement(std::string name, ValueType value)
         :
-        _name(std::move(name)),
-        _value(value)
+        _value(value),
+        _name(std::move(name))
         {
             // Do nothing.
         }
 
         ConfigurationElement(std::int64_t index, ValueType value)
         :
-        _index(index),
-        _value(value)
+        _value(value),
+        _index(index)
         {
             // Do nothing.
         }
