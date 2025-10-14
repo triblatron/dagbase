@@ -30,7 +30,7 @@ namespace dagbase
 	}
 
 	//! Find a component in a path and forward to the next object in the chain.
-	//! \param[in] path : std::string_view The path with multiple components sepaarated by '.'.
+	//! \param[in] path : std::string_view The path with multiple components separated by '.'.
 	//! \oaram[in] key : const char* The key that might be the first component of the path.
 	//! \param[in] obj : Ref The receiver for the call to find().
 	//! \note Type Ref must implement find().
@@ -39,7 +39,7 @@ namespace dagbase
 	//! \note We use std::invoke() to handle pointers and references uniformly.
 	template<typename Ref>
 	auto findInternal(std::string_view path, const char* key, const Ref& obj) ->
-		dagbase::ConfigurationElement::ValueType
+		dagbase::Variant
 	{
 		auto pos = path.compare(0, std::strlen(key), key);
 
@@ -47,13 +47,16 @@ namespace dagbase
 		{
 			auto dotPos = path.find('.');
 			auto subPos = path.find('[');
+            // We need the static_cast<> to resolve a potential overload of find() in a SearchableMap
+            // The double std::remove_pointer_t is required to treat pointers and references uniformly in both the
+            // signature of the intended overload and its address.
 			if (subPos != std::string_view::npos && subPos < dotPos)
 			{
-				return std::invoke(&std::remove_pointer_t<Ref>::find, obj, path.substr(subPos));
+				return std::invoke(static_cast<dagbase::Variant(std::remove_pointer_t<Ref>::*)(std::string_view)const>(&std::remove_pointer_t<Ref>::find), obj, path.substr(subPos));
 			}
 			if (dotPos < path.length() - 1)
 			{
-				return std::invoke(&std::remove_pointer_t<Ref>::find, obj, path.substr(dotPos + 1));
+				return std::invoke(static_cast<dagbase::Variant(std::remove_pointer_t<Ref>::*)(std::string_view)const>(&std::remove_pointer_t<Ref>::find), obj, path.substr(dotPos + 1));
 			}
 		}
 
@@ -93,7 +96,7 @@ namespace dagbase
 	}
 
     template<typename Array>
-	dagbase::ConfigurationElement::ValueType findPrimitiveArray(std::string_view path, const Array& obj)
+	dagbase::Variant findPrimitiveArray(std::string_view path, const Array& obj)
 	{
 		if (path.length()>1 && path[0]=='[')
 		{
@@ -106,7 +109,7 @@ namespace dagbase
 			}
 			if (index < obj.size() && endPtr && *endPtr==']')
 			{
-                return obj[index];//std::invoke(&std::remove_pointer_t<typename Array::value_type>::find, obj[index], path.substr(dotPos + 1));
+                return Variant(obj[index]);
 			}
 		}
 
@@ -121,7 +124,7 @@ namespace dagbase
     		auto dotPos = path.find('.');
     		if (dotPos < path.length() - 1)
     		{
-    			std::string key;
+    			typename Map::key_type key;
     			key = path.substr(0, dotPos);
     			if (auto it=obj.find(key); it!=obj.end())
     				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
@@ -144,6 +147,31 @@ namespace dagbase
                 Atom atom = Atom::intern(key);
     			if (auto it=obj.find(atom); it!=obj.end())
     				return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+    		}
+    	}
+
+    	return {};
+    }
+
+	template<typename Map>
+	ConfigurationElement::ValueType findMapFromAtomPair(std::string_view path, const Map& obj)
+    {
+    	if (!path.empty())
+    	{
+    		auto dotPos = path.find('.');
+    		if (dotPos < path.length() - 1)
+    		{
+    			typename Map::key_type key;
+
+                key.first = Atom::intern(std::string(path.substr(0,dotPos)));
+                path = path.substr(dotPos+1);
+                dotPos = path.find('.');
+                if (dotPos < path.length()-1)
+                {
+                    key.second = Atom::intern(std::string(path.substr(0,dotPos)));
+                    if (auto it=obj.find(key); it!=obj.end())
+                        return std::invoke(&std::remove_pointer_t<typename Map::value_type::second_type>::find, it->second, path.substr(dotPos + 1) );
+                }
     		}
     	}
 

@@ -143,6 +143,11 @@ namespace dagbase
             return *this;
         }
 
+        virtual InputStream& readUInt8(std::uint8_t* value)
+        {
+            return read(value);
+        }
+
         virtual InputStream& readUInt32(std::uint32_t* value)
         {
             return read(value);

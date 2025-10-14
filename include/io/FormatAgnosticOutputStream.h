@@ -31,6 +31,8 @@ namespace dagbase
 
         OutputStream& write(Variant value) override;
 
+        OutputStream& writeUInt8(std::uint8_t value) override;
+
         OutputStream& writeUInt32(std::uint32_t value) override;
 
         OutputStream& writeInt64(std::int64_t value) override;

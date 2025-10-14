@@ -1,0 +1,9 @@
+root=
+{
+	index="TYPE_BOOL",
+	items=
+	{
+		false,
+		true,
+	}
+}

@@ -55,6 +55,11 @@ include/util/DebugPrinter.h
         include/core/PropertyBagFactory.h
         include/util/TimeProvider.h
         include/util/FakeTimeProvider.h
+        include/util/MultiArray.h
+        include/util/DynamicMultiArray.h
+        include/core/VariantArray.h
+        include/util/Rope.h
+        include/util/RedBlackTree.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -97,6 +102,10 @@ src/util/DebugPrinter.cpp
         src/core/PropertyBagFactory.cpp
         src/core/PropertyBag.cpp
         src/util/FakeTimeProvider.cpp
+        src/util/DynamicMultiArray.cpp
+        src/core/VariantArray.cpp
+        src/util/Rope.cpp
+        src/util/RedBlackTree.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

@@ -7,6 +7,8 @@
 #include "core/Variant.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
+#include "util/Searchable.h"
+#include "util/enums.h"
 
 #include <iostream>
 
@@ -94,7 +96,7 @@ namespace dagbase
         str.writeBool(has_value());
         if (has_value())
         {
-            str.writeUInt32(_value->index());
+            str.writeUInt8(std::uint8_t(_value->index()));
             switch (_value->index())
             {
                 case Variant::TYPE_DOUBLE:
@@ -129,8 +131,8 @@ namespace dagbase
         str.readBool(&hasValue);
         if (hasValue)
         {
-            std::uint32_t type{0};
-            str.readUInt32(&type);
+            std::uint8_t type{0};
+            str.readUInt8(&type);
             switch (type)
             {
                 case Variant::TYPE_DOUBLE:
@@ -177,9 +179,50 @@ namespace dagbase
         //str.readFooter();
         return str;
     }
+
+    Variant Variant::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "value", *this);
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
+
+    const char *Variant::indexToString(Variant::Index value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(TYPE_INTEGER)
+            ENUM_NAME(TYPE_DOUBLE)
+            ENUM_NAME(TYPE_BOOL)
+            ENUM_NAME(TYPE_STRING)
+            ENUM_NAME(TYPE_COLOUR)
+            ENUM_NAME(TYPE_VEC2)
+            ENUM_NAME(TYPE_UINT)
+            ENUM_NAME(TYPE_UNKNOWN)
+        }
+
+        return "<error>";
+    }
+
+    Variant::Index Variant::parseIndex(const char *str)
+    {
+        TEST_ENUM(TYPE_INTEGER, str)
+        TEST_ENUM(TYPE_DOUBLE, str)
+        TEST_ENUM(TYPE_BOOL, str)
+        TEST_ENUM(TYPE_STRING, str)
+        TEST_ENUM(TYPE_COLOUR, str)
+        TEST_ENUM(TYPE_VEC2, str)
+        TEST_ENUM(TYPE_UINT, str)
+
+        return Variant::TYPE_UNKNOWN;
+    }
 }
 
-std::ostream &operator<<(std::ostream &str, dagbase::Variant value)
+std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
 {
     switch (value.index())
     {

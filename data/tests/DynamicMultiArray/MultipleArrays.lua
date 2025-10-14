@@ -1,0 +1,42 @@
+root=
+{
+	arrays=
+	{
+		{
+			index="TYPE_INTEGER",
+			items=
+			{
+				1
+			},
+		},
+		{
+			index="TYPE_DOUBLE",
+			items=
+			{
+				2.5
+			},
+		},
+		{
+			index="TYPE_STRING",
+			items=
+			{
+				"test"
+			},
+		},
+		{
+			index="TYPE_BOOL",
+			items=
+			{
+				false,
+				true,
+			},
+		},
+		{
+			index="TYPE_UINT",
+			items=
+			{
+				2,
+			},
+		}
+	}
+}

@@ -31,6 +31,9 @@ namespace dagbase
 
         void flush() override;
 
+        void writeUInt8(std::uint8_t value) override;
+        void readUInt8(std::uint8_t* value) override;
+
         void writeUInt32(std::uint32_t value) override;
         void readUInt32(std::uint32_t* value) override;
 

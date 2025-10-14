@@ -13,6 +13,7 @@
 #include <variant>
 #include <cstdint>
 #include <string>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -33,7 +34,8 @@ namespace dagbase
             TYPE_STRING,
             TYPE_COLOUR,
             TYPE_VEC2,
-            TYPE_UINT
+            TYPE_UINT,
+            TYPE_UNKNOWN
         };
     public:
         Variant() = default;
@@ -125,7 +127,7 @@ namespace dagbase
         }
 
         template<typename T>
-        T as()
+        T as() const
         {
             if (_value.has_value())
             {
@@ -171,10 +173,17 @@ namespace dagbase
 
         InputStream& read(InputStream& str);
 
+        Variant find(std::string_view path) const;
+
         std::string toString() const;
+
+        static const char* indexToString(Index value);
+
+        static Index parseIndex(const char* str);
     private:
         ValueType _value;
     };
 }
 
-std::ostream DAGBASE_API & operator<<(std::ostream& str, dagbase::Variant value);
+std::ostream DAGBASE_API & operator<<(std::ostream& str, const dagbase::Variant& value);
+//std::string to_string(dagbase::Variant value);

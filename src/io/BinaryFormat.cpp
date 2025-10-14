@@ -195,4 +195,16 @@ namespace dagbase
     {
         // Do nothing.
     }
+
+    void BinaryFormat::writeUInt8(std::uint8_t value)
+    {
+        if (_store)
+            _store->put(&value, sizeof(std::uint8_t));
+    }
+
+    void BinaryFormat::readUInt8(std::uint8_t *value)
+    {
+        if (_store)
+            _store->get(value, sizeof(std::uint8_t));
+    }
 }

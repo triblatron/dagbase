@@ -233,4 +233,20 @@ namespace dagbase
             std::cout << _ostr->str() << std::endl;
         }
     }
+
+    void TextFormat::writeUInt8(std::uint8_t value)
+    {
+        if (_printer)
+            _printer->print(int(value)).print("\n");
+    }
+
+    void TextFormat::readUInt8(std::uint8_t *value)
+    {
+        if (_istr && value)
+        {
+            int intValue{0};
+            (*_istr) >> (intValue);
+            *value = intValue;
+        }
+    }
 }

@@ -1,0 +1,9 @@
+root=
+{
+	index="TYPE_INTEGER",
+	items=
+	{
+		1,
+		2,
+	}
+}

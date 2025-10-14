@@ -14,6 +14,9 @@ namespace dagbase
     {
     public:
         using value_type = typename Array::value_type;
+        using iterator = typename Array::iterator;
+        using const_iterator = typename Array::const_iterator;
+
         Array a;
 
         std::size_t size() const
@@ -21,7 +24,37 @@ namespace dagbase
             return a.size();
         }
 
-        ConfigurationElement::ValueType find(std::string_view path) const
+        iterator begin()
+        {
+            return a.begin();
+        }
+
+        const_iterator begin() const
+        {
+            return a.begin();
+        }
+
+        iterator end()
+        {
+            return a.end();
+        }
+
+        const_iterator end() const
+        {
+            return a.end();
+        }
+
+        void configure(ConfigurationElement& config)
+        {
+            config.eachChild([this](ConfigurationElement& child) {
+                value_type value;
+                value.configure(child);
+                a.emplace_back(value);
+                return true;
+            });
+        }
+
+        Variant find(std::string_view path) const
         {
             ConfigurationElement::ValueType retval;
 
@@ -38,12 +71,21 @@ namespace dagbase
         }
     };
 
-    template<typename Array>
+    template<typename Array, typename ConfiguredType=typename Array::value_type>
     class SearchablePrimitiveArray
     {
     public:
         using value_type = typename Array::value_type;
         Array a;
+
+        void configure(ConfigurationElement& config)
+        {
+            config.eachChild([this](ConfigurationElement& child) {
+                const auto& value = child.as<ConfiguredType>();
+                a.emplace_back(value_type(value));
+                return true;
+            });
+        }
 
         Variant find(std::string_view path) const
         {

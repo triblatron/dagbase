@@ -24,6 +24,7 @@ namespace dagbase
 	public:
 		typedef std::pair<Key, Value> value_type;
         typedef Key key_type;
+        typedef Value mapped_type;
 		typedef std::vector<value_type> container;
 		typedef typename container::iterator iterator;
 		typedef typename container::const_iterator const_iterator;
@@ -92,7 +93,7 @@ namespace dagbase
 			}
 		}
 
-		iterator find(const Key& key)
+		iterator find(const key_type& key)
 		{
 			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
 			if (it != _map.end())
@@ -109,6 +110,22 @@ namespace dagbase
 			return it;
 		}
 
+		const_iterator find(const key_type& key) const
+		{
+			auto it = std::lower_bound(_map.begin(), _map.end(), value_type(key,Value()), _cmp);
+			if (it != _map.end())
+			{
+				if (_eq(it->first, key))
+				{
+					return it;
+				}
+				else
+				{
+					return end();
+				}
+			}
+			return it;
+		}
 
         iterator begin()
         {
