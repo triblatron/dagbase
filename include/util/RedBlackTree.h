@@ -45,8 +45,8 @@ namespace dagbase
         {
             struct
             {
-                RedBlackTree *_left{nullptr};
-                RedBlackTree *_right{nullptr};
+                RedBlackTree *_left;
+                RedBlackTree* _right;
             };
             RedBlackTree* _children[2];
             std::uintptr_t _asBits;

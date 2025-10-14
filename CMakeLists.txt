@@ -58,7 +58,6 @@ include/util/DebugPrinter.h
         include/util/MultiArray.h
         include/util/DynamicMultiArray.h
         include/core/VariantArray.h
-        include/util/Rope.h
         include/util/RedBlackTree.h
 )
 
@@ -104,7 +103,6 @@ src/util/DebugPrinter.cpp
         src/util/FakeTimeProvider.cpp
         src/util/DynamicMultiArray.cpp
         src/core/VariantArray.cpp
-        src/util/Rope.cpp
         src/util/RedBlackTree.cpp
 )
 
