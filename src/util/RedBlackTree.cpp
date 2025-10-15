@@ -9,10 +9,9 @@
 namespace dagbase
 {
     RedBlackTree::RedBlackTree(RedBlackTree *left, RedBlackTree *right, RedBlackTree::Colour colour)
-    :
-    _left(left),
-    _right(right)
     {
+        _children[CHILD_LEFT] = left;
+        _children[CHILD_RIGHT] = right;
         setColour(colour);
     }
 }
