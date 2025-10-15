@@ -98,7 +98,6 @@ namespace dagbase
     {
         if (lua != nullptr && lua_gettop(lua) >= 1 && lua_isfunction(lua,-1))
         {
-            Coroutine* retval = nullptr;
             int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
             lua_State* thread = lua_newthread(lua);
             // We are not going to use the thread straight away.

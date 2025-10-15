@@ -100,30 +100,35 @@ namespace dagbase
                     auto& a = std::get<ArrayOfInt64>(_value).a;
                     if (index < a.size())
                         return Variant(a[index]);
+                    break;
                 }
                 case Variant::TYPE_DOUBLE:
                 {
                     auto& a = std::get<ArrayOfDouble>(_value).a;
                     if (index < a.size())
                         return a[index];
+                    break;
                 }
                 case Variant::TYPE_STRING:
                 {
                     auto& a = std::get<ArrayOfString>(_value).a;
                     if (index < a.size())
                         return a[index];
+                    break;
                 }
                 case Variant::TYPE_BOOL:
                 {
                     auto& a = std::get<ArrayOfBool>(_value).a;
                     if (index < a.size())
                         return Variant(a[index]);
+                    break;
                 }
                 case Variant::TYPE_UINT:
                 {
                     auto& a = std::get<ArrayOfUInt32>(_value).a;
                     if (index < a.size())
                         return Variant(a[index]);
+                    break;
                 }
             }
 

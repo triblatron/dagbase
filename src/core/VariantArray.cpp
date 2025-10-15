@@ -10,7 +10,7 @@ namespace dagbase
 {
     void VariantArray::configure(dagbase::ConfigurationElement &config)
     {
-        Variant::Index index;
+        Variant::Index index = Variant::TYPE_UNKNOWN;
         ConfigurationElement::readConfig<Variant::Index>(config, "index", &Variant::parseIndex, &index);
         if (auto element = config.findElement("items"); element)
         {

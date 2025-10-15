@@ -20,7 +20,7 @@ TEST_P(IdentifierGenerator_testGenerate, testExpectedIdentifier)
     auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
     ASSERT_NE(nullptr, config);
     dagbase::IdentifierGenerator sut;
-    config->eachChild([this,&sut](dagbase::ConfigurationElement& child) {
+    config->eachChild([&sut](dagbase::ConfigurationElement& child) {
         std::string cmd;
 
         if (auto element=child.findElement("cmd"); element)
@@ -33,7 +33,7 @@ TEST_P(IdentifierGenerator_testGenerate, testExpectedIdentifier)
         {
             count = element->asInteger();
         }
-        dagbase::IdentifierGenerator::Identifier expectedId;
+        dagbase::IdentifierGenerator::Identifier expectedId = 0;
 
         if (auto element=child.findElement("expectedId"); element)
         {
@@ -43,7 +43,7 @@ TEST_P(IdentifierGenerator_testGenerate, testExpectedIdentifier)
         if (cmd == "generate")
         {
             dagbase::IdentifierGenerator::Identifier actualId = 0;
-            for (int i=0; i<count; ++i)
+            for (std::uint32_t i=0; i<count; ++i)
                 actualId = sut.generate();
 
             EXPECT_EQ(expectedId, actualId);
