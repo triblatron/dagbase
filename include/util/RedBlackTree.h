@@ -36,6 +36,13 @@ namespace dagbase
             _children[0] = reinterpret_cast<RedBlackTree*>(addr);
         }
 
+        Colour colour() const
+        {
+            auto addr = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
+
+            return static_cast<Colour>(addr & COLOUR_RED);
+        }
+
         RedBlackTree* left()
         {
             auto retval = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
@@ -46,13 +53,6 @@ namespace dagbase
         RedBlackTree* right()
         {
             return _children[CHILD_RIGHT];
-        }
-
-        Colour colour() const
-        {
-            auto addr = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
-
-            return static_cast<Colour>(addr & COLOUR_RED);
         }
     private:
         RedBlackTree* _children[2];

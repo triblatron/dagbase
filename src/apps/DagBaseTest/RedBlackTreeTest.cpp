@@ -24,3 +24,22 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testSetColour, ::testing::Va
         std::make_tuple(dagbase::RedBlackTree::COLOUR_BLACK),
         std::make_tuple(dagbase::RedBlackTree::COLOUR_RED)
         ));
+
+class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTree::Colour>>
+{
+
+};
+
+TEST_P(RedBlackTree_testDereferenceTaggedPointer, testExpectedColour)
+{
+    auto colour = std::get<0>(GetParam());
+    auto child = new dagbase::RedBlackTree(nullptr, nullptr, dagbase::RedBlackTree::COLOUR_BLACK);
+    auto root = new dagbase::RedBlackTree(child, nullptr, colour);
+    ASSERT_EQ(child, root->left());
+    EXPECT_EQ(dagbase::RedBlackTree::COLOUR_BLACK, child->colour());
+}
+
+INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testDereferenceTaggedPointer, ::testing::Values(
+        std::make_tuple(dagbase::RedBlackTree::COLOUR_BLACK),
+        std::make_tuple(dagbase::RedBlackTree::COLOUR_RED)
+        ));
