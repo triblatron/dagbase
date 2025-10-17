@@ -80,9 +80,15 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     auto op = std::get<4>(GetParam());
     auto actual = sut->find(attrPath);
     assertComparison(value, actual, tolerance, op);
+    auto afterConfig = config->findElement("after");
+    ASSERT_NE(nullptr, afterConfig);
+    auto afterTree = std::make_unique<dagbase::RedBlackTree>();
+    afterTree->configure(*afterConfig);
+    EXPECT_EQ(*afterTree, *sut);
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Values(
         std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_BLACK}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.children[1].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));

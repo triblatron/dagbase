@@ -59,6 +59,36 @@ namespace dagbase
         return {};
     }
 
+    bool RedBlackTreeNode::operator==(const RedBlackTreeNode &other) const
+    {
+        // Prevent infinite recursion due to NULL_NODE pointing to itself.
+        if (this == &other)
+            return true;
+
+        if (colour() != other.colour())
+            return false;
+
+        if (_children.a[CHILD_LEFT] == &NULL_NODE && other._children.a[CHILD_LEFT] != &NULL_NODE)
+            return false;
+
+        if (_children.a[CHILD_LEFT] != &NULL_NODE && other._children.a[CHILD_LEFT] == &NULL_NODE)
+            return false;
+
+        if (!(*_children.a[CHILD_LEFT] == *other._children.a[CHILD_LEFT]))
+            return false;
+
+        if (_children.a[CHILD_RIGHT] == &NULL_NODE && other._children.a[CHILD_RIGHT] != &NULL_NODE)
+            return false;
+
+        if (_children.a[CHILD_RIGHT] != &NULL_NODE && other._children.a[CHILD_RIGHT] == &NULL_NODE)
+            return false;
+
+        if (!(*_children.a[CHILD_RIGHT] == *other._children.a[CHILD_RIGHT]))
+            return false;
+
+        return true;
+    }
+
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
@@ -92,5 +122,10 @@ namespace dagbase
             return retval;
 
         return {};
+    }
+
+    bool RedBlackTree::operator==(const RedBlackTree &other) const
+    {
+        return *_root == *other._root;
     }
 }

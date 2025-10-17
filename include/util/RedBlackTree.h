@@ -66,6 +66,8 @@ namespace dagbase
             return _children.a[CHILD_RIGHT];
         }
 
+        bool operator==(const RedBlackTreeNode& other) const;
+
         Variant find(std::string_view path) const;
 
         std::string toString() const;
@@ -89,6 +91,8 @@ namespace dagbase
         RedBlackTree() = default;
 
         void configure(ConfigurationElement& config);
+
+        bool operator==(const RedBlackTree& other) const;
 
         RedBlackTreeNode* traverse(const RedBlackTreeNodePath& path);
 
