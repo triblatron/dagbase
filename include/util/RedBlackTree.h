@@ -72,6 +72,10 @@ namespace dagbase
 
         std::string toString() const;
 
+        static const char* colourToString(Colour value);
+
+        static Colour parseColour(const char* str);
+
         static RedBlackTreeNode NULL_NODE;
     private:
         SearchableArray<std::array<RedBlackTreeNode*,2>> _children;

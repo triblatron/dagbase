@@ -7,6 +7,7 @@
 #include "util/RedBlackTree.h"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
+#include "util/enums.h"
 
 namespace dagbase
 {
@@ -27,7 +28,9 @@ namespace dagbase
 
     void RedBlackTreeNode::configure(ConfigurationElement &config)
     {
-
+        Colour c{COLOUR_BLACK};
+        ConfigurationElement::readConfig<Colour>(config, "colour", &parseColour, &c);
+        setColour(c);
     }
 
     Variant RedBlackTreeNode::find(std::string_view path) const
@@ -89,6 +92,24 @@ namespace dagbase
         return true;
     }
 
+    RedBlackTreeNode::Colour RedBlackTreeNode::parseColour(const char *str)
+    {
+        TEST_ENUM(COLOUR_BLACK, str);
+        TEST_ENUM(COLOUR_RED, str);
+
+        return RedBlackTreeNode::COLOUR_BLACK;
+    }
+
+    const char *RedBlackTreeNode::colourToString(RedBlackTreeNode::Colour value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(COLOUR_BLACK)
+            ENUM_NAME(COLOUR_RED)
+        }
+        return "<error>";
+    }
+
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
@@ -100,7 +121,10 @@ namespace dagbase
 
     void RedBlackTree::configure(ConfigurationElement &config)
     {
-
+        if (auto element=config.findElement("root"); element)
+        {
+            _root->configure(*element);
+        }
     }
 
     RedBlackTreeNode *RedBlackTree::traverse(const RedBlackTreeNodePath &path)

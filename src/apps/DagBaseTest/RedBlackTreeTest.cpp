@@ -92,3 +92,22 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Value
         std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/ChildOfRoot.lua", "root.children[1].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
+
+class RedBlackTreeNode_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Colour>>
+{
+
+};
+
+TEST_P(RedBlackTreeNode_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::RedBlackTreeNode::colourToString(value));
+    EXPECT_EQ(value, dagbase::RedBlackTreeNode::parseColour(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testRoundTrip, ::testing::Values(
+        std::make_tuple("COLOUR_BLACK", dagbase::RedBlackTreeNode::COLOUR_BLACK),
+        std::make_tuple("COLOUR_RED", dagbase::RedBlackTreeNode::COLOUR_RED)
+        ));
