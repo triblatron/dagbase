@@ -1,0 +1,31 @@
+root=
+{
+	tree=
+	{
+		root="NODE_NULL"
+	},
+	path=
+	{
+	},
+	child=
+	{
+		colour="COLOUR_BLACK",
+		children=
+		{
+			"NODE_NULL",
+			"NODE_NULL",
+		}
+	},
+	after=
+	{
+		root=
+		{
+			colour="COLOUR_BLACK",
+			children=
+			{
+				"NODE_NULL",
+				"NODE_NULL",
+			}
+		}
+	}
+}

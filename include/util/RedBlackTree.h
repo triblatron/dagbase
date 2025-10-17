@@ -5,12 +5,17 @@
 #pragma once
 
 #include "config/DagBaseExport.h"
+#include "core/Variant.h"
 
 #include <cstdint>
+#include <vector>
+#include <string_view>
 
 namespace dagbase
 {
-    class DAGBASE_API RedBlackTree
+    class ConfigurationElement;
+
+    class DAGBASE_API RedBlackTreeNode
     {
     public:
         enum Child : std::uint32_t
@@ -27,13 +32,17 @@ namespace dagbase
 
         static constexpr std::uintptr_t PTR_MASK = ~static_cast<std::uintptr_t>(COLOUR_RED);
     public:
-        RedBlackTree(RedBlackTree* left, RedBlackTree* right, Colour colour);
+        RedBlackTreeNode();
+
+        RedBlackTreeNode(RedBlackTreeNode* left, RedBlackTreeNode* right, Colour colour);
+
+        void configure(ConfigurationElement& config);
 
         void setColour(Colour colour)
         {
             auto addr =  reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
             addr = (addr & PTR_MASK) | (colour);
-            _children[0] = reinterpret_cast<RedBlackTree*>(addr);
+            _children[0] = reinterpret_cast<RedBlackTreeNode*>(addr);
         }
 
         Colour colour() const
@@ -43,18 +52,46 @@ namespace dagbase
             return static_cast<Colour>(addr & COLOUR_RED);
         }
 
-        RedBlackTree* left()
+        RedBlackTreeNode* left()
         {
             auto retval = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
             retval &= PTR_MASK;
-            return reinterpret_cast<RedBlackTree*>(retval);
+            return reinterpret_cast<RedBlackTreeNode*>(retval);
         }
 
-        RedBlackTree* right()
+        RedBlackTreeNode* right()
         {
             return _children[CHILD_RIGHT];
         }
+
+        Variant find(std::string_view path) const;
+
+        static RedBlackTreeNode NULL_NODE;
     private:
-        RedBlackTree* _children[2];
+        RedBlackTreeNode* _children[2]{};
+    };
+
+    struct DAGBASE_API RedBlackTreeNodePath
+    {
+        using Path = std::vector<std::uint32_t>;
+        Path path;
+
+        void configure(ConfigurationElement& config);
+    };
+
+    class DAGBASE_API RedBlackTree
+    {
+    public:
+        RedBlackTree() = default;
+
+        void configure(ConfigurationElement& config);
+
+        RedBlackTreeNode* traverse(const RedBlackTreeNodePath& path);
+
+        void insert(RedBlackTreeNode* parent, RedBlackTreeNode* child);
+
+        Variant find(std::string_view path) const;
+    private:
+        RedBlackTreeNode* _root{&RedBlackTreeNode::NULL_NODE};
     };
 }
