@@ -28,14 +28,31 @@ namespace dagbase
 
     void RedBlackTreeNode::configure(ConfigurationElement &config)
     {
+        ConfigurationElement::readConfig(config, "value", &_value);
         Colour c{COLOUR_BLACK};
         ConfigurationElement::readConfig<Colour>(config, "colour", &parseColour, &c);
         setColour(c);
+        if (auto element=config.findElement("children"); element && element->numChildren()==2)
+        {
+            if (element->child(0)->asString() == "NULL_NODE")
+                _children.a[0] = &NULL_NODE;
+            else
+                _children.a[0]->configure(*element->child(0));
+
+            if (element->child(1)->asString() == "NULL_NODE")
+                _children.a[1] = &NULL_NODE;
+            else
+                _children.a[1]->configure(*element->child(1));
+        }
     }
 
     Variant RedBlackTreeNode::find(std::string_view path) const
     {
         Variant retval;
+
+        retval = findEndpoint(path, "value", _value);
+        if (retval.has_value())
+            return retval;
 
         retval = findEndpoint(path, "colour", std::uint32_t(colour()));
         if (retval.has_value())
@@ -69,6 +86,9 @@ namespace dagbase
             return true;
 
         if (colour() != other.colour())
+            return false;
+
+        if (_value != other._value)
             return false;
 
         if (_children.a[CHILD_LEFT] == &NULL_NODE && other._children.a[CHILD_LEFT] != &NULL_NODE)
@@ -123,7 +143,16 @@ namespace dagbase
     {
         if (auto element=config.findElement("root"); element)
         {
-            _root->configure(*element);
+            if (element->asString() == "NULL_NODE")
+            {
+                _root = &RedBlackTreeNode::NULL_NODE;
+            }
+            else
+            {
+                _root = new RedBlackTreeNode();
+                _root->configure(*element);
+            }
+
         }
     }
 
@@ -134,7 +163,8 @@ namespace dagbase
 
     void RedBlackTree::insert(RedBlackTreeNode *parent, RedBlackTreeNode *child)
     {
-
+        if (_root == &RedBlackTreeNode::NULL_NODE)
+            _root = child;
     }
 
     Variant RedBlackTree::find(std::string_view path) const

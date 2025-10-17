@@ -78,6 +78,7 @@ namespace dagbase
 
         static RedBlackTreeNode NULL_NODE;
     private:
+        Variant _value;
         SearchableArray<std::array<RedBlackTreeNode*,2>> _children;
     };
 

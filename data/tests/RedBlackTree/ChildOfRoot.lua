@@ -2,29 +2,31 @@ root=
 {
 	tree=
 	{
-		root="NODE_NULL"
+		root="NULL_NODE"
 	},
 	path=
 	{
 	},
 	child=
 	{
+		value=10,
 		colour="COLOUR_BLACK",
 		children=
 		{
-			"NODE_NULL",
-			"NODE_NULL",
+			"NULL_NODE",
+			"NULL_NODE",
 		}
 	},
 	after=
 	{
 		root=
 		{
+			value=10,
 			colour="COLOUR_BLACK",
 			children=
 			{
-				"NODE_NULL",
-				"NODE_NULL",
+				"NULL_NODE",
+				"NULL_NODE",
 			}
 		}
 	}
