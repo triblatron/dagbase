@@ -6,7 +6,9 @@
 
 #include "config/DagBaseExport.h"
 #include "core/Variant.h"
+#include "util/SearchableArray.h"
 
+#include <array>
 #include <cstdint>
 #include <vector>
 #include <string_view>
@@ -40,35 +42,37 @@ namespace dagbase
 
         void setColour(Colour colour)
         {
-            auto addr =  reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
+            auto addr =  reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
             addr = (addr & PTR_MASK) | (colour);
-            _children[0] = reinterpret_cast<RedBlackTreeNode*>(addr);
+            _children.a[0] = reinterpret_cast<RedBlackTreeNode*>(addr);
         }
 
         Colour colour() const
         {
-            auto addr = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
+            auto addr = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
 
             return static_cast<Colour>(addr & COLOUR_RED);
         }
 
         RedBlackTreeNode* left()
         {
-            auto retval = reinterpret_cast<std::uintptr_t>(_children[CHILD_LEFT]);
+            auto retval = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
             retval &= PTR_MASK;
             return reinterpret_cast<RedBlackTreeNode*>(retval);
         }
 
         RedBlackTreeNode* right()
         {
-            return _children[CHILD_RIGHT];
+            return _children.a[CHILD_RIGHT];
         }
 
         Variant find(std::string_view path) const;
 
+        std::string toString() const;
+
         static RedBlackTreeNode NULL_NODE;
     private:
-        RedBlackTreeNode* _children[2]{};
+        SearchableArray<std::array<RedBlackTreeNode*,2>> _children;
     };
 
     struct DAGBASE_API RedBlackTreeNodePath

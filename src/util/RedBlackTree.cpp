@@ -10,18 +10,19 @@
 
 namespace dagbase
 {
-    RedBlackTreeNode RedBlackTreeNode::NULL_NODE(nullptr, nullptr, RedBlackTreeNode::COLOUR_BLACK);
+    RedBlackTreeNode RedBlackTreeNode::NULL_NODE(&NULL_NODE, &NULL_NODE, RedBlackTreeNode::COLOUR_BLACK);
 
     RedBlackTreeNode::RedBlackTreeNode(RedBlackTreeNode *left, RedBlackTreeNode *right, RedBlackTreeNode::Colour colour)
     {
-        _children[CHILD_LEFT] = left;
-        _children[CHILD_RIGHT] = right;
+        _children.a[CHILD_LEFT] = left;
+        _children.a[CHILD_RIGHT] = right;
         setColour(colour);
     }
 
     RedBlackTreeNode::RedBlackTreeNode()
     {
-
+        _children.a[CHILD_LEFT] = &NULL_NODE;
+        _children.a[CHILD_RIGHT] = &NULL_NODE;
     }
 
     void RedBlackTreeNode::configure(ConfigurationElement &config)
@@ -36,6 +37,24 @@ namespace dagbase
         retval = findEndpoint(path, "colour", std::uint32_t(colour()));
         if (retval.has_value())
             return retval;
+
+        retval = findInternal(path, "children", _children);
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "toString", Variant(toString()));
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
+
+    std::string RedBlackTreeNode::toString() const
+    {
+        if (this == &NULL_NODE)
+        {
+            return "NULL_NODE";
+        }
 
         return {};
     }
