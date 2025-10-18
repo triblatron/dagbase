@@ -103,6 +103,10 @@ namespace dagbase
 
         static Colour parseColour(const char* str);
 
+        static const char* directionToString(Direction value);
+
+        static Direction parseDirection(const char* str);
+
         static RedBlackTreeNode NULL_NODE;
     private:
         Variant _value;

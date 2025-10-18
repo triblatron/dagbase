@@ -11,6 +11,7 @@ root=
 	{
 		value=10,
 		colour="COLOUR_BLACK",
+		direction="DIR_LEFT",
 		children=
 		{
 			"NULL_NODE",
@@ -23,6 +24,7 @@ root=
 		{
 			value=10,
 			colour="COLOUR_BLACK",
+			direction="DIR_LEFT",
 			children=
 			{
 				"NULL_NODE",

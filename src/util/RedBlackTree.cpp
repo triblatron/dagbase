@@ -33,6 +33,9 @@ namespace dagbase
         Colour c{COLOUR_BLACK};
         ConfigurationElement::readConfig<Colour>(config, "colour", &parseColour, &c);
         setColour(c);
+        Direction dir{DIR_LEFT};
+        ConfigurationElement::readConfig<Direction>(config, "direction", &parseDirection, &dir);
+        setDirection(dir);
         if (auto element=config.findElement("children"); element && element->numChildren()==2)
         {
             if (element->child(0)->asString() == "NULL_NODE")
@@ -56,6 +59,10 @@ namespace dagbase
             return retval;
 
         retval = findEndpoint(path, "colour", std::uint32_t(colour()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "direction", std::uint32_t(direction()));
         if (retval.has_value())
             return retval;
 
@@ -129,6 +136,25 @@ namespace dagbase
             ENUM_NAME(COLOUR_RED)
         }
         return "<error>";
+    }
+
+    const char *RedBlackTreeNode::directionToString(RedBlackTreeNode::Direction value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(DIR_LEFT)
+            ENUM_NAME(DIR_RIGHT)
+        }
+
+        return "<error>";
+    }
+
+    RedBlackTreeNode::Direction RedBlackTreeNode::parseDirection(const char *str)
+    {
+        TEST_ENUM(DIR_LEFT, str);
+        TEST_ENUM(DIR_RIGHT, str);
+
+        return DIR_LEFT;
     }
 
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)

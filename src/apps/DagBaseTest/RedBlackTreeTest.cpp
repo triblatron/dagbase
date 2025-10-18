@@ -97,16 +97,17 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Values(
         std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_BLACK}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.direction", std::uint32_t{dagbase::RedBlackTreeNode::DIR_LEFT}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.children[1].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
 
-class RedBlackTreeNode_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Colour>>
+class RedBlackTreeNodeColour_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Colour>>
 {
 
 };
 
-TEST_P(RedBlackTreeNode_testRoundTrip, testRoundTrip)
+TEST_P(RedBlackTreeNodeColour_testRoundTrip, testRoundTrip)
 {
     auto str = std::get<0>(GetParam());
     auto value = std::get<1>(GetParam());
@@ -115,7 +116,26 @@ TEST_P(RedBlackTreeNode_testRoundTrip, testRoundTrip)
     EXPECT_EQ(value, dagbase::RedBlackTreeNode::parseColour(str));
 }
 
-INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testRoundTrip, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNodeColour_testRoundTrip, ::testing::Values(
         std::make_tuple("COLOUR_BLACK", dagbase::RedBlackTreeNode::COLOUR_BLACK),
         std::make_tuple("COLOUR_RED", dagbase::RedBlackTreeNode::COLOUR_RED)
+        ));
+
+class RedBlackreeNodeDirection_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Direction>>
+{
+
+};
+
+TEST_P(RedBlackreeNodeDirection_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::RedBlackTreeNode::directionToString(value));
+    EXPECT_EQ(value, dagbase::RedBlackTreeNode::parseDirection(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(RedBlackreeNodeDirection, RedBlackreeNodeDirection_testRoundTrip, ::testing::Values(
+        std::make_tuple("DIR_LEFT", dagbase::RedBlackTreeNode::DIR_LEFT),
+        std::make_tuple("DIR_RIGHT", dagbase::RedBlackTreeNode::DIR_RIGHT)
         ));
