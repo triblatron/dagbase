@@ -115,6 +115,18 @@ namespace dagbase
                     return right();
             }
         }
+
+        const RedBlackTreeNode* child(Child index) const
+        {
+            switch (index)
+            {
+                case CHILD_LEFT:
+                    return left();
+                case CHILD_RIGHT:
+                    return right();
+            }
+        }
+
         bool operator==(const RedBlackTreeNode& other) const;
 
         Variant find(std::string_view path) const;
@@ -146,6 +158,7 @@ namespace dagbase
         friend class RedBlackTree;
         Variant _value;
         SearchableArray<std::array<RedBlackTreeNode*,2>> _children;
+        bool compareChild(Child index, const RedBlackTreeNode& other) const;
     };
 
     struct DAGBASE_API RedBlackTreeNodePath

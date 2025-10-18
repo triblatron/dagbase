@@ -97,6 +97,22 @@ namespace dagbase
         return {};
     }
 
+    bool RedBlackTreeNode::compareChild(RedBlackTreeNode::Child index, const RedBlackTreeNode &other) const
+    {
+        auto myChild = child(index);
+        auto otherChild = other.child(index);
+        if (myChild == &NULL_NODE && otherChild != &NULL_NODE)
+            return false;
+
+        if (myChild != &NULL_NODE && otherChild == &NULL_NODE)
+            return false;
+
+        if (!(*myChild == *otherChild))
+            return false;
+
+        return true;
+    }
+
     bool RedBlackTreeNode::operator==(const RedBlackTreeNode &other) const
     {
         // Prevent infinite recursion due to NULL_NODE pointing to itself.
@@ -109,22 +125,10 @@ namespace dagbase
         if (_value != other._value)
             return false;
 
-        if (_children.a[CHILD_LEFT] == &NULL_NODE && other._children.a[CHILD_LEFT] != &NULL_NODE)
+        if (!compareChild(CHILD_LEFT, other))
             return false;
 
-        if (_children.a[CHILD_LEFT] != &NULL_NODE && other._children.a[CHILD_LEFT] == &NULL_NODE)
-            return false;
-
-        if (!(*_children.a[CHILD_LEFT] == *other._children.a[CHILD_LEFT]))
-            return false;
-
-        if (_children.a[CHILD_RIGHT] == &NULL_NODE && other._children.a[CHILD_RIGHT] != &NULL_NODE)
-            return false;
-
-        if (_children.a[CHILD_RIGHT] != &NULL_NODE && other._children.a[CHILD_RIGHT] == &NULL_NODE)
-            return false;
-
-        if (!(*_children.a[CHILD_RIGHT] == *other._children.a[CHILD_RIGHT]))
+        if (!compareChild(CHILD_RIGHT, other))
             return false;
 
         return true;
