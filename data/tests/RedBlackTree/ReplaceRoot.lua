@@ -7,10 +7,11 @@ root=
 	path=
 	{
 	},
+	direction="DIR_LEFT",
 	child=
 	{
 		value=10,
-		colour="COLOUR_BLACK",
+		colour="COLOUR_RED	",
 		direction="DIR_LEFT",
 		children=
 		{
@@ -23,7 +24,7 @@ root=
 		root=
 		{
 			value=10,
-			colour="COLOUR_BLACK",
+			colour="COLOUR_RED",
 			direction="DIR_LEFT",
 			children=
 			{

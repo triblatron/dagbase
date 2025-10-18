@@ -88,11 +88,33 @@ namespace dagbase
             return reinterpret_cast<RedBlackTreeNode*>(retval);
         }
 
+        const RedBlackTreeNode* left() const
+        {
+            auto retval = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
+            retval &= PTR_MASK;
+            return reinterpret_cast<const RedBlackTreeNode*>(retval);
+        }
+
         RedBlackTreeNode* right()
         {
             return _children.a[CHILD_RIGHT];
         }
 
+        const RedBlackTreeNode* right() const
+        {
+            return _children.a[CHILD_RIGHT];
+        }
+
+        RedBlackTreeNode* child(Child index)
+        {
+            switch (index)
+            {
+                case CHILD_LEFT:
+                    return left();
+                case CHILD_RIGHT:
+                    return right();
+            }
+        }
         bool operator==(const RedBlackTreeNode& other) const;
 
         Variant find(std::string_view path) const;
@@ -107,16 +129,53 @@ namespace dagbase
 
         static Direction parseDirection(const char* str);
 
+        static Direction oppositeDirection(Direction dir)
+        {
+            return static_cast<Direction>(DIR_RIGHT - dir);
+        }
+
+        static const char* childToString(Child value);
+
+        static Child parseChild(const char* str);
+
+        static Child directionToChild(Direction dir);
+
         static RedBlackTreeNode NULL_NODE;
     private:
+        void setChild(Child index, RedBlackTreeNode* child);
+        friend class RedBlackTree;
         Variant _value;
         SearchableArray<std::array<RedBlackTreeNode*,2>> _children;
     };
 
     struct DAGBASE_API RedBlackTreeNodePath
     {
-        using Path = std::vector<std::uint32_t>;
+        using Path = std::vector<RedBlackTreeNode::Child>;
         Path path;
+
+        RedBlackTreeNode* parent(RedBlackTreeNode* root, RedBlackTreeNode* child)
+        {
+            RedBlackTreeNode* parent = root;
+
+            for (auto index : path)
+            {
+                parent = parent->child(index);
+            }
+
+            return parent;
+        }
+
+        const RedBlackTreeNode* parent(RedBlackTreeNode* root, RedBlackTreeNode* child) const
+        {
+            RedBlackTreeNode* parent = root;
+
+            for (auto index : path)
+            {
+                parent = parent->child(index);
+            }
+
+            return parent;
+        }
 
         void configure(ConfigurationElement& config);
     };
@@ -132,7 +191,7 @@ namespace dagbase
 
         RedBlackTreeNode* traverse(const RedBlackTreeNodePath& path);
 
-        void insert(RedBlackTreeNode* parent, RedBlackTreeNode* child);
+        void insert(RedBlackTreeNodePath &path, RedBlackTreeNode* child, RedBlackTreeNode::Direction direction);
 
         Variant find(std::string_view path) const;
     private:

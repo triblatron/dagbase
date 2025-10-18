@@ -81,7 +81,9 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     ASSERT_NE(nullptr, childConfig);
     auto child = new dagbase::RedBlackTreeNode();
     child->configure(*childConfig);
-    sut->insert(parent, child);
+    auto direction = dagbase::RedBlackTreeNode::DIR_LEFT;
+    dagbase::ConfigurationElement::readConfig<dagbase::RedBlackTreeNode::Direction>(*config, "direction", &dagbase::RedBlackTreeNode::parseDirection, &direction);
+    sut->insert(path, child, direction);
     auto attrPath = std::get<1>(GetParam());
     auto value = std::get<2>(GetParam());
     auto tolerance = std::get<3>(GetParam());
@@ -96,10 +98,15 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Values(
-        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_BLACK}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.value", std::int64_t{10}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_RED}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.direction", std::uint32_t{dagbase::RedBlackTreeNode::DIR_LEFT}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.children[1].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/RedBlackTree/ReplaceRoot.lua", "root.children[1].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_RED}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].direction", std::uint32_t{dagbase::RedBlackTreeNode::DIR_LEFT}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_NE)
         ));
 
 class RedBlackTreeNodeColour_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Colour>>
@@ -138,4 +145,40 @@ TEST_P(RedBlackreeNodeDirection_testRoundTrip, testRoundTrip)
 INSTANTIATE_TEST_SUITE_P(RedBlackreeNodeDirection, RedBlackreeNodeDirection_testRoundTrip, ::testing::Values(
         std::make_tuple("DIR_LEFT", dagbase::RedBlackTreeNode::DIR_LEFT),
         std::make_tuple("DIR_RIGHT", dagbase::RedBlackTreeNode::DIR_RIGHT)
+        ));
+
+class RedBlackTreeNode_testOppositeDirection : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Direction, dagbase::RedBlackTreeNode::Direction>>
+{
+
+};
+
+TEST_P(RedBlackTreeNode_testOppositeDirection, testOpposite)
+{
+    auto dir = std::get<0>(GetParam());
+    auto opposite = std::get<1>(GetParam());
+    EXPECT_EQ(opposite, dagbase::RedBlackTreeNode::oppositeDirection(dir));
+}
+
+INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testOppositeDirection, ::testing::Values(
+        std::make_tuple(dagbase::RedBlackTreeNode::DIR_LEFT, dagbase::RedBlackTreeNode::DIR_RIGHT),
+        std::make_tuple(dagbase::RedBlackTreeNode::DIR_RIGHT, dagbase::RedBlackTreeNode::DIR_LEFT)
+        ));
+
+class RedBlackTreeNodeChild_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Child>>
+{
+
+};
+
+TEST_P(RedBlackTreeNodeChild_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::RedBlackTreeNode::childToString(value));
+    EXPECT_EQ(value, dagbase::RedBlackTreeNode::parseChild(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(RedBlackTreeNodeChild, RedBlackTreeNodeChild_testRoundTrip, ::testing::Values(
+        std::make_tuple("CHILD_LEFT", dagbase::RedBlackTreeNode::CHILD_LEFT),
+        std::make_tuple("CHILD_RIGHT", dagbase::RedBlackTreeNode::CHILD_RIGHT)
         ));

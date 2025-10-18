@@ -39,14 +39,19 @@ namespace dagbase
         if (auto element=config.findElement("children"); element && element->numChildren()==2)
         {
             if (element->child(0)->asString() == "NULL_NODE")
-                _children.a[0] = &NULL_NODE;
+                setChild(CHILD_LEFT, &NULL_NODE);
             else
-                _children.a[0]->configure(*element->child(0));
-
+            {
+                setChild(CHILD_LEFT, new RedBlackTreeNode());
+                child(CHILD_LEFT)->configure(*element->child(0));
+            }
             if (element->child(1)->asString() == "NULL_NODE")
-                _children.a[1] = &NULL_NODE;
+                setChild(CHILD_RIGHT, &NULL_NODE);
             else
-                _children.a[1]->configure(*element->child(1));
+            {
+                setChild(CHILD_RIGHT, new RedBlackTreeNode());
+                child(CHILD_RIGHT)->configure(*element->child(1));
+            }
         }
     }
 
@@ -66,7 +71,12 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        retval = findInternal(path, "children", _children);
+        SearchableArray<std::array<const RedBlackTreeNode*,2>> a{};
+
+        a.a[0] = left();
+        a.a[1] = right();
+
+        retval = findInternal(path, "children", a);
         if (retval.has_value())
             return retval;
 
@@ -157,10 +167,59 @@ namespace dagbase
         return DIR_LEFT;
     }
 
+    const char *RedBlackTreeNode::childToString(RedBlackTreeNode::Child value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(CHILD_LEFT)
+            ENUM_NAME(CHILD_RIGHT)
+        }
+        return "<error>";
+    }
+
+    RedBlackTreeNode::Child RedBlackTreeNode::parseChild(const char *str)
+    {
+        TEST_ENUM(CHILD_LEFT, str)
+        TEST_ENUM(CHILD_RIGHT, str)
+
+        return RedBlackTreeNode::CHILD_LEFT;
+    }
+
+    void RedBlackTreeNode::setChild(RedBlackTreeNode::Child index, RedBlackTreeNode *child)
+    {
+        switch (index)
+        {
+            case CHILD_LEFT:
+            {
+                auto c = colour();
+                auto d = direction();
+                _children.a[0] = child;
+                setColour(c);
+                setDirection(d);
+                break;
+            }
+            case CHILD_RIGHT:
+                _children.a[1] = child;
+                break;
+        }
+    }
+
+    RedBlackTreeNode::Child RedBlackTreeNode::directionToChild(RedBlackTreeNode::Direction dir)
+    {
+        switch (dir)
+        {
+            case DIR_LEFT:
+                return CHILD_LEFT;
+            case DIR_RIGHT:
+                return CHILD_RIGHT;
+        }
+    }
+
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
-            path.emplace_back(child.asInteger());
+            auto i = child.asString();
+            path.emplace_back(RedBlackTreeNode::parseChild(i.c_str()));
 
             return true;
         });
@@ -185,13 +244,26 @@ namespace dagbase
 
     RedBlackTreeNode *RedBlackTree::traverse(const RedBlackTreeNodePath &path)
     {
-        return _root;
+        RedBlackTreeNode* parent = _root;
+
+        for (auto index : path.path)
+        {
+            parent = parent->child(index);
+        }
+        return parent;
     }
 
-    void RedBlackTree::insert(RedBlackTreeNode *parent, RedBlackTreeNode *child)
+    void RedBlackTree::insert(RedBlackTreeNodePath &path, RedBlackTreeNode *child, RedBlackTreeNode::Direction direction)
     {
-        if (_root == &RedBlackTreeNode::NULL_NODE)
+        child->setColour(RedBlackTreeNode::COLOUR_RED);
+        auto parent = path.parent(_root, child);
+        if (parent == &RedBlackTreeNode::NULL_NODE)
+        {
             _root = child;
+            return;
+        }
+
+        parent->setChild(RedBlackTreeNode::directionToChild(direction), child);
     }
 
     Variant RedBlackTree::find(std::string_view path) const
