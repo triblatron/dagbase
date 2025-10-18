@@ -70,7 +70,6 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     auto treeConfig = config->findElement("tree");
     ASSERT_NE(nullptr, treeConfig);
     sut->configure(*treeConfig);
-    auto nodePathStr = std::get<1>(GetParam());
     auto nodePathConfig = config->findElement("path");
     ASSERT_NE(nullptr, nodePathConfig);
     dagbase::RedBlackTreeNodePath path;
@@ -95,6 +94,7 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     auto afterTree = std::make_unique<dagbase::RedBlackTree>();
     afterTree->configure(*afterConfig);
     EXPECT_EQ(*afterTree, *sut);
+    EXPECT_TRUE(sut->validate());
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Values(

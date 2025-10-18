@@ -220,6 +220,30 @@ namespace dagbase
         }
     }
 
+    void RedBlackTreeNode::traverse(std::function<bool(RedBlackTreeNode &)> f)
+    {
+        if (left() != &NULL_NODE)
+        {
+            if (!f(*left()))
+            {
+                return;
+            }
+        }
+
+        if (right() != &NULL_NODE)
+        {
+            if (!f(*right()))
+            {
+                return;
+            }
+        }
+
+        if (!f(*this))
+        {
+            return;
+        }
+    }
+
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
@@ -357,5 +381,24 @@ namespace dagbase
     bool RedBlackTree::operator==(const RedBlackTree &other) const
     {
         return *_root == *other._root;
+    }
+
+    bool RedBlackTree::validate() const
+    {
+        // Property #1 is satisfied by Colour.
+        // All nodes are either red or black
+        // Property #2 is satisfied by NULL_NODE being black.
+        bool valid = true;
+        _root->traverse([&valid](RedBlackTreeNode& child) {
+            if (child.colour() == RedBlackTreeNode::COLOUR_RED &&
+                    (child.left()->colour() == RedBlackTreeNode::COLOUR_RED || child.right()->colour() == RedBlackTreeNode::COLOUR_RED)
+                    )
+            {
+                valid = false;
+                return false;
+            }
+            return true;
+        });
+        return valid;
     }
 }

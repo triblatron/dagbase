@@ -16,6 +16,7 @@
 namespace dagbase
 {
     class ConfigurationElement;
+    class RedBlackTreeNodePath;
 
     class DAGBASE_API RedBlackTreeNode
     {
@@ -134,6 +135,8 @@ namespace dagbase
             return child(childIndex);
         }
 
+        void traverse(std::function<bool(RedBlackTreeNode&)> f);
+
         bool operator==(const RedBlackTreeNode& other) const;
 
         Variant find(std::string_view path) const;
@@ -227,6 +230,8 @@ namespace dagbase
         void insert(RedBlackTreeNodePath &path, RedBlackTreeNode* node, RedBlackTreeNode::Direction direction);
 
         Variant find(std::string_view path) const;
+
+        bool validate() const;
     private:
         RedBlackTreeNode* rotateSubtree(RedBlackTreeNodePath &path, std::size_t numGenerations, RedBlackTreeNode *sub, RedBlackTreeNode::Direction direction);
         RedBlackTreeNode* _root{&RedBlackTreeNode::NULL_NODE};
