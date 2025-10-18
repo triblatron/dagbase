@@ -9,23 +9,27 @@
 
 #include <gtest/gtest.h>
 
-class RedBlackTree_testSetColour : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Colour>>
+class RedBlackTree_testSetFlags : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Colour, dagbase::RedBlackTreeNode::Direction>>
 {
 
 };
 
-TEST_P(RedBlackTree_testSetColour, testRoundTrip)
+TEST_P(RedBlackTree_testSetFlags, testRoundTrip)
 {
     auto colour = std::get<0>(GetParam());
-    auto sut = new dagbase::RedBlackTreeNode(nullptr, nullptr, colour);
+    auto dir = std::get<1>(GetParam());
+    auto sut = new dagbase::RedBlackTreeNode(&dagbase::RedBlackTreeNode::NULL_NODE, &dagbase::RedBlackTreeNode::NULL_NODE, colour, dir);
     EXPECT_EQ(colour, sut->colour());
-    EXPECT_EQ(nullptr, sut->left());
-    EXPECT_EQ(nullptr, sut->right());
+    EXPECT_EQ(dir, sut->direction());
+    EXPECT_EQ(&dagbase::RedBlackTreeNode::NULL_NODE, sut->left());
+    EXPECT_EQ(&dagbase::RedBlackTreeNode::NULL_NODE, sut->right());
 }
 
-INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTree_testSetColour, ::testing::Values(
-        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_BLACK),
-        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED)
+INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTree_testSetFlags, ::testing::Values(
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_BLACK, dagbase::RedBlackTreeNode::DIR_LEFT),
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_BLACK, dagbase::RedBlackTreeNode::DIR_RIGHT),
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED, dagbase::RedBlackTreeNode::DIR_LEFT),
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED, dagbase::RedBlackTreeNode::DIR_RIGHT)
         ));
 
 class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Colour>>
@@ -36,10 +40,11 @@ class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithPara
 TEST_P(RedBlackTree_testDereferenceTaggedPointer, testExpectedColour)
 {
     auto colour = std::get<0>(GetParam());
-    auto child = new dagbase::RedBlackTreeNode(nullptr, nullptr, dagbase::RedBlackTreeNode::COLOUR_BLACK);
-    auto root = new dagbase::RedBlackTreeNode(child, nullptr, colour);
+    auto child = new dagbase::RedBlackTreeNode(&dagbase::RedBlackTreeNode::NULL_NODE, &dagbase::RedBlackTreeNode::NULL_NODE, dagbase::RedBlackTreeNode::COLOUR_BLACK, dagbase::RedBlackTreeNode::DIR_LEFT);
+    auto root = new dagbase::RedBlackTreeNode(child, &dagbase::RedBlackTreeNode::NULL_NODE, colour, dagbase::RedBlackTreeNode::DIR_LEFT);
     ASSERT_EQ(child, root->left());
     EXPECT_EQ(dagbase::RedBlackTreeNode::COLOUR_BLACK, child->colour());
+    EXPECT_EQ(dagbase::RedBlackTreeNode::DIR_LEFT, child->direction());
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTree_testDereferenceTaggedPointer, ::testing::Values(

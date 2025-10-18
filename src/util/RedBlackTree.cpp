@@ -11,13 +11,14 @@
 
 namespace dagbase
 {
-    RedBlackTreeNode RedBlackTreeNode::NULL_NODE(&NULL_NODE, &NULL_NODE, RedBlackTreeNode::COLOUR_BLACK);
+    RedBlackTreeNode RedBlackTreeNode::NULL_NODE(&NULL_NODE, &NULL_NODE, RedBlackTreeNode::COLOUR_BLACK, RedBlackTreeNode::DIR_LEFT);
 
-    RedBlackTreeNode::RedBlackTreeNode(RedBlackTreeNode *left, RedBlackTreeNode *right, RedBlackTreeNode::Colour colour)
+    RedBlackTreeNode::RedBlackTreeNode(RedBlackTreeNode *left, RedBlackTreeNode *right, RedBlackTreeNode::Colour colour, Direction dir)
     {
         _children.a[CHILD_LEFT] = left;
         _children.a[CHILD_RIGHT] = right;
         setColour(colour);
+        setDirection(dir);
     }
 
     RedBlackTreeNode::RedBlackTreeNode()

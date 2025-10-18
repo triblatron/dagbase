@@ -20,7 +20,8 @@ namespace dagbase
     class DAGBASE_API RedBlackTreeNode
     {
     public:
-        enum Child : std::uint32_t
+        //! Index into our child list
+        enum Child : std::uint8_t
         {
             CHILD_LEFT,
             CHILD_RIGHT
@@ -32,18 +33,44 @@ namespace dagbase
             COLOUR_RED
         };
 
-        static constexpr std::uintptr_t PTR_MASK = ~static_cast<std::uintptr_t>(COLOUR_RED);
+        //! The index into our parents child list of this node
+        //! \note This is a bit.
+        enum Direction : std::uint8_t
+        {
+            DIR_LEFT,
+            DIR_RIGHT=1<<1
+        };
+
+        static constexpr std::uintptr_t PTR_MASK = ~(static_cast<std::uintptr_t>(COLOUR_RED)|static_cast<uintptr_t>(DIR_RIGHT));
+        static constexpr std::uintptr_t COLOUR_MASK = 1<<0;
+        static constexpr std::uintptr_t DIR_MASK = 1<<1;
     public:
         RedBlackTreeNode();
 
-        RedBlackTreeNode(RedBlackTreeNode* left, RedBlackTreeNode* right, Colour colour);
+        RedBlackTreeNode(RedBlackTreeNode* left, RedBlackTreeNode* right, Colour colour, Direction dir);
 
         void configure(ConfigurationElement& config);
+
+        void setDirection(Direction dir)
+        {
+            auto addr = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
+            auto flags = (addr & ~(PTR_MASK | DIR_MASK));
+            addr = (addr & PTR_MASK) | (flags | dir);
+            _children.a[CHILD_LEFT] = reinterpret_cast<RedBlackTreeNode*>(addr);
+        }
+
+        Direction direction() const
+        {
+            auto addr = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
+
+            return static_cast<Direction>(addr & DIR_RIGHT);
+        }
 
         void setColour(Colour colour)
         {
             auto addr =  reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
-            addr = (addr & PTR_MASK) | (colour);
+            auto flags = (addr & ~(PTR_MASK | COLOUR_MASK));
+            addr = (addr & PTR_MASK) | (flags | colour);
             _children.a[0] = reinterpret_cast<RedBlackTreeNode*>(addr);
         }
 
