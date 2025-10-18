@@ -32,7 +32,7 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTree_testSetFlags, ::testing:
         std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED, dagbase::RedBlackTreeNode::DIR_RIGHT)
         ));
 
-class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Colour>>
+class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithParam<std::tuple<dagbase::RedBlackTreeNode::Colour, dagbase::RedBlackTreeNode::Direction>>
 {
 
 };
@@ -40,16 +40,19 @@ class RedBlackTree_testDereferenceTaggedPointer : public ::testing::TestWithPara
 TEST_P(RedBlackTree_testDereferenceTaggedPointer, testExpectedColour)
 {
     auto colour = std::get<0>(GetParam());
+    auto dir = std::get<1>(GetParam());
     auto child = new dagbase::RedBlackTreeNode(&dagbase::RedBlackTreeNode::NULL_NODE, &dagbase::RedBlackTreeNode::NULL_NODE, dagbase::RedBlackTreeNode::COLOUR_BLACK, dagbase::RedBlackTreeNode::DIR_LEFT);
-    auto root = new dagbase::RedBlackTreeNode(child, &dagbase::RedBlackTreeNode::NULL_NODE, colour, dagbase::RedBlackTreeNode::DIR_LEFT);
+    auto root = new dagbase::RedBlackTreeNode(child, &dagbase::RedBlackTreeNode::NULL_NODE, colour, dir);
     ASSERT_EQ(child, root->left());
     EXPECT_EQ(dagbase::RedBlackTreeNode::COLOUR_BLACK, child->colour());
     EXPECT_EQ(dagbase::RedBlackTreeNode::DIR_LEFT, child->direction());
+    EXPECT_EQ(colour, root->colour());
+    EXPECT_EQ(dir, root->direction());
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTree_testDereferenceTaggedPointer, ::testing::Values(
-        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_BLACK),
-        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED)
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_BLACK, dagbase::RedBlackTreeNode::DIR_LEFT),
+        std::make_tuple(dagbase::RedBlackTreeNode::COLOUR_RED, dagbase::RedBlackTreeNode::DIR_RIGHT)
         ));
 
 class RedBlackTree_testInsert : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
