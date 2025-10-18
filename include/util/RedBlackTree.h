@@ -127,6 +127,13 @@ namespace dagbase
             }
         }
 
+        RedBlackTreeNode* otherChild(Direction dir)
+        {
+            auto childIndex = directionToChild(oppositeDirection(dir));
+
+            return child(childIndex);
+        }
+
         bool operator==(const RedBlackTreeNode& other) const;
 
         Variant find(std::string_view path) const;
@@ -166,12 +173,12 @@ namespace dagbase
         using Path = std::vector<RedBlackTreeNode::Child>;
         Path path;
 
-        RedBlackTreeNode *ancestor(RedBlackTreeNode *root, std::size_t numGenerations)
+        RedBlackTreeNode *ancestor(RedBlackTreeNode *root, std::size_t numGenerations, std::size_t startGeneration=0)
         {
             RedBlackTreeNode* retval = root;
 
-            if (path.size()>=numGenerations)
-                for (std::size_t pathIndex = 0; pathIndex<path.size() - numGenerations; ++pathIndex)
+            if (path.size()>=startGeneration+numGenerations)
+                for (std::size_t pathIndex = startGeneration; pathIndex<path.size() - numGenerations; ++pathIndex)
                 {
                     auto childIndex = path[pathIndex];
 
@@ -188,9 +195,9 @@ namespace dagbase
             return ancestor(root, 0);
         }
 
-        RedBlackTreeNode *parent(RedBlackTreeNode *root)
+        RedBlackTreeNode *parent(RedBlackTreeNode *root, std::size_t startGeneration=0)
         {
-            return ancestor(root, 1);
+            return ancestor(root, 1, startGeneration);
         }
 
         RedBlackTreeNode *grandparent(RedBlackTreeNode *root)
@@ -217,10 +224,11 @@ namespace dagbase
 
         RedBlackTreeNode* traverse(const RedBlackTreeNodePath& path);
 
-        void insert(RedBlackTreeNodePath &path, RedBlackTreeNode* child, RedBlackTreeNode::Direction direction);
+        void insert(RedBlackTreeNodePath &path, RedBlackTreeNode* node, RedBlackTreeNode::Direction direction);
 
         Variant find(std::string_view path) const;
     private:
+        RedBlackTreeNode* rotateSubtree(RedBlackTreeNodePath &path, std::size_t numGenerations, RedBlackTreeNode *sub, RedBlackTreeNode::Direction direction);
         RedBlackTreeNode* _root{&RedBlackTreeNode::NULL_NODE};
     };
 }

@@ -258,26 +258,89 @@ namespace dagbase
         return parent;
     }
 
-    void RedBlackTree::insert(RedBlackTreeNodePath &path, RedBlackTreeNode *child, RedBlackTreeNode::Direction direction)
+    RedBlackTreeNode * RedBlackTree::rotateSubtree(RedBlackTreeNodePath &path, std::size_t numGenerations, RedBlackTreeNode *sub,
+                                                   RedBlackTreeNode::Direction direction)
     {
-        child->setColour(RedBlackTreeNode::COLOUR_RED);
+        RedBlackTreeNode* subParent = path.ancestor(_root, numGenerations+1);
+        RedBlackTreeNode* newRoot = sub->otherChild(direction);
+        RedBlackTreeNode* newChild = newRoot->child(RedBlackTreeNode::directionToChild(direction));
+
+        sub->setChild(RedBlackTreeNode::directionToChild(RedBlackTreeNode::oppositeDirection(direction)), newChild);
+        //newRoot->parent = subParent;
+        newRoot->setChild(RedBlackTreeNode::directionToChild(direction), sub);
+        //sub->parent = newRoot
+        if (subParent != &RedBlackTreeNode::NULL_NODE)
+        {
+            if (sub == subParent->child(RedBlackTreeNode::CHILD_RIGHT))
+            {
+                subParent->setChild(RedBlackTreeNode::CHILD_RIGHT, newRoot);
+            }
+            else
+            {
+                subParent->setChild(RedBlackTreeNode::CHILD_LEFT, newRoot);
+            }
+        }
+        else
+        {
+            _root = newRoot;
+        }
+
+        return newRoot;
+    }
+
+    void RedBlackTree::insert(RedBlackTreeNodePath &path, RedBlackTreeNode *node, RedBlackTreeNode::Direction direction)
+    {
+        node->setColour(RedBlackTreeNode::COLOUR_RED);
         auto parent = path.parent(_root);
         if (parent == &RedBlackTreeNode::NULL_NODE)
         {
-            _root = child;
+            _root = node;
             return;
         }
 
-        parent->setChild(RedBlackTreeNode::directionToChild(direction), child);
+        parent->setChild(RedBlackTreeNode::directionToChild(direction), node);
 
         do
         {
+            // Case #1
             if (parent->colour() == RedBlackTreeNode::COLOUR_BLACK)
                 return;
 
             auto grandparent = path.grandparent(_root);
-            parent = path.parent(_root);
+
+            if (grandparent == &RedBlackTreeNode::NULL_NODE)
+            {
+                // Case #4
+                parent->setColour(RedBlackTreeNode::COLOUR_BLACK);
+                return;
+            }
+            direction = parent->direction();
+            RedBlackTreeNode* uncle = grandparent->otherChild(direction);
+            if (uncle == &RedBlackTreeNode::NULL_NODE || uncle->colour() == RedBlackTreeNode::COLOUR_BLACK)
+            {
+                if (node == parent->otherChild(direction))
+                {
+                    // Case #5
+                    rotateSubtree(path, 1, parent, direction);
+                    node = parent;
+                    parent = grandparent->child(RedBlackTreeNode::directionToChild(direction));
+                }
+                // Case #6
+                rotateSubtree(path, 2, grandparent, RedBlackTreeNode::oppositeDirection(direction));
+                parent->setColour(RedBlackTreeNode::COLOUR_BLACK);
+                grandparent->setColour(RedBlackTreeNode::COLOUR_RED);
+
+                return;
+            }
+            // Case #2
+            parent->setColour(RedBlackTreeNode::COLOUR_BLACK);
+            uncle->setColour(RedBlackTreeNode::COLOUR_BLACK);
+            grandparent->setColour(RedBlackTreeNode::COLOUR_RED);
+
+            parent = path.parent(_root, 2);
         } while (parent != &RedBlackTreeNode::NULL_NODE);
+
+        // Case #3
     }
 
     Variant RedBlackTree::find(std::string_view path) const
