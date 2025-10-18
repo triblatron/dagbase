@@ -101,6 +101,7 @@ namespace dagbase
     {
         auto myChild = child(index);
         auto otherChild = other.child(index);
+
         if (myChild == &NULL_NODE && otherChild != &NULL_NODE)
             return false;
 
@@ -260,7 +261,7 @@ namespace dagbase
     void RedBlackTree::insert(RedBlackTreeNodePath &path, RedBlackTreeNode *child, RedBlackTreeNode::Direction direction)
     {
         child->setColour(RedBlackTreeNode::COLOUR_RED);
-        auto parent = path.parent(_root, child);
+        auto parent = path.parent(_root);
         if (parent == &RedBlackTreeNode::NULL_NODE)
         {
             _root = child;
@@ -268,6 +269,15 @@ namespace dagbase
         }
 
         parent->setChild(RedBlackTreeNode::directionToChild(direction), child);
+
+        do
+        {
+            if (parent->colour() == RedBlackTreeNode::COLOUR_BLACK)
+                return;
+
+            auto grandparent = path.grandparent(_root);
+            parent = path.parent(_root);
+        } while (parent != &RedBlackTreeNode::NULL_NODE);
     }
 
     Variant RedBlackTree::find(std::string_view path) const

@@ -1,0 +1,10 @@
+root=
+{
+	tree=
+	{
+		root="NULL_NODE",
+	},
+	path=
+	{
+	},
+}

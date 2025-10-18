@@ -1,0 +1,40 @@
+root=
+{
+	tree=
+	{
+		root=
+		{
+			value=10,
+			colour="COLOUR_BLACK",
+			direction="DIR_LEFT",
+			children=
+			{
+				{
+					value=1,
+					colour="COLOUR_RED",
+					direction="DIR_LEFT",
+					children=
+					{
+						"NULL_NODE",
+						{
+							value=2,
+							colour="COLOUR_RED",
+							direction="DIR_RIGHT",
+							children=
+							{
+								"NULL_NODE",
+								"NULL_NODE",
+							},
+						},
+					},
+				},
+				"NULL_NODE",
+			}
+		}
+	},
+	path=
+	{
+		"CHILD_LEFT",
+		"CHILD_RIGHT",
+	},
+}

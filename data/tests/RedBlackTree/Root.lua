@@ -1,0 +1,20 @@
+root=
+{
+	tree=
+	{
+		root=
+		{
+			value=1,
+			colour="COLOUR_BLACK",
+			direction="DIR_LEFT",
+			children=
+			{
+				"NULL_NODE",
+				"NULL_NODE",
+			}
+		}
+	},
+	path=
+	{
+	},
+}

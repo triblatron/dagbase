@@ -16,6 +16,7 @@ root=
 	},
 	path=
 	{
+		"CHILD_LEFT",
 	},
 	dir="DIR_LEFT",
 	child=

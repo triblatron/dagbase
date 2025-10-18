@@ -166,28 +166,36 @@ namespace dagbase
         using Path = std::vector<RedBlackTreeNode::Child>;
         Path path;
 
-        RedBlackTreeNode* parent(RedBlackTreeNode* root, RedBlackTreeNode* child)
+        RedBlackTreeNode *ancestor(RedBlackTreeNode *root, std::size_t numGenerations)
         {
-            RedBlackTreeNode* parent = root;
+            RedBlackTreeNode* retval = root;
 
-            for (auto index : path)
-            {
-                parent = parent->child(index);
-            }
+            if (path.size()>=numGenerations)
+                for (std::size_t pathIndex = 0; pathIndex<path.size() - numGenerations; ++pathIndex)
+                {
+                    auto childIndex = path[pathIndex];
 
-            return parent;
+                    retval = retval->child(childIndex);
+                }
+            else
+                return &RedBlackTreeNode::NULL_NODE;
+
+            return retval;
         }
 
-        const RedBlackTreeNode* parent(RedBlackTreeNode* root, RedBlackTreeNode* child) const
+        RedBlackTreeNode* node(RedBlackTreeNode* root)
         {
-            RedBlackTreeNode* parent = root;
+            return ancestor(root, 0);
+        }
 
-            for (auto index : path)
-            {
-                parent = parent->child(index);
-            }
+        RedBlackTreeNode *parent(RedBlackTreeNode *root)
+        {
+            return ancestor(root, 1);
+        }
 
-            return parent;
+        RedBlackTreeNode *grandparent(RedBlackTreeNode *root)
+        {
+            return ancestor(root, 2);
         }
 
         void configure(ConfigurationElement& config);
@@ -199,6 +207,11 @@ namespace dagbase
         RedBlackTree() = default;
 
         void configure(ConfigurationElement& config);
+
+        RedBlackTreeNode* root()
+        {
+            return _root;
+        }
 
         bool operator==(const RedBlackTree& other) const;
 
