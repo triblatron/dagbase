@@ -528,36 +528,34 @@ namespace dagbase
         RedBlackTreeNode::findSubPaths(allPaths, subPaths);
         RedBlackTreeNode::MapOfCount counts;
         RedBlackTreeNode::findBlackNodes(subPaths, counts);
-//        for (auto path : subPaths)
-//        {
-//
-//            counts[path.a[0]] = 0;
-//
-//            for (auto node : path)
-//            {
-//                if (node->colour() == RedBlackTreeNode::COLOUR_BLACK)
-//                    ++counts[path.a[0]];
-//            }
-//        }
-//        std::map<RedBlackTreeNode*, std::size_t> counts;
-//        _root->traverse([&valid, &counts](RedBlackTreeNode& node) {
-//            counts[&node] = 0;
-//            auto it = counts.find(&node);
-//            if (it==counts.end())
-//            {
-//                auto p = counts.emplace(&node,0);
-//                it = p.first;
-//            }
-//            std::size_t count = node.countIf([&it](RedBlackTreeNode& child) {
-//                if (child.colour()==RedBlackTreeNode::COLOUR_BLACK)
-//                {
-//                    return true;
-//                }
-//                return false;
-//            });
-//            counts[&node] = count;
-//            return true;
-//        });
+        std::map<RedBlackTreeNode*, std::vector<std::uint32_t>> countsPerNode;
+
+        for (auto path : subPaths)
+        {
+            auto it=countsPerNode.find(path.subPath.a[0]);
+
+            if ( it==countsPerNode.end())
+            {
+                auto p = countsPerNode.emplace(path.subPath.a[0], std::vector<std::uint32_t>());
+                it = p.first;
+            }
+            it->second.emplace_back(counts.a[path.pathIndex].a[0]);
+        }
+
+        for (const auto& countsForNode : countsPerNode)
+        {
+            if (!countsForNode.second.empty())
+            {
+                auto firstCount = countsForNode.second[0];
+                for (std::size_t index = 1; index < countsForNode.second.size(); ++index)
+                {
+                    if (firstCount != countsForNode.second[index])
+                    {
+                        valid = false;
+                    }
+                }
+            }
+        }
         return valid;
     }
 
