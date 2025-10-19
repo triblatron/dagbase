@@ -260,8 +260,8 @@ TEST(OutputStream, testOutput)
     node2.parent = &node1;
     node2.s = "test";
     node2.b = true;
-    node1.value = 2.0;
-    node2.value = 1.0;
+    node1.value = dagbase::Variant(2.0);
+    node2.value = dagbase::Variant(1.0);
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
 
     dagbase::TextFormat format(&store);

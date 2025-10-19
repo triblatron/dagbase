@@ -77,11 +77,16 @@ namespace dagbase
     };
 
     template<typename Array, typename ConfiguredType=typename Array::value_type>
-    class SearchablePrimitiveArray
+    class SearchableVariantArray
     {
     public:
         using value_type = typename Array::value_type;
         Array a;
+
+        std::size_t size() const
+        {
+            return a.size();
+        }
 
         void configure(ConfigurationElement& config)
         {
@@ -96,7 +101,38 @@ namespace dagbase
         {
             Variant retval;
 
-            retval = findPrimitiveArray(path, a);
+            retval = findEndpoint(path, "size", std::uint32_t(size()));
+            if (retval.has_value())
+                return retval;
+
+            retval = findVariantArray(path, a);
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
+    };
+    template<typename Array>
+    class SearchablePrimitiveArray
+    {
+    public:
+        using value_type = typename Array::value_type;
+        Array a;
+
+        std::size_t size() const
+        {
+            return a.size();
+        }
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findEndpoint(path, "size", std::uint32_t(size()));
+            if (retval.has_value())
+                return retval;
+
+            retval = Variant(findPrimitiveArray(path, a));
             if (retval.has_value())
                 return retval;
 

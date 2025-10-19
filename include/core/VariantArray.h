@@ -20,13 +20,13 @@ namespace dagbase
     {
     public:
         //using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t>>;
-        using ArrayOfInt64 = SearchablePrimitiveArray<std::vector<std::int64_t>>;
-        using ArrayOfDouble = SearchablePrimitiveArray<std::vector<double>>;
-        using ArrayOfBool = SearchablePrimitiveArray<std::vector<bool>>;
-        using ArrayOfString = SearchablePrimitiveArray<std::vector<std::string>>;
-        using ArrayOfColour = SearchablePrimitiveArray<std::vector<Colour>>;
-        using ArrayOfVec2 = SearchablePrimitiveArray<std::vector<Vec2>>;
-        using ArrayOfUInt32 = SearchablePrimitiveArray<std::vector<std::uint32_t>, std::int64_t>;
+        using ArrayOfInt64 = SearchableVariantArray<std::vector<std::int64_t>>;
+        using ArrayOfDouble = SearchableVariantArray<std::vector<double>>;
+        using ArrayOfBool = SearchableVariantArray<std::vector<bool>>;
+        using ArrayOfString = SearchableVariantArray<std::vector<std::string>>;
+        using ArrayOfColour = SearchableVariantArray<std::vector<Colour>>;
+        using ArrayOfVec2 = SearchableVariantArray<std::vector<Vec2>>;
+        using ArrayOfUInt32 = SearchableVariantArray<std::vector<std::uint32_t>, std::int64_t>;
         using ValueType = std::variant<ArrayOfInt64, ArrayOfDouble, ArrayOfBool, ArrayOfString, ArrayOfColour, ArrayOfVec2, ArrayOfUInt32>;
     public:
         void reserve(std::size_t n);
@@ -106,7 +106,7 @@ namespace dagbase
                 {
                     auto& a = std::get<ArrayOfDouble>(_value).a;
                     if (index < a.size())
-                        return a[index];
+                        return Variant(a[index]);
                     break;
                 }
                 case Variant::TYPE_STRING:
