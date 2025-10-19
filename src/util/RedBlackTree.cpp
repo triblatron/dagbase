@@ -10,6 +10,7 @@
 #include "util/enums.h"
 
 #include <map>
+#include <algorithm>
 
 namespace dagbase
 {
@@ -322,6 +323,22 @@ namespace dagbase
         currentPath.a.pop_back();
     }
 
+    void RedBlackTreeNode::findSubPaths(const RedBlackTreeNode::ArrayOfPath &allPaths,
+                                        RedBlackTreeNode::ArrayOfPath &subPaths)
+    {
+        for (auto path : allPaths)
+        {
+            for (std::size_t i=0; i<path.size(); ++i)
+            {
+                Path subPath;
+
+                subPath.a.resize(path.size()-i);
+                std::copy(path.begin()+Path::difference_type(i), path.end(), subPath.begin());
+                subPaths.a.emplace_back(subPath);
+            }
+        }
+    }
+
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
@@ -481,20 +498,30 @@ namespace dagbase
         if (!valid)
             return valid;
         // Property 4:All paths from a given node to a leaf have the same number of black nodes.
-        std::map<RedBlackTreeNode*, std::size_t> counts;
-        _root->traverse([&valid, &counts](RedBlackTreeNode& node) {
-            counts[&node] = 0;
-            auto it = counts.find(&node);
-            std::size_t count = node.countIf([&it](RedBlackTreeNode& child) {
-                if (child.colour()==RedBlackTreeNode::COLOUR_BLACK)
-                {
-                    return true;
-                }
-                return false;
-            });
-            counts[&node] = count;
-            return true;
-        });
+        RedBlackTreeNode::Path currentPath;
+        RedBlackTreeNode::ArrayOfPath allPaths;
+        _root->findAllPaths(currentPath, allPaths);
+        RedBlackTreeNode::ArrayOfPath subPaths;
+        _root->findSubPaths(allPaths, subPaths);
+//        std::map<RedBlackTreeNode*, std::size_t> counts;
+//        _root->traverse([&valid, &counts](RedBlackTreeNode& node) {
+//            counts[&node] = 0;
+//            auto it = counts.find(&node);
+//            if (it==counts.end())
+//            {
+//                auto p = counts.emplace(&node,0);
+//                it = p.first;
+//            }
+//            std::size_t count = node.countIf([&it](RedBlackTreeNode& child) {
+//                if (child.colour()==RedBlackTreeNode::COLOUR_BLACK)
+//                {
+//                    return true;
+//                }
+//                return false;
+//            });
+//            counts[&node] = count;
+//            return true;
+//        });
         return valid;
     }
 }

@@ -150,6 +150,8 @@ namespace dagbase
 
         std::string toString() const;
 
+        static void findSubPaths(const ArrayOfPath& allPaths, ArrayOfPath& subPaths);
+
         static const char* colourToString(Colour value);
 
         static Colour parseColour(const char* str);

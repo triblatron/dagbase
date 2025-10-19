@@ -16,6 +16,7 @@ namespace dagbase
         using value_type = typename Array::value_type;
         using iterator = typename Array::iterator;
         using const_iterator = typename Array::const_iterator;
+        using difference_type = typename Array::difference_type;
 
         Array a;
 
