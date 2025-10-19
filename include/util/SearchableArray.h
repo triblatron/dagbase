@@ -58,6 +58,10 @@ namespace dagbase
         {
             ConfigurationElement::ValueType retval;
 
+            retval = findEndpoint(path, "size", std::uint32_t(size()));
+            if (retval.has_value())
+                return retval;
+
             retval = findArray(path, a);
             if (retval.has_value())
                 return retval;

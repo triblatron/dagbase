@@ -9,6 +9,8 @@
 #include "util/Searchable.h"
 #include "util/enums.h"
 
+#include <map>
+
 namespace dagbase
 {
     RedBlackTreeNode RedBlackTreeNode::NULL_NODE(&NULL_NODE, &NULL_NODE, RedBlackTreeNode::COLOUR_BLACK, RedBlackTreeNode::DIR_LEFT);
@@ -224,24 +226,100 @@ namespace dagbase
     {
         if (left() != &NULL_NODE)
         {
-            if (!f(*left()))
-            {
-                return;
-            }
+            left()->traverse(f);
         }
 
         if (right() != &NULL_NODE)
         {
-            if (!f(*right()))
-            {
-                return;
-            }
+            right()->traverse(f);
         }
 
         if (!f(*this))
         {
             return;
         }
+    }
+
+    std::size_t RedBlackTreeNode::countIf(std::function<bool(RedBlackTreeNode &)> f)
+    {
+        std::size_t count{0};
+
+        if (left() != &NULL_NODE)
+        {
+            left()->countIfHelper(f, count);
+        }
+
+        if (right() != &NULL_NODE)
+        {
+            right()->countIfHelper(f, count);
+        }
+
+        if (f(*this))
+        {
+            ++count;
+        }
+
+        return count;
+    }
+
+    std::size_t RedBlackTreeNode::countIfHelper(std::function<bool(RedBlackTreeNode &)> f, std::size_t count)
+    {
+        if (left() != &NULL_NODE)
+        {
+            if (f(*left()))
+                count = left()->countIfHelper(f, count+1);
+            else
+                count = left()->countIfHelper(f, count);
+        }
+        else
+        {
+            if (f(*left()))
+            {
+                ++count;
+            }
+        }
+
+        if (right() != &NULL_NODE)
+        {
+            if (f(*right()))
+                count = right()->countIfHelper(f, count+1);
+            else
+                count = right()->countIfHelper(f, count);
+        }
+        else
+        {
+            if (f(*right()))
+            {
+                ++count;
+            }
+        }
+
+        if (f(*this))
+        {
+            ++count;
+        }
+
+        return count;
+    }
+
+    void RedBlackTreeNode::findAllPaths(RedBlackTreeNode::Path &currentPath, RedBlackTreeNode::ArrayOfPath &allPaths)
+    {
+        if (this == &NULL_NODE)
+            return;
+
+        currentPath.a.emplace_back(this);
+
+        if (left() == &NULL_NODE && right() == &NULL_NODE)
+        {
+            allPaths.a.emplace_back(currentPath);
+        }
+        else
+        {
+            left()->findAllPaths(currentPath, allPaths);
+            right()->findAllPaths(currentPath, allPaths);
+        }
+
+        currentPath.a.pop_back();
     }
 
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
@@ -388,6 +466,7 @@ namespace dagbase
         // Property #1 is satisfied by Colour.
         // All nodes are either red or black
         // Property #2 is satisfied by NULL_NODE being black.
+        // Property #3:A red node does not have a red child.
         bool valid = true;
         _root->traverse([&valid](RedBlackTreeNode& child) {
             if (child.colour() == RedBlackTreeNode::COLOUR_RED &&
@@ -397,6 +476,23 @@ namespace dagbase
                 valid = false;
                 return false;
             }
+            return true;
+        });
+        if (!valid)
+            return valid;
+        // Property 4:All paths from a given node to a leaf have the same number of black nodes.
+        std::map<RedBlackTreeNode*, std::size_t> counts;
+        _root->traverse([&valid, &counts](RedBlackTreeNode& node) {
+            counts[&node] = 0;
+            auto it = counts.find(&node);
+            std::size_t count = node.countIf([&it](RedBlackTreeNode& child) {
+                if (child.colour()==RedBlackTreeNode::COLOUR_BLACK)
+                {
+                    return true;
+                }
+                return false;
+            });
+            counts[&node] = count;
             return true;
         });
         return valid;

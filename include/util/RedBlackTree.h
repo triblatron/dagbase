@@ -16,10 +16,13 @@
 namespace dagbase
 {
     class ConfigurationElement;
-    class RedBlackTreeNodePath;
+    struct RedBlackTreeNodePath;
 
     class DAGBASE_API RedBlackTreeNode
     {
+    public:
+        using Path = SearchableArray<std::vector<RedBlackTreeNode*>>;
+        using ArrayOfPath = SearchableArray<std::vector<Path>>;
     public:
         //! Index into our child list
         enum Child : std::uint8_t
@@ -137,6 +140,10 @@ namespace dagbase
 
         void traverse(std::function<bool(RedBlackTreeNode&)> f);
 
+        void findAllPaths(Path& currentPath, ArrayOfPath & allPaths);
+
+        std::size_t countIf(std::function<bool(RedBlackTreeNode&)> f);
+
         bool operator==(const RedBlackTreeNode& other) const;
 
         Variant find(std::string_view path) const;
@@ -164,6 +171,7 @@ namespace dagbase
 
         static RedBlackTreeNode NULL_NODE;
     private:
+        std::size_t countIfHelper(std::function<bool(RedBlackTreeNode&)> f, std::size_t count);
         void setChild(Child index, RedBlackTreeNode* child);
         friend class RedBlackTree;
         Variant _value;
