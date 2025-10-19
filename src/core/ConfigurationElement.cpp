@@ -213,7 +213,7 @@ namespace dagbase
                     }
                     else if (lua_isnumber(lua, -1))
                     {
-                        child = new ConfigurationElement(index, lua_tonumber(lua, -1));
+                        child = new ConfigurationElement(index, Variant(lua_tonumber(lua, -1)));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isboolean(lua, -1))
@@ -244,7 +244,7 @@ namespace dagbase
                     }
                     else if (lua_isnumber(lua, -1))
                     {
-                        child = new ConfigurationElement(name, lua_tonumber(lua, -1));
+                        child = new ConfigurationElement(name, Variant(lua_tonumber(lua, -1)));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_isboolean(lua, -1))

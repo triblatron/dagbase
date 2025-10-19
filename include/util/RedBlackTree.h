@@ -23,6 +23,15 @@ namespace dagbase
     public:
         using Path = SearchableArray<std::vector<RedBlackTreeNode*>>;
         using ArrayOfPath = SearchableArray<std::vector<Path>>;
+        struct SubPath
+        {
+            std::size_t pathIndex{0};
+            Path subPath;
+
+            Variant find(std::string_view path) const;
+        };
+        using ArrayOfSubPath = SearchableArray<std::vector<SubPath>>;
+        using MapOfCount = SearchableArray<std::vector<SearchablePrimitiveArray<std::vector<std::uint32_t>>>>;
     public:
         //! Index into our child list
         enum Child : std::uint8_t
@@ -150,7 +159,9 @@ namespace dagbase
 
         std::string toString() const;
 
-        static void findSubPaths(const ArrayOfPath& allPaths, ArrayOfPath& subPaths);
+        static void findSubPaths(const ArrayOfPath& allPaths, ArrayOfSubPath & subPaths);
+
+        static void findBlackNodes(const ArrayOfSubPath& subPaths, MapOfCount& counts);
 
         static const char* colourToString(Colour value);
 

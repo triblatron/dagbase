@@ -324,17 +324,40 @@ namespace dagbase
     }
 
     void RedBlackTreeNode::findSubPaths(const RedBlackTreeNode::ArrayOfPath &allPaths,
-                                        RedBlackTreeNode::ArrayOfPath &subPaths)
+                                        RedBlackTreeNode::ArrayOfSubPath &subPaths)
     {
-        for (auto path : allPaths)
+        std::size_t subPathIndex = 0;
+        for (std::size_t pathIndex=0; pathIndex<allPaths.size(); ++pathIndex)
         {
+            const auto& path = allPaths.a[pathIndex];
             for (std::size_t i=0; i<path.size(); ++i)
             {
-                Path subPath;
+                SubPath subPath;
 
-                subPath.a.resize(path.size()-i);
-                std::copy(path.begin()+Path::difference_type(i), path.end(), subPath.begin());
+                subPath.subPath.a.resize(path.size()-Path::difference_type(i));
+                subPath.pathIndex = subPathIndex++;
+                std::copy(path.begin()+Path::difference_type(i), path.end(), subPath.subPath.a.begin());
                 subPaths.a.emplace_back(subPath);
+            }
+        }
+    }
+
+    void
+    RedBlackTreeNode::findBlackNodes(const RedBlackTreeNode::ArrayOfSubPath &subPaths, RedBlackTreeNode::MapOfCount &counts)
+    {
+        for (const auto& path : subPaths)
+        {
+            if (path.pathIndex>=counts.size())
+            {
+                counts.a.resize(path.pathIndex+1);
+            }
+            counts.a[path.pathIndex].a.emplace_back(0);
+            for (auto node : path.subPath)
+            {
+                if (node->colour() == COLOUR_BLACK)
+                {
+                    ++counts.a[path.pathIndex].a.back();
+                }
             }
         }
     }
@@ -501,8 +524,21 @@ namespace dagbase
         RedBlackTreeNode::Path currentPath;
         RedBlackTreeNode::ArrayOfPath allPaths;
         _root->findAllPaths(currentPath, allPaths);
-        RedBlackTreeNode::ArrayOfPath subPaths;
-        _root->findSubPaths(allPaths, subPaths);
+        RedBlackTreeNode::ArrayOfSubPath subPaths;
+        RedBlackTreeNode::findSubPaths(allPaths, subPaths);
+        RedBlackTreeNode::MapOfCount counts;
+        RedBlackTreeNode::findBlackNodes(subPaths, counts);
+//        for (auto path : subPaths)
+//        {
+//
+//            counts[path.a[0]] = 0;
+//
+//            for (auto node : path)
+//            {
+//                if (node->colour() == RedBlackTreeNode::COLOUR_BLACK)
+//                    ++counts[path.a[0]];
+//            }
+//        }
 //        std::map<RedBlackTreeNode*, std::size_t> counts;
 //        _root->traverse([&valid, &counts](RedBlackTreeNode& node) {
 //            counts[&node] = 0;
@@ -523,5 +559,20 @@ namespace dagbase
 //            return true;
 //        });
         return valid;
+    }
+
+    Variant RedBlackTreeNode::SubPath::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "pathIndex", std::uint32_t(pathIndex));
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "subPath", subPath);
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 }

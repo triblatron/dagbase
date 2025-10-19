@@ -96,7 +96,7 @@ namespace dagbase
 	}
 
     template<typename Array>
-	dagbase::Variant findPrimitiveArray(std::string_view path, const Array& obj)
+	dagbase::Variant findVariantArray(std::string_view path, const Array& obj)
 	{
 		if (path.length()>1 && path[0]=='[')
 		{
@@ -110,6 +110,27 @@ namespace dagbase
 			if (index < obj.size() && endPtr && *endPtr==']')
 			{
                 return Variant(obj[index]);
+			}
+		}
+
+		return {};
+	}
+
+    template<typename Array>
+	typename Array::value_type findPrimitiveArray(std::string_view path, const Array& obj)
+	{
+		if (path.length()>1 && path[0]=='[')
+		{
+			std::size_t firstIndex = 1;
+			std::size_t index = 0;
+			char* endPtr = nullptr;
+			if (firstIndex < path.length())
+			{
+				index = strtoull(&path[firstIndex], &endPtr, 10);
+			}
+			if (index < obj.size() && endPtr && *endPtr==']')
+			{
+                return (obj[index]);
 			}
 		}
 

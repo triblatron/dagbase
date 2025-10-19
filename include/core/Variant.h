@@ -42,9 +42,9 @@ namespace dagbase
 
         explicit Variant(std::int64_t intValue);
 
-        Variant(double value);
+        explicit Variant(double value);
 
-        Variant(const std::string& strValue);
+        explicit Variant(const std::string& strValue);
 
         explicit Variant(bool value);
 
