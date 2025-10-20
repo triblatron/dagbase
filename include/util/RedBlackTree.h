@@ -7,11 +7,13 @@
 #include "config/DagBaseExport.h"
 #include "core/Variant.h"
 #include "util/SearchableArray.h"
+#include "util/PrettyPrinter.h"
 
 #include <array>
 #include <cstdint>
 #include <vector>
 #include <string_view>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -94,6 +96,19 @@ namespace dagbase
             return static_cast<Colour>(addr & COLOUR_RED);
         }
 
+        std::size_t numChildren() const
+        {
+            std:size_t retval = 0;
+
+            if (left() != &NULL_NODE)
+                ++retval;
+
+            if (right() != &NULL_NODE)
+                ++retval;
+
+            return retval;
+        }
+
         RedBlackTreeNode* left()
         {
             auto retval = reinterpret_cast<std::uintptr_t>(_children.a[CHILD_LEFT]);
@@ -149,6 +164,8 @@ namespace dagbase
 
         void traverse(std::function<bool(RedBlackTreeNode&)> f);
 
+        void traverse(std::function<bool(const RedBlackTreeNode&)> f) const;
+
         void findAllPaths(Path& currentPath, ArrayOfPath & allPaths);
 
         std::size_t countIf(std::function<bool(RedBlackTreeNode&)> f);
@@ -158,6 +175,8 @@ namespace dagbase
         Variant find(std::string_view path) const;
 
         std::string toString() const;
+
+        PrettyPrinter& print(PrettyPrinter& printer) const;
 
         static void findSubPaths(const ArrayOfPath& allPaths, ArrayOfSubPath & subPaths);
 
@@ -235,11 +254,25 @@ namespace dagbase
     class DAGBASE_API RedBlackTree
     {
     public:
+        enum ValidationResult : std::uint32_t
+        {
+            VALIDATION_OK,
+            VALIDATION_ONE_CHILD_BLACK,
+            VALIDATION_RED_HAS_RED_CHILD,
+            VALIDATION_BLACK_HEIGHT_VIOLATION
+        };
+
+    public:
         RedBlackTree() = default;
 
         void configure(ConfigurationElement& config);
 
         RedBlackTreeNode* root()
+        {
+            return _root;
+        }
+
+        const RedBlackTreeNode* root() const
         {
             return _root;
         }
@@ -252,9 +285,11 @@ namespace dagbase
 
         Variant find(std::string_view path) const;
 
-        bool validate() const;
+        ValidationResult validate() const;
     private:
         RedBlackTreeNode* rotateSubtree(RedBlackTreeNodePath &path, std::size_t numGenerations, RedBlackTreeNode *sub, RedBlackTreeNode::Direction direction);
         RedBlackTreeNode* _root{&RedBlackTreeNode::NULL_NODE};
     };
 }
+
+std::ostream DAGBASE_API & operator<<(std::ostream& str, const dagbase::RedBlackTree& value);

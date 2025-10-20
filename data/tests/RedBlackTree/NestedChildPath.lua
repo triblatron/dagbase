@@ -11,29 +11,30 @@ root=
 			{
 				{
 					value=1,
-					colour="COLOUR_RED",
+					colour="COLOUR_BLACK",
 					direction="DIR_LEFT",
 					children=
 					{
 						"NULL_NODE",
+						{
+							value=2,
+							colour="COLOUR_RED",
+							direction="DIR_RIGHT",
+							children=
+							{
+								"NULL_NODE",
+								"NULL_NODE",
+							},
+						},
 					},
 				},
-				{
-					value=2,
-					colour="COLOUR_RED",
-					direction="DIR_RIGHT",
-					children=
-					{
-						"NULL_NODE",
-						"NULL_NODE",
-					},
-				},
+				"NULL_NODE",
 			}
 		}
 	},
 	path=
 	{
-		"CHILD_RIGHT",
+		"CHILD_LEFT",
 		"CHILD_RIGHT",
 	},
 	direction="DIR_RIGHT",
@@ -53,7 +54,7 @@ root=
 		root=
 		{
 			value=10,
-			colour="COLOUR_RED",
+			colour="COLOUR_BLACK",
 			direction="DIR_LEFT",
 			children=
 			{
@@ -64,29 +65,29 @@ root=
 					children=
 					{
 						"NULL_NODE",
-						"NULL_NODE",
-					},
-				},
-				{
-					value=2,
-					colour="COLOUR_BLACK",
-					direction="DIR_RIGHT",
-					children=
-					{
-						"NULL_NODE",
 						{
-							value=15,
+							value=2,
 							colour="COLOUR_RED",
 							direction="DIR_RIGHT",
 							children=
 							{
 								"NULL_NODE",
 								"NULL_NODE",
-							}
+							},
 						},
 					},
 				},
-			},
+				{
+					value=15,
+					colour="COLOUR_RED",
+					direction="DIR_RIGHT",
+					children=
+					{
+						"NULL_NODE",
+						"NULL_NODE",
+					}
+				},
+			}
 		}
 	},
 }

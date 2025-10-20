@@ -11,6 +11,8 @@
 
 #include <map>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 
 namespace dagbase
 {
@@ -96,6 +98,11 @@ namespace dagbase
         {
             return "NULL_NODE";
         }
+
+        std::ostringstream str;
+
+        str << "colour: " << colourToString(colour()) << ", ";
+        str << "direction: " << directionToString(direction()) << ", ";
 
         return {};
     }
@@ -241,6 +248,24 @@ namespace dagbase
         }
     }
 
+    void RedBlackTreeNode::traverse(std::function<bool(const RedBlackTreeNode &)> f) const
+    {
+        if (left() != &NULL_NODE)
+        {
+            left()->traverse(f);
+        }
+
+        if (right() != &NULL_NODE)
+        {
+            right()->traverse(f);
+        }
+
+        if (!f(*this))
+        {
+            return;
+        }
+    }
+
     std::size_t RedBlackTreeNode::countIf(std::function<bool(RedBlackTreeNode &)> f)
     {
         std::size_t count{0};
@@ -360,6 +385,38 @@ namespace dagbase
                 }
             }
         }
+    }
+
+    PrettyPrinter &RedBlackTreeNode::print(PrettyPrinter &printer) const
+    {
+        printer.println("RedBlackTreeNode");
+        printer.indent();
+        printer.println("value:");
+        printer.printIndent();
+        ::operator<<(printer.str(), _value) << '\n';
+        printer.println("colour: " + std::string(colourToString(colour())));
+        printer.println("direction: " + std::string(directionToString(direction())));
+        printer.println("leftChild:");
+        if (left()!=&NULL_NODE)
+        {
+            printer.indent();
+            left()->print(printer);
+            printer.outdent();
+        }
+        else
+            printer.println("NULL_NODE");
+        printer.println("rightChild:");
+        if (right()!=&NULL_NODE)
+        {
+            printer.indent();
+            right()->print(printer);
+            printer.outdent();
+        }
+        else
+            printer.println("NULL_NODE");
+        printer.outdent();
+        printer.println("End");
+        return printer;
     }
 
     void RedBlackTreeNodePath::configure(ConfigurationElement &config)
@@ -501,24 +558,32 @@ namespace dagbase
         return *_root == *other._root;
     }
 
-    bool RedBlackTree::validate() const
+    RedBlackTree::ValidationResult RedBlackTree::validate() const
     {
         // Property #1 is satisfied by Colour.
         // All nodes are either red or black
         // Property #2 is satisfied by NULL_NODE being black.
         // Property #3:A red node does not have a red child.
-        bool valid = true;
+        ValidationResult valid = VALIDATION_OK;
         _root->traverse([&valid](RedBlackTreeNode& child) {
             if (child.colour() == RedBlackTreeNode::COLOUR_RED &&
                     (child.left()->colour() == RedBlackTreeNode::COLOUR_RED || child.right()->colour() == RedBlackTreeNode::COLOUR_RED)
                     )
             {
-                valid = false;
+                valid = VALIDATION_RED_HAS_RED_CHILD;
+                return false;
+            }
+            if (child.numChildren() == 1 &&
+                    ((child.left() != &RedBlackTreeNode::NULL_NODE && child.left()->colour() == RedBlackTreeNode::COLOUR_BLACK) ||
+                    (child.right() != &RedBlackTreeNode::NULL_NODE && child.right()->colour() == RedBlackTreeNode::COLOUR_BLACK))
+                    )
+            {
+                valid = VALIDATION_ONE_CHILD_BLACK;
                 return false;
             }
             return true;
         });
-        if (!valid)
+        if (valid != VALIDATION_OK)
             return valid;
         // Property 4:All paths from a given node to a leaf have the same number of black nodes.
         RedBlackTreeNode::Path currentPath;
@@ -551,7 +616,7 @@ namespace dagbase
                 {
                     if (firstCount != countsForNode.second[index])
                     {
-                        valid = false;
+                        valid = VALIDATION_BLACK_HEIGHT_VIOLATION;
                     }
                 }
             }
@@ -573,4 +638,15 @@ namespace dagbase
 
         return {};
     }
+}
+
+std::ostream& operator<<(std::ostream& str, const dagbase::RedBlackTree& value)
+{
+    dagbase::PrettyPrinter printer(str,2);
+    printer.println("RedBlackTree");
+    printer.indent();
+    value.root()->print(printer);
+    printer.outdent();
+
+    return str;
 }

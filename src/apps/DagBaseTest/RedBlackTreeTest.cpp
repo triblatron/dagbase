@@ -70,6 +70,7 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     auto treeConfig = config->findElement("tree");
     ASSERT_NE(nullptr, treeConfig);
     sut->configure(*treeConfig);
+    ASSERT_EQ(dagbase::RedBlackTree::VALIDATION_OK, sut->validate());
     auto nodePathConfig = config->findElement("path");
     ASSERT_NE(nullptr, nodePathConfig);
     dagbase::RedBlackTreeNodePath path;
@@ -93,8 +94,8 @@ TEST_P(RedBlackTree_testInsert, testExpectedProperties)
     ASSERT_NE(nullptr, afterConfig);
     auto afterTree = std::make_unique<dagbase::RedBlackTree>();
     afterTree->configure(*afterConfig);
-    EXPECT_EQ(*afterTree, *sut);
-    EXPECT_TRUE(sut->validate());
+    EXPECT_EQ(*afterTree, *sut) << "Expected afterTree " << *afterTree << " to be equal to actual " << *sut;
+    EXPECT_EQ(dagbase::RedBlackTree::VALIDATION_OK,sut->validate());
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Values(
@@ -106,7 +107,8 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTree, RedBlackTree_testInsert, ::testing::Value
         std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].colour", std::uint32_t{dagbase::RedBlackTreeNode::COLOUR_RED}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].direction", std::uint32_t{dagbase::RedBlackTreeNode::DIR_LEFT}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_NE)
+        std::make_tuple("data/tests/RedBlackTree/LeftChild.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_NE),
+        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "root.children[0].toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_NE)
         ));
 
 class RedBlackTreeNodeColour_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::RedBlackTreeNode::Colour>>
@@ -229,11 +231,11 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTreeNodePath, RedBlackTreeNodePath_testAncestor
         std::make_tuple("data/tests/RedBlackTree/Child.lua", std::size_t{0}, std::size_t{0}, "toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Child.lua", std::size_t{1}, std::size_t{0}, "toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_NE),
         std::make_tuple("data/tests/RedBlackTree/Child.lua", std::size_t{1}, std::size_t{0}, "value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", std::size_t{0}, std::size_t{0}, "value", std::int64_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", std::size_t{1}, std::size_t{0}, "value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", std::size_t{2}, std::size_t{0}, "value", std::int64_t{10}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", std::size_t{1}, std::size_t{1}, "value", std::int64_t{10}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", std::size_t{1}, std::size_t{2}, "toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", std::size_t{0}, std::size_t{0}, "value", std::int64_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", std::size_t{1}, std::size_t{0}, "value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", std::size_t{2}, std::size_t{0}, "value", std::int64_t{10}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", std::size_t{1}, std::size_t{1}, "value", std::int64_t{10}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", std::size_t{1}, std::size_t{2}, "toString", std::string("NULL_NODE"), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
 
 class RedBlackTreeNode_testFindAllPaths : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
@@ -265,8 +267,8 @@ TEST_P(RedBlackTreeNode_testFindAllPaths, testExpectedProperties)
 INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testFindAllPaths, ::testing::Values(
         std::make_tuple("data/tests/RedBlackTree/Empty.lua", "size", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[0].size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "[0].size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[0].size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[1].size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
@@ -305,10 +307,10 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testFindSubPaths, ::
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "[0].subPath.size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "[0].subPath[0].value", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[0].subPath.size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[1].subPath.size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[2].subPath.size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "[0].subPath.size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "[1].subPath.size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildPath.lua", "[2].subPath.size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "size", std::uint32_t{6}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[0].subPath.size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[1].subPath.size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
@@ -353,10 +355,10 @@ INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testFindBlackNodes, 
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "[0].size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/Root.lua", "[0].[0]", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[0].[0]", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[1].[0]", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/RedBlackTree/NestedChild.lua", "[2].[0]", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildFindBlack.lua", "size", std::uint32_t{3}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildFindBlack.lua", "[0].[0]", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildFindBlack.lua", "[1].[0]", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/RedBlackTree/NestedChildFindBlack.lua", "[2].[0]", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "size", std::uint32_t{6}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[0].size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
         std::make_tuple("data/tests/RedBlackTree/MultipleChildren.lua", "[0].[0]", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
