@@ -98,7 +98,7 @@ namespace dagbase
 
         std::size_t numChildren() const
         {
-            std:size_t retval = 0;
+            std::size_t retval = 0;
 
             if (left() != &NULL_NODE)
                 ++retval;
@@ -286,6 +286,8 @@ namespace dagbase
         Variant find(std::string_view path) const;
 
         ValidationResult validate() const;
+
+        static const char* validationResultToString(ValidationResult value);
     private:
         RedBlackTreeNode* rotateSubtree(RedBlackTreeNodePath &path, std::size_t numGenerations, RedBlackTreeNode *sub, RedBlackTreeNode::Direction direction);
         RedBlackTreeNode* _root{&RedBlackTreeNode::NULL_NODE};

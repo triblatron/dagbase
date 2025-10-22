@@ -4,7 +4,7 @@ root=
 	{
 		root=
 		{
-			value=10,
+			value=2,
 			colour="COLOUR_BLACK",
 			direction="DIR_LEFT",
 			children=
@@ -16,10 +16,11 @@ root=
 					children=
 					{
 						"NULL_NODE",
+						"NULL_NODE",
 					},
 				},
 				{
-					value=2,
+					value=10,
 					colour="COLOUR_RED",
 					direction="DIR_RIGHT",
 					children=
@@ -52,7 +53,7 @@ root=
 	{
 		root=
 		{
-			value=10,
+			value=2,
 			colour="COLOUR_RED",
 			direction="DIR_LEFT",
 			children=
@@ -68,7 +69,7 @@ root=
 					},
 				},
 				{
-					value=2,
+					value=10,
 					colour="COLOUR_BLACK",
 					direction="DIR_RIGHT",
 					children=
@@ -86,7 +87,7 @@ root=
 						},
 					},
 				},
-			},
+			}
 		}
 	},
 }

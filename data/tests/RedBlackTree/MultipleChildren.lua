@@ -27,7 +27,7 @@ root=
 						},
 						{
 							value=2,
-							colour="COLOUR_RED",
+							colour="COLOUR_BLACK",
 							direction="DIR_RIGHT",
 							children=
 							{

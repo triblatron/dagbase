@@ -624,6 +624,18 @@ namespace dagbase
         return valid;
     }
 
+    const char *RedBlackTree::validationResultToString(RedBlackTree::ValidationResult value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(VALIDATION_OK)
+            ENUM_NAME(VALIDATION_ONE_CHILD_BLACK)
+            ENUM_NAME(VALIDATION_RED_HAS_RED_CHILD)
+            ENUM_NAME(VALIDATION_BLACK_HEIGHT_VIOLATION)
+        }
+        return "<error>";
+    }
+
     Variant RedBlackTreeNode::SubPath::find(std::string_view path) const
     {
         Variant retval;
