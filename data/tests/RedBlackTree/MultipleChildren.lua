@@ -4,20 +4,20 @@ root=
 	{
 		root=
 		{
-			value=10,
-			colour="COLOUR_BLACK",
+			value=2,
+			colour="COLOUR_RED",
 			direction="DIR_LEFT",
 			children=
 			{
 				{
 					value=1,
-					colour="COLOUR_RED",
+					colour="COLOUR_BLACK",
 					direction="DIR_LEFT",
 					children=
 					{
 						{
 							value=0,
-							colour="COLOUR_BLACK",
+							colour="COLOUR_RED",
 							direction="DIR_LEFT",
 							children=
 							{
@@ -25,9 +25,77 @@ root=
 								"NULL_NODE",
 							},
 						},
+						"NULL_NODE",
+					},
+				},
+				{
+					value=10,
+					colour="COLOUR_BLACK",
+					direction="DIR_RIGHT",
+					children=
+					{
+						"NULL_NODE",
+						"NULL_NODE",
+					},
+				},
+			}
+		}
+	},
+	path=
+	{
+		"CHILD_RIGHT",
+		"CHILD_RIGHT",
+	},
+	child=
+	{
+		value=15,
+		colour="COLOUR_RED",
+		direction="DIR_RIGHT",
+		children=
+		{
+			"NULL_NODE",
+			"NULL_NODE",
+		},
+	},
+	direction="DIR_RIGHT",
+	after=
+	{
+		root=
+		{
+			value=2,
+			colour="COLOUR_RED",
+			direction="DIR_LEFT",
+			children=
+			{
+				{
+					value=1,
+					colour="COLOUR_BLACK",
+					direction="DIR_LEFT",
+					children=
+					{
 						{
-							value=2,
-							colour="COLOUR_BLACK",
+							value=0,
+							colour="COLOUR_RED",
+							direction="DIR_LEFT",
+							children=
+							{
+								"NULL_NODE",
+								"NULL_NODE",
+							},
+						},
+						"NULL_NODE",
+					},
+				},
+				{
+					value=10,
+					colour="COLOUR_BLACK",
+					direction="DIR_RIGHT",
+					children=
+					{
+						"NULL_NODE",
+						{
+							value=15,
+							colour="COLOUR_RED",
 							direction="DIR_RIGHT",
 							children=
 							{
@@ -37,13 +105,7 @@ root=
 						},
 					},
 				},
-				"NULL_NODE",
 			}
 		}
-	},
-	path=
-	{
-		"CHILD_LEFT",
-		"CHILD_RIGHT",
 	},
 }
