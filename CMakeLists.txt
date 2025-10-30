@@ -59,6 +59,8 @@ include/util/DebugPrinter.h
         include/util/DynamicMultiArray.h
         include/core/VariantArray.h
         include/util/RedBlackTree.h
+        include/util/Interpolate.h
+        include/util/ParameterLookup.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -104,6 +106,7 @@ src/util/DebugPrinter.cpp
         src/util/DynamicMultiArray.cpp
         src/core/VariantArray.cpp
         src/util/RedBlackTree.cpp
+        src/util/ParameterLookup.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

@@ -3,6 +3,7 @@
 //
 
 #include "core/Variant.h"
+#include "core/ConfigurationElement.h"
 
 #include <gtest/gtest.h>
 
@@ -35,4 +36,28 @@ INSTANTIATE_TEST_SUITE_P(Variant, VariantIndex_testRoundTrip, ::testing::Values(
         std::make_tuple("TYPE_COLOUR", dagbase::Variant::TYPE_COLOUR),
         std::make_tuple("TYPE_VEC2", dagbase::Variant::TYPE_VEC2),
         std::make_tuple("TYPE_UINT", dagbase::Variant::TYPE_UINT)
+        ));
+
+class ConfigurationElementRelOp_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::ConfigurationElement::RelOp>>
+{
+
+};
+
+TEST_P(ConfigurationElementRelOp_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::ConfigurationElement::relOpToString(value));
+    EXPECT_EQ(value, dagbase::ConfigurationElement::parseRelOp(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElementRelOp_testRoundTrip, ::testing::Values(
+        std::make_tuple("RELOP_UNKNOWN", dagbase::ConfigurationElement::RELOP_UNKNOWN),
+        std::make_tuple("RELOP_EQ", dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("RELOP_NE", dagbase::ConfigurationElement::RELOP_NE),
+        std::make_tuple("RELOP_LT", dagbase::ConfigurationElement::RELOP_LT),
+        std::make_tuple("RELOP_LE", dagbase::ConfigurationElement::RELOP_LE),
+        std::make_tuple("RELOP_GT", dagbase::ConfigurationElement::RELOP_GT),
+        std::make_tuple("RELOP_GE", dagbase::ConfigurationElement::RELOP_GE)
         ));

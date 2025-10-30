@@ -7,6 +7,7 @@
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
 #include "core/Atom.h"
+#include "util/enums.h"
 
 #include <stack>
 #include <cstdlib>
@@ -360,5 +361,32 @@ namespace dagbase
             {
                 *value = element->asBool();
             }
+    }
+
+    const char *ConfigurationElement::relOpToString(ConfigurationElement::RelOp value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(RELOP_UNKNOWN)
+            ENUM_NAME(RELOP_EQ)
+            ENUM_NAME(RELOP_NE)
+            ENUM_NAME(RELOP_LT)
+            ENUM_NAME(RELOP_LE)
+            ENUM_NAME(RELOP_GT)
+            ENUM_NAME(RELOP_GE)
+        }
+        return "<error>";
+    }
+
+    ConfigurationElement::RelOp ConfigurationElement::parseRelOp(const char *str)
+    {
+        TEST_ENUM(RELOP_UNKNOWN, str)
+        TEST_ENUM(RELOP_EQ, str)
+        TEST_ENUM(RELOP_NE, str)
+        TEST_ENUM(RELOP_LT, str)
+        TEST_ENUM(RELOP_LE, str)
+        TEST_ENUM(RELOP_GT, str)
+        TEST_ENUM(RELOP_GE, str)
+
     }
 }

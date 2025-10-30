@@ -301,6 +301,10 @@ namespace dagbase
                     });
                 }
         }
+
+        static const char* relOpToString(RelOp value);
+
+        static RelOp parseRelOp(const char* str);
     private:
         void setParent(ConfigurationElement* parent)
         {
