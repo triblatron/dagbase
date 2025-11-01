@@ -53,6 +53,14 @@ namespace dagbase
         }
     }
 
+    std::string Atom::toString() const
+    {
+        if (_value)
+            return (_value);
+        else
+            return {};
+    }
+
 //    Atom &Atom::intern(std::string_view name)
 //    {
 //        auto it = _atoms.find(name);

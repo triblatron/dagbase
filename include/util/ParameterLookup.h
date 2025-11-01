@@ -23,7 +23,6 @@ namespace dagbase
         {
             STATE_INITIAL,
             STATE_FOUND_OPEN,
-            STATE_FOUND_CLOSE
         };
         using container = VectorMap<Atom, Variant>;
         using iterator = typename container::iterator;

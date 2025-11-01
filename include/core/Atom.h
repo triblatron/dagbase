@@ -117,6 +117,8 @@ namespace dagbase
         {
             return _value+_length;
         }
+
+        std::string toString() const;
     private:
         explicit Atom(const char* str);
         const char* _value{nullptr};

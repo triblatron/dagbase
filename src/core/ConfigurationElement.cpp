@@ -388,5 +388,6 @@ namespace dagbase
         TEST_ENUM(RELOP_GT, str)
         TEST_ENUM(RELOP_GE, str)
 
+        return RELOP_UNKNOWN;
     }
 }
