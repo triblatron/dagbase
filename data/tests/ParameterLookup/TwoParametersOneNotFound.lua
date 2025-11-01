@@ -1,0 +1,9 @@
+root=
+{
+	sut=
+	{
+		foo=1,
+	},
+	input="foo{foo}bar{spoo}",
+	result="foo1bar",
+}

@@ -1,0 +1,9 @@
+root=
+{
+	sut=
+	{
+		spoo="wibble",
+	},
+	input="{spoo}",
+	result="wibble",
+}

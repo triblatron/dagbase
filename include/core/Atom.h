@@ -19,6 +19,8 @@ namespace dagbase
     class DAGBASE_API Atom
     {
     public:
+        using const_iterator = const char*;
+    public:
         Atom() = default;
 
         ~Atom();
@@ -104,6 +106,16 @@ namespace dagbase
                value.second.destroy();
             });
             _atoms.clear();
+        }
+
+        const_iterator begin() const
+        {
+            return _value;
+        }
+
+        const_iterator end() const
+        {
+            return _value+_length;
         }
     private:
         explicit Atom(const char* str);

@@ -42,5 +42,9 @@ TEST_P(ParameterLookup_testInterpolateAtom, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(ParameterLookup, ParameterLookup_testInterpolateAtom, ::testing::Values(
         std::make_tuple("data/tests/ParameterLookup/Empty.lua"),
-        std::make_tuple("data/tests/ParameterLookup/NoParameters.lua")
+        std::make_tuple("data/tests/ParameterLookup/NoParameters.lua"),
+        std::make_tuple("data/tests/ParameterLookup/OneParameterNotFound.lua"),
+        std::make_tuple("data/tests/ParameterLookup/OneParameter.lua"),
+        std::make_tuple("data/tests/ParameterLookup/TwoParameters.lua"),
+        std::make_tuple("data/tests/ParameterLookup/TwoParametersOneNotFound.lua")
         ));
