@@ -59,7 +59,6 @@ include/util/DebugPrinter.h
         include/util/DynamicMultiArray.h
         include/core/VariantArray.h
         include/util/RedBlackTree.h
-        include/util/Interpolate.h
         include/util/ParameterLookup.h
 )
 
