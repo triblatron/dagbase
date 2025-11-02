@@ -20,13 +20,16 @@ namespace dagbase
         });
     }
 
-    Atom ParameterLookup::interpolate(const Atom &atom)
+    Variant ParameterLookup::interpolate(const Atom &atom)
     {
         State state{STATE_INITIAL};
         std::string output;
         std::string name;
-        for (auto c : atom)
+        std::size_t numOutputs = 0;
+
+        for (std::size_t i=0; i<atom.length(); ++i)
         {
+            auto c = atom[i];
             switch (state)
             {
                 case STATE_INITIAL:
@@ -49,13 +52,21 @@ namespace dagbase
                     {
                         if (auto it=_lookup.find(Atom::intern(name)); it!=_lookup.end())
                         {
-                            output += it->second.toString();
+                            if (i<atom.length()-1 || numOutputs>0)
+                            {
+                                output += it->second.toString();
+                            }
+                            else
+                            {
+                                return it->second;
+                            }
                         }
+                        ++numOutputs;
                         state = STATE_INITIAL;
                     }
                     break;
             }
         }
-        return Atom::intern(output);
+        return (output);
     }
 }

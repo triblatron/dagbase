@@ -60,7 +60,7 @@ namespace dagbase
 
         void configure(ConfigurationElement& config);
 
-        Atom interpolate(const Atom& atom);
+        Variant interpolate(const Atom& atom);
     private:
         container _lookup;
     };

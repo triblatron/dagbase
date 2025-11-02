@@ -35,7 +35,7 @@ TEST_P(ParameterLookup_testInterpolateAtom, testExpectedValue)
     dagbase::Atom input;
     dagbase::ConfigurationElement::readConfig(*config, "input", &input);
     auto actual = sut.interpolate(input);
-    dagbase::Atom result;
+    dagbase::Variant result;
     dagbase::ConfigurationElement::readConfig(*config, "result", &result);
     EXPECT_EQ(result, actual);
 }
@@ -46,5 +46,6 @@ INSTANTIATE_TEST_SUITE_P(ParameterLookup, ParameterLookup_testInterpolateAtom, :
         std::make_tuple("data/tests/ParameterLookup/OneParameterNotFound.lua"),
         std::make_tuple("data/tests/ParameterLookup/OneParameter.lua"),
         std::make_tuple("data/tests/ParameterLookup/TwoParameters.lua"),
-        std::make_tuple("data/tests/ParameterLookup/TwoParametersOneNotFound.lua")
+        std::make_tuple("data/tests/ParameterLookup/TwoParametersOneNotFound.lua"),
+        std::make_tuple("data/tests/ParameterLookup/OneIntegerParameter.lua")
         ));
