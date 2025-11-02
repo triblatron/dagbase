@@ -142,6 +142,8 @@ namespace dagbase
                 case CHILD_RIGHT:
                     return right();
             }
+
+            return nullptr;
         }
 
         const RedBlackTreeNode* child(Child index) const
@@ -153,6 +155,8 @@ namespace dagbase
                 case CHILD_RIGHT:
                     return right();
             }
+
+            return nullptr;
         }
 
         RedBlackTreeNode* otherChild(Direction dir)

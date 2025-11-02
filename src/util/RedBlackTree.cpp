@@ -227,6 +227,8 @@ namespace dagbase
                 return CHILD_LEFT;
             case DIR_RIGHT:
                 return CHILD_RIGHT;
+            default:
+                return CHILD_LEFT;
         }
     }
 
