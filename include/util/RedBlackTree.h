@@ -25,7 +25,7 @@ namespace dagbase
     public:
         using Path = SearchableArray<std::vector<RedBlackTreeNode*>>;
         using ArrayOfPath = SearchableArray<std::vector<Path>>;
-        struct SubPath
+        struct DAGBASE_API SubPath
         {
             std::size_t pathIndex{0};
             Path subPath;
