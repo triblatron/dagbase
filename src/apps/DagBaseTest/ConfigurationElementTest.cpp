@@ -2,6 +2,12 @@
 
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
+#include "io/StreamFormat.h"
+#include "io/MemoryBackingStore.h"
+#include "io/BinaryFormat.h"
+#include "io/TextFormat.h"
+#include "io/FormatAgnosticOutputStream.h"
+#include "io/FormatAgnosticInputStream.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -147,4 +153,49 @@ TEST_P(ConfigurationElement_testAsString, testAsString)
 INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElement_testAsString, ::testing::Values(
         std::make_tuple("root={ foo=\"true\" }", "foo", "true"),
         std::make_tuple("root={ foo= { \"true\" } }", "foo[0]", "true")
+        ));
+
+class ConfigurationElement_testSerialise : public ::testing::TestWithParam<std::tuple<const char*, const char*>>
+{
+
+};
+
+TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::ConfigurationElement* config = nullptr;
+    {
+        dagbase::Lua lua;
+
+        config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+        ASSERT_NE(nullptr, config);
+    }
+    std::string className = std::get<1>(GetParam());
+    dagbase::StreamFormat* sut = nullptr;
+    dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (className == "TextFormat")
+        sut = new dagbase::TextFormat(&backingStore);
+    else if (className == "BinaryFormat")
+        sut = new dagbase::BinaryFormat(&backingStore);
+    ASSERT_NE(nullptr, sut);
+    sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
+    auto ostr = new dagbase::FormatAgnosticOutputStream(sut, &backingStore);
+    if (ostr->writeRef(config))
+    {
+        config->write(*ostr);
+    }
+    sut->flush();
+    sut->setMode(dagbase::StreamFormat::MODE_INPUT);
+    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+
+    dagbase::ConfigurationElement* configFromStream = nullptr;
+    dagbase::FormatAgnosticInputStream istr(sut, &backingStore);
+    dagbase::FormatAgnosticInputStream::ObjId id;
+    configFromStream = istr.readRef<dagbase::ConfigurationElement>(&id);
+    ASSERT_NE(nullptr, configFromStream);
+    EXPECT_EQ(*config, *configFromStream);
+}
+
+INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElement_testSerialise, ::testing::Values(
+        std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "TextFormat")
         ));

@@ -17,13 +17,14 @@
 
 namespace dagbase
 {
+    class Function;
     class OutputStream;
     class InputStream;
 
     class DAGBASE_API Variant
     {
     public:
-        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t>>;
+        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t, Function*>>;
         using InnerType = ValueType::value_type;
 
         enum Index : std::uint32_t
@@ -35,6 +36,7 @@ namespace dagbase
             TYPE_COLOUR,
             TYPE_VEC2,
             TYPE_UINT,
+            TYPE_FUNCTION,
             TYPE_UNKNOWN
         };
     public:
@@ -53,6 +55,8 @@ namespace dagbase
         explicit Variant(const Vec2& value);
 
         explicit Variant(std::uint32_t value);
+
+        explicit Variant(Function* value);
 
         //! Reject conversion from const char* to bool using SFINAE
         template <typename T,

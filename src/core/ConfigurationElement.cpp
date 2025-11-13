@@ -8,6 +8,8 @@
 #include "core/LuaInterface.h"
 #include "core/Atom.h"
 #include "util/enums.h"
+#include "io/InputStream.h"
+#include "io/OutputStream.h"
 
 #include <stack>
 #include <cstdlib>
@@ -227,6 +229,11 @@ namespace dagbase
                         child = new ConfigurationElement(index, std::string(lua_tostring(lua, -1)));
                         parentStack.top()->addChild(child);
                     }
+                    else if (lua_isfunction(lua, -1))
+                    {
+                        child = new ConfigurationElement(index, Variant(new Function(lua)));
+                        parentStack.top()->addChild(child);
+                    }
                     else if (lua_istable(lua, -1))
                     {
                         child = new ConfigurationElement(name);
@@ -263,6 +270,11 @@ namespace dagbase
                         }
                         else
                             child = new ConfigurationElement(name, std::string(lua_tostring(lua, -1)));
+                        parentStack.top()->addChild(child);
+                    }
+                    else if (lua_isfunction(lua, -1))
+                    {
+                        child = new ConfigurationElement(name, Variant(new Function(lua)));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_istable(lua, -1))
@@ -389,5 +401,90 @@ namespace dagbase
         TEST_ENUM(RELOP_GE, str)
 
         return RELOP_UNKNOWN;
+    }
+
+    bool ConfigurationElement::operator==(const ConfigurationElement &other) const
+    {
+        if (_name != other._name)
+            return false;
+
+        if (_index != other._index)
+            return false;
+
+        if (_value != other._value)
+            return false;
+
+        if (_children.size() != other._children.size())
+            return false;
+
+        for (std::size_t childIndex=0; childIndex<_children.size(); ++childIndex)
+        {
+            if (!(*_children[childIndex] == *other._children[childIndex]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    OutputStream &ConfigurationElement::write(OutputStream &ostr) const
+    {
+        ostr.writeHeader("ConfigurationElement");
+        ostr.writeField("name");
+        ostr.writeString(_name, false);
+        ostr.writeField("index");
+        ostr.writeInt64(_index);
+        ostr.writeField("value");
+        _value.write(ostr);
+        ostr.writeField("parent");
+        if (ostr.writeRef(_parent))
+        {
+            _parent->write(ostr);
+        }
+        ostr.writeField("numChildren");
+        ostr.writeUInt32(_children.size());
+        ostr.writeHeader("childArray");
+        for (std::size_t childIndex=0; childIndex<_children.size(); ++childIndex)
+        {
+            if (ostr.writeRef(_children[childIndex]))
+            {
+                _children[childIndex]->write(ostr);
+            }
+        }
+        ostr.writeFooter();
+        ostr.writeFooter();
+        return ostr;
+    }
+
+    ConfigurationElement::ConfigurationElement(InputStream &str)
+    {
+        str.addObj(this);
+        std::string className;
+        str.readHeader(&className);
+
+        std::string fieldName;
+        str.readField(&fieldName);
+        str.readString(&_name, false);
+        str.readField(&fieldName);
+        str.readInt64(&_index);
+        str.readField(&fieldName);
+        _value.read(str);
+        InputStream::ObjId parentId{};
+        str.readField(&fieldName);
+        _parent = str.readRef<ConfigurationElement>(&parentId);
+        std::uint32_t numChildren{0};
+        str.readField(&fieldName);
+        str.readUInt32(&numChildren);
+        _children.resize(numChildren);
+        str.readHeader(&className);
+        for (std::size_t childIndex = 0; childIndex < _children.size(); ++childIndex)
+        {
+            InputStream::ObjId id{};
+
+            _children[childIndex] = str.readRef<ConfigurationElement>(&id);
+        }
+        str.readFooter();
+        str.readFooter();
     }
 }

@@ -220,6 +220,13 @@ namespace dagbase
 
         return Variant::TYPE_UNKNOWN;
     }
+
+    Variant::Variant(Function *value)
+    :
+    _value(value)
+    {
+        // Do nothing.
+    }
 }
 
 std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)

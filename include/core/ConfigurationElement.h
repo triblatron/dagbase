@@ -25,7 +25,9 @@ struct lua_State;
 namespace dagbase
 {
     class Atom;
+    class InputStream;
     class Lua;
+    class OutputStream;
 
     class DAGBASE_API ConfigurationElement
     {
@@ -50,7 +52,9 @@ namespace dagbase
         };
     public:
         explicit ConfigurationElement(std::string name);
-		
+
+        explicit ConfigurationElement(InputStream& str);
+
         ConfigurationElement(std::string name, ValueType value)
         :
         _value(value),
@@ -68,6 +72,10 @@ namespace dagbase
         }
 
         ~ConfigurationElement();
+
+        bool operator==(const ConfigurationElement& other) const;
+
+        OutputStream& write(OutputStream& ostr) const;
 
         static ConfigurationElement *fromString(Lua &lua, const char *str);
 
