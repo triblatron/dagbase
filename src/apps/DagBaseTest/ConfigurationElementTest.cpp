@@ -163,9 +163,9 @@ class ConfigurationElement_testSerialise : public ::testing::TestWithParam<std::
 TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
 {
     auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
     dagbase::ConfigurationElement* config = nullptr;
     {
-        dagbase::Lua lua;
 
         config = dagbase::ConfigurationElement::fromFile(lua, configStr);
         ASSERT_NE(nullptr, config);
@@ -191,11 +191,27 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
     dagbase::ConfigurationElement* configFromStream = nullptr;
     dagbase::FormatAgnosticInputStream istr(sut, &backingStore);
     dagbase::FormatAgnosticInputStream::ObjId id;
-    configFromStream = istr.readRef<dagbase::ConfigurationElement>(&id);
+    configFromStream = istr.readRef<dagbase::ConfigurationElement>(&id, lua);
     ASSERT_NE(nullptr, configFromStream);
     EXPECT_EQ(*config, *configFromStream);
+    auto funcConfig = config->findElement("foo");
+    auto funcConfig2 = configFromStream->findElement("foo");
+    if (funcConfig && funcConfig2)
+    {
+        auto func1 = funcConfig->asFunction();
+        auto func2 = funcConfig2->asFunction();
+
+        if (func1 && func2)
+        {
+            (*func1)(0,0);
+            (*func2)(0,0);
+        }
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElement_testSerialise, ::testing::Values(
-        std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "TextFormat")
+        std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "TextFormat"),
+        std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "BinaryFormat"),
+//        std::make_tuple("data/tests/ConfigurationElement/SerialiseFunction.lua", "TextFormat"),
+        std::make_tuple("data/tests/ConfigurationElement/SerialiseFunction.lua", "BinaryFormat")
         ));

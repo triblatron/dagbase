@@ -9,6 +9,8 @@
 #include "io/InputStream.h"
 #include "util/Searchable.h"
 #include "util/enums.h"
+#include "core/Function.h"
+#include "core/LuaInterface.h"
 
 #include <iostream>
 
@@ -114,6 +116,9 @@ namespace dagbase
                 case Variant::TYPE_UINT:
                     str.writeUInt32(asUint32());
                     break;
+                case Variant::TYPE_FUNCTION:
+                    std::get<TYPE_FUNCTION>(_value.value())->write(str);
+                    break;
             }
 
         }
@@ -123,7 +128,25 @@ namespace dagbase
         return str;
     }
 
-    InputStream &Variant::read(InputStream &str)
+    bool Variant::operator!=(const Variant& other) const
+    {
+        if (has_value())
+        {
+            if (index() == other.index())
+            {
+                if (index() != TYPE_FUNCTION)
+                {
+                    return _value != other._value;
+                }
+                else
+                {
+                    return !std::get<TYPE_FUNCTION>(_value.value())->equals(*std::get<TYPE_FUNCTION>(other._value.value()));
+                }
+            }
+        }
+    }
+
+    InputStream &Variant::read(InputStream &str, Lua* lua)
     {
 //        std::string name;
 //        str.readHeader(&name);
@@ -168,6 +191,11 @@ namespace dagbase
                     std::uint32_t uint32Value{0};
                     str.readUInt32(&uint32Value);
                     _value = uint32Value;
+                    break;
+                }
+                case Variant::TYPE_FUNCTION:
+                {
+                    _value = new Function(str, *lua);
                     break;
                 }
                 default:

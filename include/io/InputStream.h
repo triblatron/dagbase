@@ -14,6 +14,8 @@
 
 namespace dagbase
 {
+    class Lua;
+
     //! Input stream that supports reading arbitrary objects encoded as integer identifiers
     //! Explicitly supports reading Nodes and Ports
     class DAGBASE_API InputStream : public Stream
@@ -90,6 +92,29 @@ namespace dagbase
                 else
                 {
                     return new T(*this);
+                }
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        template<typename T>
+        T* readRef(ObjId* id, Lua& lua)
+        {
+            readUInt32(id);
+
+            if (*id != 0)
+            {
+                _lastReadId = *id;
+                if (_lastReadId-1<_ptrLookup.size())
+                {
+                    return static_cast<T*>(_ptrLookup[_lastReadId-1]);
+                }
+                else
+                {
+                    return new T(*this, lua);
                 }
             }
             else

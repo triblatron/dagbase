@@ -274,7 +274,9 @@ namespace dagbase
                     }
                     else if (lua_isfunction(lua, -1))
                     {
-                        child = new ConfigurationElement(name, Variant(new Function(lua)));
+                        auto* func = new Function(lua);
+                        //lua_pop(lua, 1);
+                        child = new ConfigurationElement(name, Variant(func));
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_istable(lua, -1))
@@ -457,7 +459,7 @@ namespace dagbase
         return ostr;
     }
 
-    ConfigurationElement::ConfigurationElement(InputStream &str)
+    ConfigurationElement::ConfigurationElement(InputStream &str, Lua& lua)
     {
         str.addObj(this);
         std::string className;
@@ -469,10 +471,10 @@ namespace dagbase
         str.readField(&fieldName);
         str.readInt64(&_index);
         str.readField(&fieldName);
-        _value.read(str);
+        _value.read(str, &lua);
         InputStream::ObjId parentId{};
         str.readField(&fieldName);
-        _parent = str.readRef<ConfigurationElement>(&parentId);
+        _parent = str.readRef<ConfigurationElement>(&parentId, lua);
         std::uint32_t numChildren{0};
         str.readField(&fieldName);
         str.readUInt32(&numChildren);
@@ -482,9 +484,15 @@ namespace dagbase
         {
             InputStream::ObjId id{};
 
-            _children[childIndex] = str.readRef<ConfigurationElement>(&id);
+            _children[childIndex] = str.readRef<ConfigurationElement>(&id, lua);
         }
         str.readFooter();
         str.readFooter();
+    }
+
+    ConfigurationElement *ConfigurationElement::fromStream(Lua& lua, InputStream &str)
+    {
+        InputStream::ObjId id{};
+        return str.readRef<ConfigurationElement>(&id, lua);
     }
 }
