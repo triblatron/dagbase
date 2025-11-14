@@ -53,7 +53,7 @@ namespace dagbase
     public:
         explicit ConfigurationElement(std::string name);
 
-        explicit ConfigurationElement(InputStream& str);
+        explicit ConfigurationElement(InputStream& str, Lua& lua);
 
         ConfigurationElement(std::string name, ValueType value)
         :
@@ -80,6 +80,8 @@ namespace dagbase
         static ConfigurationElement *fromString(Lua &lua, const char *str);
 
         static ConfigurationElement *fromFile(Lua &lua, const char *filename);
+
+        static ConfigurationElement* fromStream(Lua& lua, InputStream& str);
 
 		void setIndex(std::int64_t index)
 		{
@@ -160,6 +162,11 @@ namespace dagbase
 //            {
 //                return defaultValue;
 //            }
+        }
+
+        Function* asFunction(Function* defaultValue=nullptr) const
+        {
+            return _value.asFunction(defaultValue);
         }
 
         template <typename T>

@@ -20,6 +20,7 @@ namespace dagbase
     class Function;
     class OutputStream;
     class InputStream;
+    class Lua;
 
     class DAGBASE_API Variant
     {
@@ -130,6 +131,14 @@ namespace dagbase
                 return defaultValue;
         }
 
+        Function* asFunction(Function* defaultValue) const
+        {
+            if (_value.has_value() && _value->index() == TYPE_FUNCTION)
+                return std::get<TYPE_FUNCTION>(_value.value());
+            else
+                return defaultValue;
+        }
+
         template<typename T>
         T as() const
         {
@@ -168,14 +177,11 @@ namespace dagbase
             return _value.value();
         }
 
-        bool operator!=(const Variant& other) const
-        {
-            return _value != other._value;
-        }
+        bool operator!=(const Variant& other) const;
 
         OutputStream& write(OutputStream& str) const;
 
-        InputStream& read(InputStream& str);
+        InputStream& read(InputStream& str, Lua* lua=nullptr);
 
         Variant find(std::string_view path) const;
 
