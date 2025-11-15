@@ -143,6 +143,12 @@ namespace dagbase
                     return !std::get<TYPE_FUNCTION>(_value.value())->equals(*std::get<TYPE_FUNCTION>(other._value.value()));
                 }
             }
+            else
+                return true;
+        }
+        else
+        {
+            return other.has_value();
         }
     }
 
