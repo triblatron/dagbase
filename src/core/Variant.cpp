@@ -290,6 +290,9 @@ std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
         case dagbase::Variant::TYPE_UINT:
             str << value.asUint32();
             break;
+        case dagbase::Variant::TYPE_FUNCTION:
+            str << "<function>";
+            break;
         default:
             str << "<unknown>";
     }

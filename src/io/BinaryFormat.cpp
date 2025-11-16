@@ -8,22 +8,21 @@
 #include "core/Class.h"
 #include "io/BackingStore.h"
 
-union BufferUInt32
+#include <cstring>
+
+struct BufferUInt32
 {
-    std::uint32_t value;
-    std::uint8_t bytes[sizeof(value)];
+    std::uint8_t bytes[sizeof(std::uint32_t)];
 };
 
-union BufferDouble
+struct BufferDouble
 {
-    double value;
-    std::uint8_t bytes[sizeof(value)];
+    std::uint8_t bytes[sizeof(double)];
 };
 
-union BufferInt64
+struct BufferInt64
 {
-    std::int64_t value;
-    std::uint8_t bytes[sizeof(value)];
+    std::uint8_t bytes[sizeof(std::int64_t)];
 };
 
 namespace dagbase
@@ -43,8 +42,8 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferUInt32 buffer;
-            buffer.value = value;
+            BufferUInt32 buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(std::uint32_t));
             _store->put(buffer.bytes, sizeof(buffer.bytes));
         }
     }
@@ -53,10 +52,10 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferUInt32 buffer;
+            BufferUInt32 buffer{};
             _store->get(buffer.bytes, sizeof(buffer.bytes));
             if (value)
-                *value = buffer.value;
+                std::memcpy(value, buffer.bytes, sizeof(std::uint32_t));
         }
     }
 
@@ -64,8 +63,8 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferInt64 buffer;
-            buffer.value = value;
+            BufferInt64 buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(std::int64_t));
             _store->put(buffer.bytes, sizeof(buffer.bytes));
         }
     }
@@ -74,10 +73,10 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferInt64 buffer;
+            BufferInt64 buffer{};
             _store->get(buffer.bytes, sizeof(buffer.bytes));
             if (value)
-                *value = buffer.value;
+                std::memcpy(value, buffer.bytes, sizeof(std::int64_t));
         }
     }
 
@@ -85,8 +84,8 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferDouble buffer;
-            buffer.value = value;
+            BufferDouble buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(double));
             _store->put(buffer.bytes, sizeof(buffer.bytes));
         }
     }
@@ -95,10 +94,10 @@ namespace dagbase
     {
         if (_store)
         {
-            BufferDouble buffer;
+            BufferDouble buffer{};
             _store->get(buffer.bytes, sizeof(buffer.bytes));
             if (value)
-                *value = buffer.value;
+                std::memcpy(value, buffer.bytes, sizeof(double));
         }
     }
 
