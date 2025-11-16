@@ -50,6 +50,22 @@ namespace dagbase
         // Do nothing.
     }
 
+    Variant::~Variant()
+    {
+        if (_own && has_value())
+        {
+            switch (_value->index())
+            {
+            case TYPE_FUNCTION:
+                delete std::get<Function *>(_value.value());
+                break;
+            default:
+                // Nothing else allocates.
+                break;
+            }
+        }
+    }
+
     Variant::Variant(std::int64_t intValue)
     :
     _value(intValue)
@@ -202,6 +218,7 @@ namespace dagbase
                 case Variant::TYPE_FUNCTION:
                 {
                     _value = new Function(str, *lua);
+                    _own = true;
                     break;
                 }
                 default:
@@ -257,9 +274,10 @@ namespace dagbase
         return Variant::TYPE_UNKNOWN;
     }
 
-    Variant::Variant(Function *value)
+    Variant::Variant(Function *value, bool own)
     :
-    _value(value)
+    _value(value),
+    _own(own)
     {
         // Do nothing.
     }

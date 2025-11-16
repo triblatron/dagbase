@@ -207,6 +207,10 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
             (*func2)(0,0);
         }
     }
+    delete configFromStream;
+    delete ostr;
+    delete sut;
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElement_testSerialise, ::testing::Values(

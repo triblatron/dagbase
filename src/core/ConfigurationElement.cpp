@@ -276,7 +276,7 @@ namespace dagbase
                     {
                         auto* func = new Function(lua);
                         //lua_pop(lua, 1);
-                        child = new ConfigurationElement(name, Variant(func));
+                        child = new ConfigurationElement(name, func);
                         parentStack.top()->addChild(child);
                     }
                     else if (lua_istable(lua, -1))

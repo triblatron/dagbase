@@ -43,6 +43,8 @@ namespace dagbase
     public:
         Variant() = default;
 
+        ~Variant();
+
         explicit Variant(std::int64_t intValue);
 
         explicit Variant(double value);
@@ -57,7 +59,7 @@ namespace dagbase
 
         explicit Variant(std::uint32_t value);
 
-        explicit Variant(Function* value);
+        explicit Variant(Function* value, bool own=false);
 
         //! Reject conversion from const char* to bool using SFINAE
         template <typename T,
@@ -192,6 +194,7 @@ namespace dagbase
         static Index parseIndex(const char* str);
     private:
         ValueType _value;
+        bool _own{false};
     };
 }
 

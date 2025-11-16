@@ -32,13 +32,13 @@ namespace dagbase
     class DAGBASE_API ConfigurationElement
     {
     public:
-//        enum Type
-//        {
-//            TYPE_BOOL,
-//            TYPE_INTEGER,
-//            TYPE_DOUBLE,
-//            TYPE_STRING
-//        };
+        //        enum Type
+        //        {
+        //            TYPE_BOOL,
+        //            TYPE_INTEGER,
+        //            TYPE_DOUBLE,
+        //            TYPE_STRING
+        //        };
         using ValueType = Variant;//std::optional<std::variant<bool, std::int64_t, double, std::string>>;
         enum RelOp
         {
@@ -58,6 +58,14 @@ namespace dagbase
         ConfigurationElement(std::string name, ValueType value)
         :
         _value(value),
+        _name(std::move(name))
+        {
+            // Do nothing.
+        }
+
+        ConfigurationElement(std::string name, Function* value)
+            :
+        _value(value, true),
         _name(std::move(name))
         {
             // Do nothing.
