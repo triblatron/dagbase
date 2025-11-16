@@ -143,6 +143,12 @@ namespace dagbase
                     return !std::get<TYPE_FUNCTION>(_value.value())->equals(*std::get<TYPE_FUNCTION>(other._value.value()));
                 }
             }
+            else
+                return true;
+        }
+        else
+        {
+            return other.has_value();
         }
     }
 
@@ -230,6 +236,7 @@ namespace dagbase
             ENUM_NAME(TYPE_COLOUR)
             ENUM_NAME(TYPE_VEC2)
             ENUM_NAME(TYPE_UINT)
+            ENUM_NAME(TYPE_FUNCTION)
             ENUM_NAME(TYPE_UNKNOWN)
         }
 
@@ -245,6 +252,7 @@ namespace dagbase
         TEST_ENUM(TYPE_COLOUR, str)
         TEST_ENUM(TYPE_VEC2, str)
         TEST_ENUM(TYPE_UINT, str)
+        TEST_ENUM(TYPE_FUNCTION, str)
 
         return Variant::TYPE_UNKNOWN;
     }
