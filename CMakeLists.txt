@@ -61,6 +61,8 @@ include/util/DebugPrinter.h
         include/util/RedBlackTree.h
         include/util/ParameterLookup.h
         include/core/Function.h
+        include/util/VectorMultimap.h
+        include/util/Less.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

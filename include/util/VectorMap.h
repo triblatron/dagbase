@@ -2,6 +2,7 @@
 
 #include "core/Variant.h"
 #include "util/Searchable.h"
+#include "util/Less.h"
 
 #include <vector>
 #include <utility>
@@ -9,15 +10,6 @@
 
 namespace dagbase
 {
-    template<typename T1, typename T2>
-    struct Less
-    {
-        bool operator()(const std::pair<T1, T2>& op1, const std::pair<T1, T2>& op2) const
-        {
-            return op1.first < op2.first;
-        }
-    };
-
 	template <typename Key, typename Value, typename Compare=Less<Key,Value>, typename Equals=std::equal_to<Key>>
 	class VectorMap
 	{

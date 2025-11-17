@@ -3,6 +3,7 @@
 //
 
 #include "util/VectorMap.h"
+#include "util/VectorMultimap.h"
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
 #include "test/TestUtils.h"
@@ -15,6 +16,7 @@ class VectorMap_testInsert : public ::testing::TestWithParam<std::tuple<const ch
 };
 
 using IntVectorMap = dagbase::VectorMap<std::int64_t, std::int64_t>;
+using IntVectorMultimap = dagbase::VectorMultimap<std::int64_t, std::int64_t>;
 
 TEST_P(VectorMap_testInsert, testInsert)
 {
@@ -186,4 +188,57 @@ INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testFind, ::testing::Values(
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1 }", true),
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4 }", false),
 	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2 }", false)
+	));
+
+class VectorMultimap_testEqualRange : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+
+};
+
+TEST_P(VectorMultimap_testEqualRange, testFind)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromString(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    auto elementsConfig = config->findElement("elements");
+    ASSERT_NE(nullptr, elementsConfig);
+    IntVectorMultimap sut;
+    elementsConfig->eachChild([&sut](auto &child) {
+        if (child.numChildren() == 2)
+            sut.insert(IntVectorMap::value_type(child.child(0)->asInteger(), child.child(1)->asInteger()));
+
+        return true;
+    });
+    auto searchConfig = config->findElement("search");
+    ASSERT_NE(nullptr, searchConfig);
+    auto key = searchConfig->asInteger();
+    std::vector<typename IntVectorMultimap::value_type> results;
+    if (auto resultConfig = config->findElement("results"); resultConfig)
+    {
+        resultConfig->eachChild([&results](dagbase::ConfigurationElement &child) {
+            if (child.numChildren() == 2)
+            {
+                results.emplace_back(child.child(0)->asInteger(0), child.child(1)->asInteger());
+            }
+            return true;
+        });
+    }
+
+
+    auto p = sut.equal_range(key);
+    std::vector<typename IntVectorMultimap::value_type> actualResults;
+    for (auto it = p.first; it != p.second; ++it)
+    {
+        actualResults.emplace_back(it->first, it->second);
+    }
+    EXPECT_EQ(actualResults, results);
+}
+
+INSTANTIATE_TEST_SUITE_P(VectorMultimap, VectorMultimap_testEqualRange, ::testing::Values(
+	std::make_tuple("root = { elements={ }, search=1, results={} }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1, results={{1,1}} }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4, results={} }"),
+	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2, results={} }"),
+    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}} }")
 	));
