@@ -240,5 +240,8 @@ INSTANTIATE_TEST_SUITE_P(VectorMultimap, VectorMultimap_testEqualRange, ::testin
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1, results={{1,1}} }"),
 	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4, results={} }"),
 	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2, results={} }"),
-    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}} }")
+    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}} }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=2, results={{2,1},{2,2},{2,3}} }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1}} }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1}} }")
 	));
