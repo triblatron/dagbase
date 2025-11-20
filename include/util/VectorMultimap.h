@@ -68,7 +68,7 @@ namespace dagbase
         std::pair<iterator, bool> emplace(Args&&... args)
         {
             auto temp = std::pair<Key,Value>(std::forward<Args>(args)...);
-            auto it = std::lower_bound(_map.begin(), _map.end(), temp, _cmp);
+            auto it = std::upper_bound(_map.begin(), _map.end(), temp, _cmp);
             if (it != _map.end())
             {
                 auto equalKey = it->first == temp.first;

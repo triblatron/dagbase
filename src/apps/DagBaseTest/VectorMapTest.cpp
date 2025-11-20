@@ -204,9 +204,20 @@ TEST_P(VectorMultimap_testEqualRange, testFind)
     auto elementsConfig = config->findElement("elements");
     ASSERT_NE(nullptr, elementsConfig);
     IntVectorMultimap sut;
-    elementsConfig->eachChild([&sut](auto &child) {
+    std::int64_t op=0;
+    if (auto element=config->findElement("op"); element)
+    {
+        op = element->asInteger();
+    }
+    ASSERT_GT(op,0);
+    elementsConfig->eachChild([&sut, op](auto &child) {
         if (child.numChildren() == 2)
-            sut.insert(IntVectorMap::value_type(child.child(0)->asInteger(), child.child(1)->asInteger()));
+        {
+            if (op == 1)
+                sut.insert(IntVectorMap::value_type(child.child(0)->asInteger(), child.child(1)->asInteger()));
+            else if (op == 2)
+                sut.emplace(IntVectorMap::value_type(child.child(0)->asInteger(), child.child(1)->asInteger()));
+        }
 
         return true;
     });
@@ -225,7 +236,6 @@ TEST_P(VectorMultimap_testEqualRange, testFind)
         });
     }
 
-
     auto p = sut.equal_range(key);
     std::vector<typename IntVectorMultimap::value_type> actualResults;
     for (auto it = p.first; it != p.second; ++it)
@@ -236,12 +246,20 @@ TEST_P(VectorMultimap_testEqualRange, testFind)
 }
 
 INSTANTIATE_TEST_SUITE_P(VectorMultimap, VectorMultimap_testEqualRange, ::testing::Values(
-	std::make_tuple("root = { elements={ }, search=1, results={} }"),
-	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1, results={{1,1}} }"),
-	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4, results={} }"),
-	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2, results={} }"),
-    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}} }"),
-    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=2, results={{2,1},{2,2},{2,3}} }"),
-    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1}} }"),
-    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1}} }")
+	std::make_tuple("root = { elements={ }, search=1, results={}, op=1 }"),
+	std::make_tuple("root = { elements={ }, search=1, results={}, op=2 }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1, results={{1,1}}, op=1 }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=1, results={{1,1}}, op=2 }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4, results={}, op=1 }"),
+	std::make_tuple("root = { elements={ {1,1}, {2,2}, {3,3} }, search=4, results={}, op=2 }"),
+	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2, results={}, op=1 }"),
+	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2, results={}, op=2 }"),
+    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}}, op=1 }"),
+    std::make_tuple("root = { elements={ {1,1}, {1,2} }, search=1, results={{1,1},{1,2}}, op=2 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=2, results={{2,1},{2,2},{2,3}}, op=1 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=2, results={{2,1},{2,2},{2,3}}, op=2 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=1 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=2 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=1 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=2 }")
 	));
