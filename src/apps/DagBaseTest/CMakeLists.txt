@@ -15,7 +15,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         MultiArrayTest.cpp
         RoundTripTest.cpp
         RedBlackTreeTest.cpp
-        ParameterLookupTest.cpp)
+        ParameterLookupTest.cpp
+        DynamicEnumTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)
