@@ -1,0 +1,11 @@
+root=
+{
+	{
+		name="ONE_BIT",
+		value=1<<0,
+	},
+	{
+		name="TWO_BIT",
+		value=1<<1,
+	},
+}

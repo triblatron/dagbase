@@ -7,6 +7,8 @@
 #include "util/DynamicEnum.h"
 #include "core/ConfigurationElement.h"
 
+#include <cctype>
+
 namespace dagbase
 {
     void DynamicEnum::configure(ConfigurationElement &config)
@@ -24,11 +26,33 @@ namespace dagbase
 
     std::uint32_t DynamicEnum::lookup(Atom name) const
     {
-        if (auto it=_lookup.find(name); it!=_lookup.end())
+        std::string token;
+        std::uint32_t value{0};
+        for (auto c : name)
         {
-            return it->second;
+            if (std::isalnum(c) || std::ispunct(c))
+            {
+                token += c;
+            }
+            else if (c == ' ')
+            {
+                value |= lookupOne(dagbase::Atom::intern(token));
+                token.clear();
+            }
+        }
+        if (!token.empty())
+        {
+            value |= lookupOne(dagbase::Atom::intern(token));
         }
 
-        return 0;
+        return value;
+    }
+
+    std::uint32_t DynamicEnum::lookupOne(Atom name) const
+    {
+        if (auto it=_lookup.find(name); it!=_lookup.end())
+            return it->second;
+        else
+            return 0;
     }
 }

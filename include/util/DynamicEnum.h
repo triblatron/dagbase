@@ -22,6 +22,8 @@ namespace dagbase
         void configure(ConfigurationElement& config);
 
         std::uint32_t lookup(Atom name) const;
+
+        std::uint32_t lookupOne(Atom name) const;
     private:
         using Lookup = VectorMap<Atom, std::uint32_t>;
         Lookup _lookup;

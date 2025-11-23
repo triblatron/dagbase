@@ -9,12 +9,12 @@
 
 #include <gtest/gtest.h>
 
-class DynamicEnum_testConfigure : public ::testing::TestWithParam<std::tuple<const char*, const char*, std::uint32_t>>
+class DynamicEnum_testLookup : public ::testing::TestWithParam<std::tuple<const char*, const char*, std::uint32_t>>
 {
 
 };
 
-TEST_P(DynamicEnum_testConfigure, testExpectedValue)
+TEST_P(DynamicEnum_testLookup, testExpectedValue)
 {
     auto configStr = std::get<0>(GetParam());
     auto name = std::get<1>(GetParam());
@@ -28,7 +28,8 @@ TEST_P(DynamicEnum_testConfigure, testExpectedValue)
     EXPECT_EQ(value, sut.lookup(dagbase::Atom::intern(name)));
 }
 
-INSTANTIATE_TEST_SUITE_P(DynamicEnum, DynamicEnum_testConfigure, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(DynamicEnum, DynamicEnum_testLookup, ::testing::Values(
         std::make_tuple("data/tests/DynamicEnum/Empty.lua", "TEST", 0),
-        std::make_tuple("data/tests/DynamicEnum/One.lua", "TEST", 1)
+        std::make_tuple("data/tests/DynamicEnum/One.lua", "TEST", 1),
+        std::make_tuple("data/tests/DynamicEnum/Multiple.lua", "ONE_BIT TWO_BIT", 3)
         ));
