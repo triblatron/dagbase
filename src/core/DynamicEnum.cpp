@@ -14,10 +14,10 @@ namespace dagbase
     void DynamicEnum::configure(ConfigurationElement &config)
     {
         config.eachChild([this](ConfigurationElement& child) {
-            std::string name;
-            dagbase::ConfigurationElement::readConfig(child, "name", &name);
-            std::uint32_t value{0};
-            dagbase::ConfigurationElement::readConfig(child, "value", &value);
+            std::string name = child.name();
+            
+            std::uint32_t value = child.asInteger();
+            
             _lookup.emplace(dagbase::Atom::intern(name), value);
 
             return true;

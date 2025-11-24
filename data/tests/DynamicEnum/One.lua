@@ -1,8 +1,5 @@
 root=
 {
-	{
-		name="TEST",
-		value=1<<0
-	},
+	TEST=1<<0,
 }
 

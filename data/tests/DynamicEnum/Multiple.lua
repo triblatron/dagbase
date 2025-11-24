@@ -1,11 +1,5 @@
 root=
 {
-	{
-		name="ONE_BIT",
-		value=1<<0,
-	},
-	{
-		name="TWO_BIT",
-		value=1<<1,
-	},
+	ONE_BIT=1<<0,
+	TWO_BIT=1<<1
 }
