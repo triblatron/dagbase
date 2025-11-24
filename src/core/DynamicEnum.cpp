@@ -13,6 +13,7 @@ namespace dagbase
 {
     void DynamicEnum::configure(ConfigurationElement &config)
     {
+        _lookup.reserve(config.numChildren());
         config.eachChild([this](ConfigurationElement& child) {
             std::string name = child.name();
             
