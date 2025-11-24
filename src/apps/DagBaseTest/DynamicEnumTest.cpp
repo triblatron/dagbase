@@ -31,5 +31,6 @@ TEST_P(DynamicEnum_testLookup, testExpectedValue)
 INSTANTIATE_TEST_SUITE_P(DynamicEnum, DynamicEnum_testLookup, ::testing::Values(
         std::make_tuple("data/tests/DynamicEnum/Empty.lua", "TEST", 0),
         std::make_tuple("data/tests/DynamicEnum/One.lua", "TEST", 1),
-        std::make_tuple("data/tests/DynamicEnum/Multiple.lua", "ONE_BIT TWO_BIT", 3)
+        std::make_tuple("data/tests/DynamicEnum/Multiple.lua", "ONE_BIT TWO_BIT", 3),
+        std::make_tuple("etc/keyCodes.lua", "KEY_A", 65)
         ));
