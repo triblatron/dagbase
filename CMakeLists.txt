@@ -64,6 +64,7 @@ include/util/DebugPrinter.h
         include/util/VectorMultimap.h
         include/util/Less.h
         include/util/DynamicEnum.h
+        include/util/DynamicBitset.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

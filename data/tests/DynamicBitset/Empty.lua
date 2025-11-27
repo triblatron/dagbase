@@ -1,0 +1,11 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=false,
+		}
+	}
+}
