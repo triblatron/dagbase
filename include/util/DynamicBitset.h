@@ -17,15 +17,13 @@ namespace dagbase
     public:
         void push_back(bool bit)
         {
-            if (empty() || _allocatedBitsWithinBlock==sizeof(block_type)*CHAR_BIT)
-            {
-                _rep.emplace_back();
-                _allocatedBitsWithinBlock = 0;
-            }
             std::size_t blockIndex = _size / (sizeof(block_type)*CHAR_BIT);
             std::size_t indexWithinBlock = _size % (sizeof(block_type)*CHAR_BIT);
+            if (blockIndex >= _rep.size())
+            {
+                _rep.emplace_back();
+            }
             _rep[blockIndex] |= bit?1<<indexWithinBlock:0;
-            ++_allocatedBitsWithinBlock;
             ++_size;
         }
 
@@ -57,6 +55,5 @@ namespace dagbase
     private:
         std::vector<block_type> _rep;
         std::size_t _size{0};
-        std::size_t _allocatedBitsWithinBlock{0};
     };
 }
