@@ -1,0 +1,20 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="PUSH_BACK",
+			operand=false,
+			result=1,
+		},
+		{
+			opcode="SET_BIT",
+			operand=0,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=true,
+		}
+	}
+}

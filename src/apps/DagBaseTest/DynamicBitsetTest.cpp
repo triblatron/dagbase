@@ -19,6 +19,7 @@ protected:
     {
         std::string opcode;
         dagbase::Variant operand;
+        dagbase::Variant operand2;
         dagbase::Variant result;
 
         void configure(dagbase::ConfigurationElement& config);
@@ -33,6 +34,7 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::configure(dagbase::ConfigurationEle
 {
     dagbase::ConfigurationElement::readConfig(config, "opcode", &opcode);
     dagbase::ConfigurationElement::readConfig(config, "operand", &operand);
+    dagbase::ConfigurationElement::readConfig(config, "operand2", &operand2);
     dagbase::ConfigurationElement::readConfig(config, "result", &result);
 }
 
@@ -46,6 +48,38 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     else if (opcode == "TEST_BIT")
     {
         EXPECT_EQ(result.asBool(), sut.testBit(operand.asInteger()));
+    }
+    else if (opcode == "SET_BIT")
+    {
+        sut.setBit(operand.asInteger());
+    }
+    else if (opcode == "CLEAR_BIT")
+    {
+        sut.clearBit(operand.asInteger());
+    }
+    else if (opcode == "FLIP_BIT")
+    {
+        sut.flipBit(operand.asInteger());
+    }
+    else if (opcode == "NUN_BLOCKS")
+    {
+        EXPECT_EQ(result.asInteger(), sut.numBlocks());
+    }
+    else if (opcode == "RESERVE")
+    {
+        sut.reserve(operand.asInteger());
+    }
+    else if (opcode == "CAPACITY")
+    {
+        EXPECT_EQ(result.asInteger(), sut.capacity());
+    }
+    else if (opcode == "RESIZE")
+    {
+        sut.resize(operand.asInteger(), operand2.asBool());
+    }
+    else if (opcode == "SIZE")
+    {
+        EXPECT_EQ(result.asInteger(), sut.size());
     }
 }
 
@@ -77,5 +111,16 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/OneNotSet.lua"),
         std::make_tuple("data/tests/DynamicBitset/OneSet.lua"),
         std::make_tuple("data/tests/DynamicBitset/TwoBits.lua"),
-        std::make_tuple("data/tests/DynamicBitset/MultipleBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/MultipleBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/SetOne.lua"),
+        std::make_tuple("data/tests/DynamicBitset/clearOne.lua"),
+        std::make_tuple("data/tests/DynamicBitset/flipOff.lua"),
+        std::make_tuple("data/tests/DynamicBitset/flipOn.lua"),
+        std::make_tuple("data/tests/DynamicBitset/TwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ReserveOne.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ReserveTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeOneFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeOneTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwo.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwice.lua")
         ));

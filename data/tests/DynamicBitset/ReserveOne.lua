@@ -1,0 +1,14 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESERVE",
+			operand=1,
+		},
+		{
+			opcode="CAPACITY",
+			result=32,
+		},
+	}
+}

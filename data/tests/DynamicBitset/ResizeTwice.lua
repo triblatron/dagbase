@@ -1,0 +1,35 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=1,
+			operand2=false,
+		},
+		{
+			opcode="SIZE",
+			result=1,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=false
+		},
+		{
+			opcode="RESIZE",
+			operand=2,
+			operand2=true,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=false,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=1,
+			result=true,
+		},
+	}
+}
