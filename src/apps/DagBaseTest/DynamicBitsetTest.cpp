@@ -21,6 +21,7 @@ protected:
         dagbase::Variant operand;
         dagbase::Variant operand2;
         dagbase::Variant result;
+        std::string message;
 
         void configure(dagbase::ConfigurationElement& config);
 
@@ -36,6 +37,7 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::configure(dagbase::ConfigurationEle
     dagbase::ConfigurationElement::readConfig(config, "operand", &operand);
     dagbase::ConfigurationElement::readConfig(config, "operand2", &operand2);
     dagbase::ConfigurationElement::readConfig(config, "result", &result);
+    dagbase::ConfigurationElement::readConfig(config, "message", &message);
 }
 
 void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std::uint32_t> &sut)
@@ -47,7 +49,7 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     }
     else if (opcode == "TEST_BIT")
     {
-        EXPECT_EQ(result.asBool(), sut.testBit(operand.asInteger()));
+        EXPECT_EQ(result.asBool(), sut.testBit(operand.asInteger())) << message;
     }
     else if (opcode == "SET_BIT")
     {
@@ -122,5 +124,9 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/ResizeOneFalse.lua"),
         std::make_tuple("data/tests/DynamicBitset/ResizeOneTrue.lua"),
         std::make_tuple("data/tests/DynamicBitset/ResizeTwo.lua"),
-        std::make_tuple("data/tests/DynamicBitset/ResizeTwice.lua")
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwice.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/PushBackThenResizeTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeIntermediateBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwiceTwoBlocks.lua")
         ));

@@ -43,24 +43,24 @@ namespace dagbase
                 std::size_t oldNumBlocks = numBlocks();
                 if (blockIndex+1>numBlocks())
                 {
-                    _rep.resize(blockIndex + 1);
+                    block_type fillValue = value?std::numeric_limits<block_type>::max():0;
+                    _rep.resize(blockIndex + 1, fillValue);
                 }
-                // Compute mask to fill block so far
+                // Fill existing partial blocks
                 std::size_t oldBlockIndex = size() / bitsPerBlock;
                 std::size_t oldNumBitsWithinBlock = size() % bitsPerBlock;
                 block_type existingMask = (1<<oldNumBitsWithinBlock)-1;
-                // We want to leave these bits alone
-                // Compute mask to fill with value
-                block_type blockMask = ((1 << (numBitsWithinBlock)) - 1);
-                // Clear bits corresponding to existing mask
-                blockMask ^= existingMask;
-                if (!value)
+
+                block_type restOfBlockMask = std::numeric_limits<block_type>::max();
+                restOfBlockMask &= ~existingMask;
+
+                if (value)
                 {
-                    _rep[blockIndex] &= ~blockMask;
+                    _rep[oldBlockIndex] |= restOfBlockMask;
                 }
                 else
                 {
-                    _rep[blockIndex] |= blockMask;
+                    _rep[oldBlockIndex] &= ~restOfBlockMask;
                 }
                 _size = n;
             }
