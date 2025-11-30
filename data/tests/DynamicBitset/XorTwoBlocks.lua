@@ -1,0 +1,24 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=33,
+			operand2=true,
+		},
+		{
+			opcode="CLEAR_BIT",
+			operand=0,
+		},
+		{
+			opcode="XOR",
+			operand="111111111111111111101111111111111",
+			result="0"
+		},
+		{
+			opcode="TO_STRING",
+			result= "000000000000000000010000000000001",
+		},
+	}
+}

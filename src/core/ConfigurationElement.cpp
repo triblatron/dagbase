@@ -250,7 +250,7 @@ namespace dagbase
                         child = new ConfigurationElement(name, Variant(std::int64_t(lua_tointeger(lua, -1))));
                         parentStack.top()->addChild(child);
                     }
-                    else if (lua_isnumber(lua, -1))
+                    else if (lua_type(lua, -1) == LUA_TNUMBER)
                     {
                         child = new ConfigurationElement(name, Variant(lua_tonumber(lua, -1)));
                         parentStack.top()->addChild(child);

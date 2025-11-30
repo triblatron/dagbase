@@ -123,7 +123,6 @@ namespace dagbase
 
             if (blockIndex<_rep.size())
             {
-                block_type block = _rep[blockIndex];
                 block_type mask = 1 << indexWithinBlock;
 
                 _rep[blockIndex] |= mask;
@@ -137,7 +136,6 @@ namespace dagbase
 
             if (blockIndex<_rep.size())
             {
-                block_type block = _rep[blockIndex];
                 block_type mask = 1 << indexWithinBlock;
 
                 _rep[blockIndex] &= ~mask;
@@ -151,7 +149,6 @@ namespace dagbase
 
             if (blockIndex<_rep.size())
             {
-                block_type block = _rep[blockIndex];
                 block_type mask = 1 << indexWithinBlock;
 
                 _rep[blockIndex] ^= mask;
@@ -199,6 +196,45 @@ namespace dagbase
             {
                 str[size() - 1 - i] = testBit(i)?'1':'0';
             }
+        }
+
+        DynamicBitset<Block>& operator&=(const DynamicBitset<Block>& other)
+        {
+            if (numBlocks() == other.numBlocks())
+            {
+                for (std::size_t i=0; i<numBlocks(); ++i)
+                {
+                    _rep[i] &= other._rep[i];
+                }
+            }
+
+            return *this;
+        }
+
+        DynamicBitset<Block>& operator|=(const DynamicBitset<Block>& other)
+        {
+            if (numBlocks() == other.numBlocks())
+            {
+                for (std::size_t i=0; i<numBlocks(); ++i)
+                {
+                    _rep[i] |= other._rep[i];
+                }
+            }
+
+            return *this;
+        }
+
+        DynamicBitset<Block>& operator^=(const DynamicBitset<Block>& other)
+        {
+            if (numBlocks() == other.numBlocks())
+            {
+                for (std::size_t i=0; i<numBlocks(); ++i)
+                {
+                    _rep[i] ^= other._rep[i];
+                }
+            }
+
+            return *this;
         }
     private:
         std::vector<block_type> _rep;

@@ -1,0 +1,20 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="PUSH_BACK",
+			operand=true,
+			result=1,
+		},
+		{
+			opcode="AND",
+			operand="0",
+			result="0"
+		},
+		{
+			opcode="TO_STRING",
+			result="0",
+		},
+	}
+}

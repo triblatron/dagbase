@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-class DynamicBitSet_testBitwiseOp : public ::testing::TestWithParam<std::tuple<const char*>>
+class DynamicBitset_testBitwiseOp : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
     void configure(dagbase::ConfigurationElement& config);
@@ -31,7 +31,7 @@ protected:
     dagbase::DynamicBitset<std::uint32_t> _sut;
 };
 
-void DynamicBitSet_testBitwiseOp::BitwiseOp::configure(dagbase::ConfigurationElement &config)
+void DynamicBitset_testBitwiseOp::BitwiseOp::configure(dagbase::ConfigurationElement &config)
 {
     dagbase::ConfigurationElement::readConfig(config, "opcode", &opcode);
     dagbase::ConfigurationElement::readConfig(config, "operand", &operand);
@@ -40,7 +40,7 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::configure(dagbase::ConfigurationEle
     dagbase::ConfigurationElement::readConfig(config, "message", &message);
 }
 
-void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std::uint32_t> &sut)
+void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std::uint32_t> &sut)
 {
     if (opcode == "PUSH_BACK")
     {
@@ -87,14 +87,38 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     {
         sut.pop_back();
     }
+    else if (opcode == "AND")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.toString());
+        sut &= op2;
+    }
+    else if (opcode == "OR")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.toString());
+        sut |= op2;
+    }
+    else if (opcode == "XOR")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.toString());
+        sut ^= op2;
+    }
+    else if (opcode == "TO_STRING")
+    {
+        std::string actual;
+        sut.toString(actual);
+        EXPECT_EQ(result.toString(), actual);
+    }
 }
 
-void DynamicBitSet_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
+void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
 {
     dagbase::ConfigurationElement::readConfigVector(config, "ops", &_ops);
 }
 
-void DynamicBitSet_testBitwiseOp::makeItSo()
+void DynamicBitset_testBitwiseOp::makeItSo()
 {
     for (auto op : _ops)
     {
@@ -102,7 +126,7 @@ void DynamicBitSet_testBitwiseOp::makeItSo()
     }
 }
 
-TEST_P(DynamicBitSet_testBitwiseOp, testExpectedResult)
+TEST_P(DynamicBitset_testBitwiseOp, testExpectedResult)
 {
     auto configStr = std::get<0>(GetParam());
     dagbase::Lua lua;
@@ -112,7 +136,7 @@ TEST_P(DynamicBitSet_testBitwiseOp, testExpectedResult)
     makeItSo();
 }
 
-INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::Values(
         std::make_tuple("data/tests/DynamicBitset/Empty.lua"),
         std::make_tuple("data/tests/DynamicBitset/OneNotSet.lua"),
         std::make_tuple("data/tests/DynamicBitset/OneSet.lua"),
@@ -138,7 +162,11 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/PopBackToEmpty.lua"),
         std::make_tuple("data/tests/DynamicBitset/PopBackWithinBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/PopBackWithinSecondBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/PopBackAcrossBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/PopBackAcrossBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AndOneBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AndTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/OrTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/XorTwoBlocks.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
