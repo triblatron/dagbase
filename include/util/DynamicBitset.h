@@ -67,14 +67,11 @@ namespace dagbase
                 block_type restOfBlockMask = std::numeric_limits<block_type>::max();
                 // Mask off the bits we want to leave alone.
                 restOfBlockMask &= ~existingMask;
-                // Set or clear the bits depending on whether we want to fill with true or false.
+                // Set the rest of the block if we want to fill with true.
+                // It will already be false by default.
                 if (value)
                 {
                     _rep[oldBlockIndex] |= restOfBlockMask;
-                }
-                else
-                {
-                    _rep[oldBlockIndex] &= ~restOfBlockMask;
                 }
                 _size = n;
             }
