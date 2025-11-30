@@ -173,6 +173,33 @@ namespace dagbase
             else
                 return false;
         }
+
+        void fromString(std::string_view str)
+        {
+            resize(str.length());
+            for (std::size_t i=0; i<size(); ++i)
+            {
+                // We parse MSB first so we have to flip the index to get which bit to write.
+                if (str[i] == '1')
+                {
+                    setBit(size() - 1 - i);
+                }
+                else
+                {
+                    clearBit(size() - 1 - i);
+                }
+            }
+        }
+
+        void toString(std::string& str) const
+        {
+            str.resize(size());
+            // We output MSB first so we have to flip the index to get the bit to test.
+            for (std::size_t i=0; i<size(); ++i)
+            {
+                str[size() - 1 - i] = testBit(i)?'1':'0';
+            }
+        }
     private:
         std::vector<block_type> _rep;
         std::size_t _size{0};

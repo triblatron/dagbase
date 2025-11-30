@@ -140,3 +140,24 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/PopBackWithinSecondBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/PopBackAcrossBlocks.lua")
         ));
+
+class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+
+};
+
+TEST_P(DynamicBitset_testRoundTrip, testExpectedValue)
+{
+    auto str = std::get<0>(GetParam());
+    dagbase::DynamicBitset<std::uint32_t> sut;
+    sut.fromString(str);
+    std::string actual;
+    sut.toString(actual);
+    EXPECT_EQ(str, actual);
+}
+
+INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testRoundTrip, ::testing::Values(
+        std::make_tuple("1"),
+        std::make_tuple("10"),
+        std::make_tuple("100000000000000000000000000000000")
+        ));
