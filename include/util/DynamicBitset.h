@@ -14,11 +14,12 @@ namespace dagbase
     {
     public:
         using block_type = Block;
+        static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
     public:
         void push_back(bool bit)
         {
-            std::size_t blockIndex = _size / (sizeof(block_type)*CHAR_BIT);
-            std::size_t indexWithinBlock = _size % (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = _size / bitsPerBlock;
+            std::size_t indexWithinBlock = _size % bitsPerBlock;
             if (blockIndex >= _rep.size())
             {
                 _rep.emplace_back();
@@ -34,13 +35,11 @@ namespace dagbase
 
         void resize(std::size_t n, bool value=false)
         {
-            const std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
             std::size_t blockIndex = n / (bitsPerBlock);
             std::size_t numBitsWithinBlock = n % bitsPerBlock;
 
             if (n > size())
             {
-                std::size_t oldNumBlocks = numBlocks();
                 if (blockIndex+1>numBlocks())
                 {
                     block_type fillValue = value?std::numeric_limits<block_type>::max():0;
@@ -73,8 +72,14 @@ namespace dagbase
                 {
                     _rep[oldBlockIndex] |= restOfBlockMask;
                 }
-                _size = n;
             }
+            else if (n < size())
+            {
+                _rep.resize(blockIndex+1);
+                block_type keepMask = (1<<numBitsWithinBlock)-1;
+                _rep[blockIndex] &= keepMask;
+            }
+            _size = n;
         }
 
         std::size_t size() const
@@ -84,13 +89,13 @@ namespace dagbase
 
         void reserve(std::size_t n)
         {
-            std::size_t blockIndex = n / (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = n / bitsPerBlock;
             _rep.reserve(blockIndex+1);
         }
 
         std::size_t capacity() const
         {
-            return _rep.capacity() * sizeof(block_type) * CHAR_BIT;
+            return _rep.capacity() * bitsPerBlock;
         }
 
         std::size_t numBlocks() const
@@ -100,8 +105,8 @@ namespace dagbase
 
         void setBit(std::size_t which)
         {
-            std::size_t blockIndex = which / (sizeof(block_type)*CHAR_BIT);
-            std::size_t indexWithinBlock = which % (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = which / bitsPerBlock;
+            std::size_t indexWithinBlock = which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -114,8 +119,8 @@ namespace dagbase
 
         void clearBit(std::size_t which)
         {
-            std::size_t blockIndex = which / (sizeof(block_type)*CHAR_BIT);
-            std::size_t indexWithinBlock = which % (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = which / bitsPerBlock;
+            std::size_t indexWithinBlock = which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -128,8 +133,8 @@ namespace dagbase
 
         void flipBit(std::size_t which)
         {
-            std::size_t blockIndex = which / (sizeof(block_type)*CHAR_BIT);
-            std::size_t indexWithinBlock = which % (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = which / bitsPerBlock;
+            std::size_t indexWithinBlock = which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -142,8 +147,8 @@ namespace dagbase
 
         bool testBit(std::size_t which) const
         {
-            std::size_t blockIndex = which / (sizeof(block_type)*CHAR_BIT);
-            std::size_t indexWithinBlock = which % (sizeof(block_type)*CHAR_BIT);
+            std::size_t blockIndex = which / bitsPerBlock;
+            std::size_t indexWithinBlock = which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {

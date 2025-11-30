@@ -128,5 +128,7 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/ResizeTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/PushBackThenResizeTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/ResizeIntermediateBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/ResizeTwiceTwoBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/ResizeTwiceTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeDownOneBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ResizeDownTwoBlocks.lua")
         ));

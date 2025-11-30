@@ -1,0 +1,25 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="PUSH_BACK",
+			operand=true,
+			result=1,
+		},
+		{
+			opcode="TEST_BIT",
+			operancd=0,
+			result=true,
+			message="bit0 should be true before resize",
+		},
+		{
+			opcode="RESIZE",
+			operand=0,
+		},
+		{
+			opcode="SIZE",
+			result=0,
+		},
+	}
+}

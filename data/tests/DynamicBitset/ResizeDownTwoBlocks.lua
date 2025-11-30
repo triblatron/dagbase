@@ -1,0 +1,51 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=48,
+			operand2=true,
+		},
+		{
+			opcode="SIZE",
+			result=48,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=true,
+			message="bit0 should be true before resize",
+		},
+		{
+			opcode="CLEAR_BIT",
+			operand=13,
+		},
+		{
+			opcode="RESIZE",
+			operand=15,
+		},
+		{
+			opcode="SIZE",
+			result=15,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=true,
+			message="bit0 should be true after resize",
+		},
+		{
+			opcode="TEST_BIT",
+			operand=13,
+			result=false,
+			message="bit13 should be false after resize",
+		},
+		{
+			opcode="TEST_BIT",
+			operand=14,
+			result=true,
+			message="bit14 should be true after resize",
+		},
+	}
+}
