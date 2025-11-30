@@ -1,0 +1,24 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=33,
+			operand2=true
+		},
+		{
+			opcode="POP_BACK",
+		},
+		{
+			opcode="SIZE",
+			result=32,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=true,
+			message="bit0 should be set after pop back",
+		},
+	}
+}

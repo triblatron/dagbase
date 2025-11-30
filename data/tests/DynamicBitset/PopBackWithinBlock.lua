@@ -1,0 +1,23 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=2,
+			operand2=true
+		},
+		{
+			opcode="POP_BACK",
+		},
+		{
+			opcode="SIZE",
+			result=1,
+		},
+		{
+			opcode="TEST_BIT",
+			operand=0,
+			result=true,
+		},
+	}
+}

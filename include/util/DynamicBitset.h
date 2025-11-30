@@ -28,6 +28,21 @@ namespace dagbase
             ++_size;
         }
 
+        void pop_back()
+        {
+            if (!empty())
+            {
+                --_size;
+                std::size_t blockIndex = (_size) / bitsPerBlock;
+                std::size_t indexWithinBlock = (_size) % bitsPerBlock;
+
+                block_type resetMask = std::numeric_limits<block_type>::max();
+                block_type keepMask = (1 << indexWithinBlock) - 1;
+                resetMask &= ~keepMask;
+                _rep[blockIndex] &= ~resetMask;
+            }
+        }
+
         bool empty() const
         {
             return _size == 0;

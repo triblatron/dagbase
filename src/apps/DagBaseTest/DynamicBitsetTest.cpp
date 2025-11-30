@@ -83,6 +83,10 @@ void DynamicBitSet_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     {
         EXPECT_EQ(result.asInteger(), sut.size());
     }
+    else if (opcode == "POP_BACK")
+    {
+        sut.pop_back();
+    }
 }
 
 void DynamicBitSet_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -130,5 +134,9 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitSet_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/ResizeIntermediateBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/ResizeTwiceTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/ResizeDownOneBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/ResizeDownTwoBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/ResizeDownTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/PopBackToEmpty.lua"),
+        std::make_tuple("data/tests/DynamicBitset/PopBackWithinBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/PopBackWithinSecondBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/PopBackAcrossBlocks.lua")
         ));

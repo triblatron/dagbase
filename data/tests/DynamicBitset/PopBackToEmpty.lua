@@ -1,0 +1,18 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="PUSH_BACK",
+			operand=true,
+			result=1,
+		},
+		{
+			opcode="POP_BACK",
+		},
+		{
+			opcode="SIZE",
+			result=0,
+		}
+	}
+}
