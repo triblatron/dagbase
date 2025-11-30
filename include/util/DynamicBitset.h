@@ -44,16 +44,30 @@ namespace dagbase
                 if (blockIndex+1>numBlocks())
                 {
                     block_type fillValue = value?std::numeric_limits<block_type>::max():0;
+                    // This will fill whole blocks but might overrun the size requested.
                     _rep.resize(blockIndex + 1, fillValue);
+                    // Get the mask for the number of bits within the last partial block
+                    // we want to set.
+                    block_type newMask = (1<<numBitsWithinBlock)-1;
+                    // We only need to write if the mask has ones
+                    if (value)
+                    {
+                        _rep[blockIndex] = newMask;
+                    }
                 }
                 // Fill existing partial blocks
+                // We haven't updated size yet, so it has the previous value
+                // and will give us the first partial block filled by the resize.
                 std::size_t oldBlockIndex = size() / bitsPerBlock;
+                // The number of bits within the partial block.
                 std::size_t oldNumBitsWithinBlock = size() % bitsPerBlock;
+                // A mask consisting of all the bits we want to leave alone.
                 block_type existingMask = (1<<oldNumBitsWithinBlock)-1;
-
+                // A mask for the rest of the block we want to fill.
                 block_type restOfBlockMask = std::numeric_limits<block_type>::max();
+                // Mask off the bits we want to leave alone.
                 restOfBlockMask &= ~existingMask;
-
+                // Set or clear the bits depending on whether we want to fill with true or false.
                 if (value)
                 {
                     _rep[oldBlockIndex] |= restOfBlockMask;
