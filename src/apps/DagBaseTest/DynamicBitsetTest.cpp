@@ -111,6 +111,18 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
         sut.toString(actual);
         EXPECT_EQ(result.toString(), actual);
     }
+    else if (opcode == "ALL")
+    {
+        EXPECT_EQ(result.asBool(), sut.all());
+    }
+    else if (opcode == "ANY")
+    {
+        EXPECT_EQ(result.asBool(), sut.any());
+    }
+    else if (opcode == "NONE")
+    {
+        EXPECT_EQ(result.asBool(), sut.none());
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -166,7 +178,19 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/AndOneBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/AndTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/OrTwoBlocks.lua"),
-        std::make_tuple("data/tests/DynamicBitset/XorTwoBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/XorTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AllFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AllFalseTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AllTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AllTrueTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AnyFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AnyFalseTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AnyTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/AnyTrueTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NoneFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NoneFalseTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NoneTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NoneTrueTwoBlocks.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>

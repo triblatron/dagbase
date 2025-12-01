@@ -1,0 +1,15 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=16,
+			operand2=false,
+		},
+		{
+			opcode="ANY",
+			result=false,
+		},
+	}
+}

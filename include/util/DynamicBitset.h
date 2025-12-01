@@ -54,37 +54,41 @@ namespace dagbase
 
             if (n > size())
             {
-                if (blockIndex+1>numBlocks())
+                if (blockIndex>=numBlocks())
                 {
                     block_type fillValue = value?std::numeric_limits<block_type>::max():0;
                     // This will fill whole blocks but might overrun the size requested.
-                    _rep.resize(blockIndex + 1, fillValue);
+                    _rep.resize(blockIndex+(numBitsWithinBlock!=0?1:0), fillValue);
                     // Get the mask for the number of bits within the last partial block
                     // we want to set.
                     block_type newMask = (1<<numBitsWithinBlock)-1;
                     // We only need to write if the mask has ones
-                    if (value)
+                    if (value && blockIndex<numBlocks())
                     {
                         _rep[blockIndex] = newMask;
                     }
                 }
+
                 // Fill existing partial blocks
                 // We haven't updated size yet, so it has the previous value
                 // and will give us the first partial block filled by the resize.
                 std::size_t oldBlockIndex = size() / bitsPerBlock;
                 // The number of bits within the partial block.
                 std::size_t oldNumBitsWithinBlock = size() % bitsPerBlock;
-                // A mask consisting of all the bits we want to leave alone.
-                block_type existingMask = (1<<oldNumBitsWithinBlock)-1;
-                // A mask for the rest of the block we want to fill.
-                block_type restOfBlockMask = std::numeric_limits<block_type>::max();
-                // Mask off the bits we want to leave alone.
-                restOfBlockMask &= ~existingMask;
-                // Set the rest of the block if we want to fill with true.
-                // It will already be false by default.
-                if (value)
+                if (oldBlockIndex < numBlocks() && oldNumBitsWithinBlock > 0)
                 {
-                    _rep[oldBlockIndex] |= restOfBlockMask;
+                    // A mask consisting of all the bits we want to leave alone.
+                    block_type existingMask = (1<<oldNumBitsWithinBlock)-1;
+                    // A mask for the rest of the block we want to fill.
+                    block_type restOfBlockMask = std::numeric_limits<block_type>::max();
+                    // Mask off the bits we want to leave alone.
+                    restOfBlockMask &= ~existingMask;
+                    // Set the rest of the block if we want to fill with true.
+                    // It will already be false by default.
+                    if (value)
+                    {
+                        _rep[oldBlockIndex] |= restOfBlockMask;
+                    }
                 }
             }
             else if (n < size())
@@ -170,6 +174,49 @@ namespace dagbase
             }
             else
                 return false;
+        }
+
+        bool all() const
+        {
+            // Full blocks
+            for (std::size_t i=0; i<numBlocks()-1; ++i)
+            {
+                if (_rep[i] != std::numeric_limits<block_type>::max())
+                    return false;
+            }
+
+            // Partial block
+            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+            block_type existingMask = (1<<numBitsWithinBlock) - 1;
+
+            if (existingMask && _rep[numBlocks()-1] != existingMask)
+                return false;
+
+            return true;
+        }
+
+        bool any() const
+        {
+            // Full blocks
+            for (std::size_t i=0; i<numBlocks()-1; ++i)
+            {
+                if (_rep[i] != 0)
+                    return true;
+            }
+
+            // Partial block
+            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+            block_type existingMask = (1<<numBitsWithinBlock) - 1;
+
+            if (existingMask && (_rep[numBlocks()-1] & existingMask)!=0)
+                return true;
+
+            return false;
+        }
+
+        bool none() const
+        {
+            return !any();
         }
 
         void fromString(std::string_view str)

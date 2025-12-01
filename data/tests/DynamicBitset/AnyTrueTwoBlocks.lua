@@ -1,0 +1,19 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=33,
+			operand2=false,
+		},
+		{
+			opcode="SET_BIT",
+			operand=15,
+		},
+		{
+			opcode="ANY",
+			result=true,
+		},
+	}
+}
