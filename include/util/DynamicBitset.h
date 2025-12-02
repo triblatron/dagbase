@@ -219,6 +219,33 @@ namespace dagbase
             return !any();
         }
 
+        std::size_t count() const
+        {
+            std::size_t retval = 0;
+
+            // The naive way:Count the bits one by one
+            // First the full blocks
+            for (size_t i=0; i<numBlocks()-1; ++i)
+            {
+                for (size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
+                {
+                    if ((_rep[i] & (1<<bitIndex)) != 0)
+                        ++retval;
+                }
+            }
+            // Then the partial block at the end.
+            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+//            block_type existingMask = (1<<numBitsWithinBlock) - 1;
+
+            for (size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
+            {
+                if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
+                    ++retval;
+            }
+//            __builtin_popcountll()
+            return retval;
+        }
+
         void fromString(std::string_view str)
         {
             resize(str.length());

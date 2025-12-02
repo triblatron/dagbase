@@ -123,6 +123,10 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     {
         EXPECT_EQ(result.asBool(), sut.none());
     }
+    else if (opcode == "COUNT")
+    {
+        EXPECT_EQ(result.asInteger(), sut.count());
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -190,7 +194,10 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/NoneFalse.lua"),
         std::make_tuple("data/tests/DynamicBitset/NoneFalseTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/NoneTrue.lua"),
-        std::make_tuple("data/tests/DynamicBitset/NoneTrueTwoBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/NoneTrueTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/CountNone.lua"),
+        std::make_tuple("data/tests/DynamicBitset/CountOne.lua"),
+        std::make_tuple("data/tests/DynamicBitset/CountTwoAcrossTwoBlocks.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
