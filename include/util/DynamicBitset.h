@@ -231,7 +231,7 @@ namespace dagbase
             {
 //                for (size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
 //                {
-                    retval += __builtin_popcountll(static_cast<unsigned long long>(_rep[i]) & 0xffffffff);
+                    retval += popcount(static_cast<unsigned long long>(_rep[i]));
 
 //                    if ((_rep[i] & (1<<bitIndex)) != 0)
 //                        ++retval;
@@ -241,7 +241,7 @@ namespace dagbase
             std::size_t numBitsWithinBlock = size() % bitsPerBlock;
             block_type existingMask = (1<<numBitsWithinBlock) - 1;
 
-            retval += __builtin_popcountll(_rep[numBlocks()-1] & existingMask);
+            retval += popcount(_rep[numBlocks()-1] & existingMask);
 //            for (size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
 //            {
 //                if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
@@ -318,5 +318,13 @@ namespace dagbase
     private:
         std::vector<block_type> _rep;
         std::size_t _size{0};
+        static std::uint64_t popcount(std::uint64_t value)
+        {
+#if defined(__POPCNT__) || defined(__ARM_FEATURE_POPCNT)
+            return __builtin_popcount(value);
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
+            return __popcnt64(value);
+#endif
+        }
     };
 }
