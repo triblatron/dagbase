@@ -7,6 +7,8 @@
 #include <vector>
 #include <limits>
 #include <climits>
+#include <string_view>
+#include <string>
 
 namespace dagbase
 {
