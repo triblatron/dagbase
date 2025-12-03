@@ -1,0 +1,21 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=33,
+			operand2=true,
+		},
+		{
+			opcode="AT",
+			operand=0,
+			result=true,
+		},
+		{
+			opcode="AT",
+			operand=32,
+			result=true,			
+		}
+	}
+}

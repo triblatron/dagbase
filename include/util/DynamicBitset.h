@@ -268,6 +268,19 @@ namespace dagbase
             }
         }
 
+        bool operator[](std::size_t index) const
+        {
+            if (index < size())
+            {
+                std::size_t blockIndex = index / bitsPerBlock;
+                std::size_t bitWithinBlock = index % bitsPerBlock;
+
+                return (_rep[blockIndex] & (1<<bitWithinBlock))!=0;
+            }
+
+            return false;
+        }
+
         void toString(std::string& str) const
         {
             str.resize(size());
