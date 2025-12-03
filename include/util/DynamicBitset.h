@@ -9,6 +9,7 @@
 #include <climits>
 #include <string_view>
 #include <string>
+#include <cstdint>
 
 namespace dagbase
 {
@@ -324,7 +325,14 @@ namespace dagbase
             return __builtin_popcount(value);
 #elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
             return __popcnt64(value);
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_popcount)
+            return __builtin_popcount(value);
 #endif
+#elif defined(__GNUC__)
+            return __builtin_popcount(value);
+#endif
+            return 0;
         }
     };
 }
