@@ -18,6 +18,39 @@ namespace dagbase
     {
     public:
         using block_type = Block;
+        using const_reference = bool;
+        class reference
+        {
+        public:
+            reference(block_type* block, std::size_t bitWithinBlock)
+            :
+            _block(block),
+            _bitWithinBlock(bitWithinBlock)
+            {
+                // Do nothing.
+            }
+
+            reference& operator=(bool value)
+            {
+                if (_block)
+                {
+                    if (value)
+                    {
+                        (*_block) |= (1 << _bitWithinBlock);
+                    }
+                    else
+                    {
+                        (*_block) &= ~(1 << _bitWithinBlock);
+                    }
+                }
+
+                return *this;
+            }
+        private:
+            void operator&();
+            block_type* _block{nullptr};
+            std::size_t _bitWithinBlock{0};
+        };
         static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
     public:
         void push_back(bool bit)
@@ -257,7 +290,7 @@ namespace dagbase
             }
         }
 
-        bool operator[](std::size_t index) const
+        const_reference operator[](std::size_t index) const
         {
             if (index < size())
             {
@@ -268,6 +301,18 @@ namespace dagbase
             }
 
             return false;
+        }
+
+        reference operator[](std::size_t index)
+        {
+            if (index<size())
+            {
+                std::size_t blockIndex = index / bitsPerBlock;
+                std::size_t bitWithinBlock = index % bitsPerBlock;
+
+                return reference(&_rep[blockIndex], bitWithinBlock);
+            }
+            return reference(nullptr, 0);
         }
 
         void toString(std::string& str) const

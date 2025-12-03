@@ -129,7 +129,11 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     }
     else if (opcode == "AT")
     {
-        EXPECT_EQ(result.asBool(), sut[operand.asInteger()]);
+        EXPECT_EQ(result.asBool(), ((const dagbase::DynamicBitset<std::uint32_t> &)sut).operator[](operand.asInteger()));
+    }
+    else if (opcode == "ASSIGN")
+    {
+        sut[operand.asInteger()] = operand2.asBool();
     }
 }
 
@@ -203,7 +207,8 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/CountOne.lua"),
         std::make_tuple("data/tests/DynamicBitset/CountTwoAcrossTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/AtFalse.lua"),
-        std::make_tuple("data/tests/DynamicBitset/AtTrue.lua")
+        std::make_tuple("data/tests/DynamicBitset/AtTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/Assign.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
