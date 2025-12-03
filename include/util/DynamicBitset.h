@@ -227,22 +227,24 @@ namespace dagbase
             // First the full blocks
             for (size_t i=0; i<numBlocks()-1; ++i)
             {
-                for (size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
-                {
-                    if ((_rep[i] & (1<<bitIndex)) != 0)
-                        ++retval;
-                }
+//                for (size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
+//                {
+                    retval += __builtin_popcountll(static_cast<unsigned long long>(_rep[i]) & 0xffffffff);
+
+//                    if ((_rep[i] & (1<<bitIndex)) != 0)
+//                        ++retval;
+//                }
             }
             // Then the partial block at the end.
             std::size_t numBitsWithinBlock = size() % bitsPerBlock;
-//            block_type existingMask = (1<<numBitsWithinBlock) - 1;
+            block_type existingMask = (1<<numBitsWithinBlock) - 1;
 
-            for (size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
-            {
-                if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
-                    ++retval;
-            }
-//            __builtin_popcountll()
+            retval += __builtin_popcountll(_rep[numBlocks()-1] & existingMask);
+//            for (size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
+//            {
+//                if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
+//                    ++retval;
+//            }
             return retval;
         }
 
