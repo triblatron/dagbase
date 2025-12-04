@@ -340,6 +340,43 @@ namespace dagbase
             return npos;
         }
 
+        std::size_t findFirst(std::size_t pos)
+        {
+            if (pos < size())
+            {
+                std::size_t initialBlockIndex = pos / bitsPerBlock;
+                std::size_t initialBitInBlock = pos % bitsPerBlock;
+
+                // Initial partial block
+                block_type initialExistingMask = (1<<initialBitInBlock) - 1;
+                block_type initialBlock = _rep[initialBlockIndex];
+
+                if (auto count = countTrailingZeros(initialBlock); count >= pos && count < sizeof(std::uint64_t) * CHAR_BIT)
+                {
+                    return count;
+                }
+
+                // Full blocks
+                for (std::size_t blockIndex=initialBlockIndex+1; blockIndex<numBlocks()-1; ++blockIndex)
+                {
+                    auto block = _rep[blockIndex];
+                    auto count = countTrailingZeros(block);
+
+                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                        return blockIndex * bitsPerBlock + count;
+                }
+
+                // Partial last block
+                std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+                block_type existingMask = (1<<numBitsWithinBlock) - 1;
+                block_type existingBits = _rep[numBlocks()-1] & existingMask;
+                if (auto count = countTrailingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
+                    return (numBlocks()-1) * bitsPerBlock + count;
+            }
+
+            return npos;
+        }
+
         void toString(std::string& str) const
         {
             str.resize(size());

@@ -1,0 +1,20 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=65,
+			operand2=false,
+		},
+		{
+			opcode="SET_BIT",
+			operand=64,
+		},
+		{
+			opcode="FIND_FIRST_FROM",
+			operand=16,
+			result=64,
+		},
+	}
+}

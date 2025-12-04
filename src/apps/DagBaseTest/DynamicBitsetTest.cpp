@@ -147,6 +147,18 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
             EXPECT_EQ(result.asInteger(), actual);
         }
     }
+    else if (opcode == "FIND_FIRST_FROM")
+    {
+        auto actual = sut.findFirst(operand.asInteger());
+        if (result.asString() == "NPOS")
+        {
+            EXPECT_EQ(dagbase::DynamicBitset<std::uint32_t>::npos, actual);
+        }
+        else
+        {
+            EXPECT_EQ(result.asInteger(), actual);
+        }
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -223,7 +235,11 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/Assign.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindFirstNone.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindFirstInFirstBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/FindFirstInSecondBlock.lua")
+        std::make_tuple("data/tests/DynamicBitset/FindFirstInSecondBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstFromNoneInFirstBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInFirstBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInSecondBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInThirdBlock.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
