@@ -1,0 +1,15 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=33,
+			operand2=false,
+		},
+		{
+			opcode="FIND_FIRST",
+			result="NPOS",
+		},
+	}
+}

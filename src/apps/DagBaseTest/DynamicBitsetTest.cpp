@@ -135,6 +135,18 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     {
         sut[operand.asInteger()] = operand2.asBool();
     }
+    else if (opcode == "FIND_FIRST")
+    {
+        auto actual = sut.findFirst();
+        if (result.asString() == "NPOS")
+        {
+            EXPECT_EQ(dagbase::DynamicBitset<std::uint32_t>::npos, actual);
+        }
+        else
+        {
+            EXPECT_EQ(result.asInteger(), actual);
+        }
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -208,7 +220,10 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/CountTwoAcrossTwoBlocks.lua"),
         std::make_tuple("data/tests/DynamicBitset/AtFalse.lua"),
         std::make_tuple("data/tests/DynamicBitset/AtTrue.lua"),
-        std::make_tuple("data/tests/DynamicBitset/Assign.lua")
+        std::make_tuple("data/tests/DynamicBitset/Assign.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstNone.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstInFirstBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindFirstInSecondBlock.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>

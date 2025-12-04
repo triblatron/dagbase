@@ -52,6 +52,7 @@ namespace dagbase
             std::size_t _bitWithinBlock{0};
         };
         static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
+        static constexpr std::size_t npos = std::numeric_limits<std::size_t>::max();
     public:
         void push_back(bool bit)
         {
@@ -313,6 +314,34 @@ namespace dagbase
                 return reference(&_rep[blockIndex], bitWithinBlock);
             }
             return reference(nullptr, 0);
+        }
+
+        std::size_t findFirst() const
+        {
+            if (!empty())
+            {
+                // Full blocks
+                for (std::size_t blockIndex=0; blockIndex<numBlocks()-1; ++blockIndex)
+                {
+                    auto block = _rep[blockIndex];
+
+                    for (std::size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
+                    {
+                        if ((block & (1<<bitIndex))!=0)
+                            return blockIndex * bitsPerBlock + bitIndex;
+                    }
+                }
+                // Partial last block
+                std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+                block_type existingMask = (1<<numBitsWithinBlock) - 1;
+                for (std::size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
+                {
+                    if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
+                        return (numBlocks()-1) * bitsPerBlock + bitIndex;
+                }
+            }
+
+            return npos;
         }
 
         void toString(std::string& str) const
