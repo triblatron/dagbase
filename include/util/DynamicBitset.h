@@ -324,7 +324,7 @@ namespace dagbase
                 for (std::size_t blockIndex=0; blockIndex<numBlocks()-1; ++blockIndex)
                 {
                     auto block = _rep[blockIndex];
-                    auto count = countLeadingZeros(block);
+                    auto count = countTrailingZeros(block);
 
                     if (count < sizeof(std::uint64_t) * CHAR_BIT)
                         return blockIndex * bitsPerBlock + count;
@@ -333,7 +333,7 @@ namespace dagbase
                 std::size_t numBitsWithinBlock = size() % bitsPerBlock;
                 block_type existingMask = (1<<numBitsWithinBlock) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
-                if (auto count = countLeadingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
+                if (auto count = countTrailingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
                     return (numBlocks()-1) * bitsPerBlock + count;
             }
 
@@ -407,7 +407,7 @@ namespace dagbase
             return 0;
         }
 
-        static std::uint64_t countLeadingZeros(std::uint64_t value)
+        static std::uint64_t countTrailingZeros(std::uint64_t value)
         {
 #if defined(__ARM_FEATURE_CLZ)
             return __builtin_ctzll(value);
