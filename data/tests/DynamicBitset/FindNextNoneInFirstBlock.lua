@@ -4,17 +4,17 @@ root=
 	{
 		{
 			opcode="RESIZE",
-			operand=33,
-			operand2=true,
+			operand=32,
+			operand2=false,
 		},
 		{
 			opcode="SET_BIT",
 			operand=16,
 		},
 		{
-			opcode="FIND_FIRST_FROM",
+			opcode="FIND_NEXT",
 			operand=16,
-			result=16,
+			result="NPOS",
 		},
 	}
 }

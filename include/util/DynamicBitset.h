@@ -345,15 +345,59 @@ namespace dagbase
             if (pos < size())
             {
                 std::size_t initialBlockIndex = pos / bitsPerBlock;
+                if (pos < bitsPerBlock)
+                {
+                    std::size_t initialBitInBlock = pos % bitsPerBlock;
+
+                    // Initial partial block
+                    block_type initialExistingMask = (1<<(initialBitInBlock)) - 1;
+                    block_type initialBlock = _rep[initialBlockIndex] & ~initialExistingMask;
+                    auto count = countTrailingZeros(initialBlock);
+                    if (count >= pos && count < sizeof(std::uint64_t) * CHAR_BIT)
+                    {
+                        return count;
+                    }
+                }
+
+                // Full blocks
+                for (std::size_t blockIndex=initialBlockIndex+1; blockIndex<numBlocks()-1; ++blockIndex)
+                {
+                    auto block = _rep[blockIndex];
+                    auto count = countTrailingZeros(block);
+
+                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                        return blockIndex * bitsPerBlock + count;
+                }
+
+                // Partial last block
+                std::size_t numBitsWithinBlock = (numBlocks()-1) % bitsPerBlock;
+                block_type existingMask = (1<<numBitsWithinBlock) - 1;
+                block_type existingBits = _rep[numBlocks()-1] & existingMask;
+                auto count = countTrailingZeros(existingBits);
+                if ( count != sizeof(std::uint64_t) * CHAR_BIT)
+                    return (numBlocks()-1) * bitsPerBlock + count;
+            }
+
+            return npos;
+        }
+
+        std::size_t findNext(std::size_t pos)
+        {
+            if (pos < size())
+            {
+                std::size_t initialBlockIndex = pos / bitsPerBlock;
                 std::size_t initialBitInBlock = pos % bitsPerBlock;
 
                 // Initial partial block
-                block_type initialExistingMask = (1<<initialBitInBlock) - 1;
-                block_type initialBlock = _rep[initialBlockIndex];
-
-                if (auto count = countTrailingZeros(initialBlock); count >= pos && count < sizeof(std::uint64_t) * CHAR_BIT)
+                if (pos < bitsPerBlock)
                 {
-                    return count;
+                    block_type initialExistingMask = (1<<(initialBitInBlock+1)) - 1;
+                    block_type initialBlock = _rep[initialBlockIndex] & ~initialExistingMask;
+                    auto count = countTrailingZeros(initialBlock);
+                    if (count > pos && count < sizeof(std::uint64_t) * CHAR_BIT)
+                    {
+                        return count;
+                    }
                 }
 
                 // Full blocks

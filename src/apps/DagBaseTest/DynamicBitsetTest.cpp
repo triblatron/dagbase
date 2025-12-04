@@ -159,6 +159,18 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
             EXPECT_EQ(result.asInteger(), actual);
         }
     }
+    else if (opcode == "FIND_NEXT")
+    {
+        auto actual = sut.findNext(operand.asInteger());
+        if (result.asString() == "NPOS")
+        {
+            EXPECT_EQ(dagbase::DynamicBitset<std::uint32_t>::npos, actual);
+        }
+        else
+        {
+            EXPECT_EQ(result.asInteger(), actual);
+        }
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)
@@ -239,7 +251,11 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/FindFirstFromNoneInFirstBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInFirstBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInSecondBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInThirdBlock.lua")
+        std::make_tuple("data/tests/DynamicBitset/FindFirstFromExistingInThirdBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindNextNoneInFirstBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingInFirstBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingInSecondBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingInThirdBlock.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>

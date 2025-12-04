@@ -1,0 +1,16 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=72,
+			operand2=true,
+		},
+		{
+			opcode="FIND_NEXTM",
+			operand=64,
+			result=65,
+		},
+	}
+}
