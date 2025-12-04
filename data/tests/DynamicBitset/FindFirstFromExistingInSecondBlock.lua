@@ -16,5 +16,14 @@ root=
 			operand=16,
 			result=32,
 		},
+		{
+			opcode="OR",
+			operand="11111111111111111111111111111111111111111111111111111111111111111",
+		},
+		{
+			opcode="FIND_FIRST_FROM",
+			operand=32,
+			result=32,
+		},
 	}
 }

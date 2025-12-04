@@ -344,14 +344,13 @@ namespace dagbase
         {
             if (pos < size())
             {
-                std::size_t initialBlockIndex = pos / bitsPerBlock;
                 if (pos < bitsPerBlock)
                 {
                     std::size_t initialBitInBlock = pos % bitsPerBlock;
 
                     // Initial partial block
                     block_type initialExistingMask = (1<<(initialBitInBlock)) - 1;
-                    block_type initialBlock = _rep[initialBlockIndex] & ~initialExistingMask;
+                    block_type initialBlock = _rep[0] & ~initialExistingMask;
                     auto count = countTrailingZeros(initialBlock);
                     if (count >= pos && count < sizeof(std::uint64_t) * CHAR_BIT)
                     {
@@ -360,7 +359,7 @@ namespace dagbase
                 }
 
                 // Full blocks
-                for (std::size_t blockIndex=initialBlockIndex+1; blockIndex<numBlocks()-1; ++blockIndex)
+                for (std::size_t blockIndex=1; blockIndex<numBlocks()-1; ++blockIndex)
                 {
                     auto block = _rep[blockIndex];
                     auto count = countTrailingZeros(block);
@@ -370,8 +369,8 @@ namespace dagbase
                 }
 
                 // Partial last block
-                std::size_t numBitsWithinBlock = (numBlocks()-1) % bitsPerBlock;
-                block_type existingMask = (1<<numBitsWithinBlock) - 1;
+                std::size_t numBitsWithinBlock = (pos) % bitsPerBlock;
+                block_type existingMask = (1<<(numBitsWithinBlock+1)) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
                 auto count = countTrailingZeros(existingBits);
                 if ( count != sizeof(std::uint64_t) * CHAR_BIT)
