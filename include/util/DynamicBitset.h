@@ -324,21 +324,17 @@ namespace dagbase
                 for (std::size_t blockIndex=0; blockIndex<numBlocks()-1; ++blockIndex)
                 {
                     auto block = _rep[blockIndex];
+                    auto count = countLeadingZeros(block);
 
-                    for (std::size_t bitIndex=0; bitIndex<bitsPerBlock; ++bitIndex)
-                    {
-                        if ((block & (1<<bitIndex))!=0)
-                            return blockIndex * bitsPerBlock + bitIndex;
-                    }
+                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                        return blockIndex * bitsPerBlock + count;
                 }
                 // Partial last block
                 std::size_t numBitsWithinBlock = size() % bitsPerBlock;
                 block_type existingMask = (1<<numBitsWithinBlock) - 1;
-                for (std::size_t bitIndex=0; bitIndex<numBitsWithinBlock; ++bitIndex)
-                {
-                    if ((_rep[numBlocks()-1] & (1<<bitIndex))!=0)
-                        return (numBlocks()-1) * bitsPerBlock + bitIndex;
-                }
+                block_type existingBits = _rep[numBlocks()-1] & existingMask;
+                if (auto count = countLeadingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
+                    return (numBlocks()-1) * bitsPerBlock + count;
             }
 
             return npos;
@@ -407,6 +403,22 @@ namespace dagbase
 #endif
 #elif defined(__GNUC__)
             return __builtin_popcount(value);
+#endif
+            return 0;
+        }
+
+        static std::uint64_t countLeadingZeros(std::uint64_t value)
+        {
+#if defined(__ARM_FEATURE_CLZ)
+            return __builtin_ctzll(value);
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
+            return _tzcnt_u64(value);
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_popcount)
+            return __builtin_ctzll(value);
+#endif
+#elif defined(__GNUC__)
+            return __builtin_ctzll(value);
 #endif
             return 0;
         }
