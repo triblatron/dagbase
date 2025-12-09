@@ -382,43 +382,21 @@ namespace dagbase
 
         std::size_t findNext(std::size_t pos)
         {
-            if (pos < size())
+            if (pos+1 < size())
             {
-                std::size_t initialBlockIndex = pos / bitsPerBlock;
-                std::size_t initialBitInBlock = pos % bitsPerBlock;
+                std::size_t initialBlockIndex = (pos+1) / bitsPerBlock;
 
-                // Initial partial block
-                if (pos+1 < bitsPerBlock)
+                // Full blocks - still have to mask off bits before the one specified.
+                for (std::size_t blockIndex=initialBlockIndex; blockIndex<numBlocks(); ++blockIndex)
                 {
-                    block_type initialExistingMask = (1<<(initialBitInBlock+1)) - 1;
-                    block_type initialBlock = _rep[initialBlockIndex] & ~initialExistingMask;
-                    auto count = countTrailingZeros(initialBlock);
-                    if (count > pos && count < sizeof(std::uint64_t) * CHAR_BIT)
-                    {
-                        return count;
-                    }
-                }
-                else if (initialBlockIndex < numBlocks()-1)
-                {
-                    // Full blocks - still have to mask off bits before the one specified.
-                    for (std::size_t blockIndex=1; blockIndex<numBlocks()-1; ++blockIndex)
-                    {
-                        std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
-                        block_type existingMask = ~((1<<numBitsWithinBlock)-1);
-                        auto block = _rep[blockIndex] & existingMask;
-                        auto count = countTrailingZeros(block);
+                    std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
+                    block_type existingMask = ~((1<<numBitsWithinBlock)-1);
+                    auto block = _rep[blockIndex] & existingMask;
+                    auto count = countTrailingZeros(block);
 
-                        if (count < sizeof(std::uint64_t) * CHAR_BIT)
-                            return blockIndex * bitsPerBlock + count;
-                    }
+                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                        return blockIndex * bitsPerBlock + count;
                 }
-
-                // Partial last block
-                std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
-                block_type existingMask = ~((1<<numBitsWithinBlock)-1);
-                block_type existingBits = _rep[numBlocks()-1] & existingMask;
-                if (auto count = countTrailingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
-                    return (numBlocks()-1) * bitsPerBlock + count;
             }
 
             return npos;
