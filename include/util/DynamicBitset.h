@@ -53,6 +53,7 @@ namespace dagbase
         };
         static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
         static constexpr std::size_t npos = std::numeric_limits<std::size_t>::max();
+        static constexpr std::size_t bitsPerUint64 = sizeof(std::uint64_t) * CHAR_BIT;
     public:
         void push_back(bool bit)
         {
@@ -394,7 +395,7 @@ namespace dagbase
                     auto block = _rep[blockIndex] & existingMask;
                     auto count = countTrailingZeros(block);
 
-                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                    if (count < bitsPerUint64)
                         return blockIndex * bitsPerBlock + count;
                 }
             }
