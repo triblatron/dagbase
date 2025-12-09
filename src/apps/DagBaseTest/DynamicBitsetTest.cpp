@@ -171,6 +171,14 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
             EXPECT_EQ(result.asInteger(), actual);
         }
     }
+    else if (opcode == "NUM_BLOCKS")
+    {
+        EXPECT_EQ(result.asInteger(), sut.numBlocks());
+    }
+    else
+    {
+        FAIL() << "Unexpected opcode " << opcode;
+    }
 }
 
 void DynamicBitset_testBitwiseOp::configure(dagbase::ConfigurationElement &config)

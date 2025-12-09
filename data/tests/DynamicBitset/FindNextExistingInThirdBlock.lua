@@ -8,9 +8,19 @@ root=
 			operand2=true,
 		},
 		{
-			opcode="FIND_NEXTM",
+			opcode="FIND_NEXT",
+			operand=32,
+			result=33,
+		},
+		{
+			opcode="FIND_NEXT",
 			operand=64,
 			result=65,
+		},
+		{
+			opcode="FIND_NEXT",
+			operand=70,
+			result=71,
 		},
 	}
 }

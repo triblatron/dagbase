@@ -8,7 +8,7 @@ root=
 			operand2=true,
 		},
 		{
-			opcode="FIND_NEXTM",
+			opcode="FIND_NEXT",
 			operand=32,
 			result=33,
 		},
