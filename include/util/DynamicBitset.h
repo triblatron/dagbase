@@ -327,14 +327,14 @@ namespace dagbase
                     auto block = _rep[blockIndex];
                     auto count = countTrailingZeros(block);
 
-                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                    if (count < bitsPerUint64)
                         return blockIndex * bitsPerBlock + count;
                 }
                 // Partial last block
                 std::size_t numBitsWithinBlock = size() % bitsPerBlock;
                 block_type existingMask = (1<<numBitsWithinBlock) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
-                if (auto count = countTrailingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
+                if (auto count = countTrailingZeros(existingBits); count != bitsPerUint64)
                     return (numBlocks()-1) * bitsPerBlock + count;
             }
 
@@ -353,7 +353,7 @@ namespace dagbase
                     block_type initialExistingMask = (1<<(initialBitInBlock)) - 1;
                     block_type initialBlock = _rep[0] & ~initialExistingMask;
                     auto count = countTrailingZeros(initialBlock);
-                    if (count >= pos && count < sizeof(std::uint64_t) * CHAR_BIT)
+                    if (count >= pos && count < bitsPerUint64)
                     {
                         return count;
                     }
@@ -365,7 +365,7 @@ namespace dagbase
                     auto block = _rep[blockIndex];
                     auto count = countTrailingZeros(block);
 
-                    if (count < sizeof(std::uint64_t) * CHAR_BIT)
+                    if (count < bitsPerUint64)
                         return blockIndex * bitsPerBlock + count;
                 }
 
@@ -374,7 +374,7 @@ namespace dagbase
                 block_type existingMask = (1<<(numBitsWithinBlock+1)) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
                 auto count = countTrailingZeros(existingBits);
-                if ( count != sizeof(std::uint64_t) * CHAR_BIT)
+                if ( count != bitsPerUint64)
                     return (numBlocks()-1) * bitsPerBlock + count;
             }
 
