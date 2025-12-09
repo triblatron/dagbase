@@ -388,7 +388,7 @@ namespace dagbase
                 std::size_t initialBitInBlock = pos % bitsPerBlock;
 
                 // Initial partial block
-                if (pos < bitsPerBlock)
+                if (pos+1 < bitsPerBlock)
                 {
                     block_type initialExistingMask = (1<<(initialBitInBlock+1)) - 1;
                     block_type initialBlock = _rep[initialBlockIndex] & ~initialExistingMask;
@@ -398,7 +398,6 @@ namespace dagbase
                         return count;
                     }
                 }
-
                 else if (initialBlockIndex < numBlocks()-1)
                 {
                     // Full blocks - still have to mask off bits before the one specified.

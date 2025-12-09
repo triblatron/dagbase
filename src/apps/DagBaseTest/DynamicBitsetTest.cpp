@@ -263,7 +263,8 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/FindNextNoneInFirstBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindNextExistingInFirstBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindNextExistingInSecondBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/FindNextExistingInThirdBlock.lua")
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingInThirdBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingCrossingBlocks.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
