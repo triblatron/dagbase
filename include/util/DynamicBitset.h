@@ -51,14 +51,56 @@ namespace dagbase
             block_type* _block{nullptr};
             std::size_t _bitWithinBlock{0};
         };
+        static constexpr std::uint64_t popcount(std::uint64_t value)
+        {
+#if defined(__POPCNT__) || defined(__ARM_FEATURE_POPCNT)
+            return __builtin_popcount(value);
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
+            return __popcnt64(value);
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_popcount)
+            return __builtin_popcount(value);
+#endif
+#elif defined(__GNUC__)
+            return __builtin_popcount(value);
+#endif
+            return 0;
+        }
+
+        static constexpr std::uint64_t countTrailingZeros(std::uint64_t value)
+        {
+#if defined(__ARM_FEATURE_CLZ)
+            return __builtin_ctzll(value);
+#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
+            return _tzcnt_u64(value);
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_popcount)
+            return __builtin_ctzll(value);
+#endif
+#elif defined(__GNUC__)
+            return __builtin_ctzll(value);
+#endif
+            return 0;
+        }
+
         static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
+        static constexpr std::size_t log2BitsPerBlock = countTrailingZeros(bitsPerBlock);
         static constexpr std::size_t npos = std::numeric_limits<std::size_t>::max();
         static constexpr std::size_t bitsPerUint64 = sizeof(std::uint64_t) * CHAR_BIT;
+        static std::size_t blockIndexForPos(std::size_t pos)
+        {
+            return pos >> log2BitsPerBlock;
+        }
+
+        static std::size_t bitWithinBlock(std::size_t pos)
+        {
+            return (pos & (1<<log2BitsPerBlock)-1);
+        }
     public:
         void push_back(bool bit)
         {
-            std::size_t blockIndex = _size / bitsPerBlock;
-            std::size_t indexWithinBlock = _size % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(_size);
+            std::size_t indexWithinBlock = bitWithinBlock(_size);
             if (blockIndex >= _rep.size())
             {
                 _rep.emplace_back();
@@ -72,8 +114,8 @@ namespace dagbase
             if (!empty())
             {
                 --_size;
-                std::size_t blockIndex = (_size) / bitsPerBlock;
-                std::size_t indexWithinBlock = (_size) % bitsPerBlock;
+                std::size_t blockIndex = blockIndexForPos(_size);
+                std::size_t indexWithinBlock = bitWithinBlock(_size);
                 block_type keepMask = (1 << indexWithinBlock) - 1;
 
                 _rep[blockIndex] &= keepMask;
@@ -87,8 +129,8 @@ namespace dagbase
 
         void resize(std::size_t n, bool value=false)
         {
-            std::size_t blockIndex = n / (bitsPerBlock);
-            std::size_t numBitsWithinBlock = n % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(n);// n / (bitsPerBlock);
+            std::size_t numBitsWithinBlock = bitWithinBlock(n);// n % bitsPerBlock;
 
             if (n > size())
             {
@@ -110,9 +152,9 @@ namespace dagbase
                 // Fill existing partial blocks
                 // We haven't updated size yet, so it has the previous value
                 // and will give us the first partial block filled by the resize.
-                std::size_t oldBlockIndex = size() / bitsPerBlock;
+                std::size_t oldBlockIndex = blockIndexForPos(size());// size() / bitsPerBlock;
                 // The number of bits within the partial block.
-                std::size_t oldNumBitsWithinBlock = size() % bitsPerBlock;
+                std::size_t oldNumBitsWithinBlock = bitWithinBlock(size());// size() % bitsPerBlock;
                 if (oldBlockIndex < numBlocks() && oldNumBitsWithinBlock > 0)
                 {
                     // A mask consisting of all the bits we want to leave alone.
@@ -145,7 +187,7 @@ namespace dagbase
 
         void reserve(std::size_t n)
         {
-            std::size_t blockIndex = n / bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(n);// n / bitsPerBlock;
             _rep.reserve(blockIndex+1);
         }
 
@@ -161,8 +203,8 @@ namespace dagbase
 
         void setBit(std::size_t which)
         {
-            std::size_t blockIndex = which / bitsPerBlock;
-            std::size_t indexWithinBlock = which % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(which);// which / bitsPerBlock;
+            std::size_t indexWithinBlock = bitWithinBlock(which);// which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -174,8 +216,8 @@ namespace dagbase
 
         void clearBit(std::size_t which)
         {
-            std::size_t blockIndex = which / bitsPerBlock;
-            std::size_t indexWithinBlock = which % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(which);// which / bitsPerBlock;
+            std::size_t indexWithinBlock = bitWithinBlock(which);// which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -187,8 +229,8 @@ namespace dagbase
 
         void flipBit(std::size_t which)
         {
-            std::size_t blockIndex = which / bitsPerBlock;
-            std::size_t indexWithinBlock = which % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(which);// which / bitsPerBlock;
+            std::size_t indexWithinBlock = bitWithinBlock(which);// which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -200,8 +242,8 @@ namespace dagbase
 
         bool testBit(std::size_t which) const
         {
-            std::size_t blockIndex = which / bitsPerBlock;
-            std::size_t indexWithinBlock = which % bitsPerBlock;
+            std::size_t blockIndex = blockIndexForPos(which);// which / bitsPerBlock;
+            std::size_t indexWithinBlock = bitWithinBlock(which);// which % bitsPerBlock;
 
             if (blockIndex<_rep.size())
             {
@@ -224,7 +266,7 @@ namespace dagbase
             }
 
             // Partial block
-            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+            std::size_t numBitsWithinBlock = bitWithinBlock(size());// size() % bitsPerBlock;
             block_type existingMask = (1<<numBitsWithinBlock) - 1;
 
             if (existingMask && _rep[numBlocks()-1] != existingMask)
@@ -243,7 +285,7 @@ namespace dagbase
             }
 
             // Partial block
-            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+            std::size_t numBitsWithinBlock = bitWithinBlock(size());// size() % bitsPerBlock;
             block_type existingMask = (1<<numBitsWithinBlock) - 1;
 
             if (existingMask && (_rep[numBlocks()-1] & existingMask)!=0)
@@ -268,7 +310,7 @@ namespace dagbase
                     retval += popcount(static_cast<unsigned long long>(_rep[i]));
             }
             // Then the partial block at the end.
-            std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+            std::size_t numBitsWithinBlock = bitWithinBlock(size());// size() % bitsPerBlock;
             block_type existingMask = (1<<numBitsWithinBlock) - 1;
             retval += popcount(_rep[numBlocks()-1] & existingMask);
 
@@ -296,10 +338,10 @@ namespace dagbase
         {
             if (index < size())
             {
-                std::size_t blockIndex = index / bitsPerBlock;
-                std::size_t bitWithinBlock = index % bitsPerBlock;
+                std::size_t blockIndex = blockIndexForPos(index);// index / bitsPerBlock;
+                std::size_t indexWithinBlock = bitWithinBlock(index);// index % bitsPerBlock;
 
-                return (_rep[blockIndex] & (1<<bitWithinBlock))!=0;
+                return (_rep[blockIndex] & (1<<indexWithinBlock))!=0;
             }
 
             return false;
@@ -309,10 +351,10 @@ namespace dagbase
         {
             if (index<size())
             {
-                std::size_t blockIndex = index / bitsPerBlock;
-                std::size_t bitWithinBlock = index % bitsPerBlock;
+                std::size_t blockIndex = blockIndexForPos(index);// index / bitsPerBlock;
+                std::size_t indexWithinBlock = bitWithinBlock(index);// index % bitsPerBlock;
 
-                return reference(&_rep[blockIndex], bitWithinBlock);
+                return reference(&_rep[blockIndex], indexWithinBlock);
             }
             return reference(nullptr, 0);
         }
@@ -331,7 +373,7 @@ namespace dagbase
                         return blockIndex * bitsPerBlock + count;
                 }
                 // Partial last block
-                std::size_t numBitsWithinBlock = size() % bitsPerBlock;
+                std::size_t numBitsWithinBlock = bitWithinBlock(size());// size() % bitsPerBlock;
                 block_type existingMask = (1<<numBitsWithinBlock) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
                 if (auto count = countTrailingZeros(existingBits); count != bitsPerUint64)
@@ -370,7 +412,7 @@ namespace dagbase
                 }
 
                 // Partial last block
-                std::size_t numBitsWithinBlock = (pos) % bitsPerBlock;
+                std::size_t numBitsWithinBlock = bitWithinBlock(pos);//(pos) % bitsPerBlock;
                 block_type existingMask = (1<<(numBitsWithinBlock+1)) - 1;
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
                 auto count = countTrailingZeros(existingBits);
@@ -385,12 +427,12 @@ namespace dagbase
         {
             if (pos+1 < size())
             {
-                std::size_t initialBlockIndex = (pos+1) / bitsPerBlock;
+                std::size_t initialBlockIndex = blockIndexForPos(pos+1);//(pos+1) / bitsPerBlock;
 
                 // Full blocks - still have to mask off bits before the one specified.
                 for (std::size_t blockIndex=initialBlockIndex; blockIndex<numBlocks(); ++blockIndex)
                 {
-                    std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
+                    std::size_t numBitsWithinBlock = bitWithinBlock(pos+1);//(pos+1) % bitsPerBlock;
                     block_type existingMask = ~((1<<numBitsWithinBlock)-1);
                     auto block = _rep[blockIndex] & existingMask;
                     auto count = countTrailingZeros(block);
@@ -454,36 +496,5 @@ namespace dagbase
     private:
         std::vector<block_type> _rep;
         std::size_t _size{0};
-        static std::uint64_t popcount(std::uint64_t value)
-        {
-#if defined(__POPCNT__) || defined(__ARM_FEATURE_POPCNT)
-            return __builtin_popcount(value);
-#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
-            return __popcnt64(value);
-#elif defined(__has_builtin)
-#if __has_builtin(__builtin_popcount)
-            return __builtin_popcount(value);
-#endif
-#elif defined(__GNUC__)
-            return __builtin_popcount(value);
-#endif
-            return 0;
-        }
-
-        static std::uint64_t countTrailingZeros(std::uint64_t value)
-        {
-#if defined(__ARM_FEATURE_CLZ)
-            return __builtin_ctzll(value);
-#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
-            return _tzcnt_u64(value);
-#elif defined(__has_builtin)
-#if __has_builtin(__builtin_popcount)
-            return __builtin_ctzll(value);
-#endif
-#elif defined(__GNUC__)
-            return __builtin_ctzll(value);
-#endif
-            return 0;
-        }
     };
 }
