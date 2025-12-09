@@ -401,7 +401,7 @@ namespace dagbase
 
                 else if (initialBlockIndex < numBlocks()-1)
                 {
-                    // Full blocks
+                    // Full blocks - still have to mask off bits before the one specified.
                     for (std::size_t blockIndex=1; blockIndex<numBlocks()-1; ++blockIndex)
                     {
                         std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
@@ -415,12 +415,9 @@ namespace dagbase
                 }
 
                 // Partial last block
-                std::size_t numBitsWithinBlock = size() % bitsPerBlock;
-                block_type firstValidBit = (size() - (pos+1)) % bitsPerBlock;
-                block_type existingMask = (1<<numBitsWithinBlock) - 1;
-                existingMask &= ~((1<<(numBitsWithinBlock - firstValidBit)) - 1);
+                std::size_t numBitsWithinBlock = (pos+1) % bitsPerBlock;
+                block_type existingMask = ~((1<<numBitsWithinBlock)-1);
                 block_type existingBits = _rep[numBlocks()-1] & existingMask;
-
                 if (auto count = countTrailingZeros(existingBits); count != sizeof(std::uint64_t) * CHAR_BIT)
                     return (numBlocks()-1) * bitsPerBlock + count;
             }
