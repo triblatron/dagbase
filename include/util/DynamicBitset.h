@@ -51,6 +51,9 @@ namespace dagbase
             block_type* _block{nullptr};
             std::size_t _bitWithinBlock{0};
         };
+
+        //! This uses compiler intrinsics to generate efficient instructions for the target architecture
+        //! \return The number of bits that are set in value
         static constexpr std::uint64_t popcount(std::uint64_t value)
         {
 #if defined(__POPCNT__) || defined(__ARM_FEATURE_POPCNT)
@@ -67,6 +70,8 @@ namespace dagbase
             return 0;
         }
 
+        //! This uses compiler instrinics to generate efficient instructions for the target architecture
+        //! \return The number of trailing zeros in value
         static constexpr std::uint64_t countTrailingZeros(std::uint64_t value)
         {
 #if defined(__ARM_FEATURE_CLZ)
@@ -82,11 +87,26 @@ namespace dagbase
 #endif
             return 0;
         }
+        static constexpr std::size_t bitsPerUint64 = sizeof(std::uint64_t) * CHAR_BIT;
+
+        //! This is a less efficient version of countTrailingZeros() that is able to be evaluated at compile-time.
+        //! \return The number of trailing zeros in value
+        static constexpr std::uint64_t compileTimeCountTrailingZeros(std::uint64_t value)
+        {
+            std::uint64_t count = 0;
+
+            for (size_t i = 0; i < bitsPerUint64; ++i)
+            {
+                if (value & (1ULL << i))
+                    return count;
+
+                ++count;
+            }
+        }
 
         static constexpr std::size_t bitsPerBlock = sizeof(block_type)*CHAR_BIT;
-        static constexpr std::size_t log2BitsPerBlock = countTrailingZeros(bitsPerBlock);
+        static constexpr std::size_t log2BitsPerBlock = compileTimeCountTrailingZeros (bitsPerBlock);
         static constexpr std::size_t npos = std::numeric_limits<std::size_t>::max();
-        static constexpr std::size_t bitsPerUint64 = sizeof(std::uint64_t) * CHAR_BIT;
         static std::size_t blockIndexForPos(std::size_t pos)
         {
             return pos >> log2BitsPerBlock;
