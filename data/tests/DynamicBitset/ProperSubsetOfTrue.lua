@@ -1,0 +1,20 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=2,
+			operand2=false,
+		},
+		{
+			opcode="SET_BIT",
+			operand=0,
+		},
+		{
+			opcode="PROPER_SUBSET_OF",
+			operand="11",
+			result=true,
+		},
+	}
+}

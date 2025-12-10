@@ -422,6 +422,27 @@ namespace dagbase
             return (*this) > other || (*this) == other;
         }
 
+        bool isSubsetOf(const DynamicBitset<Block>& other) const
+        {
+            if (size() == other.size())
+            {
+                for (std::size_t i=0; i<size(); ++i)
+                {
+                    if ((*this)[i] && !other[i])
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        bool isProperSubsetOf(const DynamicBitset<Block>& other) const
+        {
+            return count() < other.count() && isSubsetOf(other);
+        }
+
         std::size_t findFirst() const
         {
             if (!empty())

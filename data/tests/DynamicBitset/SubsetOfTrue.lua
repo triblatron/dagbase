@@ -1,0 +1,16 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=2,
+			operand2=true,
+		},
+		{
+			opcode="SUBSET_OF",
+			operand="11",
+			result=true,
+		},
+	}
+}

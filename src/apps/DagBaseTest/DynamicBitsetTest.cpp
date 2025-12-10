@@ -211,6 +211,22 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
         op2.fromString(operand.asString());
         EXPECT_EQ(result.asBool(), sut.operator>=(op2));
     }
+    else if (opcode == "SUBSET_OF")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        std::string thisString;
+        sut.toString(thisString);
+        EXPECT_EQ(result.asBool(), sut.isSubsetOf(op2)) << "Expected " << thisString << ".isSubsetOf( " << operand.asString() << " ) to be " << result.asBool();
+    }
+    else if (opcode == "PROPER_SUBSET_OF")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        std::string thisString;
+        sut.toString(thisString);
+        EXPECT_EQ(result.asBool(), sut.isProperSubsetOf(op2)) << "Expected " << thisString << ".isProperSubsetOf( " << operand.asString() << " ) to be " << result.asBool();
+    }
     else
     {
         FAIL() << "Unexpected opcode " << opcode;
@@ -316,7 +332,11 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/LessEqualFalse.lua"),
         std::make_tuple("data/tests/DynamicBitset/LessEqualTrue.lua"),
         std::make_tuple("data/tests/DynamicBitset/GreaterEqualFalse.lua"),
-        std::make_tuple("data/tests/DynamicBitset/GreaterEqualTrue.lua")
+        std::make_tuple("data/tests/DynamicBitset/GreaterEqualTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/SubsetOfFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/SubsetOfTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ProperSubsetOfFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/ProperSubsetOfTrue.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>
