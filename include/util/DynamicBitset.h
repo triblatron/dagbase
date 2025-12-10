@@ -455,6 +455,41 @@ namespace dagbase
             }
         }
 
+        bool lexCmp(const DynamicBitset<Block>& other) const
+        {
+            if (size() == other.size())
+            {
+                for (std::size_t i=0; i<size(); ++i)
+                {
+                    bool ourBit = (*this)[i];
+                    bool theirBit = other[i];
+
+                    if (ourBit < theirBit)
+                    {
+                        return true;
+                    }
+                    else if (ourBit > theirBit)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (size() < other.size())
+            {
+                for (std::size_t i=0; i<size(); ++i)
+                {
+                    bool ourBit = (*this)[i];
+                    bool theirBit = other[i];
+
+                    if (ourBit != theirBit)
+                        return false;
+                }
+
+                return true;
+            }
+            return false;
+        }
+
         DynamicBitset<Block>& operator&=(const DynamicBitset<Block>& other)
         {
             if (numBlocks() == other.numBlocks())

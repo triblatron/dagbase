@@ -175,6 +175,12 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
     {
         EXPECT_EQ(result.asInteger(), sut.numBlocks());
     }
+    else if (opcode == "LEX_CMP")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.lexCmp(op2));
+    }
     else
     {
         FAIL() << "Unexpected opcode " << opcode;
@@ -264,7 +270,12 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/FindNextExistingInFirstBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindNextExistingInSecondBlock.lua"),
         std::make_tuple("data/tests/DynamicBitset/FindNextExistingInThirdBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/FindNextExistingCrossingBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/FindNextExistingCrossingBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LexCmpFalseOneBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LexCmpFalseOperandShorter.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LexCmpTrueOperandLonger.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LexCmpTrueOneBlock.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LexCmpTrueTwoBlocks.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>

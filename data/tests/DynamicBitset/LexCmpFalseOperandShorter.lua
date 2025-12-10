@@ -1,0 +1,16 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=3,
+			operand2=false,
+		},
+		{
+			opcode="LEX_CMP",
+			operand="00",
+			result=false,
+		},
+	}
+}
