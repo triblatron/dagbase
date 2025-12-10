@@ -181,6 +181,36 @@ void DynamicBitset_testBitwiseOp::BitwiseOp::makeItSo(dagbase::DynamicBitset<std
         op2.fromString(operand.asString());
         EXPECT_EQ(result.asBool(), sut.lexCmp(op2));
     }
+    else if (opcode == "EQ")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.operator==(op2));
+    }
+    else if (opcode == "NE")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.operator!=(op2));
+    }
+    else if (opcode == "GT")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.operator>(op2));
+    }
+    else if (opcode == "LE")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.operator<=(op2));
+    }
+    else if (opcode == "GE")
+    {
+        decltype(_sut) op2;
+        op2.fromString(operand.asString());
+        EXPECT_EQ(result.asBool(), sut.operator>=(op2));
+    }
     else
     {
         FAIL() << "Unexpected opcode " << opcode;
@@ -275,7 +305,18 @@ INSTANTIATE_TEST_SUITE_P(DynamicBitset, DynamicBitset_testBitwiseOp, ::testing::
         std::make_tuple("data/tests/DynamicBitset/LexCmpFalseOperandShorter.lua"),
         std::make_tuple("data/tests/DynamicBitset/LexCmpTrueOperandLonger.lua"),
         std::make_tuple("data/tests/DynamicBitset/LexCmpTrueOneBlock.lua"),
-        std::make_tuple("data/tests/DynamicBitset/LexCmpTrueTwoBlocks.lua")
+        std::make_tuple("data/tests/DynamicBitset/LexCmpTrueTwoBlocks.lua"),
+        std::make_tuple("data/tests/DynamicBitset/EqualFalseSameSize.lua"),
+        std::make_tuple("data/tests/DynamicBitset/EqualFalseNotSameSize.lua"),
+        std::make_tuple("data/tests/DynamicBitset/EqualTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NotEqualFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/NotEqualTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/GreaterFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/GreaterTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LessEqualFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/LessEqualTrue.lua"),
+        std::make_tuple("data/tests/DynamicBitset/GreaterEqualFalse.lua"),
+        std::make_tuple("data/tests/DynamicBitset/GreaterEqualTrue.lua")
         ));
 
 class DynamicBitset_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*>>

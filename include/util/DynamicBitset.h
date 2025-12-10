@@ -379,6 +379,49 @@ namespace dagbase
             return reference(nullptr, 0);
         }
 
+        bool operator==(const DynamicBitset<Block>& other) const
+        {
+            if (size() == other.size())
+            {
+                for (std::size_t i=0; i<size(); ++i)
+                {
+                    if (operator[](i) != other[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        bool operator!=(const DynamicBitset<Block>& other) const
+        {
+            return !(*this == other);
+        }
+
+        bool operator<(const DynamicBitset<Block>& other) const
+        {
+            return lexCmp(other);
+        }
+
+        bool operator>(const DynamicBitset<Block>& other) const
+        {
+            return !((*this) < other || (*this)==other);
+        }
+
+        bool operator<=(const DynamicBitset<Block>& other) const
+        {
+            return (*this) < other || (*this) == other;
+        }
+
+        bool operator>=(const DynamicBitset<Block>& other) const
+        {
+            return (*this) > other || (*this) == other;
+        }
+
         std::size_t findFirst() const
         {
             if (!empty())
