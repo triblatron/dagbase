@@ -1,0 +1,20 @@
+root=
+{
+	ops=
+	{
+		{
+			opcode="RESIZE",
+			operand=2,
+			operand2=false,
+		},
+		{
+			opcode="SET_BIT",
+			operand=0
+		},
+		{
+			opcode="INTERSECTS",
+			operand="01",
+			result=true,
+		},
+	}
+}

@@ -443,6 +443,18 @@ namespace dagbase
             return count() < other.count() && isSubsetOf(other);
         }
 
+        bool intersects(const DynamicBitset<Block>& other) const
+        {
+            if (size() == other.size())
+            {
+                auto firstSet = findFirst();
+
+                return (firstSet != npos && other[firstSet]);
+            }
+
+            return false;
+        }
+
         std::size_t findFirst() const
         {
             if (!empty())
