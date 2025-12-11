@@ -27,7 +27,6 @@ namespace dagbase
             {
                 if (_store)
                 {
-                    std::string buffer;
                     _istr = new std::istringstream((const char*)_store->buffer());
                 }
             }
@@ -247,6 +246,31 @@ namespace dagbase
             int intValue{0};
             (*_istr) >> (intValue);
             *value = intValue;
+        }
+    }
+
+    void TextFormat::writeBinary(const std::uint8_t *buf, std::size_t len)
+    {
+        if (_printer && buf)
+        {
+            // TODO:Convert to base64 encoding.
+            for (std::size_t i=0; i<len; ++i)
+            {
+                _printer->print((int)buf[i]).println(" ");
+            }
+        }
+    }
+
+    void TextFormat::readBinary(std::uint8_t *value, std::size_t len)
+    {
+        if (_istr && value)
+        {
+            for (std::size_t i=0; i<len; ++i)
+            {
+                int encoded = 0;
+                (*_istr) >> encoded;
+                value[i] = encoded;
+            }
         }
     }
 }

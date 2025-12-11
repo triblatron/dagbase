@@ -6,6 +6,7 @@
 
 #include "config/DagBaseExport.h"
 #include "OutputStream.h"
+#include "core/ByteBuffer.h"
 
 namespace dagbase
 {
@@ -26,6 +27,10 @@ namespace dagbase
         {
             _backingStore = store;
         }
+
+        OutputStream& beginSubBuffer() override;
+
+        OutputStream& endSubBuffer() override;
 
         OutputStream& writeBuf(const value_type* buf, std::size_t len) override;
 
@@ -51,5 +56,7 @@ namespace dagbase
     private:
         StreamFormat* _format{ nullptr };
         BackingStore* _backingStore{ nullptr };
+        ByteBuffer _subBuffer;
+        bool _inSubBuffer{false};
     };
 }

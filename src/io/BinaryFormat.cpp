@@ -206,4 +206,16 @@ namespace dagbase
         if (_store)
             _store->get(value, sizeof(std::uint8_t));
     }
+
+    void BinaryFormat::writeBinary(const std::uint8_t *buf, std::size_t len)
+    {
+        if (_store)
+            _store->put(buf, len);
+    }
+
+    void BinaryFormat::readBinary(std::uint8_t *value, std::size_t len)
+    {
+        if (_store)
+            _store->get(value, len);
+    }
 }

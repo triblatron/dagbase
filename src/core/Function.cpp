@@ -29,11 +29,13 @@ namespace dagbase
     OutputStream &Function::write(OutputStream &str) const
     {
         lua_rawgeti(_lua, LUA_REGISTRYINDEX, _ref);
+//        str.beginSubBuffer();
         int errod = lua_dump(_lua, &writer, (void*)&str, 0);
         if (errod != LUA_OK)
         {
 
         }
+ //       str.endSubBuffer();
         //str.writeUInt32(0);
         lua_pop(_lua,1);
 

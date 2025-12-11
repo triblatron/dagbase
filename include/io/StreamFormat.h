@@ -35,6 +35,10 @@ namespace dagbase
 
         virtual void flush() = 0;
 
+        virtual void writeBinary(const std::uint8_t* value, std::size_t len) = 0;
+
+        virtual void readBinary(std::uint8_t* value, std::size_t len) = 0;
+
         virtual void writeUInt8(std::uint8_t value) = 0;
 
         virtual void readUInt8(std::uint8_t* value) = 0;

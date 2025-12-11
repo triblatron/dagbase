@@ -28,10 +28,18 @@ namespace dagbase
 
     OutputStream& FormatAgnosticOutputStream::writeBuf(const value_type* buf, std::size_t len)
     {
-        if (_backingStore)
+        if (_format)
         {
-            _backingStore->put(buf, len);
+            if (_inSubBuffer)
+            {
+                _subBuffer.put(buf, len);
+            }
+            else
+            {
+                _format->writeBinary(buf, len);
+            }
         }
+
         return *this;
     }
 
@@ -116,6 +124,16 @@ namespace dagbase
         if (_format)
             _format->writeUInt8(value);
 
+        return *this;
+    }
+
+    OutputStream &FormatAgnosticOutputStream::beginSubBuffer()
+    {
+        return *this;
+    }
+
+    OutputStream &FormatAgnosticOutputStream::endSubBuffer()
+    {
         return *this;
     }
 }

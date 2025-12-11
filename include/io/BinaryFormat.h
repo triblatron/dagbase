@@ -28,6 +28,9 @@ namespace dagbase
 
         void flush() override;
 
+        void writeBinary(const std::uint8_t* buf, std::size_t len) override;
+        void readBinary(std::uint8_t* value, std::size_t len) override;
+
         void writeUInt8(std::uint8_t value) override;
         void readUInt8(std::uint8_t* value) override;
 

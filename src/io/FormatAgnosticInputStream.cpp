@@ -28,9 +28,9 @@ namespace dagbase
 
     InputStream& FormatAgnosticInputStream::readBuf(value_type* buf, std::size_t len)
     {
-        if (_backingStore)
+        if (_format)
         {
-            _backingStore->get(buf, len);
+            _format->readBinary(buf, len);
         }
         return *this;
     }

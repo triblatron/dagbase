@@ -216,6 +216,6 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
 INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElement_testSerialise, ::testing::Values(
         std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "TextFormat"),
         std::make_tuple("data/tests/ConfigurationElement/SerialisePrimitives.lua", "BinaryFormat"),
-//        std::make_tuple("data/tests/ConfigurationElement/SerialiseFunction.lua", "TextFormat"),
+        std::make_tuple("data/tests/ConfigurationElement/SerialiseFunction.lua", "TextFormat"),
         std::make_tuple("data/tests/ConfigurationElement/SerialiseFunction.lua", "BinaryFormat")
         ));
