@@ -195,7 +195,9 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
     ASSERT_NE(nullptr, configFromStream);
     EXPECT_EQ(*config, *configFromStream);
     auto funcConfig = config->findElement("foo");
+    ASSERT_NE(nullptr, funcConfig);
     auto funcConfig2 = configFromStream->findElement("foo");
+    ASSERT_NE(nullptr, funcConfig2);
     if (funcConfig && funcConfig2)
     {
         auto func1 = funcConfig->asFunction();
