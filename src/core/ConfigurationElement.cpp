@@ -301,11 +301,11 @@ namespace dagbase
         }
     }
     
-    void ConfigurationElement::eachChild(std::function<bool (ConfigurationElement&)> f)
+    void ConfigurationElement::eachChild(const std::function<bool (ConfigurationElement&)>& f)
     {
 		for (auto child : _children)
 		{
-			if (f(*child) == false)
+			if (!f(*child))
 			{
 				break;
 			}
@@ -337,7 +337,7 @@ namespace dagbase
         if (value)
             if (auto element=config.findElement(name); element)
             {
-                *value = element->asInteger();
+                *value = static_cast<int32_t>(element->asInteger());
             }
     }
 
