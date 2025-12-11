@@ -74,10 +74,10 @@ namespace dagbase
             inputByte+= input[inputIndex] >> 6;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
-            inputByte = input[inputIndex] & ((1<<6)-1);
+            inputByte = input[inputIndex++] & ((1<<6)-1);
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
-            inputIndex+=3;
+
         }
         // Deal with padding
         if (numPadding==1)
@@ -136,6 +136,8 @@ namespace dagbase
             outputByte = ((decoded[2] & 0x03)<<6) + (decoded[3]);
             if (outputByte)
                 output->emplace_back(outputByte);
+
+            inputIndex+=4;
         }
     }
 }
