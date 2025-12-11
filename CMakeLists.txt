@@ -65,6 +65,7 @@ include/util/DebugPrinter.h
         include/util/Less.h
         include/util/DynamicEnum.h
         include/util/DynamicBitset.h
+        include/util/Base64.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -113,6 +114,7 @@ src/util/DebugPrinter.cpp
         src/util/ParameterLookup.cpp
         src/core/Function.cpp
         src/core/DynamicEnum.cpp
+        src/util/Base64.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
