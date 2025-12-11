@@ -59,7 +59,8 @@ namespace dagbase
         std::size_t inputIndex=0;
         output->reserve(static_cast<std::size_t>(4.0/3.0 * static_cast<double>(inputLen)));
         std::size_t numGroups = inputLen / 3;
-        std::size_t numPadding = inputLen % 3;
+        std::size_t numPadding = 3 - (inputLen % 3);
+        // Deal with whole groups of 3 6-bit numbers
         for (std::size_t groupIndex=0; groupIndex<numGroups; ++groupIndex)
         {
             std::uint8_t inputByte = input[inputIndex] >> 2;
@@ -78,6 +79,34 @@ namespace dagbase
             output->emplace_back(outputByte);
             inputIndex+=3;
         }
+        // Deal with padding
+        if (numPadding==1)
+        {
+            std::uint8_t inputByte = input[inputIndex] >> 2;
+            std::uint8_t outputByte = toBase64(inputByte);
+            output->emplace_back(outputByte);
+            inputByte = (input[inputIndex++] & ((1<<2)-1))<<4;
+            inputByte+= input[inputIndex] >> 4;
+            outputByte = toBase64(inputByte);
+            output->emplace_back(outputByte);
+            inputByte = (input[inputIndex++] & ((1<<4)-1))<<2;
+            inputByte+= input[inputIndex] >> 6;
+            outputByte = toBase64(inputByte);
+            output->emplace_back(outputByte);
+            output->emplace_back('=');
+        }
+        else if (numPadding==2)
+        {
+            std::uint8_t inputByte = input[inputIndex] >> 2;
+            std::uint8_t outputByte = toBase64(inputByte);
+            output->emplace_back(outputByte);
+            inputByte = (input[inputIndex++] & ((1<<2)-1))<<4;
+            inputByte+= input[inputIndex] >> 4;
+            outputByte = toBase64(inputByte);
+            output->emplace_back(outputByte);
+            output->emplace_back('=');
+            output->emplace_back('=');
+        }
     }
 
     void base64decode(const std::uint8_t *input, std::size_t inputLen, std::vector<std::uint8_t> *output)
@@ -88,7 +117,7 @@ namespace dagbase
         std::size_t inputIndex=0;
         output->reserve((inputLen>>2)*3);
         std::size_t numGroups = inputLen>>2;
-        std::size_t numPadding = inputLen & 3;
+        std::size_t numPadding = 3 - (inputLen & 3);
         for (std::size_t groupIndex=0; groupIndex<numGroups; ++groupIndex)
         {
             std::uint8_t decoded[4] = {
@@ -101,9 +130,12 @@ namespace dagbase
 
             output->emplace_back(outputByte);
             outputByte = ((decoded[1] & 0xf)<<4) + (decoded[2]>>2);
-            output->emplace_back(outputByte);
+            if (outputByte)
+                output->emplace_back(outputByte);
+
             outputByte = ((decoded[2] & 0x03)<<6) + (decoded[3]);
-            output->emplace_back(outputByte);
+            if (outputByte)
+                output->emplace_back(outputByte);
         }
     }
 }
