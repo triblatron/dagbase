@@ -63,17 +63,24 @@ namespace dagbase
         // Deal with whole groups of 3 6-bit numbers
         for (std::size_t groupIndex=0; groupIndex<numGroups; ++groupIndex)
         {
+            // First six bits of first byte shifted into low six bits
             std::uint8_t inputByte = input[inputIndex] >> 2;
             std::uint8_t outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
+            // Lower two bits of first byte shifted into high bits of second input byte 
             inputByte = (input[inputIndex++] & ((1<<2)-1))<<4;
+            // High four bits of second input byte into loewr four bits of second output six bits
             inputByte+= input[inputIndex] >> 4;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
+            // Low four bits of second input byte into high four bits of third output byte
             inputByte = (input[inputIndex++] & ((1<<4)-1))<<2;
+            // High two bits of third input byte into low two bits of third output byte
             inputByte+= input[inputIndex] >> 6;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
+            // Low six bits of third input byte into fourth output byte
+            
             inputByte = input[inputIndex++] & ((1<<6)-1);
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
