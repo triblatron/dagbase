@@ -20,8 +20,6 @@ namespace dagbase
             return '+';
         if (inputByte == 63)
             return '/';
-        if (inputByte == '=')
-            return '=';
 
         return 0;
     }
@@ -47,10 +45,6 @@ namespace dagbase
         if (inputByte == '/')
         {
             return 63;
-        }
-        if (inputByte == '=')
-        {
-            return '=';
         }
 
         return 0;
