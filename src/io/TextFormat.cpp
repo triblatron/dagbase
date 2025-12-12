@@ -8,6 +8,8 @@
 #include "io/BackingStore.h"
 #include "core/Class.h"
 #include "util/DebugPrinter.h"
+#include "util/Base64.h"
+
 #include <sstream>
 
 namespace dagbase
@@ -253,11 +255,9 @@ namespace dagbase
     {
         if (_printer && buf)
         {
-            // TODO:Convert to base64 encoding.
-            for (std::size_t i=0; i<len; ++i)
-            {
-                _printer->print((int)buf[i]).println(" ");
-            }
+            std::vector<std::uint8_t> output;
+            dagbase::base64encode(buf, len, &output);
+            _printer->println(output);
         }
     }
 
@@ -265,11 +265,17 @@ namespace dagbase
     {
         if (_istr && value)
         {
-            for (std::size_t i=0; i<len; ++i)
+            std::vector<std::uint8_t> output;
+            std::string encoded;
+            (*_istr) >> encoded;
+            base64decode((const std::uint8_t*)encoded.c_str(), encoded.length(), &output);
+            if (len == output.size())
             {
-                int encoded = 0;
-                (*_istr) >> encoded;
-                value[i] = encoded;
+                std::copy_n(output.begin(), len, value);
+            }
+            else
+            {
+                std::cerr << "Warning team:Expected " << len << " bytes, got " << output.size() << '\n';
             }
         }
     }

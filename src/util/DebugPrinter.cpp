@@ -24,12 +24,28 @@ namespace dagbase
 
     DebugPrinter& DebugPrinter::printIndent()
     {
-        for (std::uint32_t i=0; i<_indentLevel; ++i)
-        {
-            for (std::uint32_t j=0; j<_spacesPerIndent; ++j)
+        if (_str)
+            for (std::uint32_t i=0; i<_indentLevel; ++i)
             {
-                (*_str) << ' ';
+                for (std::uint32_t j=0; j<_spacesPerIndent; ++j)
+                {
+                    (*_str) << ' ';
+                }
             }
+
+        return *this;
+    }
+
+    DebugPrinter &DebugPrinter::println(const std::vector<std::uint8_t> &line)
+    {
+        if (_str)
+        {
+            printIndent();
+            for (auto c : line)
+            {
+                (*_str) << c;
+            }
+            (*_str) << '\n';
         }
 
         return *this;

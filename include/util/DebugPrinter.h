@@ -46,6 +46,9 @@ namespace dagbase
             return *this;
         }
         DebugPrinter& println(std::string line);
+
+        DebugPrinter& println(const std::vector<std::uint8_t>& line);
+
         DebugPrinter& printIndent();
     private:
         std::ostream* _str{nullptr};
