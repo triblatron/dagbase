@@ -12,14 +12,16 @@ namespace dagbase
     {
         if (inputByte >=0 && inputByte <= 25)
             return inputByte + 'A';
-        else if (inputByte >= 26 && inputByte <= 51)
+        if (inputByte >= 26 && inputByte <= 51)
             return inputByte + 'a' - 26;
-        else if (inputByte >= 52 && inputByte <= 61)
+        if (inputByte >= 52 && inputByte <= 61)
             return inputByte + '0' - 52;
-        else if (inputByte == 62)
+        if (inputByte == 62)
             return '+';
-        else if (inputByte == 63)
+        if (inputByte == 63)
             return '/';
+        if (inputByte == '=')
+            return '=';
 
         return 0;
     }
@@ -30,21 +32,25 @@ namespace dagbase
         {
             return inputByte - 'A';
         }
-        else if (inputByte >= 'a' && inputByte <= 'z')
+        if (inputByte >= 'a' && inputByte <= 'z')
         {
             return inputByte - 'a' + 26;
         }
-        else if (inputByte >= '0' && inputByte <= '9')
+        if (inputByte >= '0' && inputByte <= '9')
         {
             return inputByte - '0' + 52;
         }
-        else if (inputByte == '+')
+        if (inputByte == '+')
         {
             return 62;
         }
-        else if (inputByte == '/')
+        if (inputByte == '/')
         {
             return 63;
+        }
+        if (inputByte == '=')
+        {
+            return '=';
         }
 
         return 0;
@@ -139,11 +145,13 @@ namespace dagbase
 
             output->emplace_back(outputByte);
             outputByte = ((decoded[1] & 0xf)<<4) + (decoded[2]>>2);
-            if (outputByte)
+            if (decoded[2] != '#')
+            {
                 output->emplace_back(outputByte);
+            }
 
             outputByte = ((decoded[2] & 0x03)<<6) + (decoded[3]);
-            if (outputByte)
+            if (decoded[3] != '=')
                 output->emplace_back(outputByte);
 
             inputIndex+=4;

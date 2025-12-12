@@ -53,3 +53,39 @@ INSTANTIATE_TEST_SUITE_P(Base64, Base64_testRoundTrip, ::testing::Values(
         std::make_tuple("data/tests/Base64/HairyMultipleGroups.lua"),
         std::make_tuple("data/tests/Base64/LuaFunction.lua")
         ));
+
+TEST(Base64, Base64_testOneZero)
+{
+    std::vector<std::uint8_t> input;
+    input.emplace_back(0);
+    std::vector<std::uint8_t> output;
+    dagbase::base64encode((const std::uint8_t*)input.data(), input.size(), &output);
+    ASSERT_EQ(4U, output.size());
+    EXPECT_EQ('A', output[0]);
+    EXPECT_EQ('A', output[1]);
+    EXPECT_EQ('=', output[2]);
+    EXPECT_EQ('=', output[3]);
+    std::vector<std::uint8_t> actualOutput;
+    dagbase::base64decode(output.data(), output.size(), &actualOutput);
+    ASSERT_EQ(1U, actualOutput.size());
+    EXPECT_EQ(0, actualOutput[0]);
+}
+
+TEST(Base64, Base64_testTwoZero)
+{
+    std::vector<std::uint8_t> input;
+    input.emplace_back(0);
+    input.emplace_back(0);
+    std::vector<std::uint8_t> output;
+    dagbase::base64encode((const std::uint8_t*)input.data(), input.size(), &output);
+    ASSERT_EQ(4U, output.size());
+    EXPECT_EQ('A', output[0]);
+    EXPECT_EQ('A', output[1]);
+    EXPECT_EQ('A', output[2]);
+    EXPECT_EQ('=', output[3]);
+    std::vector<std::uint8_t> actualOutput;
+    dagbase::base64decode(output.data(), output.size(), &actualOutput);
+    ASSERT_EQ(2U, actualOutput.size());
+    EXPECT_EQ(0, actualOutput[0]);
+    EXPECT_EQ(0, actualOutput[1]);
+}
