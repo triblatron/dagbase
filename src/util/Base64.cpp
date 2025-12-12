@@ -116,6 +116,7 @@ namespace dagbase
             std::uint8_t outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
             inputByte = (input[inputIndex] & ((1<<2)-1))<<4;
+            // Discard 4 LSBs of last block
 //            inputByte+= input[inputIndex] >> 4;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
@@ -145,7 +146,7 @@ namespace dagbase
 
             output->emplace_back(outputByte);
             outputByte = ((decoded[1] & 0xf)<<4) + (decoded[2]>>2);
-            if (decoded[2] != '#')
+            if (decoded[2] != '=')
             {
                 output->emplace_back(outputByte);
             }
