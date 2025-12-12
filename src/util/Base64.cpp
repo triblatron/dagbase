@@ -98,6 +98,8 @@ namespace dagbase
             output->emplace_back(outputByte);
             inputByte = (input[inputIndex++] & ((1<<4)-1))<<2;
             inputByte+= input[inputIndex] >> 6;
+            // Discard LS two bits of last block
+            inputByte &= ~0x3;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
             output->emplace_back('=');
@@ -107,8 +109,8 @@ namespace dagbase
             std::uint8_t inputByte = input[inputIndex] >> 2;
             std::uint8_t outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
-            inputByte = (input[inputIndex++] & ((1<<2)-1))<<4;
-            inputByte+= input[inputIndex] >> 4;
+            inputByte = (input[inputIndex] & ((1<<2)-1))<<4;
+//            inputByte+= input[inputIndex] >> 4;
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
             output->emplace_back('=');

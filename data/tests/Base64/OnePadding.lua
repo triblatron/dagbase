@@ -1,5 +1,5 @@
 root=
 {
-	input="Ma",
-	output="TWE=",
+	input="MT",
+	output="TVQ=",
 }

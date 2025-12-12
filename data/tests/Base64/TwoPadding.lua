@@ -1,5 +1,5 @@
 root=
 {
-	input="M",
-	output="TQ==",
+	input="T",
+	output="VA==",
 }
