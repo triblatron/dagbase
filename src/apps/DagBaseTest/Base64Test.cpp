@@ -49,5 +49,6 @@ INSTANTIATE_TEST_SUITE_P(Base64, Base64_testRoundTrip, ::testing::Values(
         std::make_tuple("data/tests/Base64/TwoPadding.lua"),
         std::make_tuple("data/tests/Base64/TwoPaddingMultipleGroups.lua"),
         std::make_tuple("data/tests/Base64/OnePaddingMultipleGroups.lua"),
-        std::make_tuple("data/tests/Base64/NoPaddingMultipleGroups.lua")
+        std::make_tuple("data/tests/Base64/OnePaddingMultipleGroups.lua"),
+        std::make_tuple("data/tests/Base64/HairyMultipleGroups.lua")
         ));
