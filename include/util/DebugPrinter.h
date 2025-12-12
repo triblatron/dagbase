@@ -11,6 +11,7 @@
 #include <ios>
 #include <string>
 #include <iomanip>
+#include <vector>
 
 namespace dagbase
 {

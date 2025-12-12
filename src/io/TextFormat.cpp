@@ -11,6 +11,7 @@
 #include "util/Base64.h"
 
 #include <sstream>
+#include <algorithm>
 
 namespace dagbase
 {
