@@ -146,14 +146,16 @@ namespace dagbase
 
             output->emplace_back(outputByte);
             outputByte = ((decoded[1] & 0xf)<<4) + (decoded[2]>>2);
-            if (decoded[2] != '=')
+            if (input[inputIndex + 2] != '=')
             {
                 output->emplace_back(outputByte);
             }
 
             outputByte = ((decoded[2] & 0x03)<<6) + (decoded[3]);
-            if (decoded[3] != '=')
+            if (input[inputIndex + 3] != '=')
+            {
                 output->emplace_back(outputByte);
+            }
 
             inputIndex+=4;
         }
