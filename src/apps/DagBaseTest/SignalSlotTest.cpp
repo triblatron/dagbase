@@ -103,3 +103,15 @@ TEST_P(SignalSlot_testLuaSlot, testExpectedResult)
 INSTANTIATE_TEST_SUITE_P(SignalSlot, SignalSlot_testLuaSlot, ::testing::Values(
     std::make_tuple("data/tests/SignalSlot/LuaSlot.lua")
     ));
+
+int standaloneSlot()
+{
+   return 1;
+}
+
+TEST(SignalSlot, SignalSlot_testStandaloneFunction)
+{
+    dagbase::Signal<int()> testSignal;
+    testSignal.connect(standaloneSlot);
+    EXPECT_EQ(1,testSignal());
+}
