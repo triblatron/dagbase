@@ -57,7 +57,7 @@ namespace dagbase
             switch (_value->index())
             {
             case TYPE_FUNCTION:
-//                delete std::get<Function *>(_value.value());
+                delete std::get<Function *>(_value.value());
                 break;
             default:
                 // Nothing else allocates.
