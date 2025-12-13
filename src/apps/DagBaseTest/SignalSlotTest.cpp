@@ -5,6 +5,7 @@
 #include "core/Signal.h"
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
+#include "core/Function.h"
 
 #include <gtest/gtest.h>
 
@@ -56,4 +57,49 @@ TEST_P(SignalSlot_testInvoke, testExpectedResult)
 
 INSTANTIATE_TEST_SUITE_P(SignalSlot, SignalSlot_testInvoke, ::testing::Values(
     std::make_tuple("data/tests/SignalSlot/Simple.lua")
+    ));
+
+class SignalSlot_testLuaSlot : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+
+};
+
+struct LuaSlot
+{
+    void configure(dagbase::ConfigurationElement &config)
+    {
+        dagbase::Variant value;
+        dagbase::ConfigurationElement::readConfig(config, "slot", &value);
+        _func = value.asFunction(nullptr);
+    }
+
+    ~LuaSlot()
+    {
+        delete _func;
+    }
+
+    void operator()()
+    {
+        if (_func) {
+            (*_func)(0,0);
+        }
+    }
+
+    dagbase::Function* _func{nullptr};
+};
+
+TEST_P(SignalSlot_testLuaSlot, testExpectedResult)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    LuaSlot testSlot = {};
+    testSlot.configure(*config);
+    testSlot();
+    EXPECT_TRUE(lua.tableExists("result"));
+}
+
+INSTANTIATE_TEST_SUITE_P(SignalSlot, SignalSlot_testLuaSlot, ::testing::Values(
+    std::make_tuple("data/tests/SignalSlot/LuaSlot.lua")
     ));
