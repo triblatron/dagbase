@@ -47,9 +47,8 @@ TEST_P(SignalSlot_testInvoke, testExpectedResult)
     dagbase::Signal<dagbase::Variant()> testSignal;
     TestSlot testSlot = {};
     testSlot.configure(*config);
-    testSignal.connect([&testSlot]() {
-        return testSlot();
-    });
+    testSignal.connect(testSlot);
+
 
     auto actualResult = testSignal();
     EXPECT_EQ(testSlot.expectedResult, actualResult);
@@ -113,5 +112,24 @@ TEST(SignalSlot, SignalSlot_testStandaloneFunction)
 {
     dagbase::Signal<int()> testSignal;
     testSignal.connect(standaloneSlot);
+    EXPECT_EQ(1,testSignal());
+}
+
+class MemberFunctionSlot
+{
+public:
+    int slot()
+    {
+        return 1;
+    }
+};
+
+TEST(SignalSlot, SignalSlot_testMemberFunction)
+{
+    dagbase::Signal<int()> testSignal;
+    MemberFunctionSlot testSlot;
+    testSignal.connect([&testSlot]() {
+        return testSlot.slot();
+    });
     EXPECT_EQ(1,testSignal());
 }
