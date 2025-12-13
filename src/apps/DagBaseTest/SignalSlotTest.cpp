@@ -22,9 +22,10 @@ struct TestSlot
         dagbase::ConfigurationElement::readConfig(config, "result", &expectedResult);
     }
 
-    void operator()()
+    dagbase::Variant operator()()
     {
         result = expectedResult;
+        return result;
     }
 
     void makeItSo()
@@ -42,15 +43,15 @@ TEST_P(SignalSlot_testInvoke, testExpectedResult)
     dagbase::Lua lua;
     auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
     ASSERT_NE(nullptr, config);
-    dagbase::Signal<void()> testSignal;
+    dagbase::Signal<dagbase::Variant()> testSignal;
     TestSlot testSlot = {};
     testSlot.configure(*config);
     testSignal.connect([&testSlot]() {
         return testSlot();
     });
 
-    testSignal();
-    testSlot.makeItSo();
+    auto actualResult = testSignal();
+    EXPECT_EQ(testSlot.expectedResult, actualResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(SignalSlot, SignalSlot_testInvoke, ::testing::Values(
