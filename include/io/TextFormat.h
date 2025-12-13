@@ -12,6 +12,7 @@
 #include "io/StreamFormat.h"
 
 #include <iosfwd>
+#include <vector>
 
 namespace dagbase
 {
@@ -66,6 +67,7 @@ namespace dagbase
 
         void debug() override;
     private:
+        std::vector<std::uint8_t> _output;
         BackingStore* _store{nullptr};
         std::ostringstream* _ostr{nullptr};
         std::istringstream* _istr{nullptr};

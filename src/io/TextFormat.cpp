@@ -256,9 +256,9 @@ namespace dagbase
     {
         if (_printer && buf)
         {
-            std::vector<std::uint8_t> output;
-            dagbase::base64encode(buf, len, &output);
-            _printer->println(output);
+            _output.clear();
+            dagbase::base64encode(buf, len, &_output);
+            _printer->println(_output);
         }
     }
 
@@ -266,17 +266,17 @@ namespace dagbase
     {
         if (_istr && value)
         {
-            std::vector<std::uint8_t> output;
             std::string encoded;
             (*_istr) >> encoded;
-            base64decode((const std::uint8_t*)encoded.c_str(), encoded.length(), &output);
-            if (len == output.size())
+            _output.clear();
+            base64decode((const std::uint8_t*)encoded.c_str(), encoded.length(), &_output);
+            if (len == _output.size())
             {
-                std::copy_n(output.begin(), len, value);
+                std::copy_n(_output.begin(), len, value);
             }
             else
             {
-                std::cerr << "Warning team:Expected " << len << " bytes, got " << output.size() << '\n';
+                std::cerr << "Warning team:Expected " << len << " bytes, got " << _output.size() << '\n';
             }
         }
     }
