@@ -1,0 +1,4 @@
+root=
+{
+	result=1,
+}

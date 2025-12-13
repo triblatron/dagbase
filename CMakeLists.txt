@@ -66,6 +66,7 @@ include/util/DebugPrinter.h
         include/util/DynamicEnum.h
         include/util/DynamicBitset.h
         include/util/Base64.h
+        include/core/Signal.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
