@@ -133,3 +133,31 @@ TEST(SignalSlot, SignalSlot_testMemberFunction)
     });
     EXPECT_EQ(1,testSignal());
 }
+
+TEST(SignalSlot, SignalSlot_testMultipleVoidSlots)
+{
+    dagbase::Signal<void()> testSignal;
+    int i{0};
+    int j{0};
+    testSignal.connect([&i]() {
+        i=1;
+    });
+    testSignal.connect([&j]() {
+        j=2;
+    });
+    testSignal();
+    EXPECT_EQ(1,i);
+    EXPECT_EQ(2,j);
+}
+
+TEST(SignalSlot, SignalSlot_testMultipleReturnSlots)
+{
+    dagbase::Signal<int()> testSignal;
+    testSignal.connect([&testSignal]() {
+        return 1;
+    });
+    testSignal.connect([&testSignal]() {
+        return 2;
+    });
+    EXPECT_EQ(2, testSignal());
+}
