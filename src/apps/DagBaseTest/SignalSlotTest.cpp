@@ -161,3 +161,36 @@ TEST(SignalSlot, SignalSlot_testMultipleReturnSlots)
     });
     EXPECT_EQ(2, testSignal());
 }
+
+template<typename T>
+struct Maximum
+{
+    template<typename InputIterator, typename... Args>
+    T operator()(InputIterator first, InputIterator last, Args&&... args)
+    {
+        if (first == last)
+            return T();
+        T maxSoFar = (*first++)(std::forward<Args>(args)...);
+        for (auto it = first; it != last; ++it)
+        {
+            T result = (*it)(std::forward<Args>(args)...);
+            if (maxSoFar < result)
+                maxSoFar = result;
+        }
+
+        return maxSoFar;
+    }
+};
+
+TEST(SignalSlot, SignalSlot_testCombiner)
+{
+    dagbase::Signal<int()> testSignal;
+    testSignal.connect([&testSignal]() {
+        return 10;
+    });
+    testSignal.connect([&testSignal]() {
+        return 1;
+    });
+
+    EXPECT_EQ(10, testSignal.operator()<Maximum<int>>());
+}

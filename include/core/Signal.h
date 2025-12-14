@@ -11,19 +11,38 @@
 
 namespace dagbase
 {
-    template<typename Signature>
-    class Signal
+    template<typename R>
+    struct Last
+    {
+        template<typename InputIterator, typename... Args>
+        R operator()(InputIterator first, InputIterator last, Args&&... args)
+        {
+            R result;
+            for (auto it = first; it != last; ++it)
+            {
+                result = (*it)(args...);
+            }
+
+            return result;
+        }
+    };
+
+    template<class> class Signal;
+
+    template<class R, class... Args>
+    class Signal<R(Args...)>
     {
     public:
-        void connect(std::function<Signature>&& func)
+        using result_type = R;
+        void connect(std::function<R(Args...)>&& func)
         {
             _slots.emplace_back(std::move(func));
         }
 
-        template<typename... Args>
-        typename std::function<Signature>::result_type operator()(Args&&... args)
+        template<typename Combiner=Last<R>>
+        R operator()(Args&&... args)
         {
-            if constexpr (std::is_void_v<typename std::function<Signature>::result_type>)
+            if constexpr (std::is_void_v<R>)
             {
                 for (auto func : _slots)
                 {
@@ -32,16 +51,18 @@ namespace dagbase
             }
             else
             {
-                typename std::function<Signature>::result_type result{};
-                for (auto func : _slots) {
-                    result = func(args...);
-                }
+                Combiner combiner;
+                auto result = combiner(_slots.begin(), _slots.end(), std::forward<Args>(args)...);
+                // R result{};
+                // for (auto func : _slots) {
+                //     result = func(std::forward<Args>(args)...);
+                // }
                 return result;
             }
         }
 
     private:
-        std::vector<std::function<Signature>>  _slots;
+        std::vector<std::function<R(Args...)>>  _slots;
     };
 }
 
