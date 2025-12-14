@@ -48,6 +48,7 @@ namespace dagbase
                 {
                     func(std::forward<Args>(args)...);
                 }
+                return;
             }
             else
             {
