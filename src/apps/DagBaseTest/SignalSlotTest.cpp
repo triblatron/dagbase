@@ -194,3 +194,15 @@ TEST(SignalSlot, SignalSlot_testCombiner)
 
     EXPECT_EQ(10, testSignal());
 }
+
+TEST(SignalSlot, SignalSlot_testDisconnect)
+{
+    dagbase::Signal<int()> testSignal;
+    auto slot = [&testSignal]() {
+        return 1;
+    };
+    std::size_t slotIndex = testSignal.connect(slot);
+    testSignal.disconnect(slotIndex);
+    auto result = testSignal();
+    EXPECT_EQ(0, result);
+}

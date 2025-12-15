@@ -17,7 +17,7 @@ namespace dagbase
         template<typename InputIterator, typename... Args>
         R operator()(InputIterator first, InputIterator last, Args&&... args)
         {
-            R result;
+            R result{};
             for (auto it = first; it != last; ++it)
             {
                 result = (*it)(args...);
@@ -34,9 +34,18 @@ namespace dagbase
     {
     public:
         using result_type = R;
-        void connect(std::function<R(Args...)>&& func)
+        std::size_t connect(std::function<R(Args...)>&& func)
         {
             _slots.emplace_back(std::move(func));
+            return _slots.size()-1;
+        }
+
+        void disconnect(std::size_t index)
+        {
+            if ( index < _slots.size() )
+            {
+                _slots.erase(_slots.begin() + index);
+            }
         }
 
         R operator()(Args&&... args)
