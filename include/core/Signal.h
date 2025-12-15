@@ -27,10 +27,10 @@ namespace dagbase
         }
     };
 
-    template<class> class Signal;
+    template<typename Signature,typename R, typename Combiner=Last<R>> class Signal;
 
-    template<class R, class... Args>
-    class Signal<R(Args...)>
+    template<typename R, typename... Args, typename Combiner>
+    class Signal<R(Args...), Combiner>
     {
     public:
         using result_type = R;
@@ -39,7 +39,6 @@ namespace dagbase
             _slots.emplace_back(std::move(func));
         }
 
-        template<typename Combiner=Last<R>>
         R operator()(Args&&... args)
         {
             if constexpr (std::is_void_v<R>)

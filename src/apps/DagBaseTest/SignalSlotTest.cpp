@@ -44,7 +44,7 @@ TEST_P(SignalSlot_testInvoke, testExpectedResult)
     dagbase::Lua lua;
     auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
     ASSERT_NE(nullptr, config);
-    dagbase::Signal<dagbase::Variant()> testSignal;
+    dagbase::Signal<dagbase::Variant(),dagbase::Last<dagbase::Variant>> testSignal;
     TestSlot testSlot = {};
     testSlot.configure(*config);
     testSignal.connect(testSlot);
@@ -110,7 +110,7 @@ int standaloneSlot()
 
 TEST(SignalSlot, SignalSlot_testStandaloneFunction)
 {
-    dagbase::Signal<int()> testSignal;
+    dagbase::Signal<int(),dagbase::Last<int>> testSignal;
     testSignal.connect(standaloneSlot);
     EXPECT_EQ(1,testSignal());
 }
@@ -126,7 +126,7 @@ public:
 
 TEST(SignalSlot, SignalSlot_testMemberFunction)
 {
-    dagbase::Signal<int()> testSignal;
+    dagbase::Signal<int(),dagbase::Last<int>> testSignal;
     MemberFunctionSlot testSlot;
     testSignal.connect([&testSlot]() {
         return testSlot.slot();
@@ -136,7 +136,7 @@ TEST(SignalSlot, SignalSlot_testMemberFunction)
 
 TEST(SignalSlot, SignalSlot_testMultipleVoidSlots)
 {
-    dagbase::Signal<void()> testSignal;
+    dagbase::Signal<void(), dagbase::Last<void>> testSignal;
     int i{0};
     int j{0};
     testSignal.connect([&i]() {
@@ -152,7 +152,7 @@ TEST(SignalSlot, SignalSlot_testMultipleVoidSlots)
 
 TEST(SignalSlot, SignalSlot_testMultipleReturnSlots)
 {
-    dagbase::Signal<int()> testSignal;
+    dagbase::Signal<int(),dagbase::Last<int>> testSignal;
     testSignal.connect([&testSignal]() {
         return 1;
     });
@@ -184,7 +184,7 @@ struct Maximum
 
 TEST(SignalSlot, SignalSlot_testCombiner)
 {
-    dagbase::Signal<int()> testSignal;
+    dagbase::Signal<int(),Maximum<int>> testSignal;
     testSignal.connect([&testSignal]() {
         return 10;
     });
@@ -192,5 +192,5 @@ TEST(SignalSlot, SignalSlot_testCombiner)
         return 1;
     });
 
-    EXPECT_EQ(10, testSignal.operator()<Maximum<int>>());
+    EXPECT_EQ(10, testSignal.operator()());
 }
