@@ -27,7 +27,7 @@ namespace dagbase
         }
     };
 
-    template<typename Signature,typename R, typename Combiner=Last<R>> class Signal;
+    template<typename R, typename Combiner=Last<typename std::function<R>::result_type>> class Signal;
 
     template<typename R, typename... Args, typename Combiner>
     class Signal<R(Args...), Combiner>
@@ -53,10 +53,6 @@ namespace dagbase
             {
                 Combiner combiner;
                 auto result = combiner(_slots.begin(), _slots.end(), std::forward<Args>(args)...);
-                // R result{};
-                // for (auto func : _slots) {
-                //     result = func(std::forward<Args>(args)...);
-                // }
                 return result;
             }
         }
