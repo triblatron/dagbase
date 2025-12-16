@@ -8,6 +8,7 @@
 #include "core/Function.h"
 
 #include <gtest/gtest.h>
+#include <sstream>
 
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
@@ -170,10 +171,11 @@ struct Maximum
     {
         if (first == last)
             return T();
-        T maxSoFar = (*first++)(std::forward<Args>(args)...);
+        T maxSoFar = (first->second)(std::forward<Args>(args)...);
+        ++first;
         for (auto it = first; it != last; ++it)
         {
-            T result = (*it)(std::forward<Args>(args)...);
+            T result = (it->second)(std::forward<Args>(args)...);
             if (maxSoFar < result)
                 maxSoFar = result;
         }
@@ -217,4 +219,18 @@ TEST(SignalSlot, SignalSlot_testScopedConnection)
         EXPECT_EQ(1,testSignal());
     }
     EXPECT_EQ(0,testSignal());
+}
+
+TEST(SignalSlot, SignalSlot_testGroups)
+{
+    dagbase::Signal<void()> testSignal;
+    std::ostringstream str;
+    testSignal.connect([&str]() {
+        str << " World!";
+    }, 1);
+    testSignal.connect([&str]() {
+        str << "Hello,";
+    }, 0);
+    testSignal();
+    EXPECT_EQ("Hello, World!", str.str());
 }

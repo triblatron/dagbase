@@ -126,6 +126,12 @@ namespace dagbase
             return it;
         }
 
+        void erase(const_iterator it)
+        {
+            if (it!=_map.end())
+                _map.erase(it);
+        }
+
         iterator begin()
         {
             return _map.begin();

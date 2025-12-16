@@ -6,6 +6,7 @@
 #define DAGUI_SIGNAL_H
 
 #include "util/DummyMutex.h"
+#include "util/VectorMultimap.h"
 
 #include <functional>
 #include <vector>
@@ -49,7 +50,7 @@ namespace dagbase
             R result{};
             for (auto it = first; it != last; ++it)
             {
-                result = (*it)(args...);
+                result = (it->second)(args...);
             }
 
             return result;
@@ -63,10 +64,10 @@ namespace dagbase
     {
     public:
         using result_type = R;
-        std::size_t connect(std::function<R(Args...)>&& func)
+        std::size_t connect(std::function<R(Args...)>&& func, int group=0)
         {
             std::scoped_lock<Mutex> guard(_mutex);
-            _slots.emplace_back(std::move(func));
+            _slots.emplace(group, std::move(func));
             return _slots.size()-1;
         }
 
@@ -84,9 +85,9 @@ namespace dagbase
             std::scoped_lock<Mutex> guard(_mutex);
             if constexpr (std::is_void_v<R>)
             {
-                for (auto func : _slots)
+                for (auto p : _slots)
                 {
-                    func(std::forward<Args>(args)...);
+                    p.second(std::forward<Args>(args)...);
                 }
                 return;
             }
@@ -99,7 +100,7 @@ namespace dagbase
         }
 
     private:
-        std::vector<std::function<R(Args...)>>  _slots;
+        VectorMultimap<int, std::function<R(Args...)>>  _slots;
         Mutex _mutex;
     };
 }

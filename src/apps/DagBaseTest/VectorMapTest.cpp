@@ -221,6 +221,12 @@ TEST_P(VectorMultimap_testEqualRange, testFind)
 
         return true;
     });
+    if (auto element=config->findElement("erase"); element)
+    {
+        auto it = sut.find(element->asInteger());
+
+        sut.erase(it);
+    }
     auto searchConfig = config->findElement("search");
     ASSERT_NE(nullptr, searchConfig);
     auto key = searchConfig->asInteger();
@@ -261,5 +267,6 @@ INSTANTIATE_TEST_SUITE_P(VectorMultimap, VectorMultimap_testEqualRange, ::testin
     std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=1 }"),
     std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=2 }"),
     std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=1 }"),
-    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=2 }")
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, results={{3,1} }, op=2 }"),
+    std::make_tuple("root = { elements={ {2,1}, {1,1}, {1,2}, {2,2}, {3,1}, {2,3} }, search=3, erase=3, results={ }, op=2 }")
 	));
