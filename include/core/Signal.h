@@ -16,6 +16,30 @@
 
 namespace dagbase
 {
+    template<typename Signal>
+    class ScopedConnection
+    {
+    public:
+        explicit ScopedConnection(Signal* signal, std::size_t index)
+            :
+        _signal(signal),
+        _index(index)
+        {
+            // Do nothing.
+        }
+
+        ~ScopedConnection()
+        {
+            if (_signal)
+            {
+                _signal->disconnect(_index);
+            }
+        }
+    private:
+        Signal* _signal{nullptr};
+        std::size_t _index{~0U};
+    };
+
     template<typename R>
     struct Last
     {

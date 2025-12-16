@@ -206,3 +206,15 @@ TEST(SignalSlot, SignalSlot_testDisconnect)
     auto result = testSignal();
     EXPECT_EQ(0, result);
 }
+
+TEST(SignalSlot, SignalSlot_testScopedConnection)
+{
+    dagbase::Signal<int()> testSignal;
+    {
+        dagbase::ScopedConnection connection(&testSignal,testSignal.connect([]() {
+            return 1;
+        }));
+        EXPECT_EQ(1,testSignal());
+    }
+    EXPECT_EQ(0,testSignal());
+}
