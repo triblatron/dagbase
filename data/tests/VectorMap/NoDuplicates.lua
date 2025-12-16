@@ -1,0 +1,15 @@
+root=
+{
+	insertions=
+	{
+		{
+			key=1,
+			value=1,
+		},
+		{
+			key=2,
+			value=2,
+		}
+	},
+	size=2,
+}

@@ -1,0 +1,20 @@
+root=
+{
+	insertions=
+	{
+		{
+			key=1,
+			value=1,
+		},
+		{
+			key=1,
+			value=2,
+			inserted=false,
+		},
+		{
+			key=2,
+			value=2,
+		},
+	},
+	size=2,
+}

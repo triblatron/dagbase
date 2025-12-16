@@ -129,6 +129,13 @@ namespace dagbase
             return it;
         }
 
+        void erase(const_iterator it)
+        {
+            if (it==_set.end())
+                return;
+
+            _set.erase(it);
+        }
         Variant find(std::string_view path) const
         {
             Variant retval;

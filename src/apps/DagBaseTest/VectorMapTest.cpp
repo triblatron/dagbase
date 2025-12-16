@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-class VectorMap_testInsert : public ::testing::TestWithParam<std::tuple<const char*, int, int>>
+class VectorMap_testInsert : public ::testing::TestWithParam<std::tuple<const char*, int, int, bool>>
 {
 
 };
@@ -44,16 +44,24 @@ TEST_P(VectorMap_testInsert, testInsert)
             EXPECT_EQ(insertion->child(1)->asInteger(), actual.first->second);
         }
     }
+    if (auto element=config->findElement("erase"); element)
+    {
+        auto it = sut.find(element->asInteger());
+        sut.erase(it);
+    }
+    auto found = std::get<3>(GetParam());
     auto it = sut.find(key);
-    ASSERT_NE(sut.end(), it);
-    EXPECT_EQ(value , it->second);
+    ASSERT_EQ(found, sut.end()!=it);
+    if (found)
+        EXPECT_EQ(value , it->second);
 }
 
 INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testInsert, ::testing::Values(
-    std::make_tuple("root={ elements={ { 1, 1 } }, results={ { true } } }", 1, 1),
-    std::make_tuple("root={ elements={ { 2, 2 }, { 1, 1 } }, results={ { true }, { true } } }", 2, 2),
-    std::make_tuple("root={ elements={ { 1, 1 }, { 1, 2 } }, results={ { true }, { false } } }", 1, 1),
-    std::make_tuple("root={ elements={ { 3, 3 }, { 1, 1 }, { 2, 2 } }, results={ { true }, { true }, { true } } }", 1, 1)
+    std::make_tuple("root={ elements={ { 1, 1 } }, results={ { true } } }", 1, 1, true),
+    std::make_tuple("root={ elements={ { 2, 2 }, { 1, 1 } }, results={ { true }, { true } } }", 2, 2, true),
+    std::make_tuple("root={ elements={ { 1, 1 }, { 1, 2 } }, results={ { true }, { false } } }", 1, 1, true),
+    std::make_tuple("root={ elements={ { 3, 3 }, { 1, 1 }, { 2, 2 } }, results={ { true }, { true }, { true } } }", 1, 1, true),
+    std::make_tuple("root={ elements={ { 3, 3 }, { 1, 1 }, { 2, 2 } }, results={ { true }, { true }, { true } }, erase=1 }", 1, 1, false)
 ));
 
 class VectorMapTestHelper

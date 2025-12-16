@@ -38,10 +38,23 @@ public:
 
                 insertion.configure(child);
                 _insertions.emplace_back(insertion);
+
                 return true;
             });
         }
         dagbase::ConfigurationElement::readConfig(config, "size", &_expectedSize);
+        if (auto element=config.findElement("erasures"); element)
+        {
+            _erasures.reserve(element->numChildren());
+            element->eachChild([this](dagbase::ConfigurationElement& child) {
+                Insertion erasure;
+
+                erasure.configure(child);
+                _erasures.emplace_back(erasure);
+
+                return true;
+            });
+        }
     }
 
     virtual std::pair<IntVectorSet::iterator, bool> insert(const Insertion& insert) = 0;
@@ -57,10 +70,19 @@ public:
             EXPECT_EQ(p.first, _sut.find(insertion.value));
             EXPECT_EQ(insertion.inserted, p.second);
         }
+
+        for (auto erasure : _erasures)
+        {
+            auto it = _sut.find(erasure.value);
+            EXPECT_EQ(erasure.inserted, it!=_sut.end());
+            _sut.erase(it);
+            EXPECT_EQ(_sut.end(), _sut.find(erasure.value));
+        }
         EXPECT_EQ(_expectedSize, _sut.size());
     }
 protected:
     std::vector<Insertion> _insertions;
+    std::vector<Insertion> _erasures;
     std::uint32_t _expectedSize{0};
     IntVectorSet _sut;
 };
@@ -92,7 +114,8 @@ TEST_P(VectorSet_testInsert, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(VectorSet, VectorSet_testInsert, ::testing::Values(
         std::make_tuple("data/tests/VectorSet/NoDuplicates.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/VectorSet/OneDuplicate.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/VectorSet/OneDuplicate.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VectorSet/OneErasure.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
 
 class VectorSet_testEmplace : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>, public VectorSetTestHelper
@@ -122,5 +145,6 @@ TEST_P(VectorSet_testEmplace, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(VectorSet, VectorSet_testEmplace, ::testing::Values(
         std::make_tuple("data/tests/VectorSet/NoDuplicates.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-        std::make_tuple("data/tests/VectorSet/OneDuplicate.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+        std::make_tuple("data/tests/VectorSet/OneDuplicate.lua", "size", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+        std::make_tuple("data/tests/VectorSet/OneErasure.lua", "size", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
         ));
