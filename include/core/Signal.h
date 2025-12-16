@@ -5,9 +5,14 @@
 #ifndef DAGUI_SIGNAL_H
 #define DAGUI_SIGNAL_H
 
+#include "util/DummyMutex.h"
+
 #include <functional>
 #include <vector>
 #include <type_traits>
+#include <mutex>
+
+#include "gtest/internal/gtest-port.h"
 
 namespace dagbase
 {
@@ -27,21 +32,23 @@ namespace dagbase
         }
     };
 
-    template<typename R, typename Combiner=Last<typename std::function<R>::result_type>> class Signal;
+    template<typename R, typename Combiner=Last<typename std::function<R>::result_type>, typename Mutex=DummyMutex> class Signal;
 
-    template<typename R, typename... Args, typename Combiner>
-    class Signal<R(Args...), Combiner>
+    template<typename R, typename... Args, typename Combiner, typename Mutex>
+    class Signal<R(Args...), Combiner, Mutex>
     {
     public:
         using result_type = R;
         std::size_t connect(std::function<R(Args...)>&& func)
         {
+            std::scoped_lock<Mutex> guard(_mutex);
             _slots.emplace_back(std::move(func));
             return _slots.size()-1;
         }
 
         void disconnect(std::size_t index)
         {
+            std::scoped_lock<Mutex> guard(_mutex);
             if ( index < _slots.size() )
             {
                 _slots.erase(_slots.begin() + index);
@@ -50,6 +57,7 @@ namespace dagbase
 
         R operator()(Args&&... args)
         {
+            std::scoped_lock<Mutex> guard(_mutex);
             if constexpr (std::is_void_v<R>)
             {
                 for (auto func : _slots)
@@ -68,6 +76,7 @@ namespace dagbase
 
     private:
         std::vector<std::function<R(Args...)>>  _slots;
+        Mutex _mutex;
     };
 }
 
