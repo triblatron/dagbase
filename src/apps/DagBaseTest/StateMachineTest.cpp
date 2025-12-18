@@ -291,6 +291,6 @@ TEST_P(HierarchicalStateMachine_testConfigure, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testConfigure, ::testing::Values(
     std::make_tuple("data/tests/HierarchicalStateMachine/SimpleState.lua", "numStates", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-    std::make_tuple("data/tests/HierarchicalStateMachine/SimpleState.lua", "numStates", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "numStates", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "states.Complex.numStates", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
