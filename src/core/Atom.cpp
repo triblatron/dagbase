@@ -11,7 +11,7 @@ namespace dagbase
 {
     Atom::AtomMap Atom::_atoms;
 
-    Atom& Atom::intern(std::string name)
+    Atom& Atom::intern(const std::string& name)
     {
         auto it = _atoms.find(name);
         if (it == _atoms.end())
@@ -60,17 +60,4 @@ namespace dagbase
         else
             return {};
     }
-
-//    Atom &Atom::intern(std::string_view name)
-//    {
-//        auto it = _atoms.find(name);
-//        if (it == _atoms.end())
-//        {
-//            return _atoms[name] = Atom(strndup(name.data(),name.length()));
-//        }
-//        else
-//        {
-//            return it->second;
-//        }
-//    }
 }

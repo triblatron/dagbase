@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <cstring>
+#include <string>
 
 namespace dagbase
 {
@@ -25,9 +26,7 @@ namespace dagbase
 
         ~Atom();
 
-        static Atom& intern(std::string name);
-
-//        static Atom& intern(std::string_view name);
+        static Atom& intern(const std::string& name);
 
         void configure(ConfigurationElement& config);
 
