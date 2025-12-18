@@ -19,7 +19,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         DynamicEnumTest.cpp
         DynamicBitsetTest.cpp
         Base64Test.cpp
-        SignalSlotTest.cpp)
+        SignalSlotTest.cpp
+        StateMachineTest.cpp)
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)
