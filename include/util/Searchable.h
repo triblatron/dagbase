@@ -155,7 +155,26 @@ namespace dagbase
     	return {};
     }
 
-	template<typename Map>
+    template<typename Set>
+    ConfigurationElement::ValueType findSetFromAtom(std::string_view path, const Set& obj)
+    {
+        if (!path.empty())
+        {
+            auto dotPos = path.find('.');
+            if (dotPos < path.length() - 1)
+            {
+                std::string_view key;
+                key = path.substr(0, dotPos);
+                Atom atom = Atom::intern(std::string(key));
+                if (auto it=obj.find(atom); it!=obj.end())
+                    return std::invoke(&std::remove_pointer_t<typename Set::value_type>::find, it->second, path.substr(dotPos + 1) );
+            }
+        }
+
+        return {};
+    }
+
+    template<typename Map>
 	ConfigurationElement::ValueType findMapFromAtom(std::string_view path, const Map& obj)
     {
     	if (!path.empty())

@@ -1,0 +1,61 @@
+root=
+{
+	states=
+	{
+		{
+			name="STATE_INITIAL",
+			value=1,
+		},
+		{
+			name="STATE_INITIAL",
+			value=1,
+		},
+		{
+			name="STATE_FINAL",
+			value=2,
+		},
+	},
+	initialState="STATE_INITIAL",
+	inputs=
+	{
+		{
+			name="INPUT_TEST",
+			value=0,
+		},
+	},
+	transitionFunction=
+	{
+		{
+			initialState="STATE_INITIAL",
+			input="INPUT_TEST",
+			nextState="STATE_FINAL",
+		}
+	},
+	entryActions=
+	{
+		{
+			state="STATE_FINAL",
+			action=function()
+				return 0
+			end,
+		},
+	},
+	exitActions=
+	{
+		{
+			state="STATE_INITIAL",
+			action=function()
+				return 0
+			end,
+		},
+	},
+	transitionActions=
+	{
+		{
+			fromState="STATE_INITIAL",
+			toState="STATE_FINAL",
+			action=function()
+			end,
+		},
+	},
+}

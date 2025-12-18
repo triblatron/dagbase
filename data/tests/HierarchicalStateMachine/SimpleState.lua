@@ -1,0 +1,9 @@
+root=
+{
+	states=
+	{
+		{
+			name="Initial"
+		},
+	},
+}

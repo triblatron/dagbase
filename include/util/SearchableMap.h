@@ -71,6 +71,16 @@ namespace dagbase
     public:
         SearchableMapFromAtom() = default;
 
+        iterator begin()
+        {
+            return m.begin();
+        }
+
+        iterator end()
+        {
+            return m.end();
+        }
+
         //! \return The number of elements in the underlying Map
         std::size_t size() const
         {

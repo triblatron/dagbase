@@ -1,0 +1,22 @@
+root=
+{	
+	name="root",
+	states=
+	{
+		{
+			name="Initial",
+			value=0,
+		},
+		{
+			name="Complex",
+			value=1,
+			states=
+			{
+				{
+					name="Initial",
+					value=0,
+				},
+			}
+		},
+	},
+}

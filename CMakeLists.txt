@@ -68,6 +68,8 @@ include/util/DebugPrinter.h
         include/util/Base64.h
         include/core/Signal.h
         include/util/DummyMutex.h
+        include/core/HierarchicalStateMachine.h
+        include/util/SearchableSet.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -117,6 +119,7 @@ src/util/DebugPrinter.cpp
         src/core/Function.cpp
         src/core/DynamicEnum.cpp
         src/util/Base64.cpp
+        src/core/HierarchicalStateMachine.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
