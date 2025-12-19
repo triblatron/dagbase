@@ -19,4 +19,5 @@ root=
 			}
 		},
 	},
+	initialState="Initial",
 }

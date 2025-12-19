@@ -68,7 +68,9 @@ namespace dagbase
                 return true;
             });
         }
-        if (auto it=_states.m.find(Atom::intern("Initial")); it!=_states.end())
+        Atom initialState;
+        ConfigurationElement::readConfig(config, "initialState", &initialState);
+        if (auto it=_states.m.find(initialState); it!=_states.end())
         {
             _currentState = it->second;
         }
