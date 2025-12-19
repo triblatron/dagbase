@@ -22,11 +22,16 @@ namespace dagbase
     public:
         HierarchicalState() = default;
 
-        virtual ~HierarchicalState();
+        ~HierarchicalState();
 
-        virtual void configure(ConfigurationElement& config);
+        void configure(ConfigurationElement& config);
 
-        virtual Variant find(std::string_view path) const;
+        std::int64_t value() const
+        {
+            return _value;
+        }
+
+        Variant find(std::string_view path) const;
     private:
         using ChildArray = SearchableMapFromAtom<VectorMap<Atom, HierarchicalState*>>;
         ChildArray _children;

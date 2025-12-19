@@ -68,6 +68,10 @@ namespace dagbase
                 return true;
             });
         }
+        if (auto it=_states.m.find(Atom::intern("Initial")); it!=_states.end())
+        {
+            _currentState = it->second;
+        }
     }
 
     Variant HierarchicalStateMachine::find(std::string_view path) const
@@ -77,6 +81,13 @@ namespace dagbase
         retval = findEndpoint(path, "numStates", std::uint32_t(_states.m.size()));
         if (retval.has_value())
             return retval;
+
+        if (_currentState)
+        {
+            retval = findEndpoint(path, "currentState", _currentState->value());
+            if (retval.has_value())
+                return retval;
+        }
 
         retval = findInternal(path, "states", _states);
         if (retval.has_value())
