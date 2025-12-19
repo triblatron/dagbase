@@ -19,7 +19,9 @@ namespace dagbase
                 auto* state = new HierarchicalState();
 
                 state->configure(child);
-                _children.a.emplace_back(state);
+                Atom name;
+                ConfigurationElement::readConfig(child, "name", &name);
+                _children.m.emplace(name, state);
                 return true;
             });
         }
@@ -37,14 +39,18 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findInternal(path, "states", _children);
+        if (retval.has_value())
+            return retval;
+
         return {};
     }
 
     HierarchicalState::~HierarchicalState()
     {
-        for (auto state : _children.a)
+        for (auto& p : _children)
         {
-            delete state;
+            delete p.second;
         }
     }
 

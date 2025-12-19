@@ -28,7 +28,7 @@ namespace dagbase
 
         virtual Variant find(std::string_view path) const;
     private:
-        using ChildArray = SearchableArray<std::vector<HierarchicalState*>>;
+        using ChildArray = SearchableMapFromAtom<VectorMap<Atom, HierarchicalState*>>;
         ChildArray _children;
         std::int64_t _value{0};
     };
