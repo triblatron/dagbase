@@ -3,7 +3,8 @@ root=
 	states=
 	{
 		{
-			name="Initial"
+			name="Initial",
+			value=0,
 		},
 	},
 }

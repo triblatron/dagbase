@@ -10,12 +10,22 @@
 
 namespace dagbase
 {
-    void SimpleState::configure(ConfigurationElement &config)
+    void HierarchicalState::configure(ConfigurationElement &config)
     {
         ConfigurationElement::readConfig(config, "value", &_value);
+        if (auto element = config.findElement("children"); element)
+        {
+            element->eachChild([this](ConfigurationElement& child) {
+                auto* state = new HierarchicalState();
+
+                state->configure(child);
+                _children.a.emplace_back(state);
+                return true;
+            });
+        }
     }
 
-    Variant SimpleState::find(std::string_view path) const
+    Variant HierarchicalState::find(std::string_view path) const
     {
         Variant retval;
 
@@ -23,24 +33,28 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "numStates", std::uint32_t(_children.size()));
+        if (retval.has_value())
+            return retval;
+
         return {};
+    }
+
+    HierarchicalState::~HierarchicalState()
+    {
+        for (auto state : _children.a)
+        {
+            delete state;
+        }
     }
 
     void HierarchicalStateMachine::configure(ConfigurationElement& config)
     {
-        SimpleState::configure(config);
         if (auto element=config.findElement("states"); element)
         {
             element->eachChild([this](ConfigurationElement& child) {
-                SimpleState* state = nullptr;
-                if (auto statesElement=child.findElement("states"); statesElement)
-                {
-                    state = new HierarchicalStateMachine();
-                }
-                else
-                {
-                    state = new SimpleState();
-                }
+                HierarchicalState* state = nullptr;
+                state = new HierarchicalState();
                 state->configure(child);
                 Atom name;
                 ConfigurationElement::readConfig(child, "name", &name);
@@ -67,7 +81,7 @@ namespace dagbase
 
     HierarchicalStateMachine::~HierarchicalStateMachine()
     {
-        for (auto p : _states)
+        for (auto& p : _states)
         {
             delete p.second;
         }
