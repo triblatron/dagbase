@@ -38,6 +38,21 @@ namespace dagbase
         std::int64_t _value{0};
     };
 
+    class DAGBASE_API HierarchicalInput
+    {
+    public:
+        void configure(ConfigurationElement& config);
+
+        std::uint32_t value() const
+        {
+            return _value;
+        }
+
+        Variant find(std::string_view path) const;
+    private:
+        std::uint32_t _value{0};
+    };
+
     class DAGBASE_API HierarchicalStateMachine
     {
     public:
@@ -49,5 +64,6 @@ namespace dagbase
     private:
         SearchableMapFromAtom<VectorMap<Atom,HierarchicalState*>> _states;
         HierarchicalState* _currentState{nullptr};
+        SearchableMapFromAtom<VectorMap<Atom,HierarchicalInput>> _inputs;
     };
 }

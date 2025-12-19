@@ -74,6 +74,19 @@ namespace dagbase
         {
             _currentState = it->second;
         }
+        if (auto element=config.findElement("inputs"); element)
+        {
+            element->eachChild([this](ConfigurationElement& child) {
+                HierarchicalInput input;
+
+                Atom name;
+                ConfigurationElement::readConfig(child, "name", &name);
+                input.configure(child);
+                _inputs.emplace(name, input);
+
+                return true;
+            });
+        }
     }
 
     Variant HierarchicalStateMachine::find(std::string_view path) const
@@ -91,7 +104,15 @@ namespace dagbase
                 return retval;
         }
 
+        retval = findEndpoint(path, "numInputs", std::uint32_t(_inputs.size()));
+        if (retval.has_value())
+            return retval;
+
         retval = findInternal(path, "states", _states);
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "inputs", _inputs);
         if (retval.has_value())
             return retval;
 
@@ -104,5 +125,21 @@ namespace dagbase
         {
             delete p.second;
         }
+    }
+
+    void HierarchicalInput::configure(ConfigurationElement &config)
+    {
+        ConfigurationElement::readConfig(config, "value", &_value);
+    }
+
+    Variant HierarchicalInput::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "value", _value);
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 }

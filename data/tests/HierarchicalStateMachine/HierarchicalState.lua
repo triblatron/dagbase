@@ -20,4 +20,11 @@ root=
 		},
 	},
 	initialState="Initial",
+	inputs=
+	{
+		{
+			name="INPUT_ONE",
+			value=0,
+		}
+	},
 }
