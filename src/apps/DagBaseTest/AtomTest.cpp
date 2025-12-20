@@ -43,6 +43,12 @@ INSTANTIATE_TEST_SUITE_P(Atom, Atom_testFind, ::testing::Values(
     std::make_tuple("wibble", 'e', 5U)
     ));
 
+TEST(Atom, testFindEmpty)
+{
+    dagbase::Atom sut;
+    EXPECT_EQ(dagbase::Atom::npos, sut.find('.'));
+}
+
 class Atom_testSubstr : public ::testing::TestWithParam<std::tuple<const char*, std::size_t, std::size_t, const char*>>
 {
 

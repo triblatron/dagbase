@@ -50,8 +50,13 @@ namespace dagbase
 
     std::size_t Atom::find(char needle) const
     {
-        auto ptr = std::strchr(_value, needle);
-        return ptr?ptr - _value: npos;
+        if (_value)
+        {
+            auto ptr = std::strchr(_value, needle);
+            return ptr?ptr - _value: npos;
+        }
+
+        return npos;
     }
 
     Atom Atom::substr(std::size_t index, std::size_t length) const
