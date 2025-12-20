@@ -125,6 +125,7 @@ namespace dagbase
         std::string toString() const;
     private:
         explicit Atom(const char* str);
+        explicit Atom(const char* str, std::size_t length);
         const char* _value{nullptr};
         std::size_t _length{0};
         using AtomMap = std::unordered_map<std::string, Atom>;

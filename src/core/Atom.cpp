@@ -7,6 +7,8 @@
 #include "core/Atom.h"
 #include "core/ConfigurationElement.h"
 
+#include <algorithm>
+
 namespace dagbase
 {
     Atom::AtomMap Atom::_atoms;
@@ -34,6 +36,14 @@ namespace dagbase
         }
     }
 
+    Atom::Atom(const char *str, std::size_t length)
+        :
+    _value(str),
+    _length(length)
+    {
+        // Do nothing.
+    }
+
     Atom::~Atom()
     {
     }
@@ -46,7 +56,14 @@ namespace dagbase
 
     Atom Atom::substr(std::size_t index, std::size_t length) const
     {
-        return Atom();
+        if (index<_length)
+        {
+            const char* ptr = _value+index;
+            length = std::min(_length-index,length-index);
+            return intern(std::string(ptr, length));
+        }
+
+        return {};
     }
 
     void Atom::configure(ConfigurationElement &config)
