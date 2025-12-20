@@ -297,7 +297,8 @@ INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_test
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "currentState", std::int64_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "numInputs", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "inputs.INPUT_ONE.value", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "numTransitions", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
 /*
 class HierarchicalStateMachine_testOnInput : public ::testing::TestWithParam<std::tuple<const char*, const char*>>

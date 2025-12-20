@@ -31,6 +31,43 @@ namespace dagbase
         std::uint32_t _value{0};
     };
 
+    struct DAGBASE_API HierarchicalTransition
+    {
+        Atom nextState;
+
+        struct Domain
+        {
+            Atom initialState;
+            Atom input;
+
+            bool operator<(const Domain& other) const
+            {
+                return initialState < other.initialState || (initialState == other.initialState && input<other.input);
+            }
+
+            bool operator==(const Domain& other) const
+            {
+                return initialState == other.initialState && input == other.input;
+            }
+
+            void configure(ConfigurationElement& config)
+            {
+                ConfigurationElement::readConfig(config, "initialState", &initialState);
+                ConfigurationElement::readConfig(config, "input", &input);
+            }
+        };
+
+        struct Codomain
+        {
+            Atom nextState;
+
+            void configure(ConfigurationElement& config)
+            {
+                ConfigurationElement::readConfig(config, "nextState", &nextState);
+            }
+        };
+    };
+
     class DAGBASE_API HierarchicalStateMachine
     {
     public:
@@ -71,5 +108,7 @@ namespace dagbase
         HierarchicalStateMachine* _currentState{nullptr};
         Flags _flags{FLAGS_NONE};
         HierarchicalStateMachine* findInitialState();
+        using TransitionFunction=VectorMap<HierarchicalTransition::Domain,HierarchicalTransition::Codomain>;
+        TransitionFunction _transitionFunction;
     };
 }

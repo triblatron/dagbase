@@ -44,6 +44,8 @@ namespace dagbase
                 return true;
             });
         }
+        ConfigurationElement::readConfigVectorMap(config, "transitionFunction", &_transitionFunction);
+
     }
 
     Variant HierarchicalStateMachine::find(std::string_view path) const
@@ -62,6 +64,10 @@ namespace dagbase
         }
 
         retval = findEndpoint(path, "numInputs", std::uint32_t(_inputs.size()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "numTransitions", std::uint32_t(_transitionFunction.size()));
         if (retval.has_value())
             return retval;
 

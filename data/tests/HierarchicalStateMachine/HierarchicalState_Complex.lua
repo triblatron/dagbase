@@ -27,4 +27,12 @@ root=
 			value=0,
 		}
 	},
+	transitionFunction=
+	{
+		{
+			initialState="Initial",
+			input="INPUT_ONE",
+			nextState="Complex",
+		}
+	},
 }

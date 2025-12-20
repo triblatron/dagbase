@@ -19,13 +19,13 @@ namespace dagbase
     class StateMachine
     {
      public:
-        void configure(dagbase::ConfigurationElement& config)
+        void configure(ConfigurationElement& config)
         {
-            dagbase::ConfigurationElement::readConfigSet(config, "states", &_states);
+            ConfigurationElement::readConfigSet(config, "states", &_states);
 
-            dagbase::ConfigurationElement::readConfigSet(config, "inputs", &_inputs);
+            ConfigurationElement::readConfigSet(config, "inputs", &_inputs);
 
-            dagbase::ConfigurationElement::readConfigVectorMap(config, "transitionFunction", &_transitionFunction);
+            ConfigurationElement::readConfigVectorMap(config, "transitionFunction", &_transitionFunction);
 
             readEntryExitActions(config, "entryActions", &_entryActions);
 
@@ -73,39 +73,39 @@ namespace dagbase
 
         }
 
-        dagbase::Variant find(std::string_view path) const
+        Variant find(std::string_view path) const
         {
-            dagbase::Variant retval;
+            Variant retval;
 
-            retval = dagbase::findEndpoint(path, "numStates", std::uint32_t(_states.size()));
+            retval = findEndpoint(path, "numStates", std::uint32_t(_states.size()));
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findEndpoint(path, "numInputs", std::uint32_t(_inputs.size()));
+            retval = findEndpoint(path, "numInputs", std::uint32_t(_inputs.size()));
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findEndpoint(path, "numTransitions", std::uint32_t(_transitionFunction.size()));
+            retval = findEndpoint(path, "numTransitions", std::uint32_t(_transitionFunction.size()));
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findEndpoint(path, "numEntryActions", std::uint32_t(_entryActions.size()));
+            retval = findEndpoint(path, "numEntryActions", std::uint32_t(_entryActions.size()));
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findEndpoint(path, "numExitActions", std::uint32_t(_exitActions.size()));
+            retval = findEndpoint(path, "numExitActions", std::uint32_t(_exitActions.size()));
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findInternal(path, "entryActions", _entryActions);
+            retval = findInternal(path, "entryActions", _entryActions);
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findInternal(path, "exitActions", _exitActions);
+            retval = findInternal(path, "exitActions", _exitActions);
             if (retval.has_value())
                 return retval;
 
-            retval = dagbase::findInternal(path, "transitionActions", _transitionActions);
+            retval = findInternal(path, "transitionActions", _transitionActions);
             if (retval.has_value())
                 return retval;
 
