@@ -10,7 +10,7 @@ root=
 		{
 			name="Complex",
 			value=1,
-			children=
+			states=
 			{
 				{
 					name="Initial",

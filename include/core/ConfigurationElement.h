@@ -210,7 +210,7 @@ namespace dagbase
 
         void eachChild(const std::function<bool (ConfigurationElement&)>& f);
 
-        static void readConfig(ConfigurationElement& config, const char* name, std::int64_t* value);
+        static bool readConfig(ConfigurationElement& config, const char* name, std::int64_t* value);
         static void readConfig(ConfigurationElement& config, const char* name, double* value);
         static void readConfig(ConfigurationElement& config, const char* name, float* value);
         static void readConfig(ConfigurationElement& config, const char* name, bool* value);

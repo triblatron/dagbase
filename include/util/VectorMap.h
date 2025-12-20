@@ -22,6 +22,8 @@ namespace dagbase
 		typedef typename container::const_iterator const_iterator;
         typedef typename container::size_type size_type;
 	public:
+        VectorMap() = default;
+
 		void reserve(typename container::size_type n)
 		{
 			_map.reserve(n);

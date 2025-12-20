@@ -496,11 +496,14 @@ namespace dagbase
         return str.readRef<ConfigurationElement>(&id, lua);
     }
 
-    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::int64_t *value)
+    bool ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::int64_t *value)
     {
         if (auto element=config.findElement(name); element && value)
         {
             *value = element->asInteger();
+            return true;
         }
+
+        return false;
     }
 }

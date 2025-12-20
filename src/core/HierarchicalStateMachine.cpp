@@ -10,67 +10,27 @@
 
 namespace dagbase
 {
-    void HierarchicalState::configure(ConfigurationElement &config)
-    {
-        ConfigurationElement::readConfig(config, "value", &_value);
-        if (auto element = config.findElement("children"); element)
-        {
-            element->eachChild([this](ConfigurationElement& child) {
-                auto* state = new HierarchicalState();
-
-                state->configure(child);
-                Atom name;
-                ConfigurationElement::readConfig(child, "name", &name);
-                _children.m.emplace(name, state);
-                return true;
-            });
-        }
-    }
-
-    Variant HierarchicalState::find(std::string_view path) const
-    {
-        Variant retval;
-
-        retval = findEndpoint(path, "value", _value);
-        if (retval.has_value())
-            return retval;
-
-        retval = findEndpoint(path, "numStates", std::uint32_t(_children.size()));
-        if (retval.has_value())
-            return retval;
-
-        retval = findInternal(path, "states", _children);
-        if (retval.has_value())
-            return retval;
-
-        return {};
-    }
-
-    HierarchicalState::~HierarchicalState()
-    {
-        for (auto& p : _children)
-        {
-            delete p.second;
-        }
-    }
-
     void HierarchicalStateMachine::configure(ConfigurationElement& config)
     {
         if (auto element=config.findElement("states"); element)
         {
             element->eachChild([this](ConfigurationElement& child) {
-                HierarchicalState* state = nullptr;
-                state = new HierarchicalState();
+                HierarchicalStateMachine* state = nullptr;
+                state = new HierarchicalStateMachine();
                 state->configure(child);
                 Atom name;
                 ConfigurationElement::readConfig(child, "name", &name);
-                _states.emplace(name, state);
+                _children.emplace(name, state);
                 return true;
             });
         }
+        if (ConfigurationElement::readConfig(config, "value", &_value))
+        {
+            setFlag(FLAGS_HAS_VALUE);
+        }
         Atom initialState;
         ConfigurationElement::readConfig(config, "initialState", &initialState);
-        if (auto it=_states.m.find(initialState); it!=_states.end())
+        if (auto it=_children.m.find(initialState); it!=_children.end())
         {
             _currentState = it->second;
         }
@@ -93,7 +53,7 @@ namespace dagbase
     {
         Variant retval;
 
-        retval = findEndpoint(path, "numStates", std::uint32_t(_states.m.size()));
+        retval = findEndpoint(path, "numStates", std::uint32_t(_children.m.size()));
         if (retval.has_value())
             return retval;
 
@@ -108,7 +68,7 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        retval = findInternal(path, "states", _states);
+        retval = findInternal(path, "states", _children);
         if (retval.has_value())
             return retval;
 
@@ -121,7 +81,7 @@ namespace dagbase
 
     HierarchicalStateMachine::~HierarchicalStateMachine()
     {
-        for (auto& p : _states)
+        for (auto& p : _children)
         {
             delete p.second;
         }
