@@ -38,6 +38,17 @@ namespace dagbase
     {
     }
 
+    std::size_t Atom::find(char needle) const
+    {
+        auto ptr = std::strchr(_value, needle);
+        return ptr?ptr - _value: npos;
+    }
+
+    Atom Atom::substr(std::size_t index, std::size_t length) const
+    {
+        return Atom();
+    }
+
     void Atom::configure(ConfigurationElement &config)
     {
         auto name = config.asString();

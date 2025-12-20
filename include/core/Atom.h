@@ -21,10 +21,15 @@ namespace dagbase
     {
     public:
         using const_iterator = const char*;
+        static constexpr std::size_t npos = ~0U;
     public:
         Atom() = default;
 
         ~Atom();
+
+        std::size_t find(char needle) const;
+
+        Atom substr(std::size_t index, std::size_t length=npos) const;
 
         static Atom& intern(const std::string& name);
 
