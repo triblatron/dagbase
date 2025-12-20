@@ -53,10 +53,10 @@ namespace dagbase
     };
 
     //! A wrapper for a map of type Map, adding a find(std::string_view) to participate in attribute resolution.
-    //! \note We don't provide wrappers for find(const key_type&) because of a conflict with the above
+    //! \note We don't provide wrappers for find(const key_type&) because of a conflict with the above.
     //! This causes overload resolution to fail in findInternal() and requires an ugly cast to avoid compiler errors.
     //! Instead, we expose the underlying map as a public member variable and require client code to access it to get
-    //! usual begin(), end(), find() etc.
+    //! usual find() etc.
     //! \note We provide types for the value, key and mapped types of the underlying container, assuming it
     //! exposes them.
     template<typename Map>
@@ -76,7 +76,17 @@ namespace dagbase
             return m.begin();
         }
 
+        const_iterator begin() const
+        {
+            return m.begin();
+        }
+
         iterator end()
+        {
+            return m.end();
+        }
+
+        const_iterator end() const
         {
             return m.end();
         }
