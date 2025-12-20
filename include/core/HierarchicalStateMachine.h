@@ -9,7 +9,6 @@
 #include "util/VectorMap.h"
 #include "core/Atom.h"
 #include "util/SearchableMap.h"
-#include "util/SearchableArray.h"
 
 #include <string_view>
 
@@ -68,7 +67,9 @@ namespace dagbase
         ChildArray _children;
         std::int64_t _value{0};
         SearchableMapFromAtom<VectorMap<Atom,HierarchicalInput>> _inputs;
+        Atom _initialState;
         HierarchicalStateMachine* _currentState{nullptr};
         Flags _flags{FLAGS_NONE};
+        HierarchicalStateMachine* findInitialState();
     };
 }

@@ -28,12 +28,9 @@ namespace dagbase
         {
             setFlag(FLAGS_HAS_VALUE);
         }
-        Atom initialState;
-        ConfigurationElement::readConfig(config, "initialState", &initialState);
-        if (auto it=_children.m.find(initialState); it!=_children.end())
-        {
-            _currentState = it->second;
-        }
+
+        ConfigurationElement::readConfig(config, "initialState", &_initialState);
+        _currentState = findInitialState();
         if (auto element=config.findElement("inputs"); element)
         {
             element->eachChild([this](ConfigurationElement& child) {
@@ -77,6 +74,22 @@ namespace dagbase
             return retval;
 
         return {};
+    }
+
+    HierarchicalStateMachine * HierarchicalStateMachine::findInitialState()
+    {
+        if (auto it=_children.m.find(_initialState); it!=_children.m.end())
+        {
+            if (it->second->isFlagSet(FLAGS_HAS_VALUE))
+            {
+                return it->second;
+            }
+            else
+            {
+                return it->second->findInitialState();
+            }
+        }
+        return nullptr;
     }
 
     HierarchicalStateMachine::~HierarchicalStateMachine()

@@ -1,0 +1,30 @@
+root=
+{	
+	name="root",
+	states=
+	{
+		{
+			name="Initial",
+			value=0,
+		},
+		{
+			name="Complex",
+			states=
+			{
+				{
+					name="Initial",
+					value=1,
+				},
+			},
+			initialState="Initial",
+		},
+	},
+	initialState="Complex",
+	inputs=
+	{
+		{
+			name="INPUT_ONE",
+			value=0,
+		}
+	},
+}
