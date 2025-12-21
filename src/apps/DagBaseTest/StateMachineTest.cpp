@@ -400,7 +400,7 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
     sut.configure(*config);
     for (auto& input : _inputs)
     {
-        sut.onInput(input.input);
+        ASSERT_TRUE(sut.onInput(input.input));
         EXPECT_EQ(input.nextState, sut.state()->first);
         EXPECT_EQ(input.accepted, sut.state()->second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
     }
@@ -408,5 +408,6 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
 }
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
-    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua")
     ));

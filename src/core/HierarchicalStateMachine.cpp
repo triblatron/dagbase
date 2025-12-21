@@ -36,7 +36,6 @@ namespace dagbase
         }
 
         ConfigurationElement::readConfig(config, "initialState", &_initialState);
-        _currentState = findInitialState();
         if (auto element=config.findElement("inputs"); element)
         {
             element->eachChild([this](ConfigurationElement& child) {
@@ -56,7 +55,25 @@ namespace dagbase
         readEntryExitActions(config, "exitActions", &_exitActions);
 
         readTransitionActions(config, "transitionActions", &_transitionActions);
+        _currentState = _children.end();
+        if (!_initialState.empty())
+            setState(findInitialState());
+    }
 
+    HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::state()
+    {
+        if (_currentState->second->isFlagSet(FLAGS_HAS_VALUE))
+            return _currentState;
+
+        for (auto p : _children)
+        {
+            if (!p.second->isFlagSet(FLAGS_HAS_VALUE))
+            {
+                return p.second->state();
+            }
+        }
+
+        return _currentState;
     }
 
     HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::parseState(const Atom &name)
@@ -64,28 +81,29 @@ namespace dagbase
         return _children.m.find(name);
     }
 
-    void HierarchicalStateMachine::onInput(const Atom& input)
+    bool HierarchicalStateMachine::onInput(const Atom &input)
     {
-        HierarchicalTransition::Domain domain;
-        domain.initialState = _currentState->first;
-        domain.input = input;
-        if (auto it= _transitionFunction.find(domain); it!=_transitionFunction.end())
+        bool handled = false;
+        for (auto p : _children)
         {
-            if (auto itAction=_exitActions.m.find(_currentState->first); itAction != _exitActions.m.end())
+            if (!handled)
+                handled = p.second->onInput(input);
+            else
+                return true;
+        }
+        if (!handled && !isFlagSet(FLAGS_HAS_VALUE) && _currentState!=_children.end())
+        {
+            HierarchicalTransition::Domain domain;
+            domain.initialState = _currentState->first;
+            domain.input = input;
+            if (auto it= _transitionFunction.find(domain); it!=_transitionFunction.end())
             {
-                itAction->second(*_currentState->second);
-            }
-            auto nextState = parseState(it->second.nextState);
-            if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState->first, it->second.nextState)); itAction!=_transitionActions.m.end())
-            {
-                itAction->second(*_currentState->second);
-            }
-            _currentState = nextState;
-            if (auto itAction=_entryActions.m.find(_currentState->first); itAction != _entryActions.m.end())
-            {
-                itAction->second(*_currentState->second);
+                setState(it->second.nextState);
+                handled = true;
             }
         }
+
+        return handled;
     }
 
     Variant HierarchicalStateMachine::find(std::string_view path) const
@@ -134,20 +152,20 @@ namespace dagbase
         return {};
     }
 
-    HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::findInitialState()
+    Atom HierarchicalStateMachine::findInitialState()
     {
         if (auto it=_children.m.find(_initialState); it!=_children.m.end())
         {
             if (it->second->isFlagSet(FLAGS_HAS_VALUE))
             {
-                return it;
+                return it->first;
             }
             else
             {
                 return it->second->findInitialState();
             }
         }
-        return _children.end();
+        return {};
     }
 
     void HierarchicalEntryExitAction::operator()(HierarchicalStateMachine &state)
@@ -181,7 +199,7 @@ namespace dagbase
     }
 
     void HierarchicalStateMachine::readTransitionActions(
-            dagbase::ConfigurationElement &config, const char *name, HierarchicalStateMachine::TransitionActions *value)
+            dagbase::ConfigurationElement &config, const char *name, TransitionActions *value)
     {
         if (value)
             if (auto element=config.findElement(name); element)
@@ -202,6 +220,27 @@ namespace dagbase
 
                     return true;
                 });
+            }
+    }
+
+    void HierarchicalStateMachine::setState(const Atom& state)
+    {
+        if (_currentState!=_children.end())
+            if (auto itAction=_exitActions.m.find(_currentState->first); itAction != _exitActions.m.end())
+            {
+                itAction->second(*_currentState->second);
+            }
+        auto nextState = parseState(state);
+        if (_currentState!=_children.end())
+            if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState->first, state)); itAction!=_transitionActions.m.end())
+            {
+                itAction->second(*_currentState->second);
+            }
+        _currentState = nextState;
+        if (_currentState!=_children.end())
+            if (auto itAction=_entryActions.m.find(_currentState->first); itAction != _entryActions.m.end())
+            {
+                itAction->second(*_currentState->second);
             }
     }
 

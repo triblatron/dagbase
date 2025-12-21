@@ -123,14 +123,11 @@ namespace dagbase
             return (_flags & mask) != 0;
         }
 
-        ChildArray::iterator state()
-        {
-            return _currentState;
-        }
+        ChildArray::iterator state();
 
         ChildArray::iterator parseState(const Atom & atom);
 
-        void onInput(const Atom& input);
+        bool onInput(const Atom &input);
 
         Variant find(std::string_view path) const;
     private:
@@ -144,7 +141,8 @@ namespace dagbase
         Atom _initialState;
         ChildArray::iterator _currentState{_children.end()};
         Flags _flags{FLAGS_NONE};
-        ChildArray::iterator findInitialState();
+
+        Atom findInitialState();
         using TransitionFunction=VectorMap<HierarchicalTransition::Domain,HierarchicalTransition::Codomain>;
         TransitionFunction _transitionFunction;
         using EntryExitActions = SearchableMapFromAtom<VectorMap<Atom,HierarchicalEntryExitAction>>;
@@ -154,5 +152,6 @@ namespace dagbase
         using TransitionActions = SearchableMapFromAtomPair<VectorMap<std::pair<Atom,Atom>,HierarchicalEntryExitAction>>;
         TransitionActions _transitionActions;
         void readTransitionActions(ConfigurationElement& config, const char* name, TransitionActions* value);
+        void setState(const Atom& state);
     };
 }
