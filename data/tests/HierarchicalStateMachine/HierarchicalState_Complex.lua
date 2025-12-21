@@ -19,7 +19,7 @@ root=
 			initialState="Initial",
 		},
 	},
-	initialState="Complex",
+	initialState="Initial",
 	inputs=
 	{
 		{

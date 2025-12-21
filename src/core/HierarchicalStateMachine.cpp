@@ -56,6 +56,8 @@ namespace dagbase
 
         readTransitionActions(config, "transitionActions", &_transitionActions);
         _currentState = _children.end();
+        if (_initialState.empty())
+            _initialState = Atom::intern("Initial");
         if (!_initialState.empty())
             setState(findInitialState());
     }
