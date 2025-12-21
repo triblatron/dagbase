@@ -13,8 +13,6 @@
 #include <type_traits>
 #include <mutex>
 
-#include "gtest/internal/gtest-port.h"
-
 namespace dagbase
 {
     template<typename Signal>

@@ -7,7 +7,6 @@
 #include "core/HierarchicalStateMachine.h"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
-#include "core/Function.h"
 
 namespace dagbase
 {
@@ -153,11 +152,8 @@ namespace dagbase
 
     void HierarchicalEntryExitAction::operator()(HierarchicalStateMachine &state)
     {
-        if (_func)
-        {
-            (*_func)(0,1);
-            ++numCalls;
-        }
+        (func)(state);
+        ++numCalls;
     }
 
     HierarchicalStateMachine::~HierarchicalStateMachine()

@@ -9,6 +9,7 @@
 #include "util/VectorMap.h"
 #include "core/Atom.h"
 #include "util/SearchableMap.h"
+#include "core/Signal.h"
 
 #include <string_view>
 
@@ -69,11 +70,11 @@ namespace dagbase
         };
     };
 
-    struct HierarchicalEntryExitAction
+    struct DAGBASE_API HierarchicalEntryExitAction
     {
         void configure(ConfigurationElement& config)
         {
-            _func = config.asFunction();
+
         }
 
         Variant find(std::string_view path) const
@@ -89,8 +90,8 @@ namespace dagbase
 
         void operator()(HierarchicalStateMachine& state);
 
-        std::int64_t     numCalls{0};
-        dagbase::Function* _func{nullptr};
+        std::int64_t numCalls{0};
+        Signal<void(HierarchicalStateMachine&)> func;
     };
 
     class DAGBASE_API HierarchicalStateMachine
