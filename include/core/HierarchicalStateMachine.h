@@ -136,7 +136,7 @@ namespace dagbase
             _flags = static_cast<Flags>(_flags | mask);
         }
         ChildArray _children;
-        std::int64_t _value{0};
+        std::int64_t _value{-1};
         SearchableMapFromAtom<VectorMap<Atom,HierarchicalInput>> _inputs;
         Atom _initialState;
         ChildArray::iterator _currentState{_children.end()};

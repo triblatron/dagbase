@@ -158,14 +158,7 @@ namespace dagbase
     {
         if (auto it=_children.m.find(_initialState); it!=_children.m.end())
         {
-            if (it->second->isFlagSet(FLAGS_HAS_VALUE))
-            {
-                return it->first;
-            }
-            else
-            {
-                return it->second->findInitialState();
-            }
+            return it->first;
         }
         return {};
     }
