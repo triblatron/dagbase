@@ -15,6 +15,7 @@
 namespace dagbase
 {
     class ConfigurationElement;
+    class HierarchicalStateMachine;
 
     class DAGBASE_API HierarchicalInput
     {
@@ -66,6 +67,30 @@ namespace dagbase
                 ConfigurationElement::readConfig(config, "nextState", &nextState);
             }
         };
+    };
+
+    struct HierarchicalEntryExitAction
+    {
+        void configure(ConfigurationElement& config)
+        {
+            _func = config.asFunction();
+        }
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findEndpoint(path, "numCalls", numCalls);
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
+
+        void operator()(HierarchicalStateMachine& state);
+
+        std::int64_t     numCalls{0};
+        dagbase::Function* _func{nullptr};
     };
 
     class DAGBASE_API HierarchicalStateMachine
@@ -121,5 +146,12 @@ namespace dagbase
         ChildArray::iterator findInitialState();
         using TransitionFunction=VectorMap<HierarchicalTransition::Domain,HierarchicalTransition::Codomain>;
         TransitionFunction _transitionFunction;
+        using EntryExitActions = SearchableMapFromAtom<VectorMap<Atom,HierarchicalEntryExitAction>>;
+        EntryExitActions _entryActions;
+        EntryExitActions _exitActions;
+        void readEntryExitActions(ConfigurationElement& config, const char* name, EntryExitActions* value);
+        using TransitionActions = SearchableMapFromAtomPair<VectorMap<std::pair<Atom,Atom>,HierarchicalEntryExitAction>>;
+        TransitionActions _transitionActions;
+        void readTransitionActions(ConfigurationElement& config, const char* name, TransitionActions* value);
     };
 }

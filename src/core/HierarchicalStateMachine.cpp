@@ -7,6 +7,7 @@
 #include "core/HierarchicalStateMachine.h"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
+#include "core/Function.h"
 
 namespace dagbase
 {
@@ -51,6 +52,11 @@ namespace dagbase
             });
         }
         ConfigurationElement::readConfigVectorMap(config, "transitionFunction", &_transitionFunction);
+        readEntryExitActions(config, "entryActions", &_entryActions);
+
+        readEntryExitActions(config, "exitActions", &_exitActions);
+
+        readTransitionActions(config, "transitionActions", &_transitionActions);
 
     }
 
@@ -66,20 +72,20 @@ namespace dagbase
         domain.input = input;
         if (auto it= _transitionFunction.find(domain); it!=_transitionFunction.end())
         {
-            // if (auto itAction=_exitActions.m.find(_currentState.name); itAction != _exitActions.m.end())
-            // {
-            //     itAction->second(_currentState);
-            // }
+            if (auto itAction=_exitActions.m.find(_currentState->first); itAction != _exitActions.m.end())
+            {
+                itAction->second(*_currentState->second);
+            }
             auto nextState = parseState(it->second.nextState);
-            // if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState.name, it->second.nextState)); itAction!=_transitionActions.m.end())
-            // {
-            //     itAction->second(_currentState);
-            // }
+            if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState->first, it->second.nextState)); itAction!=_transitionActions.m.end())
+            {
+                itAction->second(*_currentState->second);
+            }
             _currentState = nextState;
-            // if (auto itAction=_entryActions.m.find(_currentState.name); itAction != _entryActions.m.end())
-            // {
-            //     itAction->second(_currentState);
-            // }
+            if (auto itAction=_entryActions.m.find(_currentState->first); itAction != _entryActions.m.end())
+            {
+                itAction->second(*_currentState->second);
+            }
         }
     }
 
@@ -114,6 +120,18 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findInternal(path, "entryActions", _entryActions);
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "exitActions", _exitActions);
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "transitionActions", _transitionActions);
+        if (retval.has_value())
+            return retval;
+
         return {};
     }
 
@@ -131,6 +149,15 @@ namespace dagbase
             }
         }
         return _children.end();
+    }
+
+    void HierarchicalEntryExitAction::operator()(HierarchicalStateMachine &state)
+    {
+        if (_func)
+        {
+            (*_func)(0,1);
+            ++numCalls;
+        }
     }
 
     HierarchicalStateMachine::~HierarchicalStateMachine()
@@ -156,4 +183,57 @@ namespace dagbase
 
         return {};
     }
+
+    void HierarchicalStateMachine::readTransitionActions(
+            dagbase::ConfigurationElement &config, const char *name, HierarchicalStateMachine::TransitionActions *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                value->reserve(element->numChildren());
+                element->eachChild([this](dagbase::ConfigurationElement& child) {
+                    dagbase::Atom fromState;
+                    dagbase::Atom toState;
+                    dagbase::ConfigurationElement::readConfig(child, "fromState", &fromState);
+                    dagbase::ConfigurationElement::readConfig(child, "toState", &toState);
+                    HierarchicalEntryExitAction action;
+                    if (auto actionElement=child.findElement("action"); actionElement)
+                    {
+                        action.configure(*actionElement);
+                    }
+
+                    _transitionActions.emplace(std::make_pair(fromState, toState), action);
+
+                    return true;
+                });
+            }
+    }
+
+
+    void
+    HierarchicalStateMachine::readEntryExitActions(dagbase::ConfigurationElement &config,
+                                                                                  const char *name,
+                                                                                  EntryExitActions *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                value->reserve(element->numChildren());
+                element->eachChild([&value](dagbase::ConfigurationElement& child) {
+                    dagbase::Atom state;
+                    HierarchicalEntryExitAction action;
+                    dagbase::ConfigurationElement::readConfig(child, "state", &state);
+
+                    if (auto actionElement=child.findElement("action"); actionElement)
+                    {
+                        action.configure(*actionElement);
+                    }
+
+                    value->emplace(state, action);
+
+                    return true;
+                });
+            }
+    }
+
 }
