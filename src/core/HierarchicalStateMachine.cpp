@@ -24,6 +24,12 @@ namespace dagbase
                 return true;
             });
         }
+
+        bool final = false;
+        ConfigurationElement::readConfig(config, "final", &final);
+        if (final)
+            setFlag(FLAGS_FINAL);
+
         if (ConfigurationElement::readConfig(config, "value", &_value))
         {
             setFlag(FLAGS_HAS_VALUE);
@@ -48,6 +54,35 @@ namespace dagbase
 
     }
 
+    HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::parseState(const Atom &name)
+    {
+        return _children.m.find(name);
+    }
+
+    void HierarchicalStateMachine::onInput(const Atom& input)
+    {
+        HierarchicalTransition::Domain domain;
+        domain.initialState = _currentState->first;
+        domain.input = input;
+        if (auto it= _transitionFunction.find(domain); it!=_transitionFunction.end())
+        {
+            // if (auto itAction=_exitActions.m.find(_currentState.name); itAction != _exitActions.m.end())
+            // {
+            //     itAction->second(_currentState);
+            // }
+            auto nextState = parseState(it->second.nextState);
+            // if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState.name, it->second.nextState)); itAction!=_transitionActions.m.end())
+            // {
+            //     itAction->second(_currentState);
+            // }
+            _currentState = nextState;
+            // if (auto itAction=_entryActions.m.find(_currentState.name); itAction != _entryActions.m.end())
+            // {
+            //     itAction->second(_currentState);
+            // }
+        }
+    }
+
     Variant HierarchicalStateMachine::find(std::string_view path) const
     {
         Variant retval;
@@ -56,9 +91,9 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        if (_currentState)
+        if (_currentState!=_children.end())
         {
-            retval = findEndpoint(path, "currentState", _currentState->value());
+            retval = findEndpoint(path, "currentState", _currentState->second->value());
             if (retval.has_value())
                 return retval;
         }
@@ -82,20 +117,20 @@ namespace dagbase
         return {};
     }
 
-    HierarchicalStateMachine * HierarchicalStateMachine::findInitialState()
+    HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::findInitialState()
     {
         if (auto it=_children.m.find(_initialState); it!=_children.m.end())
         {
             if (it->second->isFlagSet(FLAGS_HAS_VALUE))
             {
-                return it->second;
+                return it;
             }
             else
             {
                 return it->second->findInitialState();
             }
         }
-        return nullptr;
+        return _children.end();
     }
 
     HierarchicalStateMachine::~HierarchicalStateMachine()

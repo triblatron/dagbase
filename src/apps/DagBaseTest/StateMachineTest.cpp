@@ -300,7 +300,7 @@ INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_test
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "numTransitions", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
-/*
+
 class HierarchicalStateMachine_testOnInput : public ::testing::TestWithParam<std::tuple<const char*, const char*>>
 {
     public:
@@ -401,13 +401,12 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
     for (auto& input : _inputs)
     {
         sut.onInput(input.input);
-        EXPECT_EQ(input.nextState, sut.state().name);
-        EXPECT_EQ(input.accepted, sut.accepted());
+        EXPECT_EQ(input.nextState, sut.state()->first);
+        EXPECT_EQ(input.accepted, sut.state()->second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
     }
     makeItSo(sut);
 }
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
-    std::make_tuple("data/tests/HierarchicalStateMachine/onTest.lua", "data/tests/HierarchicalStateMachine/duplicateState.lua")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua")
     ));
-    */

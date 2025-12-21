@@ -1,0 +1,25 @@
+root=
+{
+	inputs=
+	{
+		{
+			input="INPUT_TEST",
+			nextState="STATE_FINAL",
+		},
+	},
+	asserts=
+	{
+		{
+			path="entryActions.STATE_FINAL.numCalls",
+			value=1,
+		},
+		{
+			path="exitActions.STATE_INITIAL.numCalls",
+			value=1,
+		},
+		{
+			path="transitionActions.STATE_INITIAL.STATE_FINAL.numCalls",
+			value=1,
+		},
+	}
+}

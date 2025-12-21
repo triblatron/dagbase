@@ -75,8 +75,11 @@ namespace dagbase
         {
             FLAGS_NONE,
             //! We are a simple state rather than a state machine.
-            FLAGS_HAS_VALUE
+            FLAGS_HAS_VALUE = 1<<0,
+            // This is a final state.
+            FLAGS_FINAL = 1<<1
         };
+        using ChildArray = SearchableMapFromAtom<VectorMap<Atom, HierarchicalStateMachine *>>;
     public:
         HierarchicalStateMachine() = default;
 
@@ -94,20 +97,28 @@ namespace dagbase
             return (_flags & mask) != 0;
         }
 
+        ChildArray::iterator state()
+        {
+            return _currentState;
+        }
+
+        ChildArray::iterator parseState(const Atom & atom);
+
+        void onInput(const Atom& input);
+
         Variant find(std::string_view path) const;
     private:
         void setFlag(Flags mask)
         {
             _flags = static_cast<Flags>(_flags | mask);
         }
-        using ChildArray = SearchableMapFromAtom<VectorMap<Atom, HierarchicalStateMachine *>>;
         ChildArray _children;
         std::int64_t _value{0};
         SearchableMapFromAtom<VectorMap<Atom,HierarchicalInput>> _inputs;
         Atom _initialState;
-        HierarchicalStateMachine* _currentState{nullptr};
+        ChildArray::iterator _currentState{_children.end()};
         Flags _flags{FLAGS_NONE};
-        HierarchicalStateMachine* findInitialState();
+        ChildArray::iterator findInitialState();
         using TransitionFunction=VectorMap<HierarchicalTransition::Domain,HierarchicalTransition::Codomain>;
         TransitionFunction _transitionFunction;
     };
