@@ -1,0 +1,6 @@
+root=
+{
+	sut=function()
+		
+	end,
+}

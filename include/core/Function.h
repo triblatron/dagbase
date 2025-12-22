@@ -6,6 +6,8 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Variant.h"
+
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
@@ -54,6 +56,12 @@ namespace dagbase
 
         void operator()(int nargs, int nresults);
 
+        bool ok() const;
+
+        Variant result(int i);
+
+        void cleanupResults();
+
         bool equals(const Function& other) const;
 
         OutputStream& write(OutputStream& str) const;
@@ -64,6 +72,8 @@ namespace dagbase
     private:
         lua_State * _lua{nullptr};
         int _ref{LUA_NOREF};
+        int _errod{0};
+        int _numResults{0};
         bool _balance{false};
     };
 }

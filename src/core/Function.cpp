@@ -128,12 +128,49 @@ namespace dagbase
     void Function::operator()(int nargs, int nresults)
     {
         lua_rawgeti(_lua, LUA_REGISTRYINDEX, _ref);
-        int errod = lua_pcall(_lua, nargs, nargs, 0);
-        if (errod!=LUA_OK)
+        int oldTop = lua_gettop(_lua);
+        _errod = lua_pcall(_lua, nargs, nresults, 0);
+        if (_errod!=LUA_OK)
         {
             std::cerr << "Function::operator():Got error " << lua_tostring(_lua,-1) << '\n';
             lua_pop(_lua,1);
         }
+        _numResults = lua_gettop(_lua) + 1 - oldTop;
     }
 
+    bool Function::ok() const
+    {
+        return _errod==0;
+    }
+
+    Variant Function::result(int i)
+    {
+        if (!ok())
+            return {};
+
+        if (lua_gettop(_lua)<i)
+            return {};
+
+        switch (lua_type(_lua, i))
+        {
+            case LUA_TNUMBER:
+                if (lua_isinteger(_lua, i))
+                    return Variant(lua_tointeger(_lua, i));
+
+                return Variant(lua_tonumber(_lua, i));
+            case LUA_TBOOLEAN:
+                return Variant(bool(lua_toboolean(_lua, i)));
+            case LUA_TSTRING:
+                return Variant(lua_tostring(_lua, i));
+
+        }
+
+        return {};
+    }
+
+    void Function::cleanupResults()
+    {
+        if (ok())
+            lua_pop(_lua, _numResults);
+    }
 }
