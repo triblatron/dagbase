@@ -127,6 +127,17 @@ namespace dagbase
 
     void Function::operator()(int nargs, int nresults)
     {
+        if (!_lua)
+        {
+            _errod = Lua::InvalidArgument;
+            return;
+        }
+        if (_ref == LUA_NOREF)
+        {
+            _errod = Lua::InvalidArgument;
+            return;
+        }
+
         lua_rawgeti(_lua, LUA_REGISTRYINDEX, _ref);
         int oldTop = lua_gettop(_lua);
         _errod = lua_pcall(_lua, nargs, nresults, 0);
