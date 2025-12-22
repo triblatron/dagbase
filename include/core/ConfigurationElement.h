@@ -227,6 +227,9 @@ namespace dagbase
                     *value = parseEnum(element->asString().c_str());
                 }
         }
+
+        static bool readConfig(ConfigurationElement& config, const char* name, Function** value);
+
         template<typename Obj>
         static void readConfig(ConfigurationElement& config, const char* name, Obj* value)
         {

@@ -350,6 +350,18 @@ namespace dagbase
             }
     }
 
+    bool ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Function **value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                *value = element->asFunction();
+                return true;
+            }
+
+        return false;
+    }
+
     void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::uint32_t *value)
     {
         if (value)
