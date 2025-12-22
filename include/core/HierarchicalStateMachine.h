@@ -10,6 +10,7 @@
 #include "core/Atom.h"
 #include "util/SearchableMap.h"
 #include "core/Signal.h"
+#include "core/Function.h"
 
 #include <string_view>
 
@@ -72,9 +73,28 @@ namespace dagbase
 
     struct DAGBASE_API HierarchicalEntryExitAction
     {
+        using SignalType = Signal<int(HierarchicalStateMachine&)>;
+        ~HierarchicalEntryExitAction()
+        {
+            if (func)
+                signal.disconnect(0);
+        }
         void configure(ConfigurationElement& config)
         {
+            ConfigurationElement::readConfig(config, "func", &func);
+            if (func)
+                signal.connect([this](HierarchicalStateMachine& state) {
+                    (*func)(0,1);
+                    int retval = -1;
+                    if (func->ok())
+                    {
+                        auto result = func->result(1);
+                        retval = result.asInteger(-1);
+                    }
+                    func->cleanupResults();
 
+                    return retval;
+                });
         }
 
         Variant find(std::string_view path) const
@@ -91,7 +111,8 @@ namespace dagbase
         void operator()(HierarchicalStateMachine& state);
 
         std::int64_t numCalls{0};
-        Signal<void(HierarchicalStateMachine&)> func;
+        SignalType signal;
+        Function* func{nullptr};
     };
 
     class DAGBASE_API HierarchicalStateMachine
@@ -127,6 +148,15 @@ namespace dagbase
 
         ChildArray::iterator parseState(const Atom & atom);
 
+        HierarchicalEntryExitAction::SignalType* entryAction(const Atom& state)
+        {
+            if (auto it = _entryActions.m.find(state); it !=_entryActions.end())
+            {
+                return &it->second->signal;
+            }
+            return nullptr;
+        }
+
         bool onInput(const Atom &input);
 
         Variant find(std::string_view path) const;
@@ -145,11 +175,11 @@ namespace dagbase
         Atom findInitialState();
         using TransitionFunction=VectorMap<HierarchicalTransition::Domain,HierarchicalTransition::Codomain>;
         TransitionFunction _transitionFunction;
-        using EntryExitActions = SearchableMapFromAtom<VectorMap<Atom,HierarchicalEntryExitAction>>;
+        using EntryExitActions = SearchableMapFromAtom<VectorMap<Atom,HierarchicalEntryExitAction*>>;
         EntryExitActions _entryActions;
         EntryExitActions _exitActions;
         void readEntryExitActions(ConfigurationElement& config, const char* name, EntryExitActions* value);
-        using TransitionActions = SearchableMapFromAtomPair<VectorMap<std::pair<Atom,Atom>,HierarchicalEntryExitAction>>;
+        using TransitionActions = SearchableMapFromAtomPair<VectorMap<std::pair<Atom,Atom>,HierarchicalEntryExitAction*>>;
         TransitionActions _transitionActions;
         void readTransitionActions(ConfigurationElement& config, const char* name, TransitionActions* value);
         void setState(const Atom& state);

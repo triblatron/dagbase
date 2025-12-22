@@ -165,8 +165,7 @@ namespace dagbase
 
     void HierarchicalEntryExitAction::operator()(HierarchicalStateMachine &state)
     {
-        (func)(state);
-        ++numCalls;
+        numCalls+=signal(state);
     }
 
     HierarchicalStateMachine::~HierarchicalStateMachine()
@@ -205,10 +204,10 @@ namespace dagbase
                     Atom toState;
                     ConfigurationElement::readConfig(child, "fromState", &fromState);
                     ConfigurationElement::readConfig(child, "toState", &toState);
-                    HierarchicalEntryExitAction action;
+                    auto action = new HierarchicalEntryExitAction;
                     if (auto actionElement=child.findElement("action"); actionElement)
                     {
-                        action.configure(*actionElement);
+                        action->configure(*actionElement);
                     }
 
                     _transitionActions.emplace(std::make_pair(fromState, toState), action);
@@ -223,19 +222,19 @@ namespace dagbase
         if (_currentState!=_children.end())
             if (auto itAction=_exitActions.m.find(_currentState->first); itAction != _exitActions.m.end())
             {
-                itAction->second(*_currentState->second);
+                (*itAction->second)(*_currentState->second);
             }
         auto nextState = parseState(state);
         if (_currentState!=_children.end())
             if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState->first, state)); itAction!=_transitionActions.m.end())
             {
-                itAction->second(*_currentState->second);
+                (*itAction->second)(*_currentState->second);
             }
         _currentState = nextState;
         if (_currentState!=_children.end())
             if (auto itAction=_entryActions.m.find(_currentState->first); itAction != _entryActions.m.end())
             {
-                itAction->second(*_currentState->second);
+                (*itAction->second)(*_currentState->second);
             }
     }
 
@@ -251,12 +250,12 @@ namespace dagbase
                 value->reserve(element->numChildren());
                 element->eachChild([&value](ConfigurationElement& child) {
                     Atom state;
-                    HierarchicalEntryExitAction action;
+                    auto action = new HierarchicalEntryExitAction();
                     ConfigurationElement::readConfig(child, "state", &state);
 
                     if (auto actionElement=child.findElement("action"); actionElement)
                     {
-                        action.configure(*actionElement);
+                        action->configure(*actionElement);
                     }
 
                     value->emplace(state, action);

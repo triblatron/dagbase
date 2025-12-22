@@ -32,9 +32,12 @@ root=
 	{
 		{
 			state="STATE_TEST2",
-			action=function()
-				return 0
-			end,
+			action=
+			{
+				func=function()
+					return 1
+				end,
+			}
 		}
 	},
 	transitionFunction=
