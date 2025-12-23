@@ -166,7 +166,7 @@ namespace dagbase
         {
             case LUA_TNUMBER:
                 if (lua_isinteger(_lua, i))
-                    return Variant(lua_tointeger(_lua, i));
+                    return Variant(std::int64_t(lua_tointeger(_lua, i)));
 
                 return Variant(lua_tonumber(_lua, i));
             case LUA_TBOOLEAN:

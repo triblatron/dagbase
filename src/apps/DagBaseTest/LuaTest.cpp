@@ -56,7 +56,7 @@ TEST_P(Function_testCall, testExpectedResult)
 INSTANTIATE_TEST_SUITE_P(Function, Function_testCall, ::testing::Values(
     std::make_tuple("data/tests/Lua/BadFunction.lua", 0, 0, false, 1, dagbase::Variant()),
     std::make_tuple("data/tests/Lua/OutOfRangeResult.lua", 0, 0, true, 1, dagbase::Variant()),
-    std::make_tuple("data/tests/Lua/OneResult.lua", 0, 1, true, 1, 1LL),
+    std::make_tuple("data/tests/Lua/OneResult.lua", 0, 1, true, 1, std::int64_t(1LL)),
     std::make_tuple("data/tests/Lua/MultipleResults.lua", 0, 2, true, 1, 1.5),
     std::make_tuple("data/tests/Lua/MultipleResults.lua", 0, 2, true, 2, std::string("test"))
     ));
