@@ -1,0 +1,168 @@
+root=
+{
+	regions=
+	{
+		{
+			name="PLAYING",
+			states=
+			{
+				{
+					name="STATE_STOPPED",
+					value=1,
+				},
+				{
+					name="STATE_PLAYING",
+					states=
+					{
+						{
+							name="STATE_NORMAL",
+							value=2,
+						},
+						{
+							name="STATE_SHUFFLE",
+							value=3,
+							final=true,
+						},
+					},
+					initialState="STATE_NORMAL",
+					inputs=
+					{
+						{
+							name="INPUT_PLAY",
+							value=0,
+						},
+						{
+							name="INPUT_SHUFFLE",
+							value=1,
+						},
+						{
+							name="INPUT_NORMAL",
+							value=2,
+						},
+					},					
+					transitionFunction=
+					{
+						{
+							initialState="STATE_NORMAL",
+							input="INPUT_SHUFFLE",
+							nextState="STATE_SHUFFLE",
+						},
+						{
+							initialState="STATE_SHUFFLE",
+							input="INPUT_NORMAL",
+							nextState="STATE_NORMAL",
+						},
+					},
+					entryActions=
+					{
+						{
+							state="STATE_NORMAL",
+							action=
+							{
+								func=function()
+									return 1
+								end,
+							},
+						},
+					},
+				},
+			},
+			initialState="STATE_STOPPED",
+			inputs=
+			{
+				{
+					name="INPUT_PLAY",
+					value=0,
+				},
+				{
+					name="INPUT_STOP",
+					value=1,
+				},
+			},
+			transitionFunction=
+			{
+				{
+					initialState="STATE_STOPPED",
+					input="INPUT_PLAY",
+					nextState="STATE_PLAYING",
+				},
+				{
+					initialState="STATE_PLAYING",
+					input="INPUT_STOP",
+					nextState="STATE_STOPPED",
+				},
+			},
+			entryActions=
+			{
+				{
+					state="STATE_PLAYING",
+					action=
+					{
+						func=function()
+							return 1
+						end,
+					},
+				},
+			},
+		},
+		{			
+			name="STATE_VOLUME",
+			states=
+			{
+				{
+					name="STATE_UNMUTED",
+					value=1,
+				},
+				{
+					name="STATE_MUTED",
+					value=2,
+				},
+			},
+			initialState="STATE_UNMUTED",
+			inputs=
+			{
+				{
+					name="INPUT_MUTE",
+					value=0,
+				},
+				{
+					name="INPUT_UNMUTE",
+					value=1,
+				},
+			},
+			transitionFunction=
+			{
+				{
+					initialState="INPUT_UNMUTED",
+					input="INPUT_MUTE",
+					nextState="STATE_MUTED",
+				},
+				{
+					initialState="INPUT_MUTED",
+					input="INPUT_UNMUTE",
+					nextState="STATE_UNMUTED",
+				},
+			},
+		
+		},
+	},
+	states=
+	{
+		{
+			name="Initial",
+			value=0,
+		},
+	},
+	initialState="Initial",
+	--~ inputs=
+	--~ {
+		--~ {
+			--~ name="INPUT_PLAY",
+			--~ value=0,
+		--~ },
+		--~ {
+			--~ name="INPUT_STOP",
+			--~ value=1,
+		--~ },
+	--~ },
+}

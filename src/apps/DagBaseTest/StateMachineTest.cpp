@@ -194,7 +194,7 @@ public:
 
     void makeItSo(TestStateMachine& sut)
     {
-        for (auto a : _asserts)
+        for (const auto& a : _asserts)
         {
             a.makeItSo(sut);
         }
@@ -226,7 +226,7 @@ protected:
             dagbase::ConfigurationElement::readConfig(config, "value", &value);
         }
 
-        void makeItSo(TestStateMachine & sut)
+        void makeItSo(TestStateMachine & sut) const
         {
             ASSERT_FALSE(path.empty());
             auto actualValue = sut.find(path.value());
@@ -299,7 +299,10 @@ INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_test
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState.lua", "inputs.INPUT_ONE.value", std::uint32_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "currentState", std::int64_t{-1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "states.Complex.currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "numTransitions", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Complex.lua", "numTransitions", std::uint32_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Concurrent.lua", "numRegions", std::uint32_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Concurrent.lua", "regions.region1.currentState", std::int64_t{0}, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Concurrent.lua", "regions.region2.currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
 
 class HierarchicalStateMachine_testOnInput : public ::testing::TestWithParam<std::tuple<const char*, const char*>>
@@ -339,7 +342,7 @@ public:
 
     void makeItSo(TestStateMachine& sut)
     {
-        for (auto a : _asserts)
+        for (const auto& a : _asserts)
         {
             a.makeItSo(sut);
         }
@@ -371,7 +374,7 @@ protected:
             dagbase::ConfigurationElement::readConfig(config, "value", &value);
         }
 
-        void makeItSo(TestStateMachine & sut)
+        void makeItSo(TestStateMachine & sut) const
         {
             ASSERT_FALSE(path.empty());
             auto actualValue = sut.find(path.value());
@@ -402,13 +405,14 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
     for (auto& input : _inputs)
     {
         ASSERT_TRUE(sut.onInput(input.input));
-        EXPECT_EQ(input.nextState, sut.state()->first);
-        EXPECT_EQ(input.accepted, sut.state()->second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
+        EXPECT_EQ(input.nextState, sut.state().first);
+        EXPECT_EQ(input.accepted, sut.state().second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
     }
     makeItSo(sut);
 }
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
     std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua"),
-    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua")
     ));

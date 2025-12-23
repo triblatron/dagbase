@@ -1,0 +1,21 @@
+root=
+{
+	inputs=
+	{
+		{
+			input="INPUT_PLAY",
+			nextState="Initial",
+		},
+	},
+	asserts=
+	{
+		{
+			path="regions.PLAYING.entryActions.STATE_PLAYING.numCalls",
+			value=1,
+		},
+		{
+			path="regions.PLAYING.currentState",
+			value=-1,
+		},
+	},
+}

@@ -144,7 +144,7 @@ namespace dagbase
             return (_flags & mask) != 0;
         }
 
-        ChildArray::iterator state();
+        ChildArray::value_type state();
 
         ChildArray::iterator parseState(const Atom & atom);
 
@@ -169,7 +169,7 @@ namespace dagbase
         std::int64_t _value{-1};
         SearchableMapFromAtom<VectorMap<Atom,HierarchicalInput>> _inputs;
         Atom _initialState;
-        ChildArray::iterator _currentState{_children.end()};
+        ChildArray::value_type _currentState{Atom(), nullptr};
         Flags _flags{FLAGS_NONE};
 
         Atom findInitialState();
@@ -183,5 +183,7 @@ namespace dagbase
         TransitionActions _transitionActions;
         void readTransitionActions(ConfigurationElement& config, const char* name, TransitionActions* value);
         void setState(const Atom& state);
+        // Multiple concurrent orthogonal regions
+        ChildArray _regions;
     };
 }

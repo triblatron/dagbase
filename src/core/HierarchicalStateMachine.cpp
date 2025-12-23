@@ -25,6 +25,19 @@ namespace dagbase
             });
         }
 
+        if (auto element=config.findElement("regions"); element)
+        {
+            element->eachChild([this](ConfigurationElement& child) {
+                HierarchicalStateMachine* state = nullptr;
+                state = new HierarchicalStateMachine();
+                state->configure(child);
+                Atom name;
+                ConfigurationElement::readConfig(child, "name", &name);
+                _regions.emplace(name, state);
+                return true;
+            });
+        }
+
         bool final = false;
         ConfigurationElement::readConfig(config, "final", &final);
         if (final)
@@ -55,18 +68,25 @@ namespace dagbase
         readEntryExitActions(config, "exitActions", &_exitActions);
 
         readTransitionActions(config, "transitionActions", &_transitionActions);
-        _currentState = _children.end();
+        _currentState = {Atom(),nullptr};
         if (_initialState.empty())
             _initialState = Atom::intern("Initial");
         if (!_initialState.empty())
             setState(findInitialState());
     }
 
-    HierarchicalStateMachine::ChildArray::iterator HierarchicalStateMachine::state()
+    HierarchicalStateMachine::ChildArray::value_type HierarchicalStateMachine::state()
     {
-        if (_currentState->second->isFlagSet(FLAGS_HAS_VALUE))
+        if (_currentState.second && _currentState.second->isFlagSet(FLAGS_HAS_VALUE))
             return _currentState;
 
+        for (auto p : _regions)
+        {
+            auto candidate = p.second->state();
+
+            if (candidate.second)
+                return candidate;
+        }
         for (auto p : _children)
         {
             if (!p.second->isFlagSet(FLAGS_HAS_VALUE))
@@ -86,6 +106,13 @@ namespace dagbase
     bool HierarchicalStateMachine::onInput(const Atom &input)
     {
         bool handled = false;
+        for (auto p : _regions)
+        {
+            if (!handled)
+                handled = p.second->onInput(input);
+            else
+                return true;
+        }
         for (auto p : _children)
         {
             if (!handled)
@@ -93,10 +120,10 @@ namespace dagbase
             else
                 return true;
         }
-        if (!handled && !isFlagSet(FLAGS_HAS_VALUE) && _currentState!=_children.end())
+        if (!handled && !isFlagSet(FLAGS_HAS_VALUE) && _currentState.second)
         {
             HierarchicalTransition::Domain domain;
-            domain.initialState = _currentState->first;
+            domain.initialState = _currentState.first;
             domain.input = input;
             if (auto it= _transitionFunction.find(domain); it!=_transitionFunction.end())
             {
@@ -116,9 +143,9 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        if (_currentState!=_children.end())
+        if (_currentState.second)
         {
-            retval = findEndpoint(path, "currentState", _currentState->second->value());
+            retval = findEndpoint(path, "currentState", _currentState.second->value());
             if (retval.has_value())
                 return retval;
         }
@@ -131,7 +158,15 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "numRegions", std::uint32_t(_regions.size()));
+        if (retval.has_value())
+            return retval;
+
         retval = findInternal(path, "states", _children);
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "regions", _regions);
         if (retval.has_value())
             return retval;
 
@@ -219,22 +254,23 @@ namespace dagbase
 
     void HierarchicalStateMachine::setState(const Atom& state)
     {
-        if (_currentState!=_children.end())
-            if (auto itAction=_exitActions.m.find(_currentState->first); itAction != _exitActions.m.end())
+        if (!_currentState.first.empty() && _currentState.second)
+            if (auto itAction=_exitActions.m.find(_currentState.first); itAction != _exitActions.m.end())
             {
-                (*itAction->second)(*_currentState->second);
+                (*itAction->second)(*_currentState.second);
             }
         auto nextState = parseState(state);
-        if (_currentState!=_children.end())
-            if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState->first, state)); itAction!=_transitionActions.m.end())
+        if (!_currentState.first.empty() && _currentState.second)
+            if (auto itAction=_transitionActions.m.find(std::make_pair(_currentState.first, state)); itAction!=_transitionActions.m.end())
             {
-                (*itAction->second)(*_currentState->second);
+                (*itAction->second)(*_currentState.second);
             }
-        _currentState = nextState;
-        if (_currentState!=_children.end())
-            if (auto itAction=_entryActions.m.find(_currentState->first); itAction != _entryActions.m.end())
+        if (nextState!=_children.end())
+            _currentState = *nextState;
+        if (!_currentState.first.empty() && _currentState.second)
+            if (auto itAction=_entryActions.m.find(_currentState.first); itAction != _entryActions.m.end())
             {
-                (*itAction->second)(*_currentState->second);
+                (*itAction->second)(*_currentState.second);
             }
     }
 
