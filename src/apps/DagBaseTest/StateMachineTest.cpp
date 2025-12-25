@@ -420,5 +420,7 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
     std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua", "entryActions", "STATE_TEST1"),
     std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua", "entryActions", "STATE_TEST1"),
-    std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.entryActions", "STATE_MUTED")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.entryActions", "STATE_MUTED"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onMute.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.exitActions", "STATE_UNMUTED"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onMuteTransition.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.transitionActions", "STATE_UNMUTED.STATE_MUTED")
     ));

@@ -208,9 +208,19 @@ namespace dagbase
         HierarchicalStateMachine* self = this;
         ChildArray* children = &_children;
         auto token = path.substr(0,dotPos);
+        TransitionActions* transitionActions = nullptr;
+        TransitionActions::key_type p;
         if (token == "entryActions")
         {
             a = &_entryActions;
+        }
+        else if (token == "exitActions")
+        {
+            a = &_exitActions;
+        }
+        else if (token == "transitionActions")
+        {
+            transitionActions = &_transitionActions;
         }
         std::string_view rest = path;
         while (!rest.empty())
@@ -224,11 +234,19 @@ namespace dagbase
             {
                 children = &self->_regions;
             }
-            else if (token == "entryActions")
+            else if (token == "entryActions" && self)
             {
                 a = &self->_entryActions;
             }
-            else
+            else if (token == "exitActions" && self)
+            {
+                a = &self->_exitActions;
+            }
+            else if (token == "transitionActions" && self)
+            {
+                transitionActions = &self->_transitionActions;
+            }
+            else if (!transitionActions)
             {
                 std::string strToken = std::string(token);
                 self = children->lookup(Atom::intern(strToken));
@@ -240,7 +258,18 @@ namespace dagbase
             auto action = new HierarchicalEntryExitAction;
             action->signal.connect(std::forward<std::function<int(HierarchicalStateMachine&)>>(f));
             a->emplace(stateName, action);
-
+        }
+        else if (transitionActions)
+        {
+            auto action = new HierarchicalEntryExitAction;
+            dotPos = stateName.find('.');
+            if (dotPos!=Atom::npos)
+            {
+                p.first = stateName.substr(0, dotPos);
+                p.second = stateName.substr(dotPos + 1);
+            }
+            action->signal.connect(std::forward<std::function<int(HierarchicalStateMachine&)>>(f));
+            transitionActions->emplace(p, action);
         }
     }
 
