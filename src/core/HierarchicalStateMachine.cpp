@@ -5,6 +5,8 @@
 #include "config/config.h"
 
 #include "core/HierarchicalStateMachine.h"
+
+#include "../../../../../../../../../../../opt/homebrew/include/glm/detail/func_geometric.inl"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
 
@@ -196,6 +198,50 @@ namespace dagbase
             return it->first;
         }
         return {};
+    }
+
+    void HierarchicalStateMachine::addEntryAction(std::string_view path, Atom stateName,
+        std::function<int(HierarchicalStateMachine &)>&& f)
+    {
+        auto dotPos = path.find('.');
+        EntryExitActions* a{nullptr};
+        HierarchicalStateMachine* self = this;
+        ChildArray* children = &_children;
+        auto token = path.substr(0,dotPos);
+        if (token == "entryActions")
+        {
+            a = &_entryActions;
+        }
+        std::string_view rest = path;
+        while (!rest.empty())
+        {
+            token = rest.substr(0, dotPos);
+            if (dotPos!=std::string_view::npos)
+                rest = rest.substr(dotPos + 1);
+            else
+                rest = "";
+            if (token == "regions")
+            {
+                children = &self->_regions;
+            }
+            else if (token == "entryActions")
+            {
+                a = &self->_entryActions;
+            }
+            else
+            {
+                std::string strToken = std::string(token);
+                self = children->lookup(Atom::intern(strToken));
+            }
+            dotPos = rest.find('.');
+        }
+        if (a)
+        {
+            auto action = new HierarchicalEntryExitAction;
+            action->signal.connect(std::forward<std::function<int(HierarchicalStateMachine&)>>(f));
+            a->emplace(stateName, action);
+
+        }
     }
 
     void HierarchicalEntryExitAction::operator()(HierarchicalStateMachine &state)

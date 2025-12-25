@@ -6,6 +6,10 @@ root=
 			input="INPUT_PLAY",
 			nextState="Initial",
 		},
+		{
+			input="INPUT_MUTE",
+			nextState="Initial",
+		},
 	},
 	asserts=
 	{
@@ -14,8 +18,16 @@ root=
 			value=1,
 		},
 		{
+			path="regions.STATE_VOLUME.entryActions.STATE_MUTED.numCalls",
+			value=1,
+		},
+		{
 			path="regions.PLAYING.currentState",
 			value=-1,
+		},
+		{
+			path="regions.STATE_VOLUME.currentState",
+			value=2,
 		},
 	},
 }

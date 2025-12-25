@@ -15,6 +15,10 @@ root=
 	asserts=
 	{
 		{
+			path="entryActions.STATE_TEST1.numCalls",
+			value=1,
+		},
+		{
 			path="entryActions.STATE_TEST2.numCalls",
 			value=1,
 		},

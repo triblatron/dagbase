@@ -133,12 +133,12 @@ root=
 			transitionFunction=
 			{
 				{
-					initialState="INPUT_UNMUTED",
+					initialState="STATE_UNMUTED",
 					input="INPUT_MUTE",
 					nextState="STATE_MUTED",
 				},
 				{
-					initialState="INPUT_MUTED",
+					initialState="STATE_MUTED",
 					input="INPUT_UNMUTE",
 					nextState="STATE_UNMUTED",
 				},

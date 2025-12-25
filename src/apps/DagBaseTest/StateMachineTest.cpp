@@ -305,7 +305,7 @@ INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_test
     std::make_tuple("data/tests/HierarchicalStateMachine/HierarchicalState_Concurrent.lua", "regions.region2.currentState", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
 
-class HierarchicalStateMachine_testOnInput : public ::testing::TestWithParam<std::tuple<const char*, const char*>>
+class HierarchicalStateMachine_testOnInput : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*, const char*>>
 {
     public:
     using TestStateMachine = dagbase::HierarchicalStateMachine;
@@ -396,23 +396,29 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
         ASSERT_NE(nullptr, testConfig);
     }
     configure(*testConfig);
+    auto func = [](dagbase::HierarchicalStateMachine& sut) {
+        return 1;
+    };
     auto configStr = std::get<1>(GetParam());
     dagbase::Lua lua;
     auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
     ASSERT_NE(nullptr, config);
     TestStateMachine sut;
     sut.configure(*config);
-    for (auto& input : _inputs)
+    auto entryActionPath = std::get<2>(GetParam());
+    auto stateName = dagbase::Atom::intern(std::get<3>(GetParam()));
+    sut.addEntryAction(entryActionPath, stateName, func);
+    for (auto&[input, nextState, accepted] : _inputs)
     {
-        ASSERT_TRUE(sut.onInput(input.input));
-        EXPECT_EQ(input.nextState, sut.state().first);
-        EXPECT_EQ(input.accepted, sut.state().second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
+        ASSERT_TRUE(sut.onInput(input));
+        EXPECT_EQ(nextState, sut.state().first);
+        EXPECT_EQ(accepted, sut.state().second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
     }
     makeItSo(sut);
 }
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
-    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua"),
-    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua"),
-    std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua", "entryActions", "STATE_TEST1"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua", "entryActions", "STATE_TEST1"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.entryActions", "STATE_MUTED")
     ));
