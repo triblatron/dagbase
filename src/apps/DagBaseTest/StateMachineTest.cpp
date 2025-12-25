@@ -407,7 +407,7 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
     sut.configure(*config);
     auto entryActionPath = std::get<2>(GetParam());
     auto stateName = dagbase::Atom::intern(std::get<3>(GetParam()));
-    sut.addEntryAction(entryActionPath, stateName, func);
+    sut.addAction(entryActionPath, stateName, func);
     for (auto&[input, nextState, accepted] : _inputs)
     {
         ASSERT_TRUE(sut.onInput(input));

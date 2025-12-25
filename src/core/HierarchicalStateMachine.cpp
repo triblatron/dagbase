@@ -200,7 +200,7 @@ namespace dagbase
         return {};
     }
 
-    void HierarchicalStateMachine::addEntryAction(std::string_view path, Atom stateName,
+    void HierarchicalStateMachine::addAction(std::string_view path, Atom stateName,
         std::function<int(HierarchicalStateMachine &)>&& f)
     {
         auto dotPos = path.find('.');
