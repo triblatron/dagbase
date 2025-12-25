@@ -146,6 +146,9 @@ namespace dagbase
         using value_type = typename Map::value_type;
         using key_type = typename Map::key_type;
         using mapped_type = typename Map::mapped_type;
+        using iterator = typename Map::iterator;
+        using const_iterator = typename Map::const_iterator;
+
     public:
         SearchableMapFromAtomPair() = default;
 
@@ -157,6 +160,26 @@ namespace dagbase
         void reserve(std::size_t n)
         {
             m.reserve(n);
+        }
+
+        iterator begin()
+        {
+            return m.begin();
+        }
+
+        const_iterator begin() const
+        {
+            return m.begin();
+        }
+
+        iterator end()
+        {
+            return m.end();
+        }
+
+        const_iterator end() const
+        {
+            return m.end();
         }
 
         template<typename... Args>

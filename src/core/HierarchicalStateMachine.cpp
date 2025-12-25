@@ -284,6 +284,18 @@ namespace dagbase
         {
             delete p.second;
         }
+        for (auto& p : _regions)
+        {
+            delete p.second;
+        }
+        for (auto& p : _entryActions)
+        {
+            delete p.second;
+        }
+        for (auto& p : _exitActions)
+            delete p.second;
+        for (auto& p : _transitionActions)
+            delete p.second;
     }
 
     void HierarchicalInput::configure(ConfigurationElement &config)
