@@ -72,8 +72,16 @@ namespace dagbase
         _currentState = {Atom(),nullptr};
         if (_initialState.empty())
             _initialState = Atom::intern("Initial");
+    }
+
+    void HierarchicalStateMachine::init()
+    {
         if (!_initialState.empty())
             setState(findInitialState());
+        for (auto& p : _children)
+            p.second->init();
+        for (auto& p : _regions)
+            p.second->init();
     }
 
     HierarchicalStateMachine::ChildArray::value_type HierarchicalStateMachine::state()

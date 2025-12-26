@@ -1,0 +1,21 @@
+root=
+{
+	inputs=
+	{
+		{
+			input="INPUT_MUTE",
+			nextState="Initial",
+		},
+	},
+	asserts=
+	{
+		{
+			path="regions.STATE_VOLUME.entryActions.STATE_UNMUTED.numCalls",
+			value=1,
+		},
+		{
+			path="regions.STATE_VOLUME.currentState",
+			value=2,
+		},
+	},
+}

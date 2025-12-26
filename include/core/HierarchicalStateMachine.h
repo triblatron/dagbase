@@ -134,6 +134,8 @@ namespace dagbase
 
         void configure(ConfigurationElement& config);
 
+        void init();
+
         void addAction(std::string_view path, Atom stateName, std::function<int(HierarchicalStateMachine&)>&& f);
 
         std::int64_t value() const

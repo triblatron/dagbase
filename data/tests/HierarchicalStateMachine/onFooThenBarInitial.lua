@@ -1,0 +1,35 @@
+root=
+{
+	inputs=
+	{
+		{
+			input="INPUT_TEST1",
+			nextState="STATE_FOO",
+		},
+		{
+			input="INPUT_FOO",
+			nextState="STATE_BAR",
+			accepted=true,
+		},
+		{
+			input="INPUT_TEST2",
+			nextState="STATE_TEST2",
+			accepted = true,
+		},
+	},
+	asserts=
+	{
+		{
+			path="entryActions.STATE_INITIAL.numCalls",
+			value=1,
+		},
+		{
+			path="entryActions.STATE_TEST2.numCalls",
+			value=1,
+		},
+		{
+			path="states.STATE_TEST1.entryActions.STATE_FOO.numCalls",
+			value=1,
+		},
+	},
+}

@@ -408,9 +408,11 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
     auto entryActionPath = std::get<2>(GetParam());
     auto stateName = dagbase::Atom::intern(std::get<3>(GetParam()));
     sut.addAction(entryActionPath, stateName, func);
+    sut.init();
     for (auto&[input, nextState, accepted] : _inputs)
     {
         ASSERT_TRUE(sut.onInput(input));
+        EXPECT_NE(nullptr, sut.state().first.value());
         EXPECT_EQ(nextState, sut.state().first);
         EXPECT_EQ(accepted, sut.state().second->isFlagSet(dagbase::HierarchicalStateMachine::FLAGS_FINAL));
     }
@@ -419,8 +421,11 @@ TEST_P(HierarchicalStateMachine_testOnInput, testExpectedNestState)
 
 INSTANTIATE_TEST_SUITE_P(HierarchicalStateMachine, HierarchicalStateMachine_testOnInput, ::testing::Values(
     std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwo.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua", "entryActions", "STATE_TEST1"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onOneThenTwoInitial.lua", "data/tests/HierarchicalStateMachine/multipleStates.lua", "entryActions", "STATE_INITIAL"),
     std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBar.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua", "entryActions", "STATE_TEST1"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onFooThenBarInitial.lua", "data/tests/HierarchicalStateMachine/nestedStates.lua", "entryActions", "STATE_INITIAL"),
     std::make_tuple("data/tests/HierarchicalStateMachine/onPlay.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.entryActions", "STATE_MUTED"),
     std::make_tuple("data/tests/HierarchicalStateMachine/onMute.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.exitActions", "STATE_UNMUTED"),
-    std::make_tuple("data/tests/HierarchicalStateMachine/onMuteTransition.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.transitionActions", "STATE_UNMUTED.STATE_MUTED")
+    std::make_tuple("data/tests/HierarchicalStateMachine/onMuteTransition.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.transitionActions", "STATE_UNMUTED.STATE_MUTED"),
+    std::make_tuple("data/tests/HierarchicalStateMachine/onMuteInitial.lua", "data/tests/HierarchicalStateMachine/recorder.lua", "regions.STATE_VOLUME.entryActions", "STATE_UNMUTED")
     ));
