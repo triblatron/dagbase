@@ -6,7 +6,6 @@
 
 #include "core/HierarchicalStateMachine.h"
 
-#include "../../../../../../../../../../../opt/homebrew/include/glm/detail/func_geometric.inl"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
 
