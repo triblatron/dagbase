@@ -281,6 +281,7 @@ TEST_P(HierarchicalStateMachine_testConfigure, testExpectedValue)
     ASSERT_NE(nullptr, config);
     dagbase::HierarchicalStateMachine sut;
     sut.configure(*config);
+    sut.init();
     auto path = std::get<1>(GetParam());
     auto value = std::get<2>(GetParam());
     auto tolerance = std::get<3>(GetParam());
