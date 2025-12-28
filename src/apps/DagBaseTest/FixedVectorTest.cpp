@@ -84,6 +84,21 @@ INSTANTIATE_TEST_SUITE_P(FixedVector, FixedVector_testEmplaceBack, ::testing::Va
     std::make_tuple("data/tests/FixedVector/EmplaceTooMany.lua")
     ));
 
+struct TestFixedVectorElement
+{
+    int x{0};
+    int y{0};
+
+    void configure(dagbase::ConfigurationElement& config);
+
+    bool operator==(const TestFixedVectorElement& rhs) const
+    {
+        return x == rhs.x && y == rhs.y;
+    }
+};
+
+using TestFixedVectorOfStruct = dagbase::FixedVector<TestFixedVectorElement,10>;
+
 class FixedVector_testOp : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
@@ -99,21 +114,27 @@ public:
         };
 
         Cmd cmd{CMD_UNKNOWN};
-        int value{0};
+        TestFixedVectorElement value{};
         std::uint32_t index{0};
         std::uint32_t size{0};
         bool empty{true};
         void configure(dagbase::ConfigurationElement& config);
-        void makeItSo(TestFixedVector& sut);
+        void makeItSo(TestFixedVectorOfStruct& sut);
         static Cmd parseCommand(const char* str);
     };
 
     void configure(dagbase::ConfigurationElement& config);
 
-    void makeItSo(TestFixedVector& sut);
+    void makeItSo(TestFixedVectorOfStruct& sut);
 private:
     std::vector<Op> _ops;
 };
+
+void TestFixedVectorElement::configure(dagbase::ConfigurationElement &config)
+{
+    dagbase::ConfigurationElement::readConfig(config, "x", &x);
+    dagbase::ConfigurationElement::readConfig(config, "y", &y);
+}
 
 void FixedVector_testOp::Op::configure(dagbase::ConfigurationElement &config)
 {
@@ -139,7 +160,7 @@ void FixedVector_testOp::Op::configure(dagbase::ConfigurationElement &config)
     }
 }
 
-void FixedVector_testOp::Op::makeItSo(TestFixedVector &sut)
+void FixedVector_testOp::Op::makeItSo(TestFixedVectorOfStruct &sut)
 {
     switch (cmd)
     {
@@ -177,7 +198,7 @@ void FixedVector_testOp::configure(dagbase::ConfigurationElement &config)
     dagbase::ConfigurationElement::readConfigVector(config, "ops", &_ops);
 }
 
-void FixedVector_testOp::makeItSo(TestFixedVector &sut)
+void FixedVector_testOp::makeItSo(TestFixedVectorOfStruct &sut)
 {
     for (auto op : _ops)
     {
@@ -192,7 +213,7 @@ TEST_P(FixedVector_testOp, testExpectedState)
     auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
     ASSERT_NE(nullptr, config);
     configure(*config);
-    TestFixedVector sut;
+    TestFixedVectorOfStruct sut;
     makeItSo(sut);
 }
 

@@ -4,7 +4,11 @@ root=
 	{
 		{
 			cmd="CMD_EMPLACE_BACK",
-			value=1,
+			value=
+			{
+				x=1,
+				y=2,
+			},
 			size=1,
 		},
 		{
