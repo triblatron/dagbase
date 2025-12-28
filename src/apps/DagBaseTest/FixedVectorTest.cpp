@@ -5,6 +5,7 @@
 #include "util/FixedVector.h"
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
+#include "util/enums.h"
 
 #include <gtest/gtest.h>
 
@@ -81,4 +82,122 @@ INSTANTIATE_TEST_SUITE_P(FixedVector, FixedVector_testEmplaceBack, ::testing::Va
     std::make_tuple("data/tests/FixedVector/EmplaceMany.lua"),
     std::make_tuple("data/tests/FixedVector/EmplaceMax.lua"),
     std::make_tuple("data/tests/FixedVector/EmplaceTooMany.lua")
+    ));
+
+class FixedVector_testOp : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    struct Op
+    {
+        enum Cmd : std::uint32_t
+        {
+            CMD_UNKNOWN,
+            CMD_EMPLACE_BACK,
+            CMD_POP_BACK,
+            CMD_EMPTY,
+            CMD_SUBSCRIPT
+        };
+
+        Cmd cmd{CMD_UNKNOWN};
+        int value{0};
+        std::uint32_t index{0};
+        std::uint32_t size{0};
+        bool empty{true};
+        void configure(dagbase::ConfigurationElement& config);
+        void makeItSo(TestFixedVector& sut);
+        static Cmd parseCommand(const char* str);
+    };
+
+    void configure(dagbase::ConfigurationElement& config);
+
+    void makeItSo(TestFixedVector& sut);
+private:
+    std::vector<Op> _ops;
+};
+
+void FixedVector_testOp::Op::configure(dagbase::ConfigurationElement &config)
+{
+    dagbase::ConfigurationElement::readConfig<Cmd>(config, "cmd", &parseCommand, &cmd);
+    switch (cmd)
+    {
+        case CMD_EMPLACE_BACK:
+            dagbase::ConfigurationElement::readConfig(config, "value", &value);
+            dagbase::ConfigurationElement::readConfig(config, "size", &size);
+            break;
+        case CMD_POP_BACK:
+            dagbase::ConfigurationElement::readConfig(config, "size", &size);
+            break;
+        case CMD_EMPTY:
+            dagbase::ConfigurationElement::readConfig(config, "empty", &empty);
+            break;
+        case CMD_SUBSCRIPT:
+            dagbase::ConfigurationElement::readConfig(config, "index", &index);
+            dagbase::ConfigurationElement::readConfig(config, "value", &value);
+            break;
+        default:
+            break;
+    }
+}
+
+void FixedVector_testOp::Op::makeItSo(TestFixedVector &sut)
+{
+    switch (cmd)
+    {
+        case CMD_EMPLACE_BACK:
+            sut.emplace_back(value);
+            EXPECT_EQ(size, sut.size());
+            break;
+        case CMD_POP_BACK:
+            sut.pop_back();
+            EXPECT_EQ(size, sut.size());
+            break;
+        case CMD_EMPTY:
+            EXPECT_EQ(empty, sut.empty());
+            break;
+        case CMD_SUBSCRIPT:
+            EXPECT_EQ(value, sut[index]);
+            break;
+        default:
+            break;
+    }
+}
+
+FixedVector_testOp::Op::Cmd FixedVector_testOp::Op::parseCommand(const char *str)
+{
+    TEST_ENUM(CMD_EMPLACE_BACK, str)
+    TEST_ENUM(CMD_POP_BACK, str)
+    TEST_ENUM(CMD_EMPTY, str)
+    TEST_ENUM(CMD_SUBSCRIPT, str)
+
+    return CMD_UNKNOWN;
+}
+
+void FixedVector_testOp::configure(dagbase::ConfigurationElement &config)
+{
+    dagbase::ConfigurationElement::readConfigVector(config, "ops", &_ops);
+}
+
+void FixedVector_testOp::makeItSo(TestFixedVector &sut)
+{
+    for (auto op : _ops)
+    {
+        op.makeItSo(sut);
+    }
+}
+
+TEST_P(FixedVector_testOp, testExpectedState)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    TestFixedVector sut;
+    makeItSo(sut);
+}
+
+INSTANTIATE_TEST_SUITE_P(FixedVector, FixedVector_testOp, ::testing::Values(
+    std::make_tuple("data/tests/FixedVector/PushThenPop.lua"),
+    std::make_tuple("data/tests/FixedVector/Subscript.lua"),
+    std::make_tuple("data/tests/FixedVector/Underflow.lua")
     ));

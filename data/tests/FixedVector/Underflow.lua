@@ -1,0 +1,14 @@
+root=
+{
+	ops=
+	{
+		{
+			cmd="CMD_POP_BACK",
+			size=0,
+		},
+		{
+			cmd="CMD_EMPTY",
+			empty=true,
+		},
+	}
+}

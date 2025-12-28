@@ -36,6 +36,31 @@ namespace dagbase
                 new (data()+_size++) T(std::forward<Args>(value)...);
             }
         }
+
+        bool empty() const
+        {
+            return _size==0;
+        }
+
+        void pop_back()
+        {
+            if (!empty())
+            {
+                _size--;
+                // Explicitly destroy the last element.
+                data()[_size].~T();
+            }
+        }
+
+        T& operator[](std::size_t index)
+        {
+            return data()[index];
+        }
+
+        const T& operator[](std::size_t index) const
+        {
+            return data()[index];
+        }
     private:
         alignas(T) std::uint8_t _values[Capacity*sizeof(T)]{};
         std::size_t _size{0};

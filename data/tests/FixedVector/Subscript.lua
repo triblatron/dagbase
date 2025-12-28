@@ -1,0 +1,19 @@
+root=
+{
+	ops=
+	{
+		{
+			cmd="CMD_EMPLACE_BACK",
+			value=1,
+			size=1,
+		},
+		{
+			cmd="CMD_EMPTY",
+			empty=false,
+		},
+		{
+			cmd="CMD_SUBSCRIPT",
+			value=1,
+		},
+	}
+}
