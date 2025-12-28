@@ -70,6 +70,7 @@ include/util/DebugPrinter.h
         include/util/DummyMutex.h
         include/core/HierarchicalStateMachine.h
         include/util/SearchableSet.h
+        include/util/FixedVector.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

@@ -1,0 +1,10 @@
+root=
+{
+	size=1,
+	emplacements=
+	{
+		{
+			value=1,
+		},
+	}
+}
