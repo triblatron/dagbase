@@ -164,8 +164,8 @@ namespace dagbase
         int reasonCode = lua_resume(_thread, numArgs);
 #elif LUA_VERSION_NUM == 503
         int reasonCode = lua_resume(_thread, NULL, numArgs);
-#elif LUA_VERSION_NUM == 504
-        int reasonCode = lua_resume(_thread, NULL, numArgs, numResults);
+#elif LUA_VERSION_NUM == 504 || LUA_VERSION_NUM == 505
+        int reasonCode = lua_resume(_thread, nullptr, numArgs, numResults);
 #else
 #error "Unknown Lua version"
 #endif

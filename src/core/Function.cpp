@@ -37,7 +37,9 @@ namespace dagbase
         }
  //       str.endSubBuffer();
         //str.writeUInt32(0);
-        lua_pop(_lua,1);
+        int top = lua_gettop(_lua);
+        if (top>=1)
+            lua_pop(_lua,1);
 
         return str;
     }
@@ -46,11 +48,10 @@ namespace dagbase
     {
         OutputStream* str = static_cast<OutputStream*>(userData);
 
-        if (str)
+        if (str && size)
         {
             str->writeUInt32(size);
             str->writeBuf((const OutputStream::value_type*)data, size);
-
         }
 
         return 0;
@@ -91,10 +92,10 @@ namespace dagbase
             std::uint32_t blockSize{0};
 
             str->readUInt32(&blockSize);
+            *size = blockSize;
 
             if (blockSize)
             {
-                *size = blockSize;
                 delete [] readerData->buf;
                 readerData->buf = new InputStream::value_type [blockSize];
                 str->readBuf(readerData->buf, *size);
