@@ -62,6 +62,19 @@ namespace dagbase
     {
     public:
         using result_type = R;
+
+        //! Copying is forbidden to avoid issues of ambiguous semantics
+        Signal(const Signal&) = delete;
+
+        //! Copying is forbidden to avoid issues of ambiguous semantics
+        Signal& operator=(const Signal&) = delete;
+
+        //! Moving is allowed because it involves a clean transfer of ownership
+        Signal(Signal&&) = default;
+
+        //! Moving is allowed because it involves a clean transfer of ownership
+        Signal& operator=(Signal&&) = default;
+
         std::size_t connect(std::function<R(Args...)>&& func, int group=0)
         {
             std::scoped_lock<Mutex> guard(_mutex);
@@ -76,6 +89,13 @@ namespace dagbase
             {
                 _slots.erase(_slots.begin() + index);
             }
+        }
+
+        std::size_t numConnected()
+        {
+            std::scoped_lock<Mutex> guard(_mutex);
+
+            return _slots.size();
         }
 
         R operator()(Args&&... args)

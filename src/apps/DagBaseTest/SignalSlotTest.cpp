@@ -10,6 +10,8 @@
 #include <gtest/gtest.h>
 #include <sstream>
 
+#include "TestObject.h"
+
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 
@@ -233,4 +235,46 @@ TEST(SignalSlot, SignalSlot_testGroups)
     }, 0);
     testSignal();
     EXPECT_EQ("Hello, World!", str.str());
+}
+
+// class SignalSlot_testDisconnectOnDestroySubscriber : public ::testing::TestWithParam<std::tuple<>>
+// {
+//
+// };
+
+struct TestSubscriber
+{
+    ~TestSubscriber()
+    {
+        
+    }
+    void setValue(int i)
+    {
+        _i = i;
+    }
+
+    int value() const
+    {
+        return _i;
+    }
+private:
+    int _i{0};
+};
+
+class TestPublisher
+{
+public:
+    dagbase::Signal<int()> testSignal;
+    int numDisconnects{0};
+};
+
+TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
+{
+    TestPublisher publisher;
+    {
+        TestSubscriber subscriber;
+        publisher.testSignal.connect([&subscriber]() { return subscriber.value(); });
+        EXPECT_EQ(1, publisher.testSignal.numConnected());
+    }
+    EXPECT_EQ(0, publisher.testSignal.numConnected());
 }
