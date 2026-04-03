@@ -246,8 +246,10 @@ struct TestSubscriber
 {
     ~TestSubscriber()
     {
-        
+        if (index!=~0U)
+            testSignal->disconnect(index);
     }
+
     void setValue(int i)
     {
         _i = i;
@@ -257,6 +259,8 @@ struct TestSubscriber
     {
         return _i;
     }
+    std::size_t index{~0U};
+    dagbase::Signal<int()>* testSignal{nullptr};
 private:
     int _i{0};
 };
@@ -264,8 +268,12 @@ private:
 class TestPublisher
 {
 public:
+    ~TestPublisher()
+    {
+    }
     dagbase::Signal<int()> testSignal;
     int numDisconnects{0};
+    std::size_t index{~0U};
 };
 
 TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
@@ -273,7 +281,8 @@ TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
     TestPublisher publisher;
     {
         TestSubscriber subscriber;
-        publisher.testSignal.connect([&subscriber]() { return subscriber.value(); });
+        subscriber.testSignal = &publisher.testSignal;
+        subscriber.index = publisher.testSignal.connect([&subscriber]() { return subscriber.value(); });
         EXPECT_EQ(1, publisher.testSignal.numConnected());
     }
     EXPECT_EQ(0, publisher.testSignal.numConnected());
