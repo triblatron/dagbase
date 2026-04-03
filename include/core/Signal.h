@@ -63,6 +63,8 @@ namespace dagbase
     public:
         using result_type = R;
 
+        Signal() = default;
+
         //! Copying is forbidden to avoid issues of ambiguous semantics
         Signal(const Signal&) = delete;
 
@@ -89,6 +91,13 @@ namespace dagbase
             {
                 _slots.erase(_slots.begin() + index);
             }
+        }
+
+        void disconnectAll()
+        {
+            std::scoped_lock<Mutex> guard(_mutex);
+
+            _slots.clear();
         }
 
         std::size_t numConnected()
