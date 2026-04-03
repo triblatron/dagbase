@@ -55,7 +55,7 @@ namespace dagbase
 
         explicit ConfigurationElement(InputStream& str, Lua& lua);
 
-        ConfigurationElement(std::string name, ValueType value)
+        ConfigurationElement(std::string name, const ValueType& value)
         :
         _value(value),
         _name(std::move(name))
@@ -71,7 +71,7 @@ namespace dagbase
             // Do nothing.
         }
 
-        ConfigurationElement(std::int64_t index, ValueType value)
+        ConfigurationElement(std::int64_t index, const ValueType &value)
         :
         _value(value),
         _index(index)
@@ -161,7 +161,7 @@ namespace dagbase
 
         std::string asString(std::string defaultValue="") const
         {
-            return _value.asString(defaultValue);
+            return _value.asString(std::move(defaultValue));
 //            if (_value.has_value() && _value->index()==TYPE_STRING)
 //            {
 //                return std::get<TYPE_STRING>(_value.value());
@@ -181,14 +181,6 @@ namespace dagbase
         T as() const
 		{
             return _value.as<T>();
-//		    if (_value.has_value())
-//		    {
-//		        return std::get<T>(_value.value());
-//		    }
-//		    else
-//		    {
-//		        return T();
-//		    }
 		}
 
         ConfigurationElement* findElement(std::string_view path);
