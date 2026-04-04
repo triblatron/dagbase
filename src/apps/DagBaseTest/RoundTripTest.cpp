@@ -4,6 +4,7 @@
 
 #include "core/Variant.h"
 #include "core/ConfigurationElement.h"
+#include "core/MetaProperty.h"
 
 #include <gtest/gtest.h>
 
@@ -62,3 +63,23 @@ INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElementRelOp_testRou
         std::make_tuple("RELOP_GT", dagbase::ConfigurationElement::RELOP_GT),
         std::make_tuple("RELOP_GE", dagbase::ConfigurationElement::RELOP_GE)
         ));
+
+class MetaPropertyFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string, dagbase::MetaProperty::Flags>>
+{
+
+};
+
+TEST_P(MetaPropertyFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+    EXPECT_EQ(str, dagbase::MetaProperty::flagsToString(value));
+    EXPECT_EQ(value, dagbase::MetaProperty::parseFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(MetaPropertyFlags, MetaPropertyFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("FLAGS_NONE", dagbase::MetaProperty::FLAGS_NONE),
+    std::make_tuple("FLAGS_READ_BIT", dagbase::MetaProperty::FLAGS_READ_BIT),
+    std::make_tuple("FLAGS_WRITE_BIT", dagbase::MetaProperty::FLAGS_WRITE_BIT),
+    std::make_tuple("FLAGS_READ_BIT FLAGS_WRITE_BIT", static_cast<dagbase::MetaProperty::Flags>(dagbase::MetaProperty::FLAGS_READ_BIT | dagbase::MetaProperty::FLAGS_WRITE_BIT))
+    ));

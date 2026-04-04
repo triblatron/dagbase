@@ -83,4 +83,30 @@ namespace dagbase
 
         return MetaProperty::FORMAT_UNKNOWN;
     }
+
+    std::string MetaProperty::flagsToString(Flags value)
+    {
+        std::string retval;
+
+        if (value == FLAGS_NONE)
+            return "FLAGS_NONE";
+
+        BIT_NAME(value, FLAGS_READ_BIT, retval);
+        BIT_NAME(value, FLAGS_WRITE_BIT, retval);
+
+        if (!retval.empty() && retval.back() == ' ')
+            retval.pop_back();
+
+        return retval;
+    }
+
+    MetaProperty::Flags MetaProperty::parseFlags(std::string_view str)
+    {
+        Flags retval = FLAGS_NONE;
+
+        TEST_BIT(FLAGS_READ_BIT, str, retval);
+        TEST_BIT(FLAGS_WRITE_BIT, str, retval);
+
+        return retval;
+    }
 }

@@ -10,7 +10,6 @@
 
 #include <string_view>
 #include <string>
-#include <cstdint>
 
 namespace dagbase
 {
@@ -33,6 +32,13 @@ namespace dagbase
             FORMAT_NONE,
             FORMAT_COLOUR
         };
+
+        enum Flags : std::uint32_t
+        {
+            FLAGS_NONE,
+            FLAGS_READ_BIT = 1<<0,
+            FLAGS_WRITE_BIT = 1<<1,
+        };
     public:
         void configure(ConfigurationElement& config);
 
@@ -43,9 +49,13 @@ namespace dagbase
 
         static const char* formatToString(Format value);
         static Format parseFormat(const char* str);
+
+        static std::string flagsToString(Flags value);
+        static Flags parseFlags(std::string_view str);
     private:
         std::string _name;
         DataType _dataType{DATATYPE_UNKNOWN};
         Format _format{FORMAT_UNKNOWN};
+        Flags _flags{FLAGS_READ_BIT};
     };
 }
