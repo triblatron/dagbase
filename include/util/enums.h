@@ -15,15 +15,27 @@
         str += ' ';              \
     }
 
+#define BITSET_NAME(mask, bit, str) \
+    if (mask.test(bit))             \
+    {                               \
+        str += #bit "_BIT";         \
+        str += ' ';                 \
+    }
+
 #define ENUM_NAME(name) \
 	case (name): return #name;
 	
-#define TEST_BIT(needle, haystack, mask) \
-    if (haystack.find(#needle)!=std::string::npos) \
-    {                              \
-        mask = static_cast<decltype(mask)>(mask | needle);            \
+#define TEST_BIT(needle, haystack, mask)                                \
+    if (haystack.find(#needle)!=std::string::npos)                      \
+    {                                                                   \
+        mask = static_cast<decltype(mask)>(mask | needle);              \
     }
     
+#define TEST_BITSET(needle, haystack, mask) \
+    if (haystack.find(#needle "_BIT")!=std::string::npos)               \
+    {                                                                   \
+        mask.set(needle);                                               \
+    }
 
 #define TEST_ENUM(needle, haystack) \
 	if (std::strcmp(#needle, haystack)==0)\
