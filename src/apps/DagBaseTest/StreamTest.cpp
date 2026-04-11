@@ -350,12 +350,14 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
     sut.write(value);
     format->flush();
     dagbase::FormatAgnosticInputStream istr(format, &store);
-    dagbase::Variant actualValue;
+    dagbase::Variant actualValue{std::numeric_limits<std::uint32_t>::max()};
     istr.read(&actualValue);
     EXPECT_EQ(value, actualValue);
 }
 
 INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(
+        std::make_tuple("TextFormat", dagbase::Variant()),
+        std::make_tuple("BinaryFormat", dagbase::Variant()),
         std::make_tuple("TextFormat", std::uint32_t{1}),
         std::make_tuple("BinaryFormat", std::uint32_t{1}),
         std::make_tuple("TextFormat", std::int64_t{-1}),

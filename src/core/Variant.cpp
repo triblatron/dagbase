@@ -226,7 +226,10 @@ namespace dagbase
             }
 
         }
-
+        else
+        {
+            *this = Variant();
+        }
         //str.readFooter();
         return str;
     }

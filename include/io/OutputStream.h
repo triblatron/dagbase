@@ -63,8 +63,7 @@ namespace dagbase
 
         virtual OutputStream& write(Variant value)
         {
-            if (value.has_value())
-                return write(value.value());
+            value.write(*this);
 
             return *this;
         }

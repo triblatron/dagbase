@@ -35,9 +35,9 @@ namespace dagbase
         return *this;
     }
 
-    InputStream& FormatAgnosticInputStream::read(ConfigurationElement::ValueType* value)
+    InputStream& FormatAgnosticInputStream::read(Variant* value)
     {
-        if (_format)
+        if (value)
         {
             value->read(*this);
         }
