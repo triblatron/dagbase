@@ -371,3 +371,69 @@ INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing:
         std::make_tuple("TextFormat", "test"),
         std::make_tuple("BinaryFormat", "test")
         ));
+
+class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+
+};
+
+TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
+{
+    std::string formatClass = std::get<0>(GetParam());
+    dagbase::StreamFormat* format = nullptr;
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    if (formatClass == "TextFormat")
+    {
+        format = new dagbase::TextFormat(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        format = new dagbase::BinaryFormat(&store);
+    }
+    ASSERT_NE(nullptr, format);
+    dagbase::FormatAgnosticOutputStream sut(format, &store);
+    sut.setFormat(format);
+    sut.setBackingStore(&store);
+    dagbase::Lua lua;
+    sut.writeUInt8(1);
+    sut.writeInt8(-1);
+    sut.writeUInt16(2);
+    sut.writeInt16(-2);
+    sut.writeUInt32(3);
+    sut.writeInt32(-3);
+    sut.writeUInt64(4);
+    sut.writeInt64(-4);
+    sut.writeFloat(1.5f);
+    sut.writeDouble(1.5);
+    format->flush();
+    dagbase::FormatAgnosticInputStream istr(format, &store);
+    std::uint8_t actualUint8 = 0;
+    istr.readUInt8(&actualUint8);
+    EXPECT_EQ(actualUint8, 1);
+    std::int8_t actualInt8 = 0;
+    istr.readInt8(&actualInt8);
+    EXPECT_EQ(actualInt8, -1);
+    std::uint16_t actualUint16 = 0;
+    istr.readUInt16(&actualUint16);
+    EXPECT_EQ(actualUint16, 2);
+    std::int16_t actualInt16 = 0;
+    istr.readInt16(&actualInt16);
+    EXPECT_EQ(actualInt16, -2);
+    std::uint32_t actualUint32 = 0;
+    istr.readUInt32(&actualUint32);
+    EXPECT_EQ(actualUint32, 3);
+    std::int32_t actualInt32 = 0;
+    istr.readInt32(&actualInt32);
+    EXPECT_EQ(actualInt32, -3);
+    std::uint64_t actualUint64 = 0;
+    istr.readUInt64(&actualUint64);
+    EXPECT_EQ(actualUint64, 4);
+    std::int64_t actualInt64 = 0;
+    istr.readInt64(&actualInt64);
+    EXPECT_EQ(actualInt64, -4);
+}
+
+INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testSerialisePrimitive, ::testing::Values(
+    std::make_tuple("TextFormat"),
+    std::make_tuple("BinaryFormat")
+    ));

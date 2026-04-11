@@ -43,9 +43,29 @@ namespace dagbase
 
         virtual void readUInt8(std::uint8_t* value) = 0;
 
+        virtual void writeInt8(std::int8_t value) = 0;
+
+        virtual void readInt8(std::int8_t* value) = 0;
+
+        virtual void writeUInt16(std::uint16_t value) = 0;
+
+        virtual void readUInt16(std::uint16_t* value) = 0;
+
+        virtual void writeInt16(std::int16_t value) = 0;
+
+        virtual void readInt16(std::int16_t* value) = 0;
+
         virtual void writeUInt32(std::uint32_t value) = 0;
 
         virtual void readUInt32(std::uint32_t* value) = 0;
+
+        virtual void writeInt32(std::int32_t value) = 0;
+
+        virtual void readInt32(std::int32_t* value) = 0;
+
+        virtual void writeUInt64(std::uint64_t value) = 0;
+
+        virtual void readUInt64(std::uint64_t* value) = 0;
 
         virtual void writeInt64(std::int64_t value) = 0;
 
@@ -54,6 +74,10 @@ namespace dagbase
         virtual void writeDouble(double value) = 0;
 
         virtual void readDouble(double* value) = 0;
+
+        virtual void writeFloat(float value) = 0;
+
+        virtual void readFloat(float* value) = 0;
 
         virtual void writeString(std::string_view value, bool quoted) = 0;
 

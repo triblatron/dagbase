@@ -74,6 +74,26 @@ namespace dagbase
         return *this;
     }
 
+    InputStream & FormatAgnosticInputStream::readInt32(std::int32_t *value)
+    {
+        if (_format)
+        {
+            _format->readInt32(value);
+        }
+
+        return *this;
+    }
+
+    InputStream & FormatAgnosticInputStream::readUInt64(std::uint64_t *value)
+    {
+        if (_format)
+        {
+            _format->readUInt64(value);
+        }
+
+        return *this;
+    }
+
     InputStream& FormatAgnosticInputStream::readInt64(std::int64_t* value)
     {
         if (_format)
@@ -89,6 +109,16 @@ namespace dagbase
         if (_format)
         {
             _format->readBool(value);
+        }
+
+        return *this;
+    }
+
+    InputStream & FormatAgnosticInputStream::readFloat(float *value)
+    {
+        if (_format)
+        {
+            _format->readFloat(value);
         }
 
         return *this;
@@ -128,6 +158,30 @@ namespace dagbase
     {
         if (_format)
             _format->readUInt8(value);
+
+        return *this;
+    }
+
+    InputStream & FormatAgnosticInputStream::readInt8(std::int8_t *value)
+    {
+        if (_format)
+            _format->readInt8(value);
+
+        return *this;
+    }
+
+    InputStream & FormatAgnosticInputStream::readUInt16(std::uint16_t *value)
+    {
+        if (_format)
+            _format->readUInt16(value);
+
+        return *this;
+    }
+
+    InputStream & FormatAgnosticInputStream::readInt16(std::int16_t *value)
+    {
+        if (_format)
+            _format->readInt16(value);
 
         return *this;
     }

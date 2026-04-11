@@ -53,10 +53,58 @@ namespace dagbase
         return *this;
     }
 
+    OutputStream& FormatAgnosticOutputStream::writeUInt8(std::uint8_t value)
+    {
+        if (_format)
+            _format->writeUInt8(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeInt8(std::int8_t value)
+    {
+        if (_format)
+            _format->writeInt8(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeUInt16(std::uint16_t value)
+    {
+        if (_format)
+            _format->writeUInt16(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeInt16(std::int16_t value)
+    {
+        if (_format)
+            _format->writeInt16(value);
+
+        return *this;
+    }
+
     OutputStream& FormatAgnosticOutputStream::writeUInt32(std::uint32_t value)
     {
         if (_format)
             _format->writeUInt32(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeInt32(std::int32_t value)
+    {
+        if (_format)
+            _format->writeInt32(value);
+
+        return *this;
+    }
+
+    OutputStream& FormatAgnosticOutputStream::writeUInt64(std::uint64_t value)
+    {
+        if (_format)
+            _format->writeUInt64(value);
 
         return *this;
     }
@@ -75,6 +123,14 @@ namespace dagbase
     {
         if (_format)
             _format->writeBool(value);
+
+        return *this;
+    }
+
+    OutputStream & FormatAgnosticOutputStream::writeFloat(float value)
+    {
+        if (_format)
+            _format->writeFloat(value);
 
         return *this;
     }
@@ -115,14 +171,6 @@ namespace dagbase
     {
         if (_format)
             _format->writeField(name.data());
-
-        return *this;
-    }
-
-    OutputStream &FormatAgnosticOutputStream::writeUInt8(std::uint8_t value)
-    {
-        if (_format)
-            _format->writeUInt8(value);
 
         return *this;
     }

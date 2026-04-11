@@ -70,6 +70,38 @@ namespace dagbase
         }
     }
 
+    void TextFormat::writeInt32(std::int32_t value)
+    {
+        if (_printer)
+        {
+            _printer->print(value).print("\n");
+        }
+    }
+
+    void TextFormat::readInt32(std::int32_t *value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
+    void TextFormat::writeUInt64(std::uint64_t value)
+    {
+        if (_printer)
+        {
+            _printer->print(value).print("\n");
+        }
+    }
+
+    void TextFormat::readUInt64(std::uint64_t *value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
     void TextFormat::writeInt64(std::int64_t value)
     {
         if (_printer)
@@ -77,6 +109,22 @@ namespace dagbase
     }
 
     void TextFormat::readInt64(std::int64_t* value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
+    void TextFormat::writeFloat(float value)
+    {
+        if (_printer)
+        {
+            _printer->print(value).print("\n");
+        }
+    }
+
+    void TextFormat::readFloat(float *value)
     {
         if (_istr && value)
         {
@@ -249,6 +297,50 @@ namespace dagbase
             int intValue{0};
             (*_istr) >> (intValue);
             *value = intValue;
+        }
+    }
+
+    void TextFormat::writeInt8(std::int8_t value)
+    {
+        if (_printer)
+            _printer->print(int(value)).print("\n");
+    }
+
+    void TextFormat::readInt8(std::int8_t *value)
+    {
+        if (_istr && value)
+        {
+            int intValue{0};
+            (*_istr) >> (intValue);
+            *value = intValue;
+        }
+    }
+
+    void TextFormat::writeUInt16(std::uint16_t value)
+    {
+        if (_printer)
+            _printer->print(int(value)).print("\n");
+    }
+
+    void TextFormat::readUInt16(std::uint16_t *value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
+        }
+    }
+
+    void TextFormat::writeInt16(std::int16_t value)
+    {
+        if (_printer)
+            _printer->print(value).print("\n");
+    }
+
+    void TextFormat::readInt16(std::int16_t *value)
+    {
+        if (_istr && value)
+        {
+            (*_istr) >> (*value);
         }
     }
 

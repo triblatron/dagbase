@@ -161,7 +161,32 @@ namespace dagbase
             return read(value);
         }
 
+        virtual InputStream& readInt8(std::int8_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readUInt16(std::uint16_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readInt16(std::int16_t* value)
+        {
+            return read(value);
+        }
+
         virtual InputStream& readUInt32(std::uint32_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readInt32(std::int32_t* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readUInt64(std::uint64_t* value)
         {
             return read(value);
         }
@@ -172,6 +197,11 @@ namespace dagbase
         }
 
         virtual InputStream& readBool(bool* value)
+        {
+            return read(value);
+        }
+
+        virtual InputStream& readFloat(float* value)
         {
             return read(value);
         }

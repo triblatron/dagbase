@@ -38,11 +38,23 @@ namespace dagbase
 
         OutputStream& writeUInt8(std::uint8_t value) override;
 
+        OutputStream& writeInt8(std::int8_t value) override;
+
+        OutputStream& writeUInt16(std::uint16_t value) override;
+
+        OutputStream& writeInt16(std::int16_t value) override;
+
         OutputStream& writeUInt32(std::uint32_t value) override;
+
+        OutputStream& writeInt32(std::int32_t value) override;
+
+        OutputStream& writeUInt64(std::uint64_t value) override;
 
         OutputStream& writeInt64(std::int64_t value) override;
 
         OutputStream& writeBool(bool value) override;
+
+        OutputStream& writeFloat(float value) override;
 
         OutputStream& writeDouble(double value) override;
 

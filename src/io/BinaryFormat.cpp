@@ -10,14 +10,39 @@
 
 #include <cstring>
 
+struct BufferUInt16
+{
+    std::uint8_t bytes[sizeof(std::uint16_t)];
+};
+
+struct BufferInt16
+{
+    std::uint8_t bytes[sizeof(std::int16_t)];
+};
+
 struct BufferUInt32
 {
     std::uint8_t bytes[sizeof(std::uint32_t)];
 };
 
+struct BufferInt32
+{
+    std::uint8_t bytes[sizeof(std::int32_t)];
+};
+
+struct BufferFloat
+{
+    std::uint8_t bytes[sizeof(float)];
+};
+
 struct BufferDouble
 {
     std::uint8_t bytes[sizeof(double)];
+};
+
+struct BufferUInt64
+{
+    std::uint8_t bytes[sizeof(std::uint64_t)];
 };
 
 struct BufferInt64
@@ -36,6 +61,48 @@ namespace dagbase
 
     void BinaryFormat::flush()
     {
+    }
+
+    void BinaryFormat::writeUInt16(std::uint16_t value)
+    {
+        if (_store)
+        {
+            BufferUInt16 buffer{};
+            memcpy(buffer.bytes, &value, sizeof(std::uint16_t));
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readUInt16(std::uint16_t *value)
+    {
+        if (_store)
+        {
+            BufferUInt16 buffer{};
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                std::memcpy(value, buffer.bytes, sizeof(std::uint16_t));
+        }
+    }
+
+    void BinaryFormat::writeInt16(std::int16_t value)
+    {
+        if (_store)
+        {
+            BufferInt16 buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(std::int16_t));
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readInt16(std::int16_t *value)
+    {
+        if (_store)
+        {
+            BufferInt16 buffer{};
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                std::memcpy(value, buffer.bytes, sizeof(std::int16_t));
+        }
     }
 
     void BinaryFormat::writeUInt32(std::uint32_t value)
@@ -59,6 +126,48 @@ namespace dagbase
         }
     }
 
+    void BinaryFormat::writeInt32(std::int32_t value)
+    {
+        if (_store)
+        {
+            BufferInt32 buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(std::int32_t));
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readInt32(std::int32_t *value)
+    {
+        if (_store)
+        {
+            BufferInt32 buffer{};
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                std::memcpy(value, buffer.bytes, sizeof(std::int32_t));
+        }
+    }
+
+    void BinaryFormat::writeUInt64(std::uint64_t value)
+    {
+        if (_store)
+        {
+            BufferUInt64 buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(std::uint64_t));
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readUInt64(std::uint64_t *value)
+    {
+        if (_store)
+        {
+            BufferUInt64 buffer{};
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                std::memcpy(value, buffer.bytes, sizeof(std::uint64_t));
+        }
+    }
+
     void BinaryFormat::writeInt64(std::int64_t value)
     {
         if (_store)
@@ -77,6 +186,27 @@ namespace dagbase
             _store->get(buffer.bytes, sizeof(buffer.bytes));
             if (value)
                 std::memcpy(value, buffer.bytes, sizeof(std::int64_t));
+        }
+    }
+
+    void BinaryFormat::writeFloat(float value)
+    {
+        if (_store)
+        {
+            BufferFloat buffer{};
+            std::memcpy(buffer.bytes, &value, sizeof(float));
+            _store->put(buffer.bytes, sizeof(buffer.bytes));
+        }
+    }
+
+    void BinaryFormat::readFloat(float *value)
+    {
+        if (_store)
+        {
+            BufferFloat buffer{};
+            _store->get(buffer.bytes, sizeof(buffer.bytes));
+            if (value)
+                std::memcpy(value, buffer.bytes, sizeof(float));
         }
     }
 
@@ -205,6 +335,18 @@ namespace dagbase
     {
         if (_store)
             _store->get(value, sizeof(std::uint8_t));
+    }
+
+    void BinaryFormat::writeInt8(std::int8_t value)
+    {
+        if (_store)
+            _store->put(reinterpret_cast<std::uint8_t*>(&value), sizeof(std::int8_t));
+    }
+
+    void BinaryFormat::readInt8(std::int8_t *value)
+    {
+        if (_store)
+            _store->get(reinterpret_cast<std::uint8_t*>(value), sizeof(std::int8_t));
     }
 
     void BinaryFormat::writeBinary(const std::uint8_t *buf, std::size_t len)

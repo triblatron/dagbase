@@ -74,12 +74,24 @@ namespace dagbase
 
         virtual OutputStream& writeUInt8(std::uint8_t value) = 0;
 
+        virtual OutputStream& writeInt8(std::int8_t value) = 0;
+
+        virtual OutputStream& writeUInt16(std::uint16_t value) = 0;
+
+        virtual OutputStream& writeInt16(std::int16_t value) = 0;
+
         virtual OutputStream& writeUInt32(std::uint32_t value) = 0;
+
+        virtual OutputStream& writeInt32(std::int32_t value) = 0;
 
         //! Write a string which requires special encoding because it is not a primitive type.
         virtual OutputStream& writeString(std::string const& value, bool quoted);
 
         virtual OutputStream& writeDouble(double value) = 0;
+
+        virtual OutputStream& writeFloat(float value) = 0;
+
+        virtual OutputStream& writeUInt64(std::uint64_t value) = 0;
 
         virtual OutputStream& writeInt64(std::int64_t value) = 0;
 

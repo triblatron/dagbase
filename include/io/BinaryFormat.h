@@ -34,11 +34,29 @@ namespace dagbase
         void writeUInt8(std::uint8_t value) override;
         void readUInt8(std::uint8_t* value) override;
 
+        void writeInt8(std::int8_t value) override;
+        void readInt8(std::int8_t* value) override;
+
+        void writeUInt16(std::uint16_t value) override;
+        void readUInt16(std::uint16_t* value) override;
+
+        void writeInt16(std::int16_t value) override;
+        void readInt16(std::int16_t* value) override;
+
         void writeUInt32(std::uint32_t value) override;
-        void readUInt32(std::uint32_t *value) override;
+        void readUInt32(std::uint32_t* value) override;
+
+        void writeInt32(std::int32_t value) override;
+        void readInt32(std::int32_t* value) override;
+
+        void writeUInt64(std::uint64_t value) override;
+        void readUInt64(std::uint64_t* value) override;
 
         void writeInt64(std::int64_t value) override;
         void readInt64(std::int64_t* value) override;
+
+        void writeFloat(float value) override;
+        void readFloat(float* value) override;
 
         void writeDouble(double value) override;
         void readDouble(double* value) override;

@@ -45,11 +45,23 @@ namespace dagbase
 
         InputStream& readUInt8(std::uint8_t* value) override;
 
+        InputStream& readInt8(std::int8_t* value) override;
+
+        InputStream& readUInt16(std::uint16_t* value) override;
+
+        InputStream& readInt16(std::int16_t* value) override;
+
         InputStream& readUInt32(std::uint32_t* value) override;
+
+        InputStream& readInt32(std::int32_t* value) override;
+
+        InputStream& readUInt64(std::uint64_t* value) override;
 
         InputStream& readInt64(int64_t* value) override;
 
         InputStream& readBool(bool* value) override;
+
+        InputStream& readFloat(float* value) override;
 
         InputStream& readDouble(double* value) override;
 
