@@ -6,6 +6,7 @@
 #define DAGUI_TESTOBJECT_H
 
 #include "core/Class.h"
+#include "io/StreamFormat.h"
 
 struct TestObject : public dagbase::Class
 {

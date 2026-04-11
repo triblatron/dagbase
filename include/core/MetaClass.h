@@ -7,9 +7,11 @@
 
 namespace dagbase
 {
+    class Atom;
     class MetaCoroutine;
     class MetaField;
     class MetaOperation;
+    class MetaProperty;
 
 #define DAGBASE_PROPERTY(type, name, member, initialValue, setter, getter) \
     public: \
@@ -31,7 +33,13 @@ namespace dagbase
         typedef std::vector<MetaField *> MetaFieldArray;
         typedef std::vector<MetaOperation *> MetaOperationArray;
         typedef std::vector<MetaCoroutine *> MetaCoroutineArray;
+        using MetaPropertyArray = std::vector<MetaProperty *>;
     public:
+        void addProperty( MetaProperty* property )
+        {
+            _properties.emplace_back(property);
+        }
+
         void addField( MetaField * field )
         {
             _fields.emplace_back(field);
@@ -68,5 +76,6 @@ namespace dagbase
         MetaFieldArray _fields;
         MetaOperationArray _ops;
         MetaCoroutineArray _coroutines;
+        MetaPropertyArray _properties;
     };
 }

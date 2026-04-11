@@ -1,6 +1,7 @@
 #include "config/config.h"
 
 #include "core/Class.h"
+#include "io/StreamFormat.h"
 
 #include <sstream>
 
@@ -11,7 +12,12 @@ namespace dagbase
         delete _errorStr;
     }
 
-    std::ostringstream & Class::raiseError( int code )
+    void Class::describe(ClassDescription &description) const
+    {
+        // Do nothing.
+    }
+
+    std::ostringstream & Class::raiseError( Error code )
     {
         if (_errorStr==nullptr)
             _errorStr=new std::ostringstream();

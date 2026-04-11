@@ -71,6 +71,8 @@ include/util/DebugPrinter.h
         include/core/HierarchicalStateMachine.h
         include/util/SearchableSet.h
         include/util/FixedVector.h
+        include/core/Property.h
+        include/core/ClassDescription.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

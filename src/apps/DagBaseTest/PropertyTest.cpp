@@ -9,9 +9,13 @@
 #include "core/PropertyBagFactory.h"
 #include "core/PropertyBag.h"
 #include "core/MetaClass.h"
+#include "core/Property.h"
+#include "core/ClassDescription.h"
+#include "core/Signal.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+
 
 class MetaProperty_testConfigure : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::ConfigurationElement::ValueType, double, dagbase::ConfigurationElement::RelOp>>
 {
@@ -126,7 +130,7 @@ TEST_P(PropertyBag_testLookup, testExpectedValue)
         {
             return static_cast<dagbase::PropertyBag*>(new dagbase::TemplatePropertyBag<TestProperties>());
         }
-        return (dagbase::PropertyBag*)nullptr;
+        return static_cast<dagbase::PropertyBag*>(nullptr);
     });
     auto sut = factory.create(*config);
     ASSERT_NE(nullptr, sut);
@@ -153,4 +157,117 @@ TEST(PropertyDecl, testReadWrite)
     TestObjectWithProperties sut;
     sut.setFoo(1);
     EXPECT_EQ(1, sut.foo());
+}
+
+#define DECLARE_PROPERTY_READER(type, name, member) \
+    type name() const \
+    {\
+        return member;\
+    }
+
+#define DECLARE_PROPERTY_WRITER(type, name, member) \
+    void name(type value) \
+    {\
+        member = value;\
+    }
+
+class TestClassWithProperties
+{
+public:
+    DECLARE_PROPERTY_READER(bool, foo, _foo)
+    DECLARE_PROPERTY_WRITER(bool, setFoo, _foo)
+
+    // Signals
+    dagbase::Signal<void()> bar;
+
+    // Slots
+    void onBar();
+private:
+    bool _foo{false};
+};
+
+TEST(PropertyDecl, testAccessors)
+{
+    TestClassWithProperties sut;
+
+    bool actual = sut.foo();
+    ASSERT_FALSE(actual);
+    sut.setFoo(true);
+    ASSERT_TRUE(sut.foo());
+}
+
+class TestOwner : public dagbase::Class
+{
+public:
+    void setValue(const std::int32_t& value)
+    {
+        _value = value;
+    }
+
+    void getValue(std::int32_t* value) const
+    {
+        if (value)
+        {
+            *value = _value;
+        }
+    }
+
+    void valueChanged()
+    {
+        // Do nothing.
+    }
+
+    void describe(dagbase::ClassDescription& description) const override
+    {
+        description.addInt32(dagbase::Atom::intern("value"));
+    }
+private:
+    std::int32_t _value{0};
+};
+
+class Property_testAccessors : public ::testing::TestWithParam<std::tuple<const char*, std::int32_t>>
+{
+
+};
+
+TEST_P(Property_testAccessors, testExpectedValue)
+{
+    auto name = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    TestOwner owner;
+    dagbase::Property sut(dagbase::Atom::intern(name), &TestOwner::getValue, &TestOwner::setValue, &TestOwner::valueChanged);
+    sut.set(owner, value);
+    std::int32_t actual = 0;
+    sut.get(&owner, &actual, sizeof(std::int32_t));
+    ASSERT_EQ(value, actual);
+}
+
+INSTANTIATE_TEST_SUITE_P(Property, Property_testAccessors, ::testing::Values(
+    std::make_tuple("value", 1)
+    ));
+
+class TestClassDescription : public dagbase::ClassDescription
+{
+public:
+    MOCK_METHOD(void, addInt8, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addInt16, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addInt32, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addInt64, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addFloat, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addDouble, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addString, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addBool, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addUint8, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addUint16, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addUint32, (const dagbase::Atom& name), (override));
+    MOCK_METHOD(void, addUint64, (const dagbase::Atom& name), (override));
+};
+
+TEST(Class, testDescribe)
+{
+    TestOwner sut;
+    TestClassDescription description;
+    EXPECT_CALL(description, addInt32(::testing::_)).Times(1);
+    sut.describe(description);
 }

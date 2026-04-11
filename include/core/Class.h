@@ -7,18 +7,13 @@
 #include <iosfwd>
 #include <string>
 
-#include "io/StreamFormat.h"
-
 namespace dagbase
 {
     class BackingStore;
-    class StreamFormat;
-}
-
-namespace dagbase
-{
+    class ClassDescription;
     class MetaClass;
     class Lua;
+    class StreamFormat;
 
     //! Base class for classes that have fields and operations.
     class DAGBASE_API Class
@@ -44,7 +39,9 @@ namespace dagbase
             return "Class";
         }
 
-        std::ostringstream & raiseError(int code);
+        virtual void describe(ClassDescription& description) const;
+
+        std::ostringstream & raiseError(Error code);
 
         std::string errorMessage() const;
 
@@ -52,8 +49,8 @@ namespace dagbase
 
         virtual void readFromStream(StreamFormat& str);
     private:
-        Error _errod{Error::NoError};
         MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };
+        Error _errod{Error::NoError};
     };
 }
