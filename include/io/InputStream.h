@@ -44,15 +44,9 @@ namespace dagbase
                 {
                     return static_cast<T*>(_ptrLookup[_lastReadId-1]);
                 }
-                else
-                {
-                    return dynamic_cast<T*>(nodeLib.instantiate(baseClassName, *this));
-                }
+                return dynamic_cast<T*>(nodeLib.instantiate(baseClassName, *this));
             }
-            else
-            {
-                return nullptr;
-            }
+            return nullptr;
         }
 
         Ref readRef(ObjId* id)
