@@ -272,7 +272,6 @@ public:
     {
     }
     dagbase::Signal<int()> testSignal;
-    int numDisconnects{0};
     std::size_t index{~0U};
 };
 
