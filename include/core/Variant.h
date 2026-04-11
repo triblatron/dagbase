@@ -183,7 +183,7 @@ namespace dagbase
 
         OutputStream& write(OutputStream& str) const;
 
-        InputStream& read(InputStream& str, Lua* lua=nullptr);
+        InputStream& read(InputStream& str, Lua &lua);
 
         Variant find(std::string_view path) const;
 

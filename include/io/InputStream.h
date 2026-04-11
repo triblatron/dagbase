@@ -32,7 +32,7 @@ namespace dagbase
         //virtual void* readRef(ObjId* id) = 0;
 
         template<typename T, typename ClassLibrary>
-        T* readRef(const char*baseClassName, ClassLibrary& nodeLib)
+        T* readRef(const char*baseClassName, ClassLibrary& nodeLib, dagbase::Lua& lua)
         {
             ObjId id;
             readUInt32(&id);
@@ -44,7 +44,7 @@ namespace dagbase
                 {
                     return static_cast<T*>(_ptrLookup[_lastReadId-1]);
                 }
-                return dynamic_cast<T*>(nodeLib.instantiate(baseClassName, *this));
+                return dynamic_cast<T*>(nodeLib.instantiate(baseClassName, *this, lua));
             }
             return nullptr;
         }
@@ -60,15 +60,9 @@ namespace dagbase
                 {
                     return (_ptrLookup[_lastReadId-1]);
                 }
-                else
-                {
-                    return nullptr;
-                }
-            }
-            else
-            {
                 return nullptr;
             }
+            return nullptr;
         }
 
         template<typename T>
@@ -187,7 +181,7 @@ namespace dagbase
             return read(value);
         }
 
-        virtual InputStream& read(dagbase::Variant* value)
+        virtual InputStream& read(Lua& lua, dagbase::Variant* value)
         {
             return *this;
         }

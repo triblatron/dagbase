@@ -168,7 +168,7 @@ namespace dagbase
         }
     }
 
-    InputStream &Variant::read(InputStream &str, Lua* lua)
+    InputStream &Variant::read(InputStream &str, Lua &lua)
     {
 //        std::string name;
 //        str.readHeader(&name);
@@ -217,7 +217,7 @@ namespace dagbase
                 }
                 case Variant::TYPE_FUNCTION:
                 {
-                    _value = new Function(str, *lua);
+                    _value = new Function(str, lua);
                     _own = true;
                     break;
                 }

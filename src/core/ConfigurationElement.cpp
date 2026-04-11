@@ -483,7 +483,7 @@ namespace dagbase
         str.readField(&fieldName);
         str.readInt64(&_index);
         str.readField(&fieldName);
-        _value.read(str, &lua);
+        _value.read(str, lua);
         InputStream::ObjId parentId{};
         str.readField(&fieldName);
         _parent = str.readRef<ConfigurationElement>(&parentId, lua);

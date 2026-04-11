@@ -37,7 +37,7 @@ namespace dagbase
 
         InputStream& readBuf(value_type* buf, std::size_t len) override;
 
-        InputStream& read(Variant* value) override;
+        InputStream& read(Lua& lua, Variant* value) override;
 
         InputStream& readHeader(std::string* className) override;
 

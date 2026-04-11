@@ -185,7 +185,7 @@ struct TestNode
     dagbase::ConfigurationElement::ValueType value{};
     TestNode() = default;
 
-    TestNode(dagbase::InputStream& str)
+    TestNode(dagbase::InputStream& str, dagbase::Lua& lua)
     {
         str.addObj(this);
         std::string className;
@@ -193,7 +193,7 @@ struct TestNode
         std::string fieldName;
         str.readField(&fieldName);
         dagbase::Stream::ObjId id{0};
-        parent = str.readRef<TestNode>(&id);
+        parent = str.readRef<TestNode>(&id, lua);
         str.readField(&fieldName);
         str.readUInt32(&i);
         str.readField(&fieldName);
@@ -201,7 +201,7 @@ struct TestNode
         str.readField(&fieldName);
         str.readBool(&b);
         str.readField(&fieldName);
-        str.read(&value);
+        str.read(lua, &value);
         std::uint32_t numChildren{0};
         str.readField(&fieldName);
         str.readUInt32(&numChildren);
@@ -212,7 +212,7 @@ struct TestNode
         {
             dagbase::Stream::ObjId childId{0};
 
-            if (TestNode* child=str.readRef<TestNode>(&childId); child)
+            if (TestNode* child=str.readRef<TestNode>(&childId, lua); child)
                 children.emplace_back(child);
         }
         str.readFooter();
@@ -284,6 +284,7 @@ class FormatAgnosticOutputToInput_testRoundTrip : public ::testing::TestWithPara
 
 TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
 {
+    dagbase::Lua lua;
     auto formatClass = std::get<0>(GetParam());
     dagbase::StreamFormat* format = nullptr;
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
@@ -312,7 +313,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
     format->flush();
     dagbase::FormatAgnosticInputStream istr(format, &store);
     dagbase::Stream::ObjId id{~0U};
-    auto actual = (istr.readRef<TestNode>(&id));
+    auto actual = (istr.readRef<TestNode>(&id, lua));
     ASSERT_NE(nullptr, actual);
     ASSERT_NE(nullptr, actual->parent);
     EXPECT_EQ(42, actual->i);
@@ -347,11 +348,12 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
     sut.setFormat(format);
     sut.setBackingStore(&store);
     auto value = std::get<1>(GetParam());
+    dagbase::Lua lua;
     sut.write(value);
     format->flush();
     dagbase::FormatAgnosticInputStream istr(format, &store);
     dagbase::Variant actualValue{std::numeric_limits<std::uint32_t>::max()};
-    istr.read(&actualValue);
+    istr.read(lua, &actualValue);
     EXPECT_EQ(value, actualValue);
 }
 

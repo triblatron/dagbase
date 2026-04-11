@@ -35,11 +35,11 @@ namespace dagbase
         return *this;
     }
 
-    InputStream& FormatAgnosticInputStream::read(Variant* value)
+    InputStream& FormatAgnosticInputStream::read(Lua& lua, Variant* value)
     {
         if (value)
         {
-            value->read(*this);
+            value->read(*this, lua);
         }
 
         return *this;
