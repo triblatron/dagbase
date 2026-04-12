@@ -450,8 +450,31 @@ INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testSerialisePrimitive, ::te
     std::make_tuple("BinaryFormat")
     ));
 
-TEST(TextInputStream, EmptyBuffer)
+class InputStream_testReadEmptyBuffer : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+
+};
+
+TEST_P(InputStream_testReadEmptyBuffer, testExpectedValue)
 {
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_INPUT_BIT);
-    dagbase::TextInputStream sut(&store);
+    std::string formatClass = std::get<0>(GetParam());
+    dagbase::InputStream* sut = nullptr;
+    if (formatClass == "TextFormat")
+    {
+        sut = new dagbase::TextInputStream(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        sut = new dagbase::BinaryInputStream(&store);
+    }
+    ASSERT_NE(nullptr, sut);
+    std::int32_t actual{0};
+    sut->readInt32(&actual);
+    EXPECT_EQ(actual, 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(InputStream, InputStream_testReadEmptyBuffer, ::testing::Values(
+    std::make_tuple("TextFormat"),
+    std::make_tuple("BinaryFormat")
+    ));
