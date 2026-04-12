@@ -343,27 +343,34 @@ class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple
 TEST_P(OutputStream_testWriteVariant, testExpectedValue)
 {
     std::string formatClass = std::get<0>(GetParam());
-    dagbase::StreamFormat* format = nullptr;
+    dagbase::OutputStream* sut = nullptr;
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
     if (formatClass == "TextFormat")
     {
-        format = new dagbase::TextFormat(&store);
+        sut = new dagbase::TextOutputStream(&store);
     }
     else if (formatClass == "BinaryFormat")
     {
-        format = new dagbase::BinaryFormat(&store);
+        sut = new dagbase::BinaryOutputStream(&store);
     }
-    ASSERT_NE(nullptr, format);
-    dagbase::FormatAgnosticOutputStream sut(format, &store);
-    sut.setFormat(format);
-    sut.setBackingStore(&store);
+    ASSERT_NE(nullptr, sut);
     auto value = std::get<1>(GetParam());
     dagbase::Lua lua;
-    sut.write(value);
-    format->flush();
-    dagbase::FormatAgnosticInputStream istr(format, &store);
+    sut->write(value);
+    sut->flush();
+    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::InputStream *istr{nullptr};
+    if (formatClass == "TextFormat")
+    {
+        istr = new dagbase::TextInputStream(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        istr = new dagbase::BinaryInputStream(&store);
+    }
+    ASSERT_NE(nullptr, istr);
     dagbase::Variant actualValue{std::numeric_limits<std::uint32_t>::max()};
-    istr.read(lua, &actualValue);
+    istr->read(lua, &actualValue);
     EXPECT_EQ(value, actualValue);
 }
 
