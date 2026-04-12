@@ -268,11 +268,9 @@ TEST(OutputStream, testOutput)
     node2.value = dagbase::Variant(1.0);
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
 
-    dagbase::TextFormat format(&store);
-    format.setMode(dagbase::StreamFormat::MODE_OUTPUT);
-    dagbase::FormatAgnosticOutputStream sut(&format, &store);
+    dagbase::TextOutputStream sut(&store);
     node2.write(sut);
-    format.flush();
+    sut.flush();
 
     std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : true\n1\n2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : true\n1\n1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
@@ -290,34 +288,42 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
 {
     dagbase::Lua lua;
     auto formatClass = std::get<0>(GetParam());
-    dagbase::StreamFormat* format = nullptr;
+    dagbase::OutputStream* sut = nullptr;
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
     if (formatClass == "TextFormat")
     {
-        format = new dagbase::TextFormat(&store);
+        sut = new dagbase::TextOutputStream(&store);
     }
     else if (formatClass == "BinaryFormat")
     {
-        format = new dagbase::BinaryFormat(&store);
+        sut = new dagbase::BinaryOutputStream(&store);
     }
-    ASSERT_NE(nullptr, format);
-    dagbase::FormatAgnosticOutputStream sut(format, &store);
-    sut.setFormat(format);
-    sut.setBackingStore(&store);
+    ASSERT_NE(nullptr, sut);
     TestNode node1;
     node1.i = 3141;
     TestNode node2;
     node2.i = 42;
     node2.parent = &node1;
     node1.children.emplace_back(&node2);
-    if (sut.writeRef(&node2))
+    if (sut->writeRef(&node2))
     {
-        node2.write(sut);
+        node2.write(*sut);
     }
-    format->flush();
-    dagbase::FormatAgnosticInputStream istr(format, &store);
+    sut->flush();
+    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::InputStream *istr{nullptr};
+
+    if (formatClass == "TextFormat")
+    {
+        istr = new dagbase::TextInputStream(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        istr = new dagbase::BinaryInputStream(&store);
+    }
+    ASSERT_NE(nullptr, istr);
     dagbase::Stream::ObjId id{~0U};
-    auto actual = (istr.readRef<TestNode>(&id, lua));
+    auto actual = (istr->readRef<TestNode>(&id, lua));
     ASSERT_NE(nullptr, actual);
     ASSERT_NE(nullptr, actual->parent);
     EXPECT_EQ(42, actual->i);
