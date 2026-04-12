@@ -26,14 +26,9 @@ include/core/ByteBuffer.h
 include/io/Stream.h
 include/io/InputStream.h
 include/io/OutputStream.h
-include/io/StreamFormat.h
-include/io/BinaryFormat.h
-include/io/BackingStore.h
-include/io/TextFormat.h
-include/io/MemoryBackingStore.h
+        include/io/BackingStore.h
+        include/io/MemoryBackingStore.h
 include/util/DebugPrinter.h
-        include/io/FormatAgnosticOutputStream.h
-        include/io/FormatAgnosticInputStream.h
         include/util/SearchableMap.h
         include/core/Atom.h
         include/core/DynamicVisitor.h
@@ -101,12 +96,8 @@ src/core/MetaClass.cpp
 src/core/ByteBuffer.cpp
 src/io/InputStream.cpp
 src/io/OutputStream.cpp
-src/io/TextFormat.cpp
-src/io/MemoryBackingStore.cpp
-src/io/BinaryFormat.cpp
-src/util/DebugPrinter.cpp
-        src/io/FormatAgnosticOutputStream.cpp
-        src/io/FormatAgnosticInputStream.cpp
+        src/io/MemoryBackingStore.cpp
+        src/util/DebugPrinter.cpp
         src/core/Atom.cpp
         src/core/Snippet.cpp
         src/core/MetaProperty.cpp

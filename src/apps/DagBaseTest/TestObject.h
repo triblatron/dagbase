@@ -6,7 +6,8 @@
 #define DAGUI_TESTOBJECT_H
 
 #include "core/Class.h"
-#include "io/StreamFormat.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 
 struct TestObject : public dagbase::Class
 {
@@ -17,7 +18,7 @@ struct TestObject : public dagbase::Class
         return "TestObject";
     }
 
-    void writeToStream(dagbase::StreamFormat& format) const override
+    void writeToStream(dagbase::OutputStream& format) const override
     {
         format.writeHeader("TestObject");
         Class::writeToStream(format);
@@ -26,7 +27,7 @@ struct TestObject : public dagbase::Class
         format.writeFooter();
     }
 
-    void readFromStream(dagbase::StreamFormat& format) override
+    void readFromStream(dagbase::InputStream& format) override
     {
         std::string className;
         format.readHeader(&className);

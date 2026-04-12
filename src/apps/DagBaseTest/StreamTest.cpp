@@ -2,8 +2,6 @@
 // Created by Tony Horrobin on 02/03/2025.
 //
 
-#include "io/StreamFormat.h"
-
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 

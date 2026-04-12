@@ -2,20 +2,15 @@
 
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
-#include "io/StreamFormat.h"
 #include "io/MemoryBackingStore.h"
-#include "io/BinaryFormat.h"
-#include "io/TextFormat.h"
-#include "io/FormatAgnosticOutputStream.h"
-#include "io/FormatAgnosticInputStream.h"
-
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
 #include "io/BinaryInputStream.h"
 #include "io/BinaryOutputStream.h"
 #include "io/TextInputStream.h"
 #include "io/TextOutputStream.h"
+
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
 
 class ConfigurationElement_testFindElement : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*>>
 {
@@ -197,7 +192,7 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
     else if (className == "BinaryFormat")
         istr = new dagbase::BinaryInputStream(&backingStore);
     ASSERT_NE(nullptr, istr);
-    dagbase::FormatAgnosticInputStream::ObjId id;
+    dagbase::InputStream::ObjId id;
     configFromStream = istr->readRef<dagbase::ConfigurationElement>(&id, lua);
     ASSERT_NE(nullptr, configFromStream);
     EXPECT_EQ(*config, *configFromStream);

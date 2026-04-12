@@ -1,9 +1,12 @@
 #include "config/config.h"
 
 #include "core/Class.h"
-#include "io/StreamFormat.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 
 #include <sstream>
+
+#include "io/OutputStream.h"
 
 namespace dagbase
 {
@@ -42,7 +45,7 @@ namespace dagbase
             return {};
     }
 
-    void Class::writeToStream(StreamFormat& format) const
+    void Class::writeToStream(OutputStream& format) const
     {
         // str << "Class { errod: " << _errod << " }";
         format.writeHeader("Class");
@@ -51,7 +54,7 @@ namespace dagbase
         format.writeFooter();
     }
 
-    void Class::readFromStream(StreamFormat& format)
+    void Class::readFromStream(InputStream& format)
     {
 
         std::string className;

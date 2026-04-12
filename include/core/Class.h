@@ -11,9 +11,10 @@ namespace dagbase
 {
     class BackingStore;
     class ClassDescription;
-    class MetaClass;
+    class InputStream;
     class Lua;
-    class StreamFormat;
+    class MetaClass;
+    class OutputStream;
 
     //! Base class for classes that have fields and operations.
     class DAGBASE_API Class
@@ -45,9 +46,9 @@ namespace dagbase
 
         std::string errorMessage() const;
 
-        virtual void writeToStream(StreamFormat& str) const;
+        virtual void writeToStream(OutputStream& str) const;
 
-        virtual void readFromStream(StreamFormat& str);
+        virtual void readFromStream(InputStream& str);
     private:
         MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };
