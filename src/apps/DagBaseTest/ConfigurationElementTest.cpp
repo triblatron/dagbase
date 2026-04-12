@@ -12,6 +12,11 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include "io/BinaryInputStream.h"
+#include "io/BinaryOutputStream.h"
+#include "io/TextInputStream.h"
+#include "io/TextOutputStream.h"
+
 class ConfigurationElement_testFindElement : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*>>
 {
 
@@ -171,27 +176,29 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
         ASSERT_NE(nullptr, config);
     }
     std::string className = std::get<1>(GetParam());
-    dagbase::StreamFormat* sut = nullptr;
+    dagbase::OutputStream* sut = nullptr;
     dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
     if (className == "TextFormat")
-        sut = new dagbase::TextFormat(&backingStore);
+        sut = new dagbase::TextOutputStream(&backingStore);
     else if (className == "BinaryFormat")
-        sut = new dagbase::BinaryFormat(&backingStore);
+        sut = new dagbase::BinaryOutputStream(&backingStore);
     ASSERT_NE(nullptr, sut);
-    sut->setMode(dagbase::StreamFormat::MODE_OUTPUT);
-    auto ostr = new dagbase::FormatAgnosticOutputStream(sut, &backingStore);
-    if (ostr->writeRef(config))
+    if (sut->writeRef(config))
     {
-        config->write(*ostr);
+        config->write(*sut);
     }
     sut->flush();
-    sut->setMode(dagbase::StreamFormat::MODE_INPUT);
     backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::InputStream* istr{nullptr};
 
     dagbase::ConfigurationElement* configFromStream = nullptr;
-    dagbase::FormatAgnosticInputStream istr(sut, &backingStore);
+    if (className == "TextFormat")
+        istr = new dagbase::TextInputStream(&backingStore);
+    else if (className == "BinaryFormat")
+        istr = new dagbase::BinaryInputStream(&backingStore);
+    ASSERT_NE(nullptr, istr);
     dagbase::FormatAgnosticInputStream::ObjId id;
-    configFromStream = istr.readRef<dagbase::ConfigurationElement>(&id, lua);
+    configFromStream = istr->readRef<dagbase::ConfigurationElement>(&id, lua);
     ASSERT_NE(nullptr, configFromStream);
     EXPECT_EQ(*config, *configFromStream);
     auto funcConfig = config->findElement("foo");
@@ -210,7 +217,7 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
         }
     }
     delete configFromStream;
-    delete ostr;
+    delete istr;
     delete sut;
     delete config;
 }
