@@ -450,3 +450,8 @@ INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testSerialisePrimitive, ::te
     std::make_tuple("BinaryFormat")
     ));
 
+TEST(TextInputStream, EmptyBuffer)
+{
+    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::TextInputStream sut(&store);
+}
