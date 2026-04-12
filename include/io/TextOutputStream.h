@@ -7,21 +7,20 @@
 #include "config/DagBaseExport.h"
 #include "OutputStream.h"
 #include "core/ByteBuffer.h"
+#include "util/DebugPrinter.h"
+
+#include <iosfwd>
+#include <vector>
 
 namespace dagbase
 {
     class BackingStore;
-    class StreamFormat;
+    class DebugPrinter;
 
-    class DAGBASE_API FormatAgnosticOutputStream : public dagbase::OutputStream
+    class DAGBASE_API TextOutputStream : public OutputStream
     {
     public:
-        FormatAgnosticOutputStream(StreamFormat* format, BackingStore* store);
-
-        void setFormat(StreamFormat* format)
-        {
-            _format = format;
-        }
+        explicit TextOutputStream(BackingStore* store);
 
         void setBackingStore(BackingStore* store)
         {
@@ -33,8 +32,6 @@ namespace dagbase
         OutputStream& endSubBuffer() override;
 
         OutputStream& writeBuf(const value_type* buf, std::size_t len) override;
-
-        OutputStream& write(Variant value) override;
 
         OutputStream& writeUInt8(std::uint8_t value) override;
 
@@ -64,13 +61,15 @@ namespace dagbase
 
         OutputStream& writeFooter() override;
 
-        OutputStream& writeField(std::string_view name) override;
+        OutputStream& writeField(std::string_view fieldName) override;
 
         OutputStream& flush() override;
     private:
-        StreamFormat* _format{ nullptr };
         BackingStore* _store{ nullptr };
         ByteBuffer _subBuffer;
         bool _inSubBuffer{false};
+        std::ostringstream* _ostr{nullptr};
+        DebugPrinter* _printer{ nullptr };
+        std::vector<std::uint8_t> _output;
     };
 }

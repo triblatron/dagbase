@@ -13,15 +13,10 @@ namespace dagbase
     class BackingStore;
     class StreamFormat;
 
-    class DAGBASE_API FormatAgnosticOutputStream : public dagbase::OutputStream
+    class DAGBASE_API BinaryOutputStream : public OutputStream
     {
     public:
-        FormatAgnosticOutputStream(StreamFormat* format, BackingStore* store);
-
-        void setFormat(StreamFormat* format)
-        {
-            _format = format;
-        }
+        explicit BinaryOutputStream(BackingStore* store);
 
         void setBackingStore(BackingStore* store)
         {
@@ -68,7 +63,6 @@ namespace dagbase
 
         OutputStream& flush() override;
     private:
-        StreamFormat* _format{ nullptr };
         BackingStore* _store{ nullptr };
         ByteBuffer _subBuffer;
         bool _inSubBuffer{false};

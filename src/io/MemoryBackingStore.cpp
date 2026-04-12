@@ -25,7 +25,7 @@ namespace dagbase
         {
             _buffer.get(&c, 1);
             if (c!=delim)
-                buffer += c;
+                buffer += static_cast<char>(c);
         }
     }
 

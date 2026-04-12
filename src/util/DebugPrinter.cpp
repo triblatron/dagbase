@@ -15,8 +15,29 @@ namespace dagbase
         if (_str != nullptr)
         {
             printIndent();
-            (*_str) << line;
-            (*_str) << '\n';
+            (*_str) << line << '\n';
+        }
+
+        return *this;
+    }
+
+    DebugPrinter & DebugPrinter::println(std::string_view line)
+    {
+        if (_str)
+        {
+            printIndent();
+            (*_str) << line << '\n';
+        }
+
+        return *this;
+    }
+
+    DebugPrinter & DebugPrinter::println(const char *line)
+    {
+        if (_str != nullptr)
+        {
+            printIndent();
+            (*_str) << line << '\n';
         }
 
         return *this;

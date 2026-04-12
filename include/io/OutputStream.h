@@ -85,7 +85,7 @@ namespace dagbase
         virtual OutputStream& writeInt32(std::int32_t value) = 0;
 
         //! Write a string which requires special encoding because it is not a primitive type.
-        virtual OutputStream& writeString(std::string const& value, bool quoted);
+        virtual OutputStream& writeString(std::string const& value, bool quoted) = 0;
 
         virtual OutputStream& writeDouble(double value) = 0;
 
@@ -97,23 +97,13 @@ namespace dagbase
 
         virtual OutputStream& writeBool(bool value) = 0;
 
-        virtual OutputStream& writeHeader(std::string_view className)
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual OutputStream& writeHeader(std::string_view className) = 0;
 
-        virtual OutputStream& writeFooter()
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual OutputStream& writeFooter() = 0;
 
-        virtual OutputStream& writeField(std::string_view name)
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual OutputStream& writeField(std::string_view name) = 0;
+
+        virtual OutputStream& flush() = 0;
     private:
         typedef std::map<void*, ObjId> PtrToIdMap;
         PtrToIdMap _idLookup;

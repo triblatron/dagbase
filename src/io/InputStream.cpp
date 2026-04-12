@@ -7,13 +7,4 @@
 
 namespace dagbase
 {
-
-    InputStream &InputStream::readString(std::string *value, bool quoted)
-    {
-        size_t len = 0;
-        read(&len);
-        value->resize(len);
-        readBuf(reinterpret_cast<value_type *>(value->data()), len);
-        return *this;
-    }
 }

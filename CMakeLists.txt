@@ -73,6 +73,11 @@ include/util/DebugPrinter.h
         include/util/FixedVector.h
         include/core/Property.h
         include/core/ClassDescription.h
+        include/io/BinaryOutputStream.h
+        include/io/BinaryInputStream.h
+        include/util/TypedBuffer.h
+        include/io/TextOutputStream.h
+        include/io/TextInputStream.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -123,6 +128,10 @@ src/util/DebugPrinter.cpp
         src/core/DynamicEnum.cpp
         src/util/Base64.cpp
         src/core/HierarchicalStateMachine.cpp
+        src/io/BinaryOutputStream.cpp
+        src/io/BinaryInputStream.cpp
+        src/io/TextOutputStream.cpp
+        src/io/TextInputStream.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

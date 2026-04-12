@@ -142,85 +142,37 @@ namespace dagbase
             _ptrLookup[_lastReadId-1] = ref;
         }
 
-        virtual InputStream& readString(std::string* value, bool quoted);
+        virtual InputStream& readString(std::string* value, bool quoted) = 0;
 
-        virtual InputStream& readHeader(std::string* className)
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual InputStream& readHeader(std::string* className) = 0;
 
-        virtual InputStream& readField(std::string* fieldName)
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual InputStream& readField(std::string* fieldName) = 0;
 
-        virtual InputStream& readUInt8(std::uint8_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readUInt8(std::uint8_t* value) = 0;
 
-        virtual InputStream& readInt8(std::int8_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readInt8(std::int8_t* value) = 0;
 
-        virtual InputStream& readUInt16(std::uint16_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readUInt16(std::uint16_t* value) = 0;
 
-        virtual InputStream& readInt16(std::int16_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readInt16(std::int16_t* value) = 0;
 
-        virtual InputStream& readUInt32(std::uint32_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readUInt32(std::uint32_t* value) = 0;
 
-        virtual InputStream& readInt32(std::int32_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readInt32(std::int32_t* value) = 0;
 
-        virtual InputStream& readUInt64(std::uint64_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readUInt64(std::uint64_t* value) = 0;
 
-        virtual InputStream& readInt64(int64_t* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readInt64(int64_t* value) = 0;
 
-        virtual InputStream& readBool(bool* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readBool(bool* value) = 0;
 
-        virtual InputStream& readFloat(float* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readFloat(float* value) = 0;
 
-        virtual InputStream& readDouble(double* value)
-        {
-            return read(value);
-        }
+        virtual InputStream& readDouble(double* value) = 0;
 
-        virtual InputStream& read(Lua& lua, dagbase::Variant* value)
-        {
-            return *this;
-        }
+        virtual InputStream& read(Lua& lua, dagbase::Variant* value) = 0;
 
-        virtual InputStream& readFooter()
-        {
-            // Do nothing.
-            return *this;
-        }
+        virtual InputStream& readFooter() = 0;
     private:
         using PtrArray = std::vector<Ref>;
         PtrArray _ptrLookup;

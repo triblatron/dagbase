@@ -15,6 +15,10 @@
 #include "io/Stream.h"
 #include "io/TextFormat.h"
 #include "io/FormatAgnosticInputStream.h"
+#include "io/BinaryOutputStream.h"
+#include "io/TextOutputStream.h"
+#include "io/BinaryInputStream.h"
+#include "io/TextInputStream.h"
 #include "TestObject.h"
 
 class StreamFormat_testUInt32 : public ::testing::TestWithParam<std::tuple<std::string_view, std::uint32_t>>
@@ -380,56 +384,64 @@ class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std:
 TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
 {
     std::string formatClass = std::get<0>(GetParam());
-    dagbase::StreamFormat* format = nullptr;
     dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    dagbase::OutputStream* sut = nullptr;
+    dagbase::InputStream* istr = nullptr;
     if (formatClass == "TextFormat")
     {
-        format = new dagbase::TextFormat(&store);
+        sut = new dagbase::TextOutputStream(&store);
     }
     else if (formatClass == "BinaryFormat")
     {
-        format = new dagbase::BinaryFormat(&store);
+        sut = new dagbase::BinaryOutputStream(&store);
     }
-    ASSERT_NE(nullptr, format);
-    dagbase::FormatAgnosticOutputStream sut(format, &store);
-    sut.setFormat(format);
-    sut.setBackingStore(&store);
+    store.setMode(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    ASSERT_NE(nullptr, sut);
     dagbase::Lua lua;
-    sut.writeUInt8(1);
-    sut.writeInt8(-1);
-    sut.writeUInt16(2);
-    sut.writeInt16(-2);
-    sut.writeUInt32(3);
-    sut.writeInt32(-3);
-    sut.writeUInt64(4);
-    sut.writeInt64(-4);
-    sut.writeFloat(1.5f);
-    sut.writeDouble(1.5);
-    format->flush();
-    dagbase::FormatAgnosticInputStream istr(format, &store);
+    sut->writeUInt8(1);
+    sut->writeInt8(-1);
+    sut->writeUInt16(2);
+    sut->writeInt16(-2);
+    sut->writeUInt32(3);
+    sut->writeInt32(-3);
+    sut->writeUInt64(4);
+    sut->writeInt64(-4);
+    sut->writeFloat(1.5f);
+    sut->writeDouble(1.5);
+    sut->flush();
+    if (formatClass == "TextFormat")
+    {
+        istr = new dagbase::TextInputStream(&store);
+    }
+    else if (formatClass == "BinaryFormat")
+    {
+        istr = new dagbase::BinaryInputStream(&store);
+    }
+    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    ASSERT_NE(nullptr, istr);
     std::uint8_t actualUint8 = 0;
-    istr.readUInt8(&actualUint8);
+    istr->readUInt8(&actualUint8);
     EXPECT_EQ(actualUint8, 1);
     std::int8_t actualInt8 = 0;
-    istr.readInt8(&actualInt8);
+    istr->readInt8(&actualInt8);
     EXPECT_EQ(actualInt8, -1);
     std::uint16_t actualUint16 = 0;
-    istr.readUInt16(&actualUint16);
+    istr->readUInt16(&actualUint16);
     EXPECT_EQ(actualUint16, 2);
     std::int16_t actualInt16 = 0;
-    istr.readInt16(&actualInt16);
+    istr->readInt16(&actualInt16);
     EXPECT_EQ(actualInt16, -2);
     std::uint32_t actualUint32 = 0;
-    istr.readUInt32(&actualUint32);
+    istr->readUInt32(&actualUint32);
     EXPECT_EQ(actualUint32, 3);
     std::int32_t actualInt32 = 0;
-    istr.readInt32(&actualInt32);
+    istr->readInt32(&actualInt32);
     EXPECT_EQ(actualInt32, -3);
     std::uint64_t actualUint64 = 0;
-    istr.readUInt64(&actualUint64);
+    istr->readUInt64(&actualUint64);
     EXPECT_EQ(actualUint64, 4);
     std::int64_t actualInt64 = 0;
-    istr.readInt64(&actualInt64);
+    istr->readInt64(&actualInt64);
     EXPECT_EQ(actualInt64, -4);
 }
 
@@ -437,3 +449,4 @@ INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testSerialisePrimitive, ::te
     std::make_tuple("TextFormat"),
     std::make_tuple("BinaryFormat")
     ));
+

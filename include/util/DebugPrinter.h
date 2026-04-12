@@ -11,6 +11,7 @@
 #include <ios>
 #include <string>
 #include <iomanip>
+#include <string_view>
 #include <vector>
 
 namespace dagbase
@@ -47,6 +48,10 @@ namespace dagbase
             return *this;
         }
         DebugPrinter& println(std::string line);
+
+        DebugPrinter& println(std::string_view line);
+
+        DebugPrinter& println(const char* line);
 
         DebugPrinter& println(const std::vector<std::uint8_t>& line);
 

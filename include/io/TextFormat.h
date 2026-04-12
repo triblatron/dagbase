@@ -85,6 +85,7 @@ namespace dagbase
 
         void debug() override;
     private:
+        //! The result of base64 encoding
         std::vector<std::uint8_t> _output;
         BackingStore* _store{nullptr};
         std::ostringstream* _ostr{nullptr};

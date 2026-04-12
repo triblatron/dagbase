@@ -319,7 +319,7 @@ namespace dagbase
     void TextFormat::writeUInt16(std::uint16_t value)
     {
         if (_printer)
-            _printer->print(int(value)).print("\n");
+            _printer->print(value).print("\n");
     }
 
     void TextFormat::readUInt16(std::uint16_t *value)

@@ -14,11 +14,11 @@ namespace dagbase
     FormatAgnosticOutputStream::FormatAgnosticOutputStream(StreamFormat* format, BackingStore* store)
         :
     _format(format),
-    _backingStore(store)
+    _store(store)
     {
-        if (_backingStore)
+        if (_store)
         {
-            _backingStore->setMode(BackingStore::MODE_OUTPUT_BIT);
+            _store->setMode(BackingStore::MODE_OUTPUT_BIT);
         }
         if (_format)
         {
@@ -171,6 +171,14 @@ namespace dagbase
     {
         if (_format)
             _format->writeField(name.data());
+
+        return *this;
+    }
+
+    OutputStream & FormatAgnosticOutputStream::flush()
+    {
+        if (_format)
+            _format->flush();
 
         return *this;
     }
