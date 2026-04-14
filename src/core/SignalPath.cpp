@@ -14,7 +14,7 @@ namespace dagbase
 {
     SignalPathID SignalPath::_nextID = 0;
 
-    dagbase::OutputStream &SignalPath::write(dagbase::OutputStream &str) const
+    dagbase::OutputStream &SignalPath::writeToStream(dagbase::OutputStream &str, NodeLibrary& nodeLib, Lua& lua) const
     {
         str.writeHeader("SignalPath");
         str.writeField("id");
@@ -22,12 +22,12 @@ namespace dagbase
         str.writeField("source");
         if (str.writeRef(_source))
         {
-            _source->write(str);
+            _source->writeToStream(str, nodeLib, lua);
         }
         str.writeField("dest");
         if (str.writeRef(_dest))
         {
-            _dest->write(str);
+            _dest->writeToStream(str, nodeLib, lua);
         }
         str.writeField("flags");
         str.writeUInt32(_flags);

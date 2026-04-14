@@ -45,7 +45,7 @@ namespace dagbase
 		virtual Node* instantiateNode(NodeID id, const std::string& className, const std::string& name) = 0;
 
         //! Write the given node to the stream.
-        virtual dagbase::OutputStream& write(dagbase::OutputStream& str, Node* node) const = 0;
+        virtual dagbase::OutputStream& write(dagbase::OutputStream& str, Node* node, Lua &lua) = 0;
 
 		virtual dagbase::Class* instantiate(const char* className, dagbase::InputStream& str, dagbase::Lua& lua) = 0;
 

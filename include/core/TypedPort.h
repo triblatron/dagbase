@@ -68,7 +68,7 @@ namespace dagbase
         	str.readFooter();
         }
 
-        dagbase::OutputStream& write(dagbase::OutputStream& str) const override
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override
         {
             std::string className;
 
@@ -93,7 +93,7 @@ namespace dagbase
         	str.writeField("className");
         	str.writeString(className, true);
         	str.writeHeader(className);
-            Port::write(str);
+            Port::writeToStream(str, nodeLib, lua);
         	str.writeField("value");
         	str.write(dagbase::ConfigurationElement::ValueType(_value));
         	str.writeFooter();

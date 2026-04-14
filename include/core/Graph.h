@@ -220,7 +220,7 @@ namespace dagbase
         void restore(dagbase::ByteBuffer* memento);
 
         //! Write this Graph to a stream.
-        dagbase::OutputStream& write(dagbase::OutputStream& str) const;
+        dagbase::OutputStream& write(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         //! Pretty-print this Graph for debugging purposes.
         void debug() const;

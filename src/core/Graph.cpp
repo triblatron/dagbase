@@ -254,7 +254,7 @@ namespace dagbase
         // Do nothing.
     }
 
-    dagbase::OutputStream& Graph::write(dagbase::OutputStream& str) const
+    dagbase::OutputStream& Graph::write(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const
     {
 	    str.writeHeader("Graph");
 	    str.writeField("numNodes");
@@ -266,7 +266,7 @@ namespace dagbase
                 std::string className = p.second->className();
                 str.writeField("className");
                 str.writeString(className, true);
-                p.second->write(str);
+                p.second->writeToStream(str, nodeLib, lua);
             }
         }
 
@@ -276,7 +276,7 @@ namespace dagbase
         {
             if (str.writeRef(p.second))
             {
-                p.second->write(str);
+                p.second->writeToStream(str, nodeLib, lua);
             }
         }
 	    str.writeField("numChildren");
@@ -285,7 +285,7 @@ namespace dagbase
         {
             if (str.writeRef(child))
             {
-                child->write(str);
+                child->write(str, nodeLib, lua);
             }
         }
 	    str.writeFooter();

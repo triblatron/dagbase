@@ -76,9 +76,10 @@ namespace dagbase
 
     }
 
-    dagbase::OutputStream &Node::write(dagbase::OutputStream &str) const
+    dagbase::OutputStream &Node::writeToStream(dagbase::OutputStream &str, NodeLibrary& nodeLib, Lua &lua) const
     {
         str.writeHeader("Node");
+        Class::writeToStream(str, nodeLib, lua);
         str.writeField("id");
         str.writeInt64(_id);
         str.writeField("name");
@@ -92,16 +93,17 @@ namespace dagbase
         return str;
     }
 
-    Node::Node(dagbase::InputStream &str, NodeLibrary& nodeLib)
+    Node::Node(dagbase::InputStream &str, NodeLibrary& nodeLib, Lua &lua)
     {
-        Node::readFromStream(str, nodeLib);
+        Node::readFromStream(str, nodeLib, lua);
     }
 
-    dagbase::InputStream& Node::readFromStream(dagbase::InputStream& str, dagbase::NodeLibrary& nodeLib)
+    dagbase::InputStream& Node::readFromStream(dagbase::InputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua)
     {
         std::string className;
         str.readHeader(&className);
         str.addObj(this);
+        Class::readFromStream(str, nodeLib, lua);
         std::string fieldName;
         str.readField(&fieldName);
         std::int64_t id{0};

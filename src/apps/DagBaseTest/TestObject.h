@@ -18,26 +18,28 @@ struct TestObject : public dagbase::Class
         return "TestObject";
     }
 
-    void writeToStream(dagbase::OutputStream& format) const override
+    dagbase::OutputStream& writeToStream(dagbase::OutputStream& format, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override
     {
         format.writeHeader("TestObject");
-        Class::writeToStream(format);
+        Class::writeToStream(format, nodeLib, lua);
         format.writeField("value");// << value << " }\n";
         format.writeUInt32(value);
         format.writeFooter();
+
+        return format;
     }
 
-    void readFromStream(dagbase::InputStream& format) override
+    dagbase::InputStream& readFromStream(dagbase::InputStream& format, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) override
     {
         std::string className;
         format.readHeader(&className);
         if (className != "TestObject")
-            return;
-        Class::readFromStream(format);
+            return format;
+        Class::readFromStream(format, nodeLib, lua);
         std::string fieldName;
         format.readField(&fieldName);
         if (fieldName != "value")
-            return;
+            return format;
         format.readUInt32(&value);
         format.readFooter();
         // std::string className;

@@ -315,7 +315,7 @@ namespace dagbase
 
         virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
 
-        virtual dagbase::OutputStream& write(dagbase::OutputStream& str) const;
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         [[nodiscard]]virtual bool equals(const Port& other) const
         {

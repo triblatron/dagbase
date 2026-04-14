@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "core/NodeLibrary.h"
 #include "io/OutputStream.h"
 
 namespace dagbase
@@ -45,23 +46,25 @@ namespace dagbase
             return {};
     }
 
-    void Class::writeToStream(OutputStream& format) const
+    OutputStream& Class::writeToStream(OutputStream& format, NodeLibrary& nodeLib, Lua& lua) const
     {
         // str << "Class { errod: " << _errod << " }";
         format.writeHeader("Class");
         format.writeField("errod");
         format.writeUInt32(_errod);
         format.writeFooter();
+
+        return format;
     }
 
-    void Class::readFromStream(InputStream& format)
+    InputStream& Class::readFromStream(InputStream& format, NodeLibrary& nodeLib, Lua& lua)
     {
 
         std::string className;
         format.readHeader(&className);
 
         if (className!="Class")
-            return;
+            return format;
         // char temp;
         // str >> temp;
         // if (temp!='{')
@@ -70,7 +73,7 @@ namespace dagbase
         format.readField(&fieldName);
         // str >> fieldName;
         if (fieldName!="errod")
-            return;
+            return format;
         std::uint32_t errod;
         // str >> errod;
         format.readUInt32(&errod);
@@ -80,6 +83,8 @@ namespace dagbase
         // if (temp!='}')
         //     return;
         format.readFooter();
+
+        return format;
     }
 
     // void Class::setField( size_t index, lua_Integer value )

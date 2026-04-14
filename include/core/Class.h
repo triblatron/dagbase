@@ -14,6 +14,7 @@ namespace dagbase
     class InputStream;
     class Lua;
     class MetaClass;
+    class NodeLibrary;
     class OutputStream;
 
     //! Base class for classes that have fields and operations.
@@ -46,9 +47,9 @@ namespace dagbase
 
         std::string errorMessage() const;
 
-        virtual void writeToStream(OutputStream& str) const;
+        virtual OutputStream& writeToStream(OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
-        virtual void readFromStream(InputStream& str);
+        virtual InputStream& readFromStream(InputStream& str, NodeLibrary& nodeLib, Lua& lua);
     private:
         MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };

@@ -33,7 +33,7 @@ namespace dagbase
 
 		explicit Node(KeyGenerator& keyGen, std::string name, NodeCategory::Category category=NodeCategory::CAT_NONE);
 
-        explicit Node(dagbase::InputStream& str, NodeLibrary& nodeLib);
+        explicit Node(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
 
 		Node(const Node& other, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -45,7 +45,7 @@ namespace dagbase
 
 		Node& operator=(Node&&) = default;
 
-		dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib);
+		dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua) override;
 
         //! Compare for equality with another Node.
         //! \note Typically downcasts to a concrete type to determine a result.
@@ -75,7 +75,10 @@ namespace dagbase
 
         //! Write ourself to a binary output stream
         //! \param[in] str The stream
-        virtual dagbase::OutputStream& write(dagbase::OutputStream& str) const = 0;
+	    //! \param[in] nodeLib : NodeLibrary The library from which the node came
+	    //! \param[in] lua : Lua The Lua interpreter in case there are Ports which have Lua functions as values
+        //! \param lua
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;
 
         //! \return The total number of Ports in this Node, including intrinsic/static and dynamic/extrinsic Ports.
         [[nodiscard]]virtual size_t totalPorts() const

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../../../../include/config/Export.h"
+#include "config/DagBaseExport.h"
 
 #include "core/Types.h"
 #include "core/Port.h"
@@ -17,7 +17,7 @@ namespace dagbase
     class NodeLibrary;
     class OutputStream;
 
-    class DAG_API SignalPath
+    class DAGBASE_API SignalPath
     {
     public:
         enum Flags : std::uint32_t
@@ -100,7 +100,7 @@ namespace dagbase
 
         std::ostream& toLua(std::ostream& str);
 
-        dagbase::OutputStream& write(dagbase::OutputStream& str) const;
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
     private:
         SignalPathID _id;
         Port* _source{nullptr};
