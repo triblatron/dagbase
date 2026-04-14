@@ -60,6 +60,8 @@ struct TestObject : public dagbase::Class
         // str >> temp;
         // if (temp!='}')
         //     return;
+
+        return format;
     }
 };
 
