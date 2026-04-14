@@ -42,24 +42,6 @@ struct TestObject : public dagbase::Class
             return format;
         format.readUInt32(&value);
         format.readFooter();
-        // std::string className;
-        //
-        // str >> className;
-        // if (className!="TestObject")
-        //     return;
-        // char temp;
-        // str >> temp;
-        // if (temp!='{')
-        //     return;
-        // Class::readFromStream(str);
-        // std::string fieldName;
-        // str >> fieldName;
-        // if (fieldName!="value:")
-        //     return;
-        // str >> value;
-        // str >> temp;
-        // if (temp!='}')
-        //     return;
 
         return format;
     }
