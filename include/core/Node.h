@@ -39,7 +39,7 @@ namespace dagbase
 
 		Node(Node&&) = default;
 
-		virtual ~Node() = default;
+        ~Node() override = default;
 
 		Node& operator=(const Node&) = default;
 
@@ -52,7 +52,8 @@ namespace dagbase
         [[nodiscard]]virtual bool equals(const Node& other) const = 0;
 
         //! Describe ourself
-        virtual void describe(NodeDescriptor& descriptor) const = 0;
+	    //! \note This method is implemented in Node but is also abstract to force derived classes to implement it too.
+        virtual void describeNode(NodeDescriptor& descriptor) const = 0;
 
         //! \return A MetaPort corresponding to a given index.
         //! \param[in] index The index of the port, zero-based.

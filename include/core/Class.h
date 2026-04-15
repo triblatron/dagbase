@@ -28,12 +28,14 @@ namespace dagbase
         };
     public:
         Class() = default;
+
         explicit Class(dagbase::MetaClass* metaClass)
             :
         _metaClass(metaClass)
         {
             // Do nothing.
         }
+
         virtual ~Class();
 
         virtual const char* className() const

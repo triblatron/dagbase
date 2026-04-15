@@ -3,6 +3,7 @@
 #include "config/DagBaseExport.h"
 
 #include "NodeCategory.h"
+#include "MetaPort.h"
 
 #include <cstdint>
 #include <string>

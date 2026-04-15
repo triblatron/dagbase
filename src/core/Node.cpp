@@ -38,7 +38,7 @@ namespace dagbase
     }
 
     //! Include ID, name and category.
-    void Node::describe(NodeDescriptor& descriptor) const
+    void Node::describeNode(NodeDescriptor& descriptor) const
     {
         descriptor.id = _id;
         descriptor.name = _name;
