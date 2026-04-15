@@ -108,6 +108,8 @@ namespace dagbase
             case 0:
                 _foo = std::any_cast<int>(value);
                 break;
+            default:
+                break;
             }
         }
 
@@ -157,6 +159,8 @@ namespace dagbase
             {
             case 0:
                 _foo = value;
+                break;
+            default:
                 break;
             }
         }
@@ -447,8 +451,8 @@ namespace dagbase
             _dest->setValue(_source->value());
         }
     private:
-        const dagbase::VariantPort* _source;
-        dagbase::VariantPort* _dest;
+        const dagbase::VariantPort* _source{nullptr};
+        dagbase::VariantPort* _dest{nullptr};
     };
     
     class PortTransfer : public Transfer
