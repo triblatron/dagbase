@@ -51,9 +51,6 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]virtual bool equals(const Node& other) const = 0;
 
-        //! \return The name of the class without SWIG mangling
-        [[nodiscard]] virtual const char* className() const = 0;
-
         //! Describe ourself
         virtual void describe(NodeDescriptor& descriptor) const = 0;
 
