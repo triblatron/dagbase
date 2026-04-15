@@ -110,7 +110,7 @@ namespace dagbase
         //! \note Requires the NodeLibrary to read the parent.
         Port(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
 
-	    dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
+	    dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua) override;
 
 	    ~Port() override;
 
@@ -315,7 +315,7 @@ namespace dagbase
 
         virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
 
-        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const override;
 
         [[nodiscard]]virtual bool equals(const Port& other) const
         {

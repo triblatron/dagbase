@@ -7,6 +7,8 @@
 #include "core/Colour.h"
 #include "core/ConfigurationElement.h"
 #include "util/Searchable.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 
 namespace dagbase
 {
@@ -26,7 +28,28 @@ namespace dagbase
             a = float(config.child(3)->asDouble());
         }
     }
-/*
+
+    OutputStream & Colour::write(OutputStream &str) const
+    {
+        str.writeFloat(r);
+        str.writeFloat(g);
+        str.writeFloat(b);
+        str.writeFloat(a);
+
+        return str;
+    }
+
+    InputStream & Colour::read(InputStream &str)
+    {
+        str.readFloat(&r);
+        str.readFloat(&g);
+        str.readFloat(&b);
+        str.readFloat(&a);
+
+        return str;
+    }
+
+    /*
     Variant Colour::find(std::string_view path) const
     {
         Variant retval;

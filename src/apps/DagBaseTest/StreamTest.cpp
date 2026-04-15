@@ -222,7 +222,11 @@ INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing:
         std::make_tuple("TextFormat", true),
         std::make_tuple("BinaryFormat", true),
         std::make_tuple("TextFormat", "test"),
-        std::make_tuple("BinaryFormat", "test")
+        std::make_tuple("BinaryFormat", "test"),
+        std::make_tuple("TextFormat", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("BinaryFormat", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("TextFormat", dagbase::Colour{1.0f, 0.0f, 1.0f}),
+        std::make_tuple("BinaryFormat", dagbase::Colour{1.0f, 0.0f, 1.0f})
         ));
 
 class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std::tuple<const char*>>

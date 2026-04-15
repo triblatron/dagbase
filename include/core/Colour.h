@@ -14,6 +14,8 @@
 namespace dagbase
 {
     class ConfigurationElement;
+    class InputStream;
+    class OutputStream;
 
     struct DAGBASE_API Colour
     {
@@ -23,6 +25,10 @@ namespace dagbase
         float a{0.0f};
 
         void configure(ConfigurationElement& config);
+
+        OutputStream& write(OutputStream& str) const;
+
+        InputStream& read(InputStream& str);
 
         bool operator==(const Colour& other) const
         {

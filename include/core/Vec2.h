@@ -10,6 +10,9 @@
 
 namespace dagbase
 {
+    class OutputStream;
+    class InputStream;
+
     struct DAGBASE_API Vec2
     {
         float x{0.0f};
@@ -44,6 +47,10 @@ namespace dagbase
         {
             return *this > other || *this == other;
         }
+
+        OutputStream& write(OutputStream& str) const;
+
+        InputStream& read(InputStream& str);
 
         static bool parse(std::string_view str, Vec2* value);
     };

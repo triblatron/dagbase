@@ -135,6 +135,12 @@ namespace dagbase
                 case Variant::TYPE_FUNCTION:
                     std::get<TYPE_FUNCTION>(_value.value())->write(str);
                     break;
+                case Variant::TYPE_VEC2:
+                    std::get<TYPE_VEC2>(_value.value()).write(str);
+                    break;
+                case Variant::TYPE_COLOUR:
+                    std::get<TYPE_COLOUR>(_value.value()).write(str);
+                    break;
             }
 
         }
@@ -219,6 +225,20 @@ namespace dagbase
                 {
                     _value = new Function(str, lua);
                     _own = true;
+                    break;
+                }
+                case Variant::TYPE_VEC2:
+                {
+                    Vec2 value;
+                    value.read(str);
+                    _value = value;
+                    break;
+                }
+                case Variant::TYPE_COLOUR:
+                {
+                    Colour value;
+                    value.read(str);
+                    _value = value;
                     break;
                 }
                 default:

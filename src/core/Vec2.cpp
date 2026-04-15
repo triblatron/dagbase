@@ -5,6 +5,9 @@
 #include "config/config.h"
 
 #include "core/Vec2.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
+
 #include <sstream>
 
 namespace dagbase
@@ -12,6 +15,22 @@ namespace dagbase
     std::string to_string(const Vec2& vec)
     {
         return "Vec2 { " + std::to_string(vec.x) + ", " + std::to_string(vec.y) + " }";
+    }
+
+    OutputStream & Vec2::write(OutputStream &str) const
+    {
+        str.writeFloat(x);
+        str.writeFloat(y);
+
+        return str;
+    }
+
+    InputStream & Vec2::read(InputStream &str)
+    {
+        str.readFloat(&x);
+        str.readFloat(&y);
+
+        return str;
     }
 
     bool Vec2::parse(std::string_view str, Vec2* value)

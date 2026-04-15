@@ -9,7 +9,7 @@
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
 
-struct TestObject : public dagbase::Class
+struct TestObject : dagbase::Class
 {
     std::uint32_t value{0};
 
