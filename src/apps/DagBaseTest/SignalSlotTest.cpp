@@ -11,6 +11,10 @@
 #include <sstream>
 
 #include "TestObject.h"
+#include "config/macos_config.h"
+#include "core/MetaClass.h"
+#include "core/ClassDescription.h"
+#include "util/VectorMap.h"
 
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
@@ -286,3 +290,166 @@ TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
     }
     EXPECT_EQ(0, publisher.testSignal.numConnected());
 }
+
+struct Type;
+
+struct Field
+{
+    Type* type{nullptr};
+};
+
+struct Method
+{
+    std::uint32_t arity{0};
+    Type* returnType{nullptr};
+    std::vector<Type> arguments;
+};
+
+struct Member
+{
+    dagbase::Atom name;
+    std::variant<Field, Method> data;
+};
+
+struct Type
+{
+    std::vector<Member> members;
+    std::size_t size{0};
+};
+
+class TypeRegistry
+{
+public:
+    ~TypeRegistry() = default;
+
+    static TypeRegistry& getTypeRegistry()
+    {
+        static TypeRegistry registry;
+
+        return registry;
+    }
+
+    void registerType(dagbase::Atom name, Type* type);
+
+    void unregisterType(dagbase::Atom name);
+
+    Type* findType(dagbase::Atom name);
+private:
+    dagbase::VectorMap<dagbase::Atom, Type*> _types;
+};
+
+template<typename T>
+struct MetaClassRegistration
+{
+    MetaClassRegistration();
+    ~MetaClassRegistration();
+};
+
+class TestEmitter
+{
+public:
+    ~TestEmitter() = default;
+
+    void describe(dagbase::ClassDescription& description) const
+    {
+        description.addInt32(dagbase::Atom::intern("test"));
+    }
+
+    void setTest(std::int32_t value)
+    {
+        if (_test!=value)
+        {
+            _test = value;
+            // Emit a changed signal
+        }
+    }
+
+    std::int32_t value() const
+    {
+        return _test;
+    }
+
+    static MetaClassRegistration<TestEmitter> registration;
+private:
+    std::int32_t _test{0};
+};
+
+struct Int32
+{
+    static Type& getType();
+};
+
+
+Type& Int32::getType()
+{
+    static Type type{{}, sizeof(std::int32_t)};
+
+    return type;
+}
+
+template<>
+MetaClassRegistration<Int32>::MetaClassRegistration()
+{
+    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("int32"), &Int32::getType());
+}
+
+template<>
+MetaClassRegistration<TestEmitter>::MetaClassRegistration()
+{
+    static Type type{};
+    static bool inited = false;
+    if (!inited)
+    {
+        type.size = sizeof(TestEmitter);
+        Member test;
+        test.name = dagbase::Atom::intern("test");
+        test.data = Field();
+        std::get<0>(test.data).type = &Int32::getType();
+        type.members.emplace_back(test);
+        TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("TestEmitter"), &type);
+        inited = true;
+    }
+}
+
+template<>
+MetaClassRegistration<TestEmitter>::~MetaClassRegistration()
+{
+    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("TestEmitter"));
+}
+
+void TypeRegistry::registerType(dagbase::Atom name, Type* type)
+{
+    _types.emplace(name, type);
+}
+
+void TypeRegistry::unregisterType(dagbase::Atom name)
+{
+    if (auto it=_types.find(name); it!=_types.end())
+        _types.erase(it);
+}
+
+Type * TypeRegistry::findType(dagbase::Atom name)
+{
+    if (auto it=_types.find(name); it!=_types.end())
+        return it->second;
+
+
+    return nullptr;
+}
+
+MetaClassRegistration<TestEmitter> registration;
+
+class TestEmitter_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
+{
+
+};
+
+TEST_P(TestEmitter_testTypeRegistration, testRegistration)
+{
+    auto name = std::get<0>(GetParam());
+    ASSERT_NE(nullptr, TypeRegistry::getTypeRegistry().findType(name));
+}
+
+INSTANTIATE_TEST_SUITE_P(TestEmitter, TestEmitter_testTypeRegistration,::testing::Values(
+    std::make_tuple(dagbase::Atom::intern("TestEmitter"))
+    ));
