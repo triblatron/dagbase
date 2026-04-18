@@ -21,14 +21,22 @@ FetchContent_MakeAvailable(
         googletest
         googlebenchmark)
 
-SET( ALL_PUBLIC_HEADERS include/core/Class.h include/core/MetaClass.h include/core/ConfigurationElement.h include/core/LuaInterface.h include/util/errod.h include/util/dbc.h include/util/Searchable.h include/util/PrettyPrinter.h
-include/core/ByteBuffer.h
-include/io/Stream.h
-include/io/InputStream.h
-include/io/OutputStream.h
+SET( ALL_PUBLIC_HEADERS 
+		include/core/Class.h 
+		include/core/MetaClass.h 
+		include/core/ConfigurationElement.h 
+		include/core/LuaInterface.h 
+		include/util/errod.h 
+		include/util/dbc.h 
+		include/util/Searchable.h 
+		include/util/PrettyPrinter.h
+		include/core/ByteBuffer.h
+		include/io/Stream.h
+		include/io/InputStream.h
+		include/io/OutputStream.h
         include/io/BackingStore.h
         include/io/MemoryBackingStore.h
-include/util/DebugPrinter.h
+		include/util/DebugPrinter.h
         include/util/SearchableMap.h
         include/core/Atom.h
         include/core/DynamicVisitor.h
@@ -73,6 +81,18 @@ include/util/DebugPrinter.h
         include/util/TypedBuffer.h
         include/io/TextOutputStream.h
         include/io/TextInputStream.h
+		include/core/Node.h 
+		include/core/MetaPort.h 
+		include/core/NodeCategory.h 
+		include/core/NodeDescriptor.h 
+		include/core/NodeLibrary.h 
+		include/core/Port.h 
+		include/core/SignalPath.h 
+		include/core/SignalPathDef.h 
+		include/core/Transfer.h 
+		include/core/TypedPort.h 
+		include/core/Types.h 
+		include/core/Value.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -123,7 +143,22 @@ src/io/OutputStream.cpp
         src/io/BinaryInputStream.cpp
         src/io/TextOutputStream.cpp
         src/io/TextInputStream.cpp
-)
+		src/core/Graph.cpp
+        src/core/KeyGenerator.cpp
+        src/core/MetaPort.cpp
+        src/core/Node.cpp
+        src/core/NodeCategory.cpp
+        src/core/NodeDescriptor.cpp
+        src/core/NodeLibrary.cpp
+        src/core/SignalPath.cpp
+        src/core/SignalPathDef.cpp
+        src/core/Transfer.cpp
+        src/core/Types.cpp
+        src/core/CloningFacility.cpp
+        src/core/Port.cpp
+		src/core/ClassDescription.cpp
+        src/core/Property.cpp
+        )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
         include/util/VectorSet.h)

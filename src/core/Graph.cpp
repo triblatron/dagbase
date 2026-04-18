@@ -5,11 +5,10 @@
 #include "io/InputStream.h"
 #include "core/Node.h"
 #include "core/SignalPath.h"
-#include "SelectionInterface.h"
 #include "io/OutputStream.h"
 #include "util/DebugPrinter.h"
 #include "core/LuaInterface.h"
-#include "../../include/core/TypedPort.h"
+#include "core/TypedPort.h"
 #include "core/Types.h"
 #include "core/CloningFacility.h"
 
