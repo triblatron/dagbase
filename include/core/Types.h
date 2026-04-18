@@ -7,6 +7,8 @@
 #include "config/DagBaseExport.h"
 
 #include <unordered_set>
+#include <cstdint>
+#include <string>
 
 namespace dagbase
 {
@@ -79,10 +81,10 @@ namespace dagbase
 //! This ensures type safety because IDs will have different types.
 //! They therefore cannot be mixed.
 #define INF_ID_DECLARE(Name) \
-    class Name              \
+    class Name               \
     {                        \
     public:                  \
-        enum : int64_t       \
+        enum                 \
         {                    \
             INVALID_ID = -1  \
         };                   \

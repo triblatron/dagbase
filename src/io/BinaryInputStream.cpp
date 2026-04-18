@@ -5,6 +5,9 @@
 #include "config/config.h"
 
 #include "io/BinaryInputStream.h"
+
+#include <cstring>
+
 #include "io/BackingStore.h"
 #include "util/TypedBuffer.h"
 

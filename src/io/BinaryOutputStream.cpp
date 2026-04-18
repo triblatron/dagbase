@@ -3,6 +3,9 @@
 //
 
 #include "io/BinaryOutputStream.h"
+
+#include <cstring>
+
 #include "io/BackingStore.h"
 #include "util/TypedBuffer.h"
 
