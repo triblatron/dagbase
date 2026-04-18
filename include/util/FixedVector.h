@@ -4,8 +4,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <utility>
-#include <cstdlib>
+#include <cstdint>
 
 namespace dagbase
 {

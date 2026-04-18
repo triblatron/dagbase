@@ -7,6 +7,8 @@
 #include "config/DagBaseExport.h"
 
 #include <unordered_set>
+#include <cstdint>
+#include <string>
 
 namespace dagbase
 {
@@ -82,7 +84,7 @@ namespace dagbase
     class Name              \
     {                        \
     public:                  \
-        enum : int64_t       \
+        enum                 \
         {                    \
             INVALID_ID = -1  \
         };                   \
