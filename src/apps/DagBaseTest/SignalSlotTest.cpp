@@ -315,6 +315,7 @@ struct Type
 {
     std::vector<Member> members;
     std::size_t size{0};
+    bool complete{false};
 };
 
 class TypeRegistry
@@ -382,7 +383,7 @@ struct Int32
 
 Type& Int32::getType()
 {
-    static Type type{{}, sizeof(std::int32_t)};
+    static Type type{{}, sizeof(std::int32_t), true};
 
     return type;
 }
@@ -400,12 +401,14 @@ MetaClassRegistration<TestEmitter>::MetaClassRegistration()
     static bool inited = false;
     if (!inited)
     {
+        std::cout << "MetaClassRegistration<TestEmitter>::MetaClassRegistration()" << std::endl;
         type.size = sizeof(TestEmitter);
         Member test;
         test.name = dagbase::Atom::intern("test");
         test.data = Field();
         std::get<0>(test.data).type = &Int32::getType();
         type.members.emplace_back(test);
+        type.complete = true;
         TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("TestEmitter"), &type);
         inited = true;
     }
@@ -414,12 +417,13 @@ MetaClassRegistration<TestEmitter>::MetaClassRegistration()
 template<>
 MetaClassRegistration<TestEmitter>::~MetaClassRegistration()
 {
+    std::cout << "MetaClassRegistration<TestEmitter>::~MetaClassRegistration()" << std::endl;
     TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("TestEmitter"));
 }
 
 void TypeRegistry::registerType(dagbase::Atom name, Type* type)
 {
-    _types.emplace(name, type);
+    _types.insert(dagbase::VectorMap<dagbase::Atom, Type*>::value_type(name, type));
 }
 
 void TypeRegistry::unregisterType(dagbase::Atom name)
@@ -433,23 +437,78 @@ Type * TypeRegistry::findType(dagbase::Atom name)
     if (auto it=_types.find(name); it!=_types.end())
         return it->second;
 
-
     return nullptr;
 }
 
 MetaClassRegistration<TestEmitter> registration;
 
-class TestEmitter_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
+class B;
+
+class A
+{
+public:
+    A() = default;
+
+    static MetaClassRegistration<A> registration;
+private:
+    A* _parent{nullptr};
+};
+
+
+template<>
+MetaClassRegistration<A>::MetaClassRegistration()
+{
+    static Type type{};
+    static bool inited = false;
+    if (!inited)
+    {
+        std::cout << "MetaClassRegistration<A> registering" << std::endl;
+        type.size = sizeof(A);
+        type.members.emplace_back();
+        type.members[0].name = dagbase::Atom::intern("parent");
+        type.members[0].data = Field();
+        std::get<0>(type.members[0].data).type = &type;
+        type.complete = true;
+        inited = true;
+        TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("A"), &type);
+    }
+}
+
+template<>
+MetaClassRegistration<A>::~MetaClassRegistration()
+{
+    std::cout << "MetaClassRegistration<A> unregistering" << std::endl;
+    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("A"));
+}
+
+MetaClassRegistration<A> A::registration;
+
+class B
+{
+public:
+    B() = default;
+
+    static MetaClassRegistration<B> registration;
+private:
+    A* _a{nullptr};
+};
+
+
+class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
 {
 
 };
 
-TEST_P(TestEmitter_testTypeRegistration, testRegistration)
+TEST_P(TypeRegistry_testTypeRegistration, testRegistration)
 {
     auto name = std::get<0>(GetParam());
-    ASSERT_NE(nullptr, TypeRegistry::getTypeRegistry().findType(name));
+    auto actual = TypeRegistry::getTypeRegistry().findType(name);
+
+    ASSERT_NE(nullptr, actual);
+    ASSERT_TRUE(actual->complete);
 }
 
-INSTANTIATE_TEST_SUITE_P(TestEmitter, TestEmitter_testTypeRegistration,::testing::Values(
-    std::make_tuple(dagbase::Atom::intern("TestEmitter"))
+INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testing::Values(
+    std::make_tuple(dagbase::Atom::intern("TestEmitter")),
+    std::make_tuple(dagbase::Atom::intern("A"))
     ));

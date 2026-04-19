@@ -44,8 +44,8 @@ namespace dagbase
 				if (!equalKey)
 				{
 					auto d = std::distance(_map.begin(), it);
-					_map.insert(it, value);
-					return std::make_pair(_map.begin()+d, true);
+					auto itInsert = _map.insert(it, value);
+					return std::make_pair(itInsert, true);
 				}
 				else
 				{
@@ -54,9 +54,9 @@ namespace dagbase
 			}
 			else
 			{				
-				_map.insert(it, value);
+				auto itInsert = _map.insert(it, value);
 
-				return std::make_pair(_map.end() - 1, true);
+				return std::make_pair(itInsert, true);
 			}
 		}
         template<typename... Args>

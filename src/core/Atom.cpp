@@ -11,39 +11,28 @@
 
 namespace dagbase
 {
-    Atom::AtomMap Atom::_atoms;
-
     Atom& Atom::intern(const std::string& name)
     {
-        auto it = _atoms.find(name);
-        if (it == _atoms.end())
-        {
-            return _atoms[name] = Atom(strdup(name.c_str()));
-        }
-        else
-        {
-            return it->second;
-        }
+        AtomMap& atoms = getAtoms();
+        auto [it, inserted] = atoms.emplace(name, Atom{});
+        if (inserted)
+            it->second._value = &it->first;
+        return it->second;
     }
-
+/*
     Atom::Atom(const char* str)
         :
     _value(str)
     {
-        if (_value)
-        {
-            _length = std::strlen(_value);
-        }
     }
 
     Atom::Atom(const char *str, std::size_t length)
         :
-    _value(str),
-    _length(length)
+    (*_value(str)
     {
         // Do nothing.
     }
-
+*/
     Atom::~Atom()
     {
     }
@@ -52,20 +41,21 @@ namespace dagbase
     {
         if (_value)
         {
-            auto ptr = std::strchr(_value, needle);
-            return ptr?ptr - _value: npos;
+            auto pos = _value->find(needle);
+
+            return pos;
         }
 
         return npos;
     }
 
-    Atom Atom::substr(std::size_t index, std::size_t length) const
+    Atom Atom::substr(std::string::difference_type index, std::size_t length) const
     {
-        if (index<_length)
+        if (_value && std::size_t(index)<_value->length())
         {
-            const char* ptr = _value+index;
-            length = std::min(_length-index,length-index);
-            return intern(std::string(ptr, length));
+            auto it = _value->begin()+index;
+            length = std::min(_value->length()-index,length-index);
+            return intern(std::string(it, it+std::size_t(length)));
         }
 
         return {};
@@ -74,22 +64,21 @@ namespace dagbase
     void Atom::configure(ConfigurationElement &config)
     {
         auto name = config.asString();
-        auto it = _atoms.find(name);
 
-        if (it == _atoms.end())
-        {
-            _value = strdup(name.c_str());
-        }
-        else
-        {
-            _value = it->second._value;
-        }
+        intern(name);
+    }
+
+    Atom::AtomMap & Atom::getAtoms()
+    {
+        static AtomMap atoms;
+
+        return atoms;
     }
 
     std::string Atom::toString() const
     {
         if (_value)
-            return (_value);
+            return (*_value);
         else
             return {};
     }

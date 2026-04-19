@@ -198,6 +198,45 @@ INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testFind, ::testing::Values(
 	std::make_tuple("root = { elements={ {1,1}, {3,3} }, search=2 }", false)
 	));
 
+class VectorMapAtomToInt32_testFind : public ::testing::TestWithParam<std::tuple<const char*, bool>>
+{
+
+};
+
+using VectorMapAtomToInt32 = dagbase::VectorMap<dagbase::Atom, uint32_t>;
+
+TEST_P(VectorMapAtomToInt32_testFind, testFind)
+{
+    auto configStr = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromString(lua, configStr);
+    ASSERT_NE(nullptr, config);
+    auto elementsConfig= config->findElement("elements");
+    ASSERT_NE(nullptr, elementsConfig);
+    VectorMapAtomToInt32 sut;
+    elementsConfig->eachChild([&sut](auto& child)
+    {
+        if (child.numChildren() == 2)
+            sut.insert(VectorMapAtomToInt32::value_type(dagbase::Atom::intern(child.child(0)->asString()), child.child(1)->asInteger()));
+
+        return true;
+    });
+    auto searchConfig = config->findElement("search");
+    ASSERT_NE(nullptr, searchConfig);
+    auto key = dagbase::Atom::intern(searchConfig->asString());
+    auto result = std::get<1>(GetParam());
+    auto it = sut.find(key);
+    auto actualResult = it!=sut.end();
+    EXPECT_EQ(actualResult, result);
+
+}
+
+INSTANTIATE_TEST_SUITE_P(VectorMapAtomToInt32, VectorMapAtomToInt32_testFind, ::testing::Values(
+    std::make_tuple("root = { elements={ }, search=\"spoo\" }", false),
+    std::make_tuple("root = { elements={ {\"foo\", 1} }, search=\"foo\" }", true),
+    std::make_tuple("root = { elements={ {\"test\", \"TestEmitter\", 1}, {\"A\", 2 } }, search=\"A\" }", true)
+    ));
+
 class VectorMultimap_testEqualRange : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 

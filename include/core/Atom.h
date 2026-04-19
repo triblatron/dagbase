@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <cassert>
 
 namespace dagbase
 {
@@ -20,8 +21,9 @@ namespace dagbase
     class DAGBASE_API Atom
     {
     public:
-        using const_iterator = const char*;
-        static constexpr std::size_t npos = ~0U;
+        using const_iterator = std::string::const_iterator;
+        static constexpr std::size_t npos = std::string::npos;
+        using AtomMap = std::unordered_map<std::string, Atom>;
     public:
         Atom() = default;
 
@@ -29,7 +31,7 @@ namespace dagbase
 
         std::size_t find(char needle) const;
 
-        Atom substr(std::size_t index, std::size_t length=npos) const;
+        Atom substr(std::string::difference_type index, std::size_t length=npos) const;
 
         static Atom& intern(const std::string& name);
 
@@ -37,24 +39,30 @@ namespace dagbase
 
         const char* value() const
         {
-            return _value;
+            return _value->c_str();
         }
 
         std::size_t length() const
         {
-            return _length;
+            if (_value)
+                return _value->length();
+
+            return std::size_t{0};
         }
 
         bool empty() const
         {
-            return _length==0;
+            if (_value)
+                return _value->empty();
+
+            return true;
         }
 
         char operator[](std::size_t index) const
         {
-            if (_value && index<_length)
+            if (_value && index<_value->length())
             {
-                 return _value[index];
+                 return (*_value)[index];
             }
 
             return EOF;
@@ -63,7 +71,6 @@ namespace dagbase
         Atom(const Atom& other)
         {
             _value = other._value;
-            _length = other._length;
         }
 
         Atom& operator=(const Atom& rhs)
@@ -71,14 +78,13 @@ namespace dagbase
             if (this!=&rhs)
             {
                 _value = rhs._value;
-                _length = rhs._length;
             }
             return *this;
         }
 
         bool operator==(const char* other) const
         {
-            return _value && other && std::strcmp(_value, other) == 0;
+            return _value && other && (*_value) == other;
         }
 
         bool operator==(const Atom& rhs) const
@@ -93,43 +99,39 @@ namespace dagbase
 
         bool operator<(const Atom& rhs) const
         {
-            if (_value && rhs._value)
-                return std::strcmp(_value,rhs._value)<0;
-            return false;
+            return _value < rhs._value;
         }
 
         void destroy()
         {
-            if (_value)
-                std::free((void*)_value);
         }
+
+        static AtomMap& getAtoms();
 
         static void clear()
         {
-            std::for_each(_atoms.begin(), _atoms.end(), [](AtomMap::value_type& value) {
+            AtomMap& atoms = getAtoms();
+            std::for_each(atoms.begin(), atoms.end(), [](AtomMap::value_type& value) {
                value.second.destroy();
             });
-            _atoms.clear();
+            atoms.clear();
         }
 
         const_iterator begin() const
         {
-            return _value;
+            return _value->begin();
         }
 
         const_iterator end() const
         {
-            return _value+_length;
+            return _value->end();
         }
 
         std::string toString() const;
     private:
         explicit Atom(const char* str);
         explicit Atom(const char* str, std::size_t length);
-        const char* _value{nullptr};
-        std::size_t _length{0};
-        using AtomMap = std::unordered_map<std::string, Atom>;
-        static AtomMap _atoms;
+        const std::string* _value{nullptr};
     };
 }
 
