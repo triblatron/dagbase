@@ -10,32 +10,32 @@ namespace dagbase
 {
     struct Type;
 
-    struct Field
+    struct DAGBASE_API Field
     {
         Type* type{nullptr};
     };
 
-    struct Method
+    struct DAGBASE_API Method
     {
         std::uint32_t arity{0};
         Type* returnType{nullptr};
         std::vector<Type> arguments;
     };
 
-    struct Member
+    struct DAGBASE_API Member
     {
         dagbase::Atom name;
         std::variant<Field, Method> data;
     };
 
-    struct Type
+    struct DAGBASE_API Type
     {
         std::vector<Member> members;
         std::size_t size{0};
         bool complete{false};
     };
 
-    class TypeRegistry
+    class DAGBASE_API TypeRegistry
     {
     public:
         ~TypeRegistry() = default;
