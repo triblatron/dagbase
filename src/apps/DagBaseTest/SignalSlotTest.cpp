@@ -449,15 +449,30 @@ class A
 public:
     A() = default;
 
+    static Type& getType();
+
     static MetaClassRegistration<A> registration;
 private:
     A* _parent{nullptr};
 };
 
-
 template<>
 MetaClassRegistration<A>::MetaClassRegistration()
 {
+    Type& type = A::getType();
+    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("A"), &type);
+}
+
+template<>
+MetaClassRegistration<A>::~MetaClassRegistration()
+{
+    std::cout << "MetaClassRegistration<A> unregistering" << std::endl;
+    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("A"));
+}
+
+Type & A::getType()
+{
+    // Use the Meyer Singleton pattern to create a static object in a thread-safe manner.
     static Type type{};
     static bool inited = false;
     if (!inited)
@@ -470,29 +485,113 @@ MetaClassRegistration<A>::MetaClassRegistration()
         std::get<0>(type.members[0].data).type = &type;
         type.complete = true;
         inited = true;
-        TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("A"), &type);
     }
-}
 
-template<>
-MetaClassRegistration<A>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<A> unregistering" << std::endl;
-    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("A"));
+    return type;
 }
 
 MetaClassRegistration<A> A::registration;
+
+class C;
 
 class B
 {
 public:
     B() = default;
 
+    static Type& getType(bool complete=true);
     static MetaClassRegistration<B> registration;
 private:
-    A* _a{nullptr};
+    C* _c{nullptr};
 };
 
+template<>
+MetaClassRegistration<B>::MetaClassRegistration()
+{
+    Type& type = B::getType();
+    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("B"), &type);
+}
+
+template<>
+MetaClassRegistration<B>::~MetaClassRegistration()
+{
+    std::cout << "MetaClassRegistration<B> unregistering" << std::endl;
+    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("B"));
+}
+
+MetaClassRegistration<B> B::registration;
+
+class C
+{
+public:
+    C() = default;
+
+    static Type& getType(bool complete=true);
+    static MetaClassRegistration<C> registration;
+private:
+    B* _b{nullptr};
+};
+
+Type& B::getType(bool complete)
+{
+    static Type type{};
+    static bool inited = false;
+
+    if (!complete)
+        return type;
+
+    if (!inited)
+    {
+        type.size = sizeof(B);
+        type.members.emplace_back();
+        type.members[0].name = dagbase::Atom::intern("c");
+        type.members[0].data = Field();
+        std::get<0>(type.members[0].data).type = &C::getType(false);
+        type.complete = true;
+        inited = true;
+    }
+
+    return type;
+}
+
+Type & C::getType(bool complete)
+{
+    static Type type{};
+    static bool inited = false;
+
+    if (!complete)
+        return type;
+
+    if (!inited)
+    {
+        type.size = sizeof(C);
+        type.members.emplace_back();
+        type.members[0].name = dagbase::Atom::intern("b");
+        type.members[0].data = Field();
+        std::get<0>(type.members[0].data).type = &B::getType(false);
+        type.complete = true;
+        inited = true;
+    }
+
+    return type;
+}
+
+template<>
+MetaClassRegistration<C>::MetaClassRegistration()
+{
+    Type& type = C::getType();
+
+    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("C"), &type);
+}
+
+template<>
+MetaClassRegistration<C>::~MetaClassRegistration()
+{
+    std::cout << "MetaClassRegistration<C> unregistering" << std::endl;
+    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("C"));
+}
+
+MetaClassRegistration<C> C::registration;
 
 class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
 {
@@ -510,5 +609,7 @@ TEST_P(TypeRegistry_testTypeRegistration, testRegistration)
 
 INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testing::Values(
     std::make_tuple(dagbase::Atom::intern("TestEmitter")),
-    std::make_tuple(dagbase::Atom::intern("A"))
+    std::make_tuple(dagbase::Atom::intern("A")),
+    std::make_tuple(dagbase::Atom::intern("B")),
+    std::make_tuple(dagbase::Atom::intern("C"))
     ));
