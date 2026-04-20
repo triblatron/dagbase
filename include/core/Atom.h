@@ -39,7 +39,10 @@ namespace dagbase
 
         const char* value() const
         {
-            return _value->c_str();
+            if (_value)
+                return _value->c_str();
+
+            return nullptr;
         }
 
         std::size_t length() const
