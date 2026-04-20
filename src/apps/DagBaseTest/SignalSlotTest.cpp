@@ -15,6 +15,9 @@
 #include "core/MetaClass.h"
 #include "core/ClassDescription.h"
 #include "util/VectorMap.h"
+#include "A.h"
+#include "B.h"
+#include "core/TypeRegistry.h"
 
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
@@ -291,61 +294,6 @@ TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
     EXPECT_EQ(0, publisher.testSignal.numConnected());
 }
 
-struct Type;
-
-struct Field
-{
-    Type* type{nullptr};
-};
-
-struct Method
-{
-    std::uint32_t arity{0};
-    Type* returnType{nullptr};
-    std::vector<Type> arguments;
-};
-
-struct Member
-{
-    dagbase::Atom name;
-    std::variant<Field, Method> data;
-};
-
-struct Type
-{
-    std::vector<Member> members;
-    std::size_t size{0};
-    bool complete{false};
-};
-
-class TypeRegistry
-{
-public:
-    ~TypeRegistry() = default;
-
-    static TypeRegistry& getTypeRegistry()
-    {
-        static TypeRegistry registry;
-
-        return registry;
-    }
-
-    void registerType(dagbase::Atom name, Type* type);
-
-    void unregisterType(dagbase::Atom name);
-
-    Type* findType(dagbase::Atom name);
-private:
-    dagbase::VectorMap<dagbase::Atom, Type*> _types;
-};
-
-template<typename T>
-struct MetaClassRegistration
-{
-    MetaClassRegistration();
-    ~MetaClassRegistration();
-};
-
 class TestEmitter
 {
 public:
@@ -375,6 +323,9 @@ private:
     std::int32_t _test{0};
 };
 
+using dagbase::Type;
+using dagbase::TypeRegistry;
+
 struct Int32
 {
     static Type& getType();
@@ -403,9 +354,9 @@ MetaClassRegistration<TestEmitter>::MetaClassRegistration()
     {
         std::cout << "MetaClassRegistration<TestEmitter>::MetaClassRegistration()" << std::endl;
         type.size = sizeof(TestEmitter);
-        Member test;
+        dagbase::Member test;
         test.name = dagbase::Atom::intern("test");
-        test.data = Field();
+        test.data = dagbase::Field();
         std::get<0>(test.data).type = &Int32::getType();
         type.members.emplace_back(test);
         type.complete = true;
@@ -421,177 +372,7 @@ MetaClassRegistration<TestEmitter>::~MetaClassRegistration()
     TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("TestEmitter"));
 }
 
-void TypeRegistry::registerType(dagbase::Atom name, Type* type)
-{
-    _types.insert(dagbase::VectorMap<dagbase::Atom, Type*>::value_type(name, type));
-}
-
-void TypeRegistry::unregisterType(dagbase::Atom name)
-{
-    if (auto it=_types.find(name); it!=_types.end())
-        _types.erase(it);
-}
-
-Type * TypeRegistry::findType(dagbase::Atom name)
-{
-    if (auto it=_types.find(name); it!=_types.end())
-        return it->second;
-
-    return nullptr;
-}
-
 MetaClassRegistration<TestEmitter> registration;
-
-class B;
-
-class A
-{
-public:
-    A() = default;
-
-    static Type& getType();
-
-    static MetaClassRegistration<A> registration;
-private:
-    A* _parent{nullptr};
-};
-
-template<>
-MetaClassRegistration<A>::MetaClassRegistration()
-{
-    Type& type = A::getType();
-    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("A"), &type);
-}
-
-template<>
-MetaClassRegistration<A>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<A> unregistering" << std::endl;
-    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("A"));
-}
-
-Type & A::getType()
-{
-    // Use the Meyer Singleton pattern to create a static object in a thread-safe manner.
-    static Type type{};
-    static bool inited = false;
-    if (!inited)
-    {
-        std::cout << "MetaClassRegistration<A> registering" << std::endl;
-        type.size = sizeof(A);
-        type.members.emplace_back();
-        type.members[0].name = dagbase::Atom::intern("parent");
-        type.members[0].data = Field();
-        std::get<0>(type.members[0].data).type = &type;
-        type.complete = true;
-        inited = true;
-    }
-
-    return type;
-}
-
-MetaClassRegistration<A> A::registration;
-
-class C;
-
-class B
-{
-public:
-    B() = default;
-
-    static Type& getType(bool complete=true);
-    static MetaClassRegistration<B> registration;
-private:
-    C* _c{nullptr};
-};
-
-template<>
-MetaClassRegistration<B>::MetaClassRegistration()
-{
-    Type& type = B::getType();
-    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("B"), &type);
-}
-
-template<>
-MetaClassRegistration<B>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<B> unregistering" << std::endl;
-    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("B"));
-}
-
-MetaClassRegistration<B> B::registration;
-
-class C
-{
-public:
-    C() = default;
-
-    static Type& getType(bool complete=true);
-    static MetaClassRegistration<C> registration;
-private:
-    B* _b{nullptr};
-};
-
-Type& B::getType(bool complete)
-{
-    static Type type{};
-    static bool inited = false;
-
-    if (!complete)
-        return type;
-
-    if (!inited)
-    {
-        type.size = sizeof(B);
-        type.members.emplace_back();
-        type.members[0].name = dagbase::Atom::intern("c");
-        type.members[0].data = Field();
-        std::get<0>(type.members[0].data).type = &C::getType(false);
-        type.complete = true;
-        inited = true;
-    }
-
-    return type;
-}
-
-Type & C::getType(bool complete)
-{
-    static Type type{};
-    static bool inited = false;
-
-    if (!complete)
-        return type;
-
-    if (!inited)
-    {
-        type.size = sizeof(C);
-        type.members.emplace_back();
-        type.members[0].name = dagbase::Atom::intern("b");
-        type.members[0].data = Field();
-        std::get<0>(type.members[0].data).type = &B::getType(false);
-        type.complete = true;
-        inited = true;
-    }
-
-    return type;
-}
-
-template<>
-MetaClassRegistration<C>::MetaClassRegistration()
-{
-    Type& type = C::getType();
-
-    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("C"), &type);
-}
-
-template<>
-MetaClassRegistration<C>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<C> unregistering" << std::endl;
-    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("C"));
-}
-
-MetaClassRegistration<C> C::registration;
 
 class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
 {
