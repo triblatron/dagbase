@@ -35,6 +35,15 @@ namespace dagbase
         bool complete{false};
     };
 
+    template<typename Enum>
+    struct Enumeration : Type
+    {
+        using ToStringFunc = const char* (*)(Enum);
+        using ParseFunc = Enum(*)(const char*);
+        ToStringFunc toString{ nullptr };
+        ParseFunc parse{ nullptr };
+    };
+
     class DAGBASE_API TypeRegistry
     {
     public:

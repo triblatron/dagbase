@@ -6,18 +6,20 @@
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
 #include "core/Function.h"
+#include "util/enums.h"
 
-#include <gtest/gtest.h>
-#include <sstream>
-
-#include "TestObject.h"
 #include "config/macos_config.h"
 #include "core/MetaClass.h"
 #include "core/ClassDescription.h"
 #include "util/VectorMap.h"
+#include "core/TypeRegistry.h"
+
+#include "TestObject.h"
 #include "A.h"
 #include "B.h"
-#include "core/TypeRegistry.h"
+
+#include <gtest/gtest.h>
+#include <sstream>
 
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
@@ -294,6 +296,26 @@ TEST(SignalSlot, SignalSlot_testDisconnectOnDestroySubscriber)
     EXPECT_EQ(0, publisher.testSignal.numConnected());
 }
 
+struct TestEnum
+{
+    enum Enum : std::uint32_t
+    {
+        TEST_FOO,
+        TEST_BAR,
+        TEST_BAZ
+    };
+
+    static const char* toString(TestEnum::Enum value);
+
+    static Enum parse(const char* str);
+
+    static dagbase::Type& getType();
+
+    static dagbase::MetaClassRegistration<TestEnum> registration;
+};
+
+dagbase::MetaClassRegistration<TestEnum> TestEnum::registration(dagbase::Atom::intern("TestEnum"));
+
 class TestEmitter
 {
 public:
@@ -323,10 +345,12 @@ public:
     static dagbase::MetaClassRegistration<TestEmitter> registration;
 private:
     std::int32_t _test{0};
+    TestEnum::Enum _enum{ TestEnum::TEST_FOO };
 };
 
 using dagbase::Type;
 using dagbase::TypeRegistry;
+
 
 struct Int32
 {
@@ -343,6 +367,43 @@ Type& Int32::getType()
 
 dagbase::MetaClassRegistration<Int32> Int32::registration(dagbase::Atom::intern("int32_t"));
 
+const char* TestEnum::toString(TestEnum::Enum value)
+{
+    switch (value)
+    {
+        ENUM_NAME(TEST_FOO)
+        ENUM_NAME(TEST_BAR)
+        ENUM_NAME(TEST_BAZ)
+    }
+    return "<error>";
+}
+
+TestEnum::Enum TestEnum::parse(const char* str)
+{
+    TEST_ENUM(TEST_FOO, str);
+    TEST_ENUM(TEST_BAR, str);
+    TEST_ENUM(TEST_BAZ, str);
+
+    return TestEnum::Enum();
+}
+
+dagbase::Type& TestEnum::getType()
+{
+    static dagbase::Enumeration<TestEnum::Enum> type;
+    static bool inited = false;
+    
+    if (!inited)
+    {
+        type.size = sizeof(TestEnum::Enum);
+        type.toString = &TestEnum::toString;
+        type.parse = &TestEnum::parse;
+        type.complete = true;
+        inited = true;
+    }
+
+    return type;
+}
+
 dagbase::Type& TestEmitter::getType()
 {
     static Type type{};
@@ -355,6 +416,10 @@ dagbase::Type& TestEmitter::getType()
         test.data = dagbase::Field();
         std::get<0>(test.data).type = &Int32::getType();
         type.members.emplace_back(test);
+        dagbase::Member eNum;
+        eNum.name = dagbase::Atom::intern("enum");
+        eNum.data = dagbase::Field();
+        std::get<0>(eNum.data).type = &TestEnum::getType();
         type.complete = true;
         inited = true;
     }
@@ -383,5 +448,6 @@ INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testi
     std::make_tuple(dagbase::Atom::intern("int32_t")),
     std::make_tuple(dagbase::Atom::intern("A")),
     std::make_tuple(dagbase::Atom::intern("B")),
-    std::make_tuple(dagbase::Atom::intern("C"))
+    std::make_tuple(dagbase::Atom::intern("C")),
+    std::make_tuple(dagbase::Atom::intern("TestEnum"))
     ));
