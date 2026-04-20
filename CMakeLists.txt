@@ -93,6 +93,8 @@ SET( ALL_PUBLIC_HEADERS
 		include/core/TypedPort.h 
 		include/core/Types.h 
 		include/core/Value.h
+        include/core/TypeRegistry.h
+        include/core/MetaClassRegistration.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -158,7 +160,8 @@ src/io/OutputStream.cpp
         src/core/Port.cpp
 		src/core/ClassDescription.cpp
         src/core/Property.cpp
-        )
+        src/core/TypeRegistry.cpp
+)
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
         include/util/VectorSet.h)

@@ -318,7 +318,9 @@ public:
         return _test;
     }
 
-    static MetaClassRegistration<TestEmitter> registration;
+    static dagbase::Type& getType();
+
+    static dagbase::MetaClassRegistration<TestEmitter> registration;
 private:
     std::int32_t _test{0};
 };
@@ -329,8 +331,8 @@ using dagbase::TypeRegistry;
 struct Int32
 {
     static Type& getType();
+    static dagbase::MetaClassRegistration<Int32> registration;
 };
-
 
 Type& Int32::getType()
 {
@@ -339,20 +341,14 @@ Type& Int32::getType()
     return type;
 }
 
-template<>
-MetaClassRegistration<Int32>::MetaClassRegistration()
-{
-    TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("int32"), &Int32::getType());
-}
+dagbase::MetaClassRegistration<Int32> Int32::registration(dagbase::Atom::intern("int32_t"));
 
-template<>
-MetaClassRegistration<TestEmitter>::MetaClassRegistration()
+dagbase::Type& TestEmitter::getType()
 {
     static Type type{};
     static bool inited = false;
     if (!inited)
     {
-        std::cout << "MetaClassRegistration<TestEmitter>::MetaClassRegistration()" << std::endl;
         type.size = sizeof(TestEmitter);
         dagbase::Member test;
         test.name = dagbase::Atom::intern("test");
@@ -360,19 +356,13 @@ MetaClassRegistration<TestEmitter>::MetaClassRegistration()
         std::get<0>(test.data).type = &Int32::getType();
         type.members.emplace_back(test);
         type.complete = true;
-        TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("TestEmitter"), &type);
         inited = true;
     }
+
+    return type;
 }
 
-template<>
-MetaClassRegistration<TestEmitter>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<TestEmitter>::~MetaClassRegistration()" << std::endl;
-    TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("TestEmitter"));
-}
-
-MetaClassRegistration<TestEmitter> registration;
+dagbase::MetaClassRegistration<TestEmitter> registration(dagbase::Atom::intern("TestEmitter"));
 
 class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
 {
@@ -390,6 +380,7 @@ TEST_P(TypeRegistry_testTypeRegistration, testRegistration)
 
 INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testing::Values(
     std::make_tuple(dagbase::Atom::intern("TestEmitter")),
+    std::make_tuple(dagbase::Atom::intern("int32_t")),
     std::make_tuple(dagbase::Atom::intern("A")),
     std::make_tuple(dagbase::Atom::intern("B")),
     std::make_tuple(dagbase::Atom::intern("C"))

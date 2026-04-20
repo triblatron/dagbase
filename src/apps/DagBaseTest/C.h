@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/TypeRegistry.h"
-#include "MetaClassRegistration.h"
+#include "../../../include/core/MetaClassRegistration.h"
 
 class B;
 
@@ -15,7 +15,7 @@ public:
     C() = default;
 
     static dagbase::Type& getType(bool complete=true);
-    static MetaClassRegistration<C> registration;
+    static dagbase::MetaClassRegistration<C> registration;
 private:
     B* _b{nullptr};
 };

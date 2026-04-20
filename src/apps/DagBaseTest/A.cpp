@@ -24,4 +24,4 @@ dagbase::Type & A::getType()
     return type;
 }
 
-MetaClassRegistration<A> A::registration;
+dagbase::MetaClassRegistration<A> A::registration(dagbase::Atom::intern("A"));

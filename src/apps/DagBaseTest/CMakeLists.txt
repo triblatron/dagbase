@@ -24,7 +24,6 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         FixedVectorTest.cpp
         B.h
         B.cpp
-        MetaClassRegistration.h
         A.h
         A.cpp
         C.h

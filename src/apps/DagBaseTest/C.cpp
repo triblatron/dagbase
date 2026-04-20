@@ -27,19 +27,4 @@ dagbase::Type & C::getType(bool complete)
     return type;
 }
 
-template<>
-MetaClassRegistration<C>::MetaClassRegistration()
-{
-    dagbase::Type& type = C::getType();
-
-    dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("C"), &type);
-}
-
-template<>
-MetaClassRegistration<C>::~MetaClassRegistration()
-{
-    std::cout << "MetaClassRegistration<C> unregistering" << std::endl;
-    dagbase::TypeRegistry::getTypeRegistry().unregisterType(dagbase::Atom::intern("C"));
-}
-
-MetaClassRegistration<C> C::registration;
+dagbase::MetaClassRegistration<C> C::registration(dagbase::Atom::intern("C"));
