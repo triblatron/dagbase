@@ -20,6 +20,7 @@
 
 #include <gtest/gtest.h>
 #include <sstream>
+#include <cstdint>
 
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
@@ -351,21 +352,20 @@ private:
 using dagbase::Type;
 using dagbase::TypeRegistry;
 
-
-struct Int32
-{
-    static Type& getType();
-    static dagbase::MetaClassRegistration<Int32> registration;
-};
-
-Type& Int32::getType()
-{
-    static Type type{{}, sizeof(std::int32_t), true};
-
-    return type;
-}
-
-dagbase::MetaClassRegistration<Int32> Int32::registration(dagbase::Atom::intern("int32_t"));
+// struct Int32
+// {
+//     static Type& getType();
+//     static dagbase::MetaClassRegistration<Int32> registration;
+// };
+//
+// Type& Int32::getType()
+// {
+//     static Type type{{}, sizeof(std::int32_t), true};
+//
+//     return type;
+// }
+//
+// dagbase::MetaClassRegistration<Int32> Int32::registration(dagbase::Atom::intern("int32_t"));
 
 const char* TestEnum::toString(TestEnum::Enum value)
 {
@@ -414,7 +414,7 @@ dagbase::Type& TestEmitter::getType()
         dagbase::Member test;
         test.name = dagbase::Atom::intern("test");
         test.data = dagbase::Field();
-        std::get<0>(test.data).type = &Int32::getType();
+        std::get<0>(test.data).type = TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32"));
         type.members.emplace_back(test);
         dagbase::Member eNum;
         eNum.name = dagbase::Atom::intern("enum");
@@ -445,7 +445,7 @@ TEST_P(TypeRegistry_testTypeRegistration, testRegistration)
 
 INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testing::Values(
     std::make_tuple(dagbase::Atom::intern("TestEmitter")),
-    std::make_tuple(dagbase::Atom::intern("int32_t")),
+    std::make_tuple(dagbase::Atom::intern("Int32")),
     std::make_tuple(dagbase::Atom::intern("A")),
     std::make_tuple(dagbase::Atom::intern("B")),
     std::make_tuple(dagbase::Atom::intern("C")),

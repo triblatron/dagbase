@@ -44,6 +44,22 @@ namespace dagbase
         ParseFunc parse{ nullptr };
     };
 
+#define DAGBASE_REGISTER_PRIMITIVE(name, primitive)                                                 \
+    struct name                                                                                     \
+    {                                                                                               \
+        static Type& getType();                                                                     \
+        static dagbase::MetaClassRegistration<name> registration;                                   \
+    };                                                                                              \
+    Type& name::getType()                                                                           \
+    {                                                                                               \
+        static Type type;                                                                           \
+        type.size = sizeof(primitive);                                                              \
+        type.complete = true;                                                                       \
+        return type;                                                                                \
+    }                                                                                               \
+    dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
+
+
     class DAGBASE_API TypeRegistry
     {
     public:
