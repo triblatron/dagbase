@@ -45,33 +45,35 @@ namespace dagbase
     };
 
 #define DAGBASE_REGISTER_PRIMITIVE(name, primitive)                                                 \
-    struct name                                                                                     \
-    {                                                                                               \
-        static Type& getType();                                                                     \
-        static dagbase::MetaClassRegistration<name> registration;                                   \
-    };                                                                                              \
-    Type& name::getType()                                                                           \
-    {                                                                                               \
-        static Type type;                                                                           \
-        type.size = sizeof(primitive);                                                              \
-        type.complete = true;                                                                       \
-        return type;                                                                                \
-    }                                                                                               \
-    dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
+struct name                                                                                         \
+{                                                                                                   \
+static Type& getType();                                                                             \
+static dagbase::MetaClassRegistration<name> registration;                                           \
+};                                                                                                  \
+Type& name::getType()                                                                               \
+{                                                                                                   \
+static Type type;                                                                                   \
+type.size = sizeof(primitive);                                                                      \
+type.complete = true;                                                                               \
+return type;                                                                                        \
+}                                                                                                   \
+dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
 
 #define DAGBASE_BEGIN_COMPOUND(name)                                                                \
-    static Type type{};                                                                             \
-    static bool inited{false};                                                                      \
-    if (!inited)                                                                                    \
-    {                                                                                               \
-        type.size = sizeof(name);
+static Type type{};                                                                                 \
+static bool inited{false};                                                                          \
+if (!inited)                                                                                        \
+{                                                                                                   \
+type.size = sizeof(name);
 
 #define DAGBASE_ADD_FIELD(memberName, typeName)                                                     \
-        dagbase::Member memberName;                                                                 \
-        memberName.name = dagbase::Atom::intern(#memberName);                                       \
-        memberName.data = dagbase::Field();                                                         \
-        std::get<0>(memberName.data).type = typeName;                                               \
-        type.members.emplace_back(memberName);
+{                                                                                                   \
+    dagbase::Member member;                                                                         \
+    member.name = dagbase::Atom::intern(#memberName);                                               \
+    member.data = dagbase::Field();                                                                 \
+    std::get<0>(member.data).type = typeName;                                                       \
+    type.members.emplace_back(member);                                                              \
+}
 
 #define DAGBASE_END_COMPOUND(memberName)                                                            \
         type.complete = true;                                                                       \

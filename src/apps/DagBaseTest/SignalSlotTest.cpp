@@ -352,21 +352,6 @@ private:
 using dagbase::Type;
 using dagbase::TypeRegistry;
 
-// struct Int32
-// {
-//     static Type& getType();
-//     static dagbase::MetaClassRegistration<Int32> registration;
-// };
-//
-// Type& Int32::getType()
-// {
-//     static Type type{{}, sizeof(std::int32_t), true};
-//
-//     return type;
-// }
-//
-// dagbase::MetaClassRegistration<Int32> Int32::registration(dagbase::Atom::intern("int32_t"));
-
 const char* TestEnum::toString(TestEnum::Enum value)
 {
     switch (value)
@@ -407,25 +392,9 @@ dagbase::Type& TestEnum::getType()
 dagbase::Type& TestEmitter::getType()
 {
     DAGBASE_BEGIN_COMPOUND(TestEmitter)
-    // static Type type{};
-    // static bool inited = false;
-    // if (!inited)
-    // {
-    //     type.size = sizeof(TestEmitter);
     DAGBASE_ADD_FIELD(test, TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32")))
-        // dagbase::Member test;
-        // test.name = dagbase::Atom::intern("test");
-        // test.data = dagbase::Field();
-        // std::get<0>(test.data).type = TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32"));
-        type.members.emplace_back(test);
-        dagbase::Member eNum;
-        eNum.name = dagbase::Atom::intern("enum");
-        eNum.data = dagbase::Field();
-        std::get<0>(eNum.data).type = &TestEnum::getType();
+    DAGBASE_ADD_FIELD(anEnum, &TestEnum::getType())
     DAGBASE_END_COMPOUND(TestEmitter)
-    //     type.complete = true;
-    //     inited = true;
-    // }
 
     return type;
 }
