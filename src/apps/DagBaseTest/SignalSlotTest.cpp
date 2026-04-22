@@ -406,23 +406,26 @@ dagbase::Type& TestEnum::getType()
 
 dagbase::Type& TestEmitter::getType()
 {
-    static Type type{};
-    static bool inited = false;
-    if (!inited)
-    {
-        type.size = sizeof(TestEmitter);
-        dagbase::Member test;
-        test.name = dagbase::Atom::intern("test");
-        test.data = dagbase::Field();
-        std::get<0>(test.data).type = TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32"));
+    DAGBASE_BEGIN_COMPOUND(TestEmitter)
+    // static Type type{};
+    // static bool inited = false;
+    // if (!inited)
+    // {
+    //     type.size = sizeof(TestEmitter);
+    DAGBASE_ADD_FIELD(test, TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32")))
+        // dagbase::Member test;
+        // test.name = dagbase::Atom::intern("test");
+        // test.data = dagbase::Field();
+        // std::get<0>(test.data).type = TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32"));
         type.members.emplace_back(test);
         dagbase::Member eNum;
         eNum.name = dagbase::Atom::intern("enum");
         eNum.data = dagbase::Field();
         std::get<0>(eNum.data).type = &TestEnum::getType();
-        type.complete = true;
-        inited = true;
-    }
+    DAGBASE_END_COMPOUND(TestEmitter)
+    //     type.complete = true;
+    //     inited = true;
+    // }
 
     return type;
 }

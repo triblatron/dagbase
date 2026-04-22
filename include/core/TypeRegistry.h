@@ -59,6 +59,25 @@ namespace dagbase
     }                                                                                               \
     dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
 
+#define DAGBASE_BEGIN_COMPOUND(name)                                                                \
+    static Type type{};                                                                             \
+    static bool inited{false};                                                                      \
+    if (!inited)                                                                                    \
+    {                                                                                               \
+        type.size = sizeof(name);
+
+#define DAGBASE_ADD_FIELD(memberName, typeName)                                                     \
+        dagbase::Member memberName;                                                                 \
+        memberName.name = dagbase::Atom::intern(#memberName);                                       \
+        memberName.data = dagbase::Field();                                                         \
+        std::get<0>(memberName.data).type = typeName;                                               \
+        type.members.emplace_back(memberName);
+
+#define DAGBASE_END_COMPOUND(memberName)                                                            \
+        type.complete = true;                                                                       \
+        inited = true;                                                                              \
+    }
+
 
     class DAGBASE_API TypeRegistry
     {
