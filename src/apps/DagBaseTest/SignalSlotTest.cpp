@@ -392,8 +392,8 @@ dagbase::Type& TestEnum::getType()
 dagbase::Type& TestEmitter::getType()
 {
     DAGBASE_BEGIN_COMPOUND(TestEmitter)
-    DAGBASE_ADD_FIELD(test, TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("Int32")))
-    DAGBASE_ADD_FIELD(anEnum, &TestEnum::getType())
+    DAGBASE_ADD_FIELD(test, dagbase::Int32)
+    DAGBASE_ADD_FIELD(anEnum, TestEnum)
     DAGBASE_END_COMPOUND(TestEmitter)
 
     return type;

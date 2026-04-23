@@ -44,20 +44,6 @@ namespace dagbase
         ParseFunc parse{ nullptr };
     };
 
-#define DAGBASE_REGISTER_PRIMITIVE(name, primitive)                                                 \
-struct name                                                                                         \
-{                                                                                                   \
-static Type& getType();                                                                             \
-static dagbase::MetaClassRegistration<name> registration;                                           \
-};                                                                                                  \
-Type& name::getType()                                                                               \
-{                                                                                                   \
-static Type type;                                                                                   \
-type.size = sizeof(primitive);                                                                      \
-type.complete = true;                                                                               \
-return type;                                                                                        \
-}                                                                                                   \
-dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
 
 #define DAGBASE_BEGIN_COMPOUND(name)                                                                \
 static Type type{};                                                                                 \
@@ -71,7 +57,7 @@ type.size = sizeof(name);
     dagbase::Member member;                                                                         \
     member.name = dagbase::Atom::intern(#memberName);                                               \
     member.data = dagbase::Field();                                                                 \
-    std::get<0>(member.data).type = typeName;                                                       \
+    std::get<0>(member.data).type = &typeName::getType();                                           \
     type.members.emplace_back(member);                                                              \
 }
 
