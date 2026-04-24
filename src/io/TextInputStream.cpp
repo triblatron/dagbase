@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 namespace dagbase
 {
