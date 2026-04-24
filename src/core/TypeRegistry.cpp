@@ -9,14 +9,6 @@
 
 namespace dagbase
 {
-    Variant Type::find(std::string_view path) const
-    {
-        Variant retval;
-
-
-        return {};
-    }
-
     void TypeRegistry::registerType(dagbase::Atom name, Type* type)
     {
         _types.insert(dagbase::VectorMap<dagbase::Atom, Type*>::value_type(name, type));
