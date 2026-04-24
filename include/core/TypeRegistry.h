@@ -5,6 +5,7 @@
 #pragma once
 
 #include "util/VectorMap.h"
+#include "util/Searchable.h"
 
 namespace dagbase
 {
@@ -33,6 +34,9 @@ namespace dagbase
         std::vector<Member> members;
         std::size_t size{0};
         bool complete{false};
+
+        virtual ~Type() = default;
+        virtual Variant find(std::string_view path) const;
     };
 
     template<typename Enum>
@@ -42,6 +46,20 @@ namespace dagbase
         using ParseFunc = Enum(*)(const char*);
         ToStringFunc toString{ nullptr };
         ParseFunc parse{ nullptr };
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            for (auto p : values)
+            {
+                retval = findEndpoint(path, p.first.toString().c_str(), Variant(std::uint32_t(p.second)));
+                if (retval.has_value())
+                    return retval;
+            }
+            return {};
+        }
+        using Values = std::vector<std::pair<dagbase::Atom, Enum>>;
+        Values values;
     };
 
 

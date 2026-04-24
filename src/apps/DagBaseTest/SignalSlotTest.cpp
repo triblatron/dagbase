@@ -22,6 +22,8 @@
 #include <sstream>
 #include <cstdint>
 
+#include "test/TestUtils.h"
+
 class SignalSlot_testInvoke : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 
@@ -382,6 +384,7 @@ dagbase::Type& TestEnum::getType()
         type.size = sizeof(TestEnum::Enum);
         type.toString = &TestEnum::toString;
         type.parse = &TestEnum::parse;
+        type.values = {{dagbase::Atom::intern("TEST_FOO"), TEST_FOO}, {dagbase::Atom::intern("TEST_BAR"), TEST_BAR}, {dagbase::Atom::intern("TEST_BAZ"), TEST_BAZ}};
         type.complete = true;
         inited = true;
     }
@@ -401,7 +404,7 @@ dagbase::Type& TestEmitter::getType()
 
 dagbase::MetaClassRegistration<TestEmitter> registration(dagbase::Atom::intern("TestEmitter"));
 
-class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom>>
+class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::tuple<dagbase::Atom, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
 {
 
 };
@@ -409,17 +412,28 @@ class TypeRegistry_testTypeRegistration : public ::testing::TestWithParam<std::t
 TEST_P(TypeRegistry_testTypeRegistration, testRegistration)
 {
     auto name = std::get<0>(GetParam());
+    auto path = std::get<1>(GetParam());
+    auto value = std::get<2>(GetParam());
+    auto tolerance = std::get<3>(GetParam());
+    auto op = std::get<4>(GetParam());
     auto actual = TypeRegistry::getTypeRegistry().findType(name);
 
     ASSERT_NE(nullptr, actual);
     ASSERT_TRUE(actual->complete);
+
+    auto actualValue = actual->find(path);
+    if (!actualValue.has_value())
+        actualValue = dagbase::findEndpoint(path, "name", dagbase::Variant(name.toString()));
+    assertComparison(value, actualValue, tolerance, op);
+
 }
 
 INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testing::Values(
-    std::make_tuple(dagbase::Atom::intern("TestEmitter")),
-    std::make_tuple(dagbase::Atom::intern("Int32")),
-    std::make_tuple(dagbase::Atom::intern("A")),
-    std::make_tuple(dagbase::Atom::intern("B")),
-    std::make_tuple(dagbase::Atom::intern("C")),
-    std::make_tuple(dagbase::Atom::intern("TestEnum"))
+    std::make_tuple(dagbase::Atom::intern("TestEmitter"), "name", std::string("TestEmitter"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("Int32"), "name", std::string("Int32"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("A"), "name", std::string("A"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("B"), "name", std::string("B"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("C"), "name", std::string("C"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("TestEnum"), "name", std::string("TestEnum"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("TestEnum"), "TEST_FOO", TestEnum::TEST_FOO, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
