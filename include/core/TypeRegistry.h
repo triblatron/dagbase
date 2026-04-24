@@ -37,7 +37,6 @@ namespace dagbase
         std::size_t size{0};
         bool complete{false};
 
-        virtual ~Type() = default;
         Variant find(std::string_view path) const
         {
             Variant retval;
