@@ -18,7 +18,6 @@ TEST(Atom, Atom_afterInterningTwoAtomsForTheSameStringCompareEqual)
     auto & a2 = dagbase::Atom::intern(s2);
 
     EXPECT_EQ(a1, a2);
-    dagbase::Atom::clear();
 }
 
 class Atom_testFind : public ::testing::TestWithParam<std::tuple<const char*, char, std::size_t>>

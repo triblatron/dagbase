@@ -15,5 +15,4 @@ TEST(DynamicVisitor_testVisit, testExpectedCall)
     });
     obj.accept(sut);
     EXPECT_EQ(1,obj.numCalls);
-    dagbase::Atom::clear();
 }
