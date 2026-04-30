@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "TypeRegistry.h"
 #include "util/VectorMap.h"
 #include "util/Searchable.h"
 
@@ -18,15 +19,51 @@ namespace dagbase
 
     struct DAGBASE_API Method
     {
-        std::uint32_t arity{0};
         Type* returnType{nullptr};
         std::vector<Type> arguments;
+    };
+
+    using Getter = dagbase::Variant (*)(void *);
+    using Setter = void (*)(void *, dagbase::Variant);
+
+    struct DAGBASE_API Property
+    {
+        Type* type{nullptr};
+        Getter getter{nullptr};
+        Setter setter{nullptr};
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findInternal(path, "type", *type);
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
+    };
+
+    struct TypeData
+    {
+        std::variant<Field, Method, Property> value;
     };
 
     struct DAGBASE_API Member
     {
         dagbase::Atom name;
-        std::variant<Field, Method> data;
+        TypeData data;
+
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+
+            retval = findInternal(path, "prop", std::get<Property>(data.value));
+            if (retval.has_value())
+                return retval;
+
+            return {};
+        }
     };
 
     struct DAGBASE_API Type
@@ -40,6 +77,16 @@ namespace dagbase
         Variant find(std::string_view path) const
         {
             Variant retval;
+
+            for (auto member : members)
+            {
+                retval = findInternal(path, member.name.value(), member);
+                if (retval.has_value())
+                    return retval;
+            }
+            retval = findEndpoint(path, "size", std::uint32_t(size));
+            if (retval.has_value())
+                return retval;
 
             for (auto p : values)
             {
@@ -56,10 +103,10 @@ namespace dagbase
     {
         using ToStringFunc = const char* (*)(Enum);
         using ParseFunc = Enum(*)(const char*);
+        Type* base{nullptr};
         ToStringFunc toString{ nullptr };
         ParseFunc parse{ nullptr };
     };
-
 
 #define DAGBASE_BEGIN_COMPOUND(name)                                                                \
 static Type type{};                                                                                 \
@@ -72,10 +119,35 @@ type.size = sizeof(name);
 {                                                                                                   \
     dagbase::Member member;                                                                         \
     member.name = dagbase::Atom::intern(#memberName);                                               \
-    member.data = dagbase::Field();                                                                 \
-    std::get<0>(member.data).type = &typeName::getType();                                           \
+    member.data.value = dagbase::Field();                                                                 \
+    std::get<dagbase::Field>(member.data.value).type = &typeName::getType();                                           \
     type.members.emplace_back(member);                                                              \
 }
+
+#define DAGBASE_DEFINE_PROPERTY(className, typeName, propName, setPropName)                                                \
+public:                                                                                             \
+inline static dagbase::Variant propName##_get(void *obj)                                              \
+{                                                                                                   \
+    auto self = static_cast<className*>(obj);                                                  \
+                                                                                                    \
+    return dagbase::Variant(self->propName());                                                               \
+}                                                                                                   \
+                                                                                                    \
+inline static void propName##_set(void *obj, dagbase::Variant value)                                  \
+{                                                                                                   \
+    auto self = static_cast<className*>(obj);                                                 \
+                                                                                                    \
+    self->setPropName(value.typeName());                                                                       \
+}
+
+#define DAGBASE_ADD_PROPERTY(className, memberName, typeName)    \
+    dagbase::Member member;                 \
+    member.name = dagbase::Atom::intern(#memberName);                                               \
+    member.data.value = dagbase::Property();\
+    std::get<dagbase::Property>(member.data.value).type = &typeName::getType(); \
+    std::get<dagbase::Property>(member.data.value).getter = className::memberName##_get; \
+    std::get<dagbase::Property>(member.data.value).setter = className::memberName##_set; \
+    type.members.emplace_back(member);
 
 #define DAGBASE_END_COMPOUND(memberName)                                                            \
         type.complete = true;                                                                       \

@@ -18,8 +18,8 @@ dagbase::Type& B::getType(bool complete)
         type.size = sizeof(B);
         type.members.emplace_back();
         type.members[0].name = dagbase::Atom::intern("c");
-        type.members[0].data = dagbase::Field();
-        std::get<0>(type.members[0].data).type = &C::getType(false);
+        type.members[0].data.value = dagbase::Field();
+        std::get<0>(type.members[0].data.value).type = &C::getType(false);
         type.complete = true;
         inited = true;
     }

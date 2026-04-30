@@ -343,12 +343,24 @@ public:
         return _test;
     }
 
+    void setSpoo(double value)
+    {
+        _spoo = value;
+    }
+
+    double spoo() const
+    {
+        return _spoo;
+    }
+    DAGBASE_DEFINE_PROPERTY(TestEmitter, asDouble, spoo, setSpoo);
     static dagbase::Type& getType();
 
     static dagbase::MetaClassRegistration<TestEmitter> registration;
 private:
     std::int32_t _test{0};
+    double _spoo{0.0};
     TestEnum::Enum _enum{ TestEnum::TEST_FOO };
+    A* _a{nullptr};
 };
 
 using dagbase::Type;
@@ -397,6 +409,8 @@ dagbase::Type& TestEmitter::getType()
     DAGBASE_BEGIN_COMPOUND(TestEmitter)
     DAGBASE_ADD_FIELD(test, dagbase::Int32)
     DAGBASE_ADD_FIELD(anEnum, TestEnum)
+    DAGBASE_ADD_FIELD(a, A)
+    DAGBASE_ADD_PROPERTY(TestEmitter, spoo, dagbase::Double)
     DAGBASE_END_COMPOUND(TestEmitter)
 
     return type;
@@ -435,5 +449,6 @@ INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testi
     std::make_tuple(dagbase::Atom::intern("B"), "name", std::string("B"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple(dagbase::Atom::intern("C"), "name", std::string("C"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple(dagbase::Atom::intern("TestEnum"), "name", std::string("TestEnum"), 0.0, dagbase::ConfigurationElement::RELOP_EQ),
-    std::make_tuple(dagbase::Atom::intern("TestEnum"), "TEST_FOO", TestEnum::TEST_FOO, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple(dagbase::Atom::intern("TestEnum"), "TEST_FOO", TestEnum::TEST_FOO, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
+    std::make_tuple(dagbase::Atom::intern("TestEmitter"), "spoo.prop.type.size", std::uint32_t(sizeof(double)), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));

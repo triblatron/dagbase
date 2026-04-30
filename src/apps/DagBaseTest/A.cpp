@@ -15,8 +15,8 @@ dagbase::Type & A::getType()
         type.size = sizeof(A);
         type.members.emplace_back();
         type.members[0].name = dagbase::Atom::intern("parent");
-        type.members[0].data = dagbase::Field();
-        std::get<0>(type.members[0].data).type = &type;
+        type.members[0].data.value = dagbase::Field();
+        std::get<0>(type.members[0].data.value).type = &type;
         type.complete = true;
         inited = true;
     }
