@@ -452,3 +452,26 @@ INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testi
     std::make_tuple(dagbase::Atom::intern("TestEnum"), "TEST_FOO", TestEnum::TEST_FOO, 0.0, dagbase::ConfigurationElement::RELOP_EQ),
     std::make_tuple(dagbase::Atom::intern("TestEmitter"), "spoo.prop.type.size", std::uint32_t(sizeof(double)), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
+
+class Type_EnumerateProperties : public ::testing::TestWithParam<std::tuple<const char*, std::size_t>>
+{
+
+};
+
+TEST_P(Type_EnumerateProperties, testEnumerateProperties)
+{
+    auto typeName = std::get<0>(GetParam());
+    auto numProps = std::get<1>(GetParam());
+
+    auto type = dagbase::TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern(typeName));
+    ASSERT_NE(nullptr, type);
+    decltype(dagbase::Type::members)::iterator itBegin = type->members.begin(), itEnd= type->members.end();
+    auto actual = std::partition(itBegin, itEnd, [](dagbase::Member& member) {
+        return std::holds_alternative<dagbase::Property>(member.data.value);
+    });
+    EXPECT_EQ(numProps, std::distance(itBegin, actual));
+}
+
+INSTANTIATE_TEST_SUITE_P(Type, Type_EnumerateProperties, ::testing::Values(
+    std::make_tuple("TestEmitter", std::size_t(1))
+    ));
