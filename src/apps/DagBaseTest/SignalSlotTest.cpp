@@ -453,26 +453,25 @@ INSTANTIATE_TEST_SUITE_P(TypeRegistry, TypeRegistry_testTypeRegistration,::testi
     std::make_tuple(dagbase::Atom::intern("TestEmitter"), "spoo.prop.type.size", std::uint32_t(sizeof(double)), 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
 
-class Type_EnumerateProperties : public ::testing::TestWithParam<std::tuple<const char*, std::size_t>>
+class Type_Enumerate : public ::testing::TestWithParam<std::tuple<const char*, std::size_t, std::size_t>>
 {
 
 };
 
-TEST_P(Type_EnumerateProperties, testEnumerateProperties)
+TEST_P(Type_Enumerate, testEnumerate)
 {
     auto typeName = std::get<0>(GetParam());
-    auto numProps = std::get<1>(GetParam());
+    auto index = std::get<1>(GetParam());
+    auto numProps = std::get<2>(GetParam());
 
     auto type = dagbase::TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern(typeName));
     ASSERT_NE(nullptr, type);
-    auto pred = [](const dagbase::Member& op) {
-        return std::holds_alternative<dagbase::Property>(op.data.value);
-    };
-    decltype(dagbase::Type::members)::const_iterator itBegin = std::find_if(type->members.begin(), type->members.end(), pred);
-    decltype(dagbase::Type::members)::const_iterator itEnd=std::find_if_not<std::vector<dagbase::Member>::const_iterator, decltype(pred)>(itBegin, type->members.end(), pred);
-    EXPECT_EQ(numProps, std::distance(itBegin, itEnd));
+    auto actual = type->enumerate(index);
+    EXPECT_EQ(numProps, std::distance(actual.first, actual.second));
 }
 
-INSTANTIATE_TEST_SUITE_P(Type, Type_EnumerateProperties, ::testing::Values(
-    std::make_tuple("TestEmitter", std::size_t(1))
+INSTANTIATE_TEST_SUITE_P(Type, Type_Enumerate, ::testing::Values(
+    std::make_tuple("TestEmitter", 0, std::size_t(3)),
+    std::make_tuple("TestEmitter", 1, std::size_t(0)),
+    std::make_tuple("TestEmitter", 2, std::size_t(1))
     ));

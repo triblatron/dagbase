@@ -70,9 +70,21 @@ namespace dagbase
     {
         using Values = std::vector<std::pair<dagbase::Atom, std::uint32_t>>;
         Values values;
-        std::vector<Member> members;
+        using MemberArray = std::vector<Member>;
+        MemberArray members;
         std::size_t size{0};
         bool complete{false};
+
+        std::pair<decltype(members)::const_iterator, decltype(members)::const_iterator> enumerate(std::size_t index) const
+        {
+            auto pred = [index](const dagbase::Member& op) {
+                return op.data.value.index()==index;
+            };
+            decltype(dagbase::Type::members)::const_iterator itBegin = std::find_if(members.begin(), members.end(), pred);
+            decltype(dagbase::Type::members)::const_iterator itEnd=std::find_if_not<std::vector<dagbase::Member>::const_iterator, decltype(pred)>(itBegin, members.end(), pred);
+
+            return std::make_pair(itBegin, itEnd);
+        }
 
         Variant find(std::string_view path) const
         {
