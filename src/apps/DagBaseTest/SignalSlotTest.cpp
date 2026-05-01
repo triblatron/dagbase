@@ -465,11 +465,12 @@ TEST_P(Type_EnumerateProperties, testEnumerateProperties)
 
     auto type = dagbase::TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern(typeName));
     ASSERT_NE(nullptr, type);
-    decltype(dagbase::Type::members)::iterator itBegin = type->members.begin(), itEnd= type->members.end();
-    auto actual = std::partition(itBegin, itEnd, [](dagbase::Member& member) {
-        return std::holds_alternative<dagbase::Property>(member.data.value);
-    });
-    EXPECT_EQ(numProps, std::distance(itBegin, actual));
+    auto pred = [](const dagbase::Member& op) {
+        return std::holds_alternative<dagbase::Property>(op.data.value);
+    };
+    decltype(dagbase::Type::members)::const_iterator itBegin = std::find_if(type->members.begin(), type->members.end(), pred);
+    decltype(dagbase::Type::members)::const_iterator itEnd=std::find_if_not<std::vector<dagbase::Member>::const_iterator, decltype(pred)>(itBegin, type->members.end(), pred);
+    EXPECT_EQ(numProps, std::distance(itBegin, itEnd));
 }
 
 INSTANTIATE_TEST_SUITE_P(Type, Type_EnumerateProperties, ::testing::Values(

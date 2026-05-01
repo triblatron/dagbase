@@ -108,50 +108,53 @@ namespace dagbase
         ParseFunc parse{ nullptr };
     };
 
-#define DAGBASE_BEGIN_COMPOUND(name)                                                                \
-static Type type{};                                                                                 \
-static bool inited{false};                                                                          \
-if (!inited)                                                                                        \
-{                                                                                                   \
+#define DAGBASE_BEGIN_COMPOUND(name)                                                                    \
+static Type type{};                                                                                     \
+static bool inited{false};                                                                              \
+if (!inited)                                                                                            \
+{                                                                                                       \
 type.size = sizeof(name);
 
-#define DAGBASE_ADD_FIELD(memberName, typeName)                                                     \
-{                                                                                                   \
-    dagbase::Member member;                                                                         \
-    member.name = dagbase::Atom::intern(#memberName);                                               \
-    member.data.value = dagbase::Field();                                                                 \
-    std::get<dagbase::Field>(member.data.value).type = &typeName::getType();                                           \
-    type.members.emplace_back(member);                                                              \
+#define DAGBASE_ADD_FIELD(memberName, typeName)                                                         \
+{                                                                                                       \
+    dagbase::Member member;                                                                             \
+    member.name = dagbase::Atom::intern(#memberName);                                                   \
+    member.data.value = dagbase::Field();                                                               \
+    std::get<dagbase::Field>(member.data.value).type = &typeName::getType();                            \
+    type.members.emplace_back(member);                                                                  \
 }
 
-#define DAGBASE_DEFINE_PROPERTY(className, typeName, propName, setPropName)                                                \
-public:                                                                                             \
-inline static dagbase::Variant propName##_get(void *obj)                                              \
-{                                                                                                   \
-    auto self = static_cast<className*>(obj);                                                  \
-                                                                                                    \
-    return dagbase::Variant(self->propName());                                                               \
-}                                                                                                   \
-                                                                                                    \
-inline static void propName##_set(void *obj, dagbase::Variant value)                                  \
-{                                                                                                   \
-    auto self = static_cast<className*>(obj);                                                 \
-                                                                                                    \
-    self->setPropName(value.typeName());                                                                       \
+#define DAGBASE_DEFINE_PROPERTY(className, typeName, propName, setPropName)                             \
+public:                                                                                                 \
+inline static dagbase::Variant propName##_get(void *obj)                                                \
+{                                                                                                       \
+    auto self = static_cast<className*>(obj);                                                           \
+                                                                                                        \
+    return dagbase::Variant(self->propName());                                                          \
+}                                                                                                       \
+                                                                                                        \
+inline static void propName##_set(void *obj, dagbase::Variant value)                                    \
+{                                                                                                       \
+    auto self = static_cast<className*>(obj);                                                           \
+                                                                                                        \
+    self->setPropName(value.typeName());                                                                \
 }
 
-#define DAGBASE_ADD_PROPERTY(className, memberName, typeName)    \
-    dagbase::Member member;                 \
-    member.name = dagbase::Atom::intern(#memberName);                                               \
-    member.data.value = dagbase::Property();\
-    std::get<dagbase::Property>(member.data.value).type = &typeName::getType(); \
-    std::get<dagbase::Property>(member.data.value).getter = className::memberName##_get; \
-    std::get<dagbase::Property>(member.data.value).setter = className::memberName##_set; \
+#define DAGBASE_ADD_PROPERTY(className, memberName, typeName)                                           \
+    dagbase::Member member;                                                                             \
+    member.name = dagbase::Atom::intern(#memberName);                                                   \
+    member.data.value = dagbase::Property();                                                            \
+    std::get<dagbase::Property>(member.data.value).type = &typeName::getType();                         \
+    std::get<dagbase::Property>(member.data.value).getter = className::memberName##_get;                \
+    std::get<dagbase::Property>(member.data.value).setter = className::memberName##_set;                \
     type.members.emplace_back(member);
 
-#define DAGBASE_END_COMPOUND(memberName)                                                            \
-        type.complete = true;                                                                       \
-        inited = true;                                                                              \
+#define DAGBASE_END_COMPOUND(memberName)                                                                \
+    type.complete = true;                                                                               \
+        std::sort(type.members.begin(), type.members.end(), [](const dagbase::Member& op1, const dagbase::Member& op2) {  \
+            return op1.data.value.index() < op2.data.value.index();                                                       \
+        });                                                                                             \
+        inited = true;                                                                                  \
     }
 
 
