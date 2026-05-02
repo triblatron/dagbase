@@ -137,6 +137,10 @@ namespace dagbase
 		return {};
 	}
 
+    //! Look up an item in a map-like data structure
+    //! \param[in] path string_view The remaining components of the path, separated by '.'
+    //! \param[in] map : The map-like object on which to perform the lookup
+    //! \note The key of the map is typically a string
 	template<typename Map>
 	ConfigurationElement::ValueType findMap(std::string_view path, const Map& obj)
     {
@@ -155,25 +159,7 @@ namespace dagbase
     	return {};
     }
 
-    template<typename Set>
-    ConfigurationElement::ValueType findSetFromAtom(std::string_view path, const Set& obj)
-    {
-        if (!path.empty())
-        {
-            auto dotPos = path.find('.');
-            if (dotPos < path.length() - 1)
-            {
-                std::string_view key;
-                key = path.substr(0, dotPos);
-                Atom atom = Atom::intern(std::string(key));
-                if (auto it=obj.find(atom); it!=obj.end())
-                    return std::invoke(&std::remove_pointer_t<typename Set::value_type>::find, it->second, path.substr(dotPos + 1) );
-            }
-        }
-
-        return {};
-    }
-
+    //! Variation of findMap() for maps indexed by Atom
     template<typename Map>
 	ConfigurationElement::ValueType findMapFromAtom(std::string_view path, const Map& obj)
     {
@@ -193,6 +179,7 @@ namespace dagbase
     	return {};
     }
 
+    //! Variation of findMap() for maps indexed by a pair of Atom.
 	template<typename Map>
 	ConfigurationElement::ValueType findMapFromAtomPair(std::string_view path, const Map& obj)
     {
