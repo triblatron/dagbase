@@ -8,8 +8,8 @@ Supports the following functionality:
 
 * Lua interface
 * Configuration interface
-* OutputStream to serialise a Graph
-* InputStream to read previously serialised objects
+* OutputStream to serialise a Graph including Lua functions using lua_dump()
+* InputStream to read previously serialised objects including Lua functions using lua_load()
 
 ## Supported Platforms
 
@@ -26,6 +26,8 @@ Supports the following functionality:
 * Lua >= 5.4
 * googletest including googlemock
 * googlebenchmark
+
+Note that at some point cmake became more efficient at detecting dependencies so version >= 4.2 is recommended
 
 ## Building
 
