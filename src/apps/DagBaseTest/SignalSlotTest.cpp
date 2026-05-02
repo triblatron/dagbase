@@ -411,7 +411,7 @@ dagbase::Type& TestEmitter::getType()
     DAGBASE_ADD_FIELD(anEnum, TestEnum)
     DAGBASE_ADD_FIELD(a, A)
     DAGBASE_ADD_PROPERTY(TestEmitter, spoo, dagbase::Double)
-    DAGBASE_END_COMPOUND(TestEmitter)
+    DAGBASE_END_COMPOUND()
 
     return type;
 }

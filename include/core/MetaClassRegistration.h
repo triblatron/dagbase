@@ -28,20 +28,21 @@ namespace dagbase
         }
         Atom name;
     };
-#define DAGBASE_REGISTER_PRIMITIVE(name, primitive)                                                 \
-    struct name                                                                                         \
+#define DAGBASE_REGISTER_PRIMITIVE(typeName, primitive)                                                 \
+    struct typeName                                                                                     \
     {                                                                                                   \
         static Type& getType();                                                                         \
-        static dagbase::MetaClassRegistration<name> registration;                                       \
+        static dagbase::MetaClassRegistration<typeName> registration;                                   \
     };                                                                                                  \
-    inline Type& name::getType()                                                                        \
+    inline Type& typeName::getType()                                                                    \
     {                                                                                                   \
         static Type type;                                                                               \
+        type.name = dagbase::Atom::intern(#typeName);                                                   \
         type.size = sizeof(primitive);                                                                  \
         type.complete = true;                                                                           \
         return type;                                                                                    \
     }                                                                                                   \
-inline dagbase::MetaClassRegistration<name> name::registration(dagbase::Atom::intern(#name));
+    inline dagbase::MetaClassRegistration<typeName> typeName::registration(dagbase::Atom::intern(#typeName));
 
 
     DAGBASE_REGISTER_PRIMITIVE(Int8, std::int8_t)

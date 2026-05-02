@@ -46,6 +46,12 @@ namespace dagbase
 
     struct TypeData
     {
+        enum MemberType : std::uint32_t
+        {
+            MEMBER_FIELD,
+            MEMBER_METHOD,
+            MEMBER_PROPERTY
+        };
         std::variant<Field, Method, Property> value;
     };
 
@@ -68,6 +74,7 @@ namespace dagbase
 
     struct DAGBASE_API Type
     {
+        Atom name;
         using Values = std::vector<std::pair<dagbase::Atom, std::uint32_t>>;
         Values values;
         using MemberArray = std::vector<Member>;
@@ -121,7 +128,7 @@ namespace dagbase
     };
 
 #define DAGBASE_BEGIN_COMPOUND(name)                                                                    \
-static Type type{};                                                                                     \
+static dagbase::Type type{};                                                                            \
 static bool inited{false};                                                                              \
 if (!inited)                                                                                            \
 {                                                                                                       \
@@ -161,7 +168,7 @@ inline static void propName##_set(void *obj, dagbase::Variant value)            
     std::get<dagbase::Property>(member.data.value).setter = className::memberName##_set;                \
     type.members.emplace_back(member);
 
-#define DAGBASE_END_COMPOUND(memberName)                                                                \
+#define DAGBASE_END_COMPOUND()                                                                \
     type.complete = true;                                                                               \
         std::sort(type.members.begin(), type.members.end(), [](const dagbase::Member& op1, const dagbase::Member& op2) {  \
             return op1.data.value.index() < op2.data.value.index();                                                       \
