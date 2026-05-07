@@ -518,4 +518,13 @@ namespace dagbase
 
         return false;
     }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::uint64_t *value)
+    {
+        if (value)
+            if (auto element=config.findElement(name); element)
+            {
+                *value = element->asInteger();
+            }
+    }
 }
