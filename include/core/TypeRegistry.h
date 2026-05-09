@@ -32,6 +32,26 @@ namespace dagbase
         Getter getter{nullptr};
         Setter setter{nullptr};
 
+        Property() = default;
+
+        Property(const Property& other)
+        {
+            type = other.type;
+            getter = other.getter;
+            setter = other.setter;
+        }
+
+        Property& operator=(const Property& other)
+        {
+            if (this!=&other)
+            {
+                type = other.type;
+                getter = other.getter;
+                setter = other.setter;
+            }
+
+            return *this;
+        }
         Variant find(std::string_view path) const
         {
             Variant retval;
@@ -127,12 +147,13 @@ namespace dagbase
         ParseFunc parse{ nullptr };
     };
 
-#define DAGBASE_BEGIN_COMPOUND(name)                                                                    \
+#define DAGBASE_BEGIN_COMPOUND(typeName)                                                                \
 static dagbase::Type type{};                                                                            \
 static bool inited{false};                                                                              \
 if (!inited)                                                                                            \
 {                                                                                                       \
-type.size = sizeof(name);
+type.name = dagbase::Atom::intern(#typeName);                                                           \
+type.size = sizeof(typeName);
 
 #define DAGBASE_ADD_FIELD(memberName, typeName)                                                         \
 {                                                                                                       \
