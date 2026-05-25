@@ -36,20 +36,6 @@ namespace dagbase
 
         virtual ~BackingStore() = default;
 
-        void setMode(Mode mode)
-        {
-            _mode = mode;
-            if (_mode == MODE_INPUT_BIT)
-            {
-                flipBuffer();
-            }
-        }
-
-        Mode mode() const
-        {
-            return _mode;
-        }
-
         virtual void put(const unsigned char* buffer, std::size_t bufferSize) = 0;
 
         virtual void get(unsigned char* buffer, std::size_t bufferSize) = 0;
@@ -61,6 +47,16 @@ namespace dagbase
         virtual std::size_t bufferSize() const = 0;
 
         virtual void flipBuffer() = 0;
+    protected:
+        void setMode(Mode mode)
+        {
+            _mode = mode;
+        }
+
+        Mode mode() const
+        {
+            return _mode;
+        }
     private:
         Mode _mode{0x0};
     };

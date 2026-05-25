@@ -107,7 +107,7 @@ TEST(OutputStream, testOutput)
     dagbase::TextOutputStream sut(&store);
     node2.write(sut);
     sut.flush();
-
+    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
     std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : true\n1\n2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : true\n1\n1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
@@ -146,7 +146,7 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
         node2.write(*sut);
     }
     sut->flush();
-    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
     dagbase::InputStream *istr{nullptr};
 
     if (formatClass == "TextFormat")
@@ -194,7 +194,7 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
     dagbase::Lua lua;
     sut->write(value);
     sut->flush();
-    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
+    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
     dagbase::InputStream *istr{nullptr};
     if (formatClass == "TextFormat")
     {
@@ -250,7 +250,6 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
     {
         sut = new dagbase::BinaryOutputStream(&store);
     }
-    store.setMode(dagbase::BackingStore::MODE_OUTPUT_BIT);
     ASSERT_NE(nullptr, sut);
     dagbase::Lua lua;
     sut->writeUInt8(1);
@@ -264,6 +263,7 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
     sut->writeFloat(1.5f);
     sut->writeDouble(1.5);
     sut->flush();
+    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
     if (formatClass == "TextFormat")
     {
         istr = new dagbase::TextInputStream(&store);
@@ -272,7 +272,6 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
     {
         istr = new dagbase::BinaryInputStream(&store);
     }
-    store.setMode(dagbase::BackingStore::MODE_INPUT_BIT);
     ASSERT_NE(nullptr, istr);
     std::uint8_t actualUint8 = 0;
     istr->readUInt8(&actualUint8);

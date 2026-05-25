@@ -28,7 +28,7 @@ namespace dagbase
         ByteBuffer& put(T value)
         {
             std::copy(reinterpret_cast<BufferType ::pointer>(&value), reinterpret_cast<BufferType::pointer>(&value)+sizeof(T), std::back_insert_iterator(_buf));
-            _limit = _buf.size();
+            _position += sizeof(T);// _buf.size();
 
             return *this;
         }
@@ -47,9 +47,8 @@ namespace dagbase
 
         ByteBuffer& put(const BufferType::value_type* buf, std::size_t len)
         {
-            auto diff = static_cast<BufferType::difference_type>(len);
             std::copy(buf, buf+len, std::back_insert_iterator(_buf));
-            _limit = _buf.size();
+            _position += len;
 
             return *this;
         }
