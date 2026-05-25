@@ -22,6 +22,12 @@ namespace dagbase
         _printer->setStr(_ostr);
     }
 
+    TextOutputStream::~TextOutputStream()
+    {
+        delete _ostr;
+        delete _printer;
+    }
+
     OutputStream& TextOutputStream::beginSubBuffer()
     {
         _inSubBuffer = true;
