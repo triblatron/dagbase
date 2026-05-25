@@ -195,10 +195,14 @@ namespace dagbase
 
     OutputStream & TextOutputStream::flush()
     {
-        if (_ostr)
+        if (_ostr && _store)
         {
             std::string strValue = _ostr->str();
-            _store->put(reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.size());
+            if (!strValue.empty())
+            {
+                std::vector<std::uint8_t> buf(strValue.begin(), strValue.end());
+                _store->put(buf.data(), buf.size());
+            }
         }
 
         return *this;

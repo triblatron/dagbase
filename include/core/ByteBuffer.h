@@ -38,7 +38,7 @@ namespace dagbase
         {
             if (value != nullptr && _position + sizeof(T) <= _buf.size())
             {
-                std::copy(_buf.begin()+_position, _buf.begin()+_position+sizeof(T), reinterpret_cast<BufferType::pointer>(value));
+                std::copy(_buf.begin()+static_cast<BufferType::difference_type>(_position), _buf.begin()+static_cast<BufferType::difference_type>(_position+sizeof(T)), reinterpret_cast<BufferType::pointer>(value));
                 _position+=sizeof(T);
             }
 
@@ -47,6 +47,7 @@ namespace dagbase
 
         ByteBuffer& put(const BufferType::value_type* buf, std::size_t len)
         {
+            auto diff = static_cast<BufferType::difference_type>(len);
             std::copy(buf, buf+len, std::back_insert_iterator(_buf));
             _limit = _buf.size();
 
@@ -57,8 +58,9 @@ namespace dagbase
         {
             if (_position + len <= _buf.size())
             {
-                std::copy(_buf.begin()+_position, _buf.begin()+_position+BufferType::difference_type(len), buf);
-                _position += BufferType::difference_type(len);
+                auto diff = static_cast<BufferType::difference_type>(_position);
+                std::copy(_buf.begin()+diff, _buf.begin()+diff+BufferType::difference_type(len), buf);
+                _position += len;
             }
 
             return *this;
@@ -66,7 +68,10 @@ namespace dagbase
 
         BufferType::value_type const* buffer() const
         {
-            return _buf.data();
+            if (!_buf.empty())
+                return _buf.data();
+
+            return nullptr;
         }
 
         BufferType::iterator begin()
@@ -91,11 +96,11 @@ namespace dagbase
 
         std::size_t size() const
         {
-            return _buf.size();
+            return _limit;
         }
     private:
         BufferType _buf;
-        BufferType::difference_type _position{0};
+        BufferType::size_type _position{0};
         BufferType::size_type _limit{0};
     };
 }

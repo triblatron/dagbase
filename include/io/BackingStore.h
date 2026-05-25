@@ -39,6 +39,10 @@ namespace dagbase
         void setMode(Mode mode)
         {
             _mode = mode;
+            if (_mode == MODE_INPUT_BIT)
+            {
+                flipBuffer();
+            }
         }
 
         Mode mode() const
@@ -53,6 +57,10 @@ namespace dagbase
         virtual void get(std::string& buffer, unsigned char delim) = 0;
 
         virtual const unsigned char* buffer() const = 0;
+
+        virtual std::size_t bufferSize() const = 0;
+
+        virtual void flipBuffer() = 0;
     private:
         Mode _mode{0x0};
     };

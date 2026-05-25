@@ -22,9 +22,14 @@ namespace dagbase
     {
         auto buffer = _store->buffer();
         if (buffer)
-            _istr = new std::istringstream(std::string(reinterpret_cast<const char*>(buffer)));
+            _istr = new std::istringstream(std::string(reinterpret_cast<const char*>(buffer), _store->bufferSize()));
         else
             _istr = new std::istringstream();
+    }
+
+    TextInputStream::~TextInputStream()
+    {
+        delete _istr;
     }
 
     InputStream & TextInputStream::readBuf(value_type *value, std::size_t len)

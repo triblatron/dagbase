@@ -196,7 +196,8 @@ namespace dagbase
         ValueType _value;
         bool _own{false};
     };
+
+    std::ostream DAGBASE_API & operator<<(std::ostream& str, const dagbase::Variant& value);
 }
 
-std::ostream DAGBASE_API & operator<<(std::ostream& str, const dagbase::Variant& value);
 //std::string to_string(dagbase::Variant value);

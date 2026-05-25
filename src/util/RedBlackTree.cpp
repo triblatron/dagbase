@@ -395,7 +395,7 @@ namespace dagbase
         printer.indent();
         printer.println("value:");
         printer.printIndent();
-        ::operator<<(printer.str(), _value) << '\n';
+        operator<<(printer.str(), _value) << '\n';
         printer.println("colour: " + std::string(colourToString(colour())));
         printer.println("direction: " + std::string(directionToString(direction())));
         printer.println("leftChild:");

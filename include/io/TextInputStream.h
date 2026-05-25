@@ -22,6 +22,8 @@ namespace dagbase
     public:
         explicit TextInputStream(BackingStore* store);
 
+        ~TextInputStream();
+
         void setBackingStore(BackingStore* backingStore)
         {
             _store = backingStore;

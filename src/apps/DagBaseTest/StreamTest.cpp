@@ -208,6 +208,8 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
     dagbase::Variant actualValue{std::numeric_limits<std::uint32_t>::max()};
     istr->read(lua, &actualValue);
     EXPECT_EQ(value, actualValue);
+    delete istr;
+    delete sut;
 }
 
 INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(

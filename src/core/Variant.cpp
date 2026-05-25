@@ -304,38 +304,40 @@ namespace dagbase
     {
         // Do nothing.
     }
+
+    std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
+    {
+        if (value.has_value())
+            switch (value.index())
+            {
+                case dagbase::Variant::TYPE_INTEGER:
+                    str << value.asInteger();
+                    break;
+                case dagbase::Variant::TYPE_BOOL:
+                    str << bool(value.asBool());
+                    break;
+                case dagbase::Variant::TYPE_DOUBLE:
+                    str << value.asDouble();
+                    break;
+                case dagbase::Variant::TYPE_STRING:
+                    str << value.asString();
+                    break;
+                case dagbase::Variant::TYPE_COLOUR:
+                    str << dagbase::to_string(value.asColour());
+                    break;
+                case dagbase::Variant::TYPE_VEC2:
+                    str << dagbase::to_string(value.asVec2());
+                    break;
+                case dagbase::Variant::TYPE_UINT:
+                    str << value.asUint32();
+                    break;
+                case dagbase::Variant::TYPE_FUNCTION:
+                    str << "<function>";
+                    break;
+                default:
+                    str << "<unknown>";
+            }
+        return str;
+    }
 }
 
-std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
-{
-    switch (value.index())
-    {
-        case dagbase::Variant::TYPE_INTEGER:
-            str << value.asInteger();
-            break;
-        case dagbase::Variant::TYPE_BOOL:
-            str << bool(value.asBool());
-            break;
-        case dagbase::Variant::TYPE_DOUBLE:
-            str << value.asDouble();
-            break;
-        case dagbase::Variant::TYPE_STRING:
-            str << value.asString();
-            break;
-        case dagbase::Variant::TYPE_COLOUR:
-            str << dagbase::to_string(value.asColour());
-            break;
-        case dagbase::Variant::TYPE_VEC2:
-            str << dagbase::to_string(value.asVec2());
-            break;
-        case dagbase::Variant::TYPE_UINT:
-            str << value.asUint32();
-            break;
-        case dagbase::Variant::TYPE_FUNCTION:
-            str << "<function>";
-            break;
-        default:
-            str << "<unknown>";
-    }
-    return str;
-}

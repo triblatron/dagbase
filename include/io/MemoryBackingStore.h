@@ -47,6 +47,16 @@ namespace dagbase
         {
             return _buffer.size();
         }
+
+        std::size_t bufferSize() const override
+        {
+            return _buffer.size();
+        }
+
+        void flipBuffer() override
+        {
+            _buffer.flip();
+        }
     private:
         ByteBuffer _buffer;
     };
