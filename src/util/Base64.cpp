@@ -97,7 +97,6 @@ namespace dagbase
             outputByte = toBase64(inputByte);
             output->emplace_back(outputByte);
             inputByte = (input[inputIndex++] & ((1<<4)-1))<<2;
-            inputByte+= input[inputIndex] >> 6;
             // Discard LS two bits of last block
             inputByte &= ~0x3;
             outputByte = toBase64(inputByte);

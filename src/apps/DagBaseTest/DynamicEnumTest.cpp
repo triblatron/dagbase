@@ -26,6 +26,7 @@ TEST_P(DynamicEnum_testLookup, testExpectedValue)
     dagbase::DynamicEnum sut;
     sut.configure(*config);
     EXPECT_EQ(value, sut.lookup(dagbase::Atom::intern(name)));
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(DynamicEnum, DynamicEnum_testLookup, ::testing::Values(

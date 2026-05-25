@@ -38,6 +38,7 @@ TEST_P(ParameterLookup_testInterpolateAtom, testExpectedValue)
     dagbase::Variant result;
     dagbase::ConfigurationElement::readConfig(*config, "result", &result);
     EXPECT_EQ(result, actual);
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(ParameterLookup, ParameterLookup_testInterpolateAtom, ::testing::Values(

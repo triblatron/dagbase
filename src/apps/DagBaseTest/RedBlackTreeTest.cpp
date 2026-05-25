@@ -269,6 +269,7 @@ TEST_P(RedBlackTreeNode_testFindAllPaths, testExpectedProperties)
     auto op = std::get<4>(GetParam());
     auto actual = allPaths.find(path);
     assertComparison(value, actual, tolerance, op);
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(RedBlackTreeNode, RedBlackTreeNode_testFindAllPaths, ::testing::Values(

@@ -41,6 +41,7 @@ TEST_P(Base64_testRoundTrip, testRoundTrip)
         inputBuf.emplace_back(input[i]);
     }
     EXPECT_EQ(inputBuf, actualDecodedOutput);
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(Base64, Base64_testRoundTrip, ::testing::Values(
