@@ -51,6 +51,7 @@ TEST_P(DynamicMultiArray_testConfigure, testExpectedValue)
     auto op = std::get<4>(GetParam());
     auto actualValue = sut.find(path);
     assertComparison(value, actualValue, tolerance, op);
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(DynamicMultiArray, DynamicMultiArray_testConfigure, ::testing::Values(

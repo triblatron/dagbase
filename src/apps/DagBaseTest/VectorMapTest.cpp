@@ -54,6 +54,7 @@ TEST_P(VectorMap_testInsert, testInsert)
     ASSERT_EQ(found, sut.end()!=it);
     if (found)
         EXPECT_EQ(value , it->second);
+    delete config;
 }
 
 INSTANTIATE_TEST_SUITE_P(VectorMap, VectorMap_testInsert, ::testing::Values(

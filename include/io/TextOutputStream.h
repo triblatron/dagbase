@@ -22,6 +22,8 @@ namespace dagbase
     public:
         explicit TextOutputStream(BackingStore* store);
 
+        ~TextOutputStream() override;
+
         void setBackingStore(BackingStore* store)
         {
             _store = store;
