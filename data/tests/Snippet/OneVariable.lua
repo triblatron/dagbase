@@ -1,0 +1,10 @@
+root=
+{
+	open="{{",
+	close="}}",
+	input="foo={{foo}}",
+	variables=
+	{
+		{"foo","true"}
+	}
+}

@@ -1,0 +1,12 @@
+root=
+{
+	class="TestPropertyBag",
+	staticProperties=
+	{
+		i=1,
+	},
+	dynamicProperties=
+	{
+		spoo=true,
+	}
+}
