@@ -411,6 +411,7 @@ namespace dagbase
         }
         printer.outdent();
         printer.println("}");
+        std::cout << std::flush;
     }
 
     std::ostream& Graph::toLua(std::ostream& str)
