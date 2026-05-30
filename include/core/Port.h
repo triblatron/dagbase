@@ -91,8 +91,9 @@ namespace dagbase
     public:
         typedef std::vector<Port*> PortArray;
 
-        enum
+        enum PortFlags : std::uint32_t
         {
+            FLAGS_NONE          = 0,
             OWN_META_PORT_BIT   = (1<<0),
             OWN_INPUTS_BIT      = (1<<1),
             OWN_OUTPUTS_BIT     = (1<<2)
@@ -100,7 +101,7 @@ namespace dagbase
     public:
 	    Port() = default;
 
-        explicit Port(PortID id, Node* parent, MetaPort *metaPort, std::uint32_t flags=0x0);
+        explicit Port(PortID id, Node* parent, MetaPort *metaPort, PortFlags flags=FLAGS_NONE);
 
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -334,20 +335,20 @@ namespace dagbase
 		PortArray _outgoingConnections;
 		PortArray _incomingConnections;
 
-        void setFlag(std::uint32_t mask)
+        void setFlag(PortFlags mask)
         {
-            _flags |= mask;
+            _flags = static_cast<PortFlags>(_flags | mask);
         }
 
         void setOwnMetaPort(bool own)
         {
             if (own)
             {
-                _flags |= OWN_META_PORT_BIT;
+                _flags = static_cast<PortFlags>(_flags | OWN_META_PORT_BIT);
             }
             else
             {
-                _flags &= ~OWN_META_PORT_BIT;
+                _flags = static_cast<PortFlags>(_flags & ~OWN_META_PORT_BIT);
             }
         }
 
@@ -361,7 +362,7 @@ namespace dagbase
         Node* _parent{nullptr};
         bool _removed{false};
 //        Value _value{0.0};
-        std::uint32_t _flags{0x0};
+        PortFlags _flags{0x0};
 	};
 
 	class DAGBASE_API ValuePort final : public Port

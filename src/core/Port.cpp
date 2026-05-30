@@ -11,7 +11,7 @@
 
 namespace dagbase
 {
-    Port::Port(PortID id, Node *parent, MetaPort *metaPort, std::uint32_t flags)
+    Port::Port(PortID id, Node *parent, MetaPort *metaPort, PortFlags flags)
             :
             _id(id),
             _metaPort(metaPort),
@@ -58,7 +58,7 @@ namespace dagbase
             _id(other._id),
             _metaPort(new MetaPort(*other._metaPort)),
             _parent(other._parent),
-            _flags(other._flags|OWN_META_PORT_BIT)
+        _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
     {
         std::uint64_t otherId = 0;
         bool shouldClone = facility.putOrig(const_cast<Port*>(&other), &otherId);
