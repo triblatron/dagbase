@@ -170,7 +170,7 @@ namespace dagbase
                 Port *newInput = this->clone(facility, CopyOp{0}, nullptr);
                 newSource->addDynamicPort(newInput);
                 newInput->_incomingConnections.emplace_back(oldOutput);
-                if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != _outgoingConnections.end())
+                if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())
                 {
                     (*itOld) = newInput;
                 }

@@ -81,20 +81,21 @@ SET( ALL_PUBLIC_HEADERS
         include/util/TypedBuffer.h
         include/io/TextOutputStream.h
         include/io/TextInputStream.h
-		include/core/Node.h 
-		include/core/MetaPort.h 
-		include/core/NodeCategory.h 
-		include/core/NodeDescriptor.h 
-		include/core/NodeLibrary.h 
-		include/core/Port.h 
-		include/core/SignalPath.h 
-		include/core/SignalPathDef.h 
-		include/core/Transfer.h 
-		include/core/TypedPort.h 
-		include/core/Types.h 
-		include/core/Value.h
+        include/core/Node.h
+        include/core/MetaPort.h
+        include/core/NodeCategory.h
+        include/core/NodeDescriptor.h
+        include/core/NodeLibrary.h
+        include/core/Port.h
+        include/core/SignalPath.h
+        include/core/SignalPathDef.h
+        include/core/Transfer.h
+        include/core/TypedPort.h
+        include/core/Types.h
+        include/core/Value.h
         include/core/TypeRegistry.h
         include/core/MetaClassRegistration.h
+        include/core/Graph.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -145,7 +146,7 @@ src/io/OutputStream.cpp
         src/io/BinaryInputStream.cpp
         src/io/TextOutputStream.cpp
         src/io/TextInputStream.cpp
-		src/core/Graph.cpp
+        src/core/Graph.cpp
         src/core/KeyGenerator.cpp
         src/core/MetaPort.cpp
         src/core/Node.cpp
