@@ -223,6 +223,10 @@ namespace dagbase
 
         //! Convert this Node to a Lua representation.
         virtual std::ostream& toLua(std::ostream& str);
+
+        static std::string flagsToString(NodeFlags value);
+
+        static NodeFlags parseFlags(const std::string& str);
 	private:
         NodeID _id{NodeID::INVALID_ID};
         std::string _name;

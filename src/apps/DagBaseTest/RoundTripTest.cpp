@@ -5,6 +5,7 @@
 #include "core/Variant.h"
 #include "core/ConfigurationElement.h"
 #include "core/MetaProperty.h"
+#include "core/Node.h"
 
 #include <gtest/gtest.h>
 
@@ -83,3 +84,24 @@ INSTANTIATE_TEST_SUITE_P(MetaPropertyFlags, MetaPropertyFlags_testRoundTrip, ::t
     std::make_tuple("FLAGS_WRITE_BIT", dagbase::MetaProperty::FLAGS_WRITE_BIT),
     std::make_tuple("FLAGS_READ_BIT FLAGS_WRITE_BIT", static_cast<dagbase::MetaProperty::Flags>(dagbase::MetaProperty::FLAGS_READ_BIT | dagbase::MetaProperty::FLAGS_WRITE_BIT))
     ));
+
+class NodeFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string, dagbase::Node::NodeFlags>>
+{
+
+};
+
+TEST_P(NodeFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::Node::flagsToString(value));
+    EXPECT_EQ(value, dagbase::Node::parseFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Node, NodeFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("NODE_NONE", dagbase::Node::NODE_NONE),
+    std::make_tuple("NODE_INPUT_BIT", dagbase::Node::NODE_INPUT_BIT),
+    std::make_tuple("NODE_OUTPUT_BIT", dagbase::Node::NODE_OUTPUT_BIT),
+    std::make_tuple("NODE_INTERNAL_BIT", dagbase::Node::NODE_INTERNAL_BIT)
+));

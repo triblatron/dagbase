@@ -8,6 +8,7 @@
 #include "core/NodeLibrary.h"
 #include "core/KeyGenerator.h"
 #include "core/CloningFacility.h"
+#include "util/enums.h"
 
 #include <iostream>
 
@@ -152,8 +153,8 @@ namespace dagbase
     {
         printer.println("id: " + std::to_string(_id));
         printer.println("name: " + _name);
-        printer.println("category: " + std::to_string(_category));
-        printer.println("flags: " + std::to_string(_flags));
+        printer.println("category: " + std::string(NodeCategory::toString(_category)));
+        printer.println("flags: " + std::string(Node::flagsToString(_flags)));
     }
 
     std::ostream &Node::toLua(std::ostream &str)
@@ -175,5 +176,33 @@ namespace dagbase
         str << " }";
 
         return str;
+    }
+
+    std::string Node::flagsToString(NodeFlags value)
+    {
+        std::string retval;
+
+        if (value == NODE_NONE)
+            return "NODE_NONE";
+
+        BIT_NAME(value, NODE_INPUT_BIT, retval)
+        BIT_NAME(value, NODE_OUTPUT_BIT, retval)
+        BIT_NAME(value, NODE_INTERNAL_BIT, retval)
+
+        if (!retval.empty() && retval.back() == ' ')
+            retval.pop_back();
+
+        return retval;
+    }
+
+    Node::NodeFlags Node::parseFlags(const std::string& str)
+    {
+        NodeFlags value{ NODE_NONE };
+
+        TEST_BIT(NODE_INPUT_BIT, str, value)
+        TEST_BIT(NODE_OUTPUT_BIT, str, value)
+        TEST_BIT(NODE_INTERNAL_BIT, str, value)
+
+        return value;
     }
 }
