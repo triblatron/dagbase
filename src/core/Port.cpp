@@ -60,9 +60,9 @@ namespace dagbase
             _parent(other._parent),
         _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
     {
-        std::uint64_t otherId = 0;
-        bool shouldClone = facility.putOrig(const_cast<Port*>(&other), &otherId);
-        facility.addClone(otherId, this);
+        // std::uint64_t otherId = 0;
+        // bool shouldClone = facility.putOrig(const_cast<Port*>(&other), &otherId);
+        // facility.addClone(otherId, this);
         if (copyOp & CopyOp::DEEP_COPY_INPUTS_BIT)
         {
             setFlag(OWN_INPUTS_BIT);

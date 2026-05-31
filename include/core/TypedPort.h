@@ -175,13 +175,12 @@ namespace dagbase
 
         [[nodiscard]]const char* className() const override
         {
-            return classNames[type()];
+            return PortType::toString(type());
         }
 
         std::ostream& toLua(std::ostream& str) override;
     private:
 		T _value;
-        static const char* classNames[];
 	};
 
     template<typename T>
@@ -192,27 +191,6 @@ namespace dagbase
 
         return str;
     }
-
-    template<typename T>
-    const char* TypedPort<T>::classNames[]=
-            {
-                    "TypedPort<uint8_t>",
-                    "TypedPort<int8_t>",
-                    "TypedPort<uint16_t>",
-                    "TypedPort<int16_t>",
-                    "TypedPort<uint32_t>",
-                    "TypedPort<int32_t>",
-                    "TypedPort<uint64_t>",
-                    "TypedPort<int64_t>",
-                    "TypedPort<float>",
-                    "TypedPort<double>",
-                    "TypedPort<string>",
-                    "TypedPort<bool>",
-                    "TypedPort<Vec3d>",
-                    "TypedPort<void*>",
-                    "TypedPort<std::vector<Value>>",
-                    "TypedPort<unknown>"
-            };
 
     template<typename T>
     void TypedPort<T>::debug(dagbase::DebugPrinter& printer) const

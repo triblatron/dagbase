@@ -24,6 +24,7 @@ namespace dagbase
 	public:
 		enum NodeFlags : std::uint32_t
 		{
+            NODE_NONE           = 0,
 			NODE_INPUT_BIT		= 1<<0,
 			NODE_OUTPUT_BIT		= 1<<1,
 			NODE_INTERNAL_BIT	= 1<<2
@@ -228,6 +229,6 @@ namespace dagbase
         // Position to allow for manual layout
         std::int64_t _pos[2]{0,0};
 		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
-		NodeFlags _flags{ 0x0 };
+        NodeFlags _flags{ NODE_NONE };
 	};
 }
