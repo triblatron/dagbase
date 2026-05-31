@@ -24,7 +24,10 @@
 
 #define ENUM_NAME(name) \
 	case (name): return #name;
-	
+
+#define ENUM_ALT_NAME(name, altName) \
+    case (name): return altName;
+
 #define TEST_BIT(needle, haystack, mask)                                \
     if (haystack.find(#needle)!=std::string::npos)                      \
     {                                                                   \

@@ -75,6 +75,8 @@ namespace dagbase
 
         //! Convert a port type to a string.
         static const char* toString(Type type);
+
+        static const char* className(Type type);
     };
 
 //! Macro to declare a ID type

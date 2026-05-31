@@ -54,6 +54,28 @@ namespace dagbase
         return "<error>";
     }
 
+    const char* PortType::className(Type type)
+    {
+        switch (type)
+        {
+            ENUM_ALT_NAME(PortType::TYPE_UINT8, "TypedPort<uint8>")
+            ENUM_ALT_NAME(PortType::TYPE_INT8, "TypedPort<int8>")
+            ENUM_ALT_NAME(PortType::TYPE_UINT16, "TypedPort<uint16>")
+            ENUM_ALT_NAME(PortType::TYPE_INT16, "TypedPort<int16>")
+            ENUM_ALT_NAME(PortType::TYPE_UINT32, "TypedPort<uint32>")
+            ENUM_ALT_NAME(PortType::TYPE_INT32, "TypedPort<int32>")
+            ENUM_ALT_NAME(PortType::TYPE_UINT64, "TypedPort<uint64>")
+            ENUM_ALT_NAME(PortType::TYPE_INT64, "TypedPort<int64>")
+            ENUM_ALT_NAME(PortType::TYPE_FLOAT, "TypedPort<float>")
+            ENUM_ALT_NAME(PortType::TYPE_DOUBLE, "TypedPort<double>")
+            ENUM_ALT_NAME(PortType::TYPE_STRING, "TypedPort<string>")
+            ENUM_ALT_NAME(PortType::TYPE_BOOL, "TypedPort<bool>")
+            ENUM_ALT_NAME(PortType::TYPE_OPAQUE, "TypedPort<void*>")
+        }
+
+        return "<error>";
+    }
+
     std::string copyOpToString(CopyOp op)
     {
         std::string str;

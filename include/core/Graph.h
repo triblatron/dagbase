@@ -15,6 +15,7 @@
 namespace dagbase
 {
     class ByteBuffer;
+    class DebugPrinter;
     class CloningFacility;
     class InputStream;
 	class Lua;
@@ -224,6 +225,8 @@ namespace dagbase
 
         //! Pretty-print this Graph for debugging purposes.
         void debug() const;
+
+        void debug(dagbase::DebugPrinter& printer) const;
 
         dagbase::NodeID nextNodeID() override
         {

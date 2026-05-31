@@ -60,9 +60,9 @@ namespace dagbase
             _parent(other._parent),
         _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
     {
-        // std::uint64_t otherId = 0;
-        // bool shouldClone = facility.putOrig(const_cast<Port*>(&other), &otherId);
-        // facility.addClone(otherId, this);
+        std::uint64_t otherId = 0;
+        facility.putOrig(const_cast<Port*>(&other), &otherId);
+        facility.addClone(otherId, this);
         if (copyOp & CopyOp::DEEP_COPY_INPUTS_BIT)
         {
             setFlag(OWN_INPUTS_BIT);
@@ -243,6 +243,8 @@ namespace dagbase
 
     void Port::debug(dagbase::DebugPrinter& printer) const
     {
+        printer.printIndent().print(this);
+        printer.println("");
         printer.println("id: " + std::to_string(_id));
         printer.println("metaPort:");
         if (_metaPort!=nullptr)
@@ -255,7 +257,7 @@ namespace dagbase
         }
         if (_parent!=nullptr)
         {
-            printer.println("parent:" + _parent->name());
+            printer.println("parent:" + _parent->name() + "(" + std::to_string(_parent->id()) + ")");
         }
         else
         {
@@ -263,6 +265,38 @@ namespace dagbase
         }
         printer.println("remove: " + std::to_string(_removed));
         printer.println("value:");
+        printer.println("outgoingConnections:");
+        printer.println("{");
+        printer.indent();
+        for (auto connection : _outgoingConnections)
+        {
+            if (auto it = connection->findIncomingConnection(*this); it != connection->_incomingConnections.end())
+            {
+                printer.println(std::to_string(connection->id()));
+            }
+            else
+            {
+                printer.println(std::to_string(connection->id()) + " X");
+            }
+        }
+        printer.outdent();
+        printer.println("}");
+        printer.println("incomingConnections");
+        printer.println("{");
+        printer.indent();
+        for (auto connection : _incomingConnections)
+        {
+            if (auto it = connection->findOutgoingConnection(*this); it != connection->_outgoingConnections.end())
+            {
+                printer.println(std::to_string(connection->id()));
+            }
+            else
+            {
+                printer.println(std::to_string(connection->id()) + " X");
+            }
+        }
+        printer.outdent();
+        printer.println("}");
         //printer.print(_value);
     }
 
@@ -295,7 +329,7 @@ namespace dagbase
         str.readField(&fieldName);
         str.readUInt32(&numOutgoingConnections);
         str.readField(&fieldName);
-        for (auto i=0; i<numOutgoingConnections; ++i)
+        for (std::uint32_t i=0; i<numOutgoingConnections; ++i)
         {
             Port* port = str.readRef<Port>("Port",nodeLib, lua);
             if (port!=nullptr)
@@ -307,7 +341,7 @@ namespace dagbase
         str.readField(&fieldName);
         str.readUInt32(&numIncomingConnections);
         str.readField(&fieldName);
-        for (auto i=0; i<numIncomingConnections; ++i)
+        for (std::uint32_t i=0; i<numIncomingConnections; ++i)
         {
             Port* port = str.readRef<Port>("Port", nodeLib, lua);
             if (port != nullptr)

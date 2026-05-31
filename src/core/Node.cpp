@@ -151,6 +151,8 @@ namespace dagbase
 
     void Node::debug(dagbase::DebugPrinter& printer) const
     {
+        printer.printIndent().print(this);
+        printer.println("");
         printer.println("id: " + std::to_string(_id));
         printer.println("name: " + _name);
         printer.println("category: " + std::string(NodeCategory::toString(_category)));

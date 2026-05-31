@@ -1,27 +1,19 @@
 #pragma once
 
-#include "../../../../include/config/Export.h"
-
 #include "core/NodeLibrary.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
 #include "Transfer.h"
-#include "../../../../include/TypeTraits.h"
 #include "core/Types.h"
+#include "util/enums.h"
+
 #include <atomic>
 #include <cassert>
 #include <iostream>
+#include <type_traits>
 
 namespace dagbase
 {
-/*	class DAG_API TypedPortBase : public Port
-	{
-	public:
-		explicit TypedPortBase(Node* parent, MetaPort* metaPort);
-
-
-	};
-*/
     class DebugPrinter;
 
 	template<typename T>
@@ -175,7 +167,7 @@ namespace dagbase
 
         [[nodiscard]]const char* className() const override
         {
-            return PortType::toString(type());
+            return PortType::className(type());
         }
 
         std::ostream& toLua(std::ostream& str) override;

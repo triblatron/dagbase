@@ -318,7 +318,7 @@ namespace dagbase
         std::uint32_t numSignalPaths=0;
 	    str.readField(&fieldName);
         str.readUInt32(&numSignalPaths);
-        for (auto i=0; i<numSignalPaths; ++i)
+        for (std::uint32_t i=0; i<numSignalPaths; ++i)
         {
             dagbase::Stream::ObjId id = 0;
             dagbase::SignalPath* p = nullptr;
@@ -342,7 +342,7 @@ namespace dagbase
         std::uint32_t numChildren = 0;
 	    str.readField(&fieldName);
         str.readUInt32(&numChildren);
-        for (auto i=0; i<numChildren; ++i)
+        for (std::uint32_t i=0; i<numChildren; ++i)
         {
             dagbase::Stream::ObjId id = 0;
             Graph* child = nullptr;
@@ -403,11 +403,25 @@ namespace dagbase
     {
         dagbase::DebugPrinter printer;
         printer.setStr(&std::cout);
+        debug(printer);
+    }
+
+    void Graph::debug(dagbase::DebugPrinter& printer) const
+    {
         printer.println("{");
         printer.indent();
         for (auto p : _nodes)
         {
             p.second->debug(printer);
+        }
+        printer.outdent();
+        printer.println("}");
+        printer.println("children:");
+        printer.println("{");
+        printer.indent();
+        for (auto child : _children)
+        {
+            child->debug(printer);
         }
         printer.outdent();
         printer.println("}");
