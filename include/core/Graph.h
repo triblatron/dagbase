@@ -141,6 +141,8 @@ namespace dagbase
 			return nullptr;
 		}
 
+        void eachSignalPath(std::function<bool(SignalPath*)> f);
+
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
 		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str);

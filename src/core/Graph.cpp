@@ -41,12 +41,16 @@ namespace dagbase
 	{
 		if (node != nullptr && _nodeLib!=nullptr)
         {
-			auto result = _nodes.insert(std::make_pair(node->id(), node));
+			auto result = _nodes.emplace(node->id(), node);
             auto it = _nodeLookupByName.find(node->name());
             if (result.second && it==_nodeLookupByName.end())
             {
-                _nodeLookupByName.insert(NameToNodeMap::value_type(node->name(), node));
+                _nodeLookupByName.emplace(node->name(), node);
                 _lastAddedNode = node;
+                for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
+                {
+                    addPort(node->dynamicPort(portIndex));
+                }
             }
 		}
 	}
@@ -58,6 +62,16 @@ namespace dagbase
 			_signalPaths.insert(SignalPathMap::value_type(signalPath->id(), signalPath));
 		}
 	}
+
+    void Graph::eachSignalPath(std::function<bool(SignalPath*)> f)
+    {
+        if (f)
+            for (auto signalPath : _signalPaths)
+            {
+                if (!f(signalPath.second))
+                    break;
+            }
+    }
 
     template<typename PortClass>
     void readTypedPort(dagbase::NodeLibrary& nodeLib, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
@@ -191,7 +205,7 @@ namespace dagbase
     {
         if (port != nullptr)
         {
-            _ports.insert(PortMap::value_type(port->id(), port));
+            _ports.emplace(port->id(), port);
         }
     }
 
