@@ -163,6 +163,7 @@ src/io/OutputStream.cpp
 		src/core/ClassDescription.cpp
         src/core/Property.cpp
         src/core/TypeRegistry.cpp
+		src/core/Editable.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
