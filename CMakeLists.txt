@@ -96,6 +96,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/TypeRegistry.h
         include/core/MetaClassRegistration.h
         include/core/Graph.h
+        include/core/Editable.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
