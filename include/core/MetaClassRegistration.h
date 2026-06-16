@@ -24,7 +24,9 @@ namespace dagbase
 
         ~MetaClassRegistration()
         {
-            TypeRegistry::getTypeRegistry().unregisterType(name);
+            // We cannot unregister because of order of destructor calls on Linux
+            // Otherwise there may be a use-after-free after the TypeRegistry dtor is called.
+//            TypeRegistry::getTypeRegistry().unregisterType(name);
         }
         Atom name;
     };
