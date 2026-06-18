@@ -12,7 +12,7 @@ namespace dagbase
 
     void dagbase::Editable::editType(const char* label, bool* value)
     {
-        ImGui::InputScalar(label, ImGuiDataType_Bool, value);
+        ImGui::Checkbox(label, value);
     }
 
     void dagbase::Editable::editType(const char* label, double* value)
