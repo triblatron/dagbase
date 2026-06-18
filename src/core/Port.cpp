@@ -8,6 +8,7 @@
 #include "core/NodeLibrary.h"
 #include "util/DebugPrinter.h"
 #include "core/CloningFacility.h"
+//#include "imgui.h"
 
 namespace dagbase
 {
@@ -479,6 +480,10 @@ namespace dagbase
         }
     }
 
+    void VariantPort::edit(ImGuiContext* context)
+    {
+    }
+
     Transfer* ValuePort::connectTo(Port& dest)
     {
         if (dir() == PortDirection::DIR_OUT && dest.dir() == PortDirection::DIR_IN && isCompatibleWith(dest))
@@ -555,6 +560,46 @@ namespace dagbase
                 
                 break;
             }
+        }
+    }
+
+    void ValuePort::edit(ImGuiContext* context)
+    {
+        switch (type())
+        {
+        case PortType::TYPE_INT64:
+        {
+//            ImGui::
+            break;
+        }
+        case PortType::TYPE_DOUBLE:
+        {
+            break;
+        }
+        case PortType::TYPE_STRING:
+        {
+            break;
+        }
+        case PortType::TYPE_BOOL:
+        {
+            break;
+        }
+        case PortType::TYPE_VEC3D: {
+
+            break;
+        }
+        case PortType::TYPE_OPAQUE: {
+
+            break;
+        }
+        case PortType::TYPE_VECTOR: {
+
+            break;
+        }
+        case PortType::TYPE_UNKNOWN: {
+
+            break;
+        }
         }
     }
 

@@ -8,6 +8,7 @@
 #include "Types.h"
 #include "NodeLibrary.h"
 #include "MetaPort.h"
+#include "core/Editable.h"
 
 #include <string>
 #include <type_traits>
@@ -86,7 +87,7 @@ namespace dagbase
         Value _value;
     };
 
-	class DAGBASE_API Port : public dagbase::Class
+	class DAGBASE_API Port : public dagbase::Class, public dagbase::Editable
     {
     public:
         typedef std::vector<Port*> PortArray;
@@ -393,6 +394,8 @@ namespace dagbase
             _value = other._value;
         }
 
+        void edit(ImGuiContext* context) override;
+
         bool operator==(const ValuePort& other) const
         {
             return Port::operator==(other) && _value == other._value;
@@ -471,6 +474,8 @@ namespace dagbase
         {
             return new VariantPort(*this, facility, copyOp, keyGen);
         }
+
+        void edit(ImGuiContext* context) override;
 
 		void setValue(const ValueType & value)
 		{

@@ -7,6 +7,8 @@
 #include "core/Types.h"
 #include "util/enums.h"
 
+#include "imgui/imgui.h"
+
 #include <atomic>
 #include <cassert>
 #include <iostream>
@@ -58,6 +60,11 @@ namespace dagbase
         		_value = std::get<T>(configValue.value().value());
         	}
         	str.readFooter();
+        }
+
+        void edit(ImGuiContext* context)
+        {
+
         }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override
