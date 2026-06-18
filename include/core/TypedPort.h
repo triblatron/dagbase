@@ -7,8 +7,6 @@
 #include "core/Types.h"
 #include "util/enums.h"
 
-#include "imgui/imgui.h"
-
 #include <atomic>
 #include <cassert>
 #include <iostream>
@@ -64,7 +62,7 @@ namespace dagbase
 
         void edit(ImGuiContext* context)
         {
-
+            editType(metaPort()->name.c_str(), &_value);
         }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override

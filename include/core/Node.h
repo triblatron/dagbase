@@ -9,6 +9,8 @@
 #include <string>
 #include <stdexcept>
 
+struct ImGuiContext;
+
 namespace dagbase
 {
     class InputStream;
@@ -19,7 +21,7 @@ namespace dagbase
 	struct NodeDescriptor;
     class NodeLibrary;
 
-	class DAGBASE_API Node : public dagbase::Class
+	class DAGBASE_API Node : public dagbase::Class, public Editable
 	{
 	public:
 		enum NodeFlags : std::uint32_t
@@ -45,6 +47,8 @@ namespace dagbase
 		Node& operator=(const Node&) = default;
 
 		Node& operator=(Node&&) = default;
+
+        void edit(ImGuiContext* context);
 
 		dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua) override;
 

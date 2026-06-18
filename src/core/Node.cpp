@@ -10,6 +10,8 @@
 #include "core/CloningFacility.h"
 #include "util/enums.h"
 
+#include "imgui.h"
+
 #include <iostream>
 
 namespace dagbase
@@ -35,6 +37,17 @@ namespace dagbase
         if ((copyOp & CopyOp::GENERATE_UNIQUE_ID_BIT)!=0x0 && keyGen!=nullptr)
         {
             _id = keyGen->nextNodeID();
+        }
+    }
+
+    void Node::edit(ImGuiContext* context)
+    {
+        ImGui::SetCurrentContext(context);
+        for (std::size_t i = 0; i < totalPorts(); ++i)
+        {
+            auto port = dynamicPort(i);
+
+            port->edit(context);
         }
     }
 

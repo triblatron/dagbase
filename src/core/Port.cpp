@@ -569,11 +569,16 @@ namespace dagbase
         {
         case PortType::TYPE_INT64:
         {
-//            ImGui::
+            std::int64_t value{ _value };
+            editType(metaPort()->name.c_str(), &value);
+            setValue(Value(value));
             break;
         }
         case PortType::TYPE_DOUBLE:
         {
+            double value{ _value };
+            editType(metaPort()->name.c_str(), &value);
+            setValue(Value(value));
             break;
         }
         case PortType::TYPE_STRING:
@@ -582,21 +587,28 @@ namespace dagbase
         }
         case PortType::TYPE_BOOL:
         {
+            bool value{ _value };
+            editType(metaPort()->name.c_str(), &value);
+            setValue(Value(value));
             break;
         }
-        case PortType::TYPE_VEC3D: {
+        case PortType::TYPE_VEC3D: 
+        {
 
             break;
         }
-        case PortType::TYPE_OPAQUE: {
+        case PortType::TYPE_OPAQUE: 
+        {
 
             break;
         }
-        case PortType::TYPE_VECTOR: {
+        case PortType::TYPE_VECTOR: 
+        {
 
             break;
         }
-        case PortType::TYPE_UNKNOWN: {
+        case PortType::TYPE_UNKNOWN: 
+        {
 
             break;
         }
