@@ -48,7 +48,7 @@ namespace dagbase
 
 		Node& operator=(Node&&) = default;
 
-        void edit(ImGuiContext* context);
+        void edit(ImGuiContext* context) override;
 
 		dagbase::InputStream& readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua) override;
 

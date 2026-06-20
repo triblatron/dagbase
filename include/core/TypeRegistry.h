@@ -210,7 +210,7 @@ inline static void propName##_set(void *obj, dagbase::Variant value)            
             return registry;
         }
 
-        void registerType(dagbase::Atom name, Type* type);
+        void registerType(const Atom &name, Type* type);
 
         void unregisterType(dagbase::Atom name);
 

@@ -98,14 +98,6 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Graph.h
         include/core/Editable.h
         include/core/CloningFacility.h
-		include/imgui/imconfig.h
-		include/imgui/imgui.h
-		include/imgui/imgui_internal.h
-		include/imgui/imstb_rectpack.h
-		include/imgui/imstb_textedit.h
-		include/imgui/imstb_truetype.h
-		include/imnodes/imnodes.h
-		include/imnodes/imnodes_internal.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -173,24 +165,34 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/Property.cpp
         src/core/TypeRegistry.cpp
 		src/core/Editable.cpp
-		src/imgui/imgui.cpp
-		src/imgui/imgui_draw.cpp
-		src/imgui/imgui_tables.cpp
-		src/imgui/imgui_widgets.cpp
-		src/imnodes/imnodes.cpp
 )
 
-ADD_LIBRARY( dagbase STATIC ${dagbase_SRC}
+ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
         include/util/VectorSet.h)
+
+ADD_LIBRARY( imgui STATIC 		include/imgui/imconfig.h
+        include/imgui/imgui.h
+        include/imgui/imgui_internal.h
+        include/imgui/imstb_rectpack.h
+        include/imgui/imstb_textedit.h
+        include/imgui/imstb_truetype.h
+        include/imnodes/imnodes.h
+        include/imnodes/imnodes_internal.h
+        src/imgui/imgui.cpp
+        src/imgui/imgui_draw.cpp
+        src/imgui/imgui_tables.cpp
+        src/imgui/imgui_widgets.cpp
+        src/imnodes/imnodes.cpp
+)
+TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes)
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
-TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES})
+TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES} imgui)
 SET_TARGET_PROPERTIES( dagbase PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib" )
 IF (LINUX)
 TARGET_COMPILE_OPTIONS( dagbase PRIVATE -fPIC )
 ENDIF(LINUX)
-target_compile_definitions( dagbase PUBLIC DAGBASE_LIBRARY_STATIC )
-
+set_target_properties( dagbase PROPERTIES DEFINE_SYMBOL DAGBASE_LIBRARY )
 REMOVE_DEFINITIONS( -DDAGBASE_LIBRARY )
 
 INCLUDE( CheckIncludeFile )

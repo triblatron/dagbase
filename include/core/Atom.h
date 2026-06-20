@@ -27,7 +27,7 @@ namespace dagbase
     public:
         Atom() = default;
 
-        ~Atom();
+        ~Atom() = default;
 
         std::size_t find(char needle) const;
 

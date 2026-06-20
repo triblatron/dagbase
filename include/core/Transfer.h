@@ -454,44 +454,6 @@ namespace dagbase
         const dagbase::VariantPort* _source{nullptr};
         dagbase::VariantPort* _dest{nullptr};
     };
-    
-    class PortTransfer : public Transfer
-    {
-    public:
-        PortTransfer(const dagbase::ValuePort* src, dagbase::ValuePort* dst)
-            :
-            _src(src),
-            _dst(dst)
-        {
-            // Do nothing.
-        }
-
-        explicit PortTransfer(const dagbase::ValuePort* src)
-        :
-        _src(src),
-        _dst(nullptr)
-        {
-            // Do nothing.
-        }
-
-        void setDest(dagbase::ValuePort* dst)
-        {
-            _dst = dst;
-        }
-
-        [[nodiscard]]bool valid() const override
-        {
-            return _src != nullptr && _dst != nullptr && _src->isConnectedTo(_dst);
-        }
-
-        void makeItSo() override
-        {
-            _dst->setValue(_src->value());
-        }
-    private:
-        const dagbase::ValuePort* _src;
-        dagbase::ValuePort* _dst;
-    };
 
     template<typename T>
     using EnableIfFundamental = std::enable_if<std::is_fundamental_v<T>>;

@@ -8,6 +8,7 @@
 #include "core/ConfigurationElement.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace dagbase
 {
@@ -33,9 +34,6 @@ namespace dagbase
         // Do nothing.
     }
 */
-    Atom::~Atom()
-    {
-    }
 
     std::size_t Atom::find(char needle) const
     {

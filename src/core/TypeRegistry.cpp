@@ -9,7 +9,7 @@
 
 namespace dagbase
 {
-    void TypeRegistry::registerType(Atom name, Type* type)
+    void TypeRegistry::registerType(const Atom& name, Type* type)
     {
         _types.insert(VectorMap<Atom, Type*>::value_type(name, type));
     }
