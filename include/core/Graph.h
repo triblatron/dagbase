@@ -4,12 +4,15 @@
 
 #include "core/Types.h"
 #include "core/KeyGenerator.h"
+#include "core/Variant.h"
+#include "util/VectorMap.h"
 
 #include <unordered_map>
 #include <vector>
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <string_view>
 #include <iterator>
 
 namespace dagbase
@@ -60,6 +63,11 @@ namespace dagbase
 			return _nodes.size();
 		}
 
+        std::size_t numPorts() const
+        {
+            return _ports.size();
+        }
+
         //! Add a node if it is non-null, does nothing otherwise.
 		void addNode(dagbase::Node* node);
 
@@ -70,6 +78,8 @@ namespace dagbase
 
         //! Remove a non-null node.
         void removeNode(dagbase::Node* node);
+
+        void deleteNode(dagbase::Node* node);
 
         void setNodeLibrary(dagbase::NodeLibrary* nodeLib)
         {
@@ -239,6 +249,8 @@ namespace dagbase
         {
             return _nextPortID++;
         }
+
+        dagbase::Variant find(std::string_view path) const;
     private:
         void setParent(Graph* parent)
         {
@@ -248,9 +260,9 @@ namespace dagbase
 		NodeMap _nodes;
         typedef std::unordered_map<std::string, dagbase::Node*> NameToNodeMap;
         NameToNodeMap _nodeLookupByName;
-		typedef std::unordered_map<std::int64_t, dagbase::SignalPath*> SignalPathMap;
+		typedef dagbase::VectorMap<std::int64_t, dagbase::SignalPath*> SignalPathMap;
 		SignalPathMap _signalPaths;
-        typedef std::unordered_map<std::int64_t, dagbase::Port*> PortMap;
+        typedef dagbase::VectorMap<std::int64_t, dagbase::Port*> PortMap;
         PortMap _ports;
 		typedef std::vector<Graph*> GraphArray;
 		GraphArray _children;

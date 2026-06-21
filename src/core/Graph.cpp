@@ -11,8 +11,10 @@
 #include "core/TypedPort.h"
 #include "core/Types.h"
 #include "core/CloningFacility.h"
+#include "util/Searchable.h"
 
 #include <queue>
+#include <algorithm>
 
 namespace dagbase
 {
@@ -225,6 +227,10 @@ namespace dagbase
     {
         if (node != nullptr)
         {
+            // TODO:
+            // Disconnect the ports
+            // node->disonnect();
+            // Remove corresponding SignalPaths
             if (auto it=_nodes.find(node->id()); it!=_nodes.end())
             {
                 _nodes.erase(it);
@@ -234,6 +240,23 @@ namespace dagbase
                 _nodeLookupByName.erase(it);
             }
         }
+    }
+
+    void Graph::deleteNode(dagbase::Node* node)
+    {
+        // Remove any SignalPaths this Node is involved in.
+        eachSignalPath([this, node](SignalPath* signalPath) {
+            if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+            {
+                signalPath->markRemoved();
+            }
+            return true;
+            });
+        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathMap::value_type& value) {
+            return value.second->isRemoved();
+            });
+        _signalPaths.erase(toKeep, _signalPaths.end());
+        removeNode(node);
     }
 
     dagbase::Node* Graph::createNode(const std::string &className, const std::string &name)
@@ -723,5 +746,24 @@ namespace dagbase
                 _children.emplace_back(copy);
             }
         }
+    }
+
+    dagbase::Variant Graph::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "numNodes", std::uint32_t(numNodes()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "numPorts", std::uint32_t(numPorts()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "numSignalPaths", std::uint32_t(numSignalPaths()));
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 }

@@ -127,7 +127,13 @@ namespace dagbase
 				return;
 			_map.erase(it);
 		}
-        iterator begin()
+
+		void erase(iterator first, iterator last)
+		{
+			_map.erase(first, last);
+		}
+		
+		iterator begin()
         {
             return _map.begin();
         }
