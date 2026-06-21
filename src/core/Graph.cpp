@@ -49,12 +49,12 @@ namespace dagbase
             {
                 _nodeLookupByName.emplace(node->name(), node);
                 _lastAddedNode = node;
-                for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
-                {
-                    addPort(node->dynamicPort(portIndex));
-                }
             }
-		}
+            for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
+            {
+                addPort(node->dynamicPort(portIndex));
+            }
+        }
 	}
 
     std::size_t Graph::totalSignalPaths() const
