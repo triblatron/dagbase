@@ -185,18 +185,27 @@ namespace dagbase
         }
     }
 
-    Graph* Graph::fromString(dagbase::NodeLibrary& nodeLib, const char* str)
+    Graph* Graph::fromString(dagbase::NodeLibrary& nodeLib, const char* str, dagbase::Status* status)
     {
         dagbase::Lua lua;
 
         lua.eval(str);
+
+        if (!lua.ok())
+        {
+            if (status)
+            {
+                status->status = dagbase::Status::STATUS_SYNTAX_ERROR;
+            }
+            return nullptr;
+        }
 
         if (!lua.tableExists("graph"))
         {
             return nullptr;
         }
 
-        return fromLua(lua, nodeLib);
+        return fromLua(lua, nodeLib, status);
     }
 
     Graph::TopoSortResult Graph::topologicalSort(NodeArray *order)
@@ -602,21 +611,33 @@ namespace dagbase
         return str;
     }
 
-    Graph *Graph::fromFile(dagbase::NodeLibrary &nodeLib, const char *filename)
+    Graph *Graph::fromFile(dagbase::NodeLibrary &nodeLib, const char *filename, Status* status)
     {
         dagbase::Lua lua;
 
+        if (!std::filesystem::exists(filename))
+        {
+            if (status)
+            {
+                status->status = Status::STATUS_FILE_NOT_FOUND;
+            }
+            return nullptr;
+        }
         lua.execute(filename);
 
         if (!lua.ok())
         {
+            if (status)
+            {
+                status->status = Status::STATUS_SYNTAX_ERROR;
+            }
             return nullptr;
         }
 
-        return fromLua(lua, nodeLib);
+        return fromLua(lua, nodeLib, status);
     }
 
-    Graph *Graph::fromLua(dagbase::Lua &lua, dagbase::NodeLibrary& nodeLib)
+    Graph *Graph::fromLua(dagbase::Lua &lua, dagbase::NodeLibrary& nodeLib, Status* status)
     {
         auto output = new Graph();
         output->setNodeLibrary(&nodeLib);
@@ -624,12 +645,17 @@ namespace dagbase
         {
             dagbase::Table graphTable = lua.tableForName("graph");
 
-            output = fromLuaGraphTable(graphTable, nodeLib, *output, output);
+            output = fromLuaGraphTable(graphTable, nodeLib, *output, output, status);
+
+            if (output && status)
+            {
+                status->status = Status::STATUS_OK;
+            }
         }
         return output;
     }
 
-    Graph* dagbase::Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output)
+    Graph* dagbase::Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status)
     {
         std::map<std::string, dagbase::Node*> nodes;
         if (auto hasNodes = graphTable.isTable("nodes"); hasNodes)
@@ -642,30 +668,42 @@ namespace dagbase
 
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
-                dagbase::Node* node = nodeLib.instantiateNode(rootKeyGen, className, name);
 
-                if (node != nullptr)
+                try
                 {
-                    std::size_t numNodesBefore = output->numNodes();
-                    nodes.insert(std::map<std::string, dagbase::Node*>::value_type(name, node));
+                    dagbase::Node* node = nodeLib.instantiateNode(rootKeyGen, className, name);
+                    if (node != nullptr)
                     {
-                        dagbase::Table portsTable = nodeTable.tableForName("ports");
-
-                        for (int portIndex = 1; portIndex <= portsTable.length(); ++portIndex)
+                        std::size_t numNodesBefore = output->numNodes();
+                        nodes.insert(std::map<std::string, dagbase::Node*>::value_type(name, node));
                         {
-                            dagbase::Table portTable = portsTable.tableForIndex(portIndex);
+                            dagbase::Table portsTable = nodeTable.tableForName("ports");
 
-                            output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootKeyGen);
+                            for (int portIndex = 1; portIndex <= portsTable.length(); ++portIndex)
+                            {
+                                dagbase::Table portTable = portsTable.tableForIndex(portIndex);
+
+                                output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootKeyGen);
+                            }
+                        }
+                        output->addNode(node);
+                        if (output->numNodes() != numNodesBefore + 1)
+                        {
+                            delete node;
+                            delete output;
+                            return nullptr;
                         }
                     }
-                    output->addNode(node);
-                    if (output->numNodes() != numNodesBefore + 1)
-                    {
-                        delete node;
-                        delete output;
-                        return nullptr;
-                    }
                 }
+                catch (std::runtime_error& err)
+                {
+                    if (status)
+                    {
+                        status->status = Status::STATUS_OBJECT_NOT_FOUND;
+                    }
+                    return nullptr;
+                }
+
             }
         }
         if (auto hasChildren = graphTable.isTable("children"); hasChildren)

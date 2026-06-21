@@ -149,11 +149,11 @@ namespace dagbase
 
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
-		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str);
+		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str, Status* status = nullptr);
 
         //! Create a Graph from a Lua representation in a file.
         //! \retval nullptr if the file could not be found or there is a syntax error.
-        static Graph* fromFile(dagbase::NodeLibrary& nodeLib, const char* filename);
+        static Graph* fromFile(dagbase::NodeLibrary& nodeLib, const char* filename, Status* status = nullptr);
 
         std::ostream& toLua(std::ostream& str);
 
@@ -268,8 +268,8 @@ namespace dagbase
 
         void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
         std::ostream& toLuaHelper(std::ostream & str);
-        static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib);
-        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output);
+        static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);
+        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();
     };
 }

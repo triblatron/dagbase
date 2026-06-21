@@ -31,8 +31,11 @@ namespace dagbase
             ENUM_NAME(STATUS_INVALID_PORT)
             ENUM_NAME(STATUS_INVALID_SELECTION)
             ENUM_NAME(STATUS_CYCLE_DETECTED)
+            ENUM_NAME(STATUS_SYNTAX_ERROR)
+            ENUM_NAME(STATUS_FAILED_TO_CREATE_GRAPH)
             ENUM_NAME(STATUS_UNKNOWN)
         }
+
         return "<error>";
     }
 
@@ -44,6 +47,8 @@ namespace dagbase
         TEST_ENUM(STATUS_INVALID_PORT, value);
         TEST_ENUM(STATUS_INVALID_SELECTION, value);
         TEST_ENUM(STATUS_CYCLE_DETECTED, value);
+        TEST_ENUM(STATUS_SYNTAX_ERROR, value);
+        TEST_ENUM(STATUS_FAILED_TO_CREATE_GRAPH, value);
         TEST_ENUM(STATUS_UNKNOWN, value);
 
         return STATUS_UNKNOWN;

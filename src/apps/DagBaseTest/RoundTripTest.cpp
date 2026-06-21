@@ -160,5 +160,7 @@ INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
     std::make_tuple("STATUS_INVALID_PORT", dagbase::Status::STATUS_INVALID_PORT),
     std::make_tuple("STATUS_INVALID_SELECTION", dagbase::Status::STATUS_INVALID_SELECTION),
     std::make_tuple("STATUS_CYCLE_DETECTED", dagbase::Status::STATUS_CYCLE_DETECTED),
+    std::make_tuple("STATUS_SYNTAX_ERROR", dagbase::Status::STATUS_SYNTAX_ERROR),
+    std::make_tuple("STATUS_FAILED_TO_CREATE_GRAPH", dagbase::Status::STATUS_FAILED_TO_CREATE_GRAPH),
     std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
 ));

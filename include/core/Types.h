@@ -163,6 +163,10 @@ namespace dagbase
             STATUS_INVALID_SELECTION,
             //! An attempt was made to create a connection that resulted in a cycle.
             STATUS_CYCLE_DETECTED,
+            //! A syntax error occurred parsing a format, typically Lua
+            STATUS_SYNTAX_ERROR,
+            //! We failed to create a Graph
+            STATUS_FAILED_TO_CREATE_GRAPH,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };
