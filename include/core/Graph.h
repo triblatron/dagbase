@@ -250,7 +250,7 @@ namespace dagbase
         {
             _parent = parent;
         }
-		typedef std::unordered_map<std::int64_t, dagbase::Node*> NodeMap;
+		typedef dagbase::VectorMapFromId<std::int64_t, dagbase::Node*> NodeMap;
 		NodeMap _nodes;
         typedef std::unordered_map<std::string, dagbase::Node*> NameToNodeMap;
         NameToNodeMap _nodeLookupByName;
