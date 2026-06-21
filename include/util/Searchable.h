@@ -165,7 +165,7 @@ namespace dagbase
 		if (path.length() > 1 && path[0] == '[')
 		{
 			std::size_t firstIndex = 1;
-			Map::key_type index = 0;
+			typename Map::key_type index = 0;
 			char* endPtr = nullptr;
 			if (firstIndex < path.length())
 			{
