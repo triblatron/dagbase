@@ -57,7 +57,69 @@ namespace dagbase
 		}
 	}
 
-	void Graph::addSignalPath(dagbase::SignalPath* signalPath)
+    std::size_t Graph::totalSignalPaths() const
+    {
+        std::size_t total = 0;
+        depthFirstTraversal([this, &total](const SignalPath* signalPath) {
+            ++total;
+            return true;
+            });
+        return total;
+    }
+
+    void Graph::depthFirstTraversal(std::function<bool(const SignalPath*)> f) const
+    {
+        if (f)
+        {
+            for (const Graph* child : _children)
+            {
+                child->depthFirstTraversal(f);
+            }
+
+            for (auto p : _signalPaths)
+            {
+                if (!f(p.second))
+                {
+                    return;
+                }
+            }
+        }
+    }
+
+    void Graph::depthFirstTraversal(std::function<bool(SignalPath*)> f)
+    {
+        if (f)
+        {
+            for (Graph* child : _children)
+            {
+                child->depthFirstTraversal(f);
+            }
+
+            for (auto p : _signalPaths)
+            {
+                if (!f(p.second))
+                {
+                    return;
+                }
+            }
+        }
+    }
+
+    void Graph::depthFirstTraversal(std::function<bool(Graph*)> f)
+    {
+        if (f)
+        {
+            for (Graph* child : _children)
+            {
+                child->depthFirstTraversal(f);
+            }
+
+            if (!f(this))
+                return;
+        }
+    }
+
+    void Graph::addSignalPath(dagbase::SignalPath* signalPath)
 	{
 		if (signalPath != nullptr)
 		{
@@ -245,17 +307,24 @@ namespace dagbase
     void Graph::deleteNode(dagbase::Node* node)
     {
         // Remove any SignalPaths this Node is involved in.
-        eachSignalPath([this, node](SignalPath* signalPath) {
-            if (signalPath->sourceNode() == node || signalPath->destNode() == node)
-            {
-                signalPath->markRemoved();
-            }
+        //eachSignalPath([this, node](SignalPath* signalPath) {
+        //    if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+        //    {
+        //        signalPath->markRemoved();
+        //    }
+        //    return true;
+        //    });
+        depthFirstTraversal([node](Graph* child) {
+            child->eachSignalPath([child, node](SignalPath* signalPath) {
+                if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+                {
+                    signalPath->markRemoved();
+                }
+                return true;
+                });
+            child->removeMarkedSignalPaths();
             return true;
-            });
-        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathMap::value_type& value) {
-            return value.second->isRemoved();
-            });
-        _signalPaths.erase(toKeep, _signalPaths.end());
+        });
         removeNode(node);
     }
 
@@ -265,6 +334,23 @@ namespace dagbase
         {
             return _nodeLib->instantiateNode(*this, className, name);
         }
+        return nullptr;
+    }
+
+    //! \retval nullptr if a dagbase::Node with the specified ID does not exist.
+    dagbase::Node* Graph::node(dagbase::NodeID id)
+    {
+        if (auto const it = _nodes.find(id); it != _nodes.end())
+        {
+            return it->second;
+        }
+
+        for (auto child : _children)
+        {
+            if (auto childNode = child->node(id); childNode)
+                return childNode;
+        }
+
         return nullptr;
     }
 
@@ -526,12 +612,12 @@ namespace dagbase
         {
             dagbase::Table graphTable = lua.tableForName("graph");
 
-            output = fromLuaGraphTable(graphTable, nodeLib, output);
+            output = fromLuaGraphTable(graphTable, nodeLib, *output, output);
         }
         return output;
     }
 
-    Graph* Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph* output)
+    Graph* dagbase::Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output)
     {
         std::map<std::string, dagbase::Node*> nodes;
         if (auto hasNodes = graphTable.isTable("nodes"); hasNodes)
@@ -544,7 +630,7 @@ namespace dagbase
 
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
-                dagbase::Node* node = nodeLib.instantiateNode(*output, className, name);
+                dagbase::Node* node = nodeLib.instantiateNode(rootKeyGen, className, name);
 
                 if (node != nullptr)
                 {
@@ -581,7 +667,7 @@ namespace dagbase
                 auto* childGraph = new Graph();
                 childGraph->setNodeLibrary(&nodeLib);
 
-                childGraph = fromLuaGraphTable(childTable, nodeLib, childGraph);
+                childGraph = fromLuaGraphTable(childTable, nodeLib, rootKeyGen, childGraph);
                 output->addChild(childGraph);
             }
         }
@@ -621,6 +707,14 @@ namespace dagbase
         }
 
         return output;
+    }
+
+    void dagbase::Graph::removeMarkedSignalPaths()
+    {
+        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathMap::value_type& value) {
+            return value.second->isRemoved();
+            });
+        _signalPaths.erase(toKeep, _signalPaths.end());
     }
 
     void Graph::findAllNodes(NodeArray *nodes)
@@ -761,6 +855,10 @@ namespace dagbase
             return retval;
 
         retval = findEndpoint(path, "numSignalPaths", std::uint32_t(numSignalPaths()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "totalSignalPaths", std::uint32_t(totalSignalPaths()));
         if (retval.has_value())
             return retval;
 

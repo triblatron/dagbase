@@ -95,14 +95,7 @@ namespace dagbase
         dagbase::Node* createNode(std::string const& className, std::string const& name);
 
         //! \retval nullptr if a dagbase::Node with the specified ID does not exist.
-		dagbase::Node* node(dagbase::NodeID id)
-		{
-			if (auto const it = _nodes.find(id); it!=_nodes.end())
-			{
-				return it->second;
-			}
-			return nullptr;
-		}
+		dagbase::Node* node(dagbase::NodeID id);
 
         //! Operate on each Node of this Graph without descending into child Graphs.
         template<typename F>
@@ -135,6 +128,15 @@ namespace dagbase
 		{
 			return _signalPaths.size();
 		}
+
+        //! \return The total number of SignalPaths in this and its children
+        std::size_t totalSignalPaths() const;
+
+        void depthFirstTraversal(std::function<bool(const SignalPath*)> f) const;
+
+        void depthFirstTraversal(std::function<bool(SignalPath*)> f);
+
+        void depthFirstTraversal(std::function<bool(Graph*)> f);
 
         //! Add a non-null SignalPath
 		void addSignalPath(dagbase::SignalPath* signalPath);
@@ -275,6 +277,7 @@ namespace dagbase
         void readPort(dagbase::Table &portTable, dagbase::Node *node, dagbase::Port *existingPort);
         std::ostream& toLuaHelper(std::ostream & str);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib);
-        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph* output);
+        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output);
+        void removeMarkedSignalPaths();
     };
 }
