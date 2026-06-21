@@ -350,6 +350,22 @@ namespace dagbase
         return nullptr;
     }
 
+    dagbase::Port* Graph::port(dagbase::PortID id)
+    {
+        if (auto const it = _ports.find(id); it != _ports.end())
+        {
+            return it->second;
+        }
+
+        for (auto child : _children)
+        {
+            if (auto childPort = child->port(id); childPort)
+                return childPort;
+        }
+
+        return nullptr;
+    }
+
     std::size_t Graph::numChildrenRecursive() const
     {
         std::size_t total = numChildren();

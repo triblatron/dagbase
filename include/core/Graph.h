@@ -114,15 +114,7 @@ namespace dagbase
         void addPort(dagbase::Port* port);
 
         //! \retval nullptr If a Port with the specified ID does not exist.
-        dagbase::Port* port(dagbase::PortID id)
-        {
-            if (auto const it=_ports.find(id); it!=_ports.end())
-            {
-                return it->second;
-            }
-
-            return nullptr;
-        }
+        dagbase::Port* port(dagbase::PortID id);
 
 		[[nodiscard]] size_t numSignalPaths() const
 		{

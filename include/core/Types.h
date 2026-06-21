@@ -147,7 +147,7 @@ namespace dagbase
     INF_ID_DECLARE(SignalPathID);
 
     //! A return value from an RPC.
-    struct Status
+    struct DAGBASE_API Status
     {
         enum StatusCode
         {
@@ -161,6 +161,8 @@ namespace dagbase
             STATUS_INVALID_PORT,
             //! An invalid selection was specified.
             STATUS_INVALID_SELECTION,
+            //! An attempt was made to create a connection that resulted in a cycle.
+            STATUS_CYCLE_DETECTED,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };
@@ -207,6 +209,10 @@ namespace dagbase
         {
             // Do nothing.
         }
+
+        static const char* statusCodeToString(StatusCode value);
+
+        static StatusCode parseStatusCode(const char* str);
     };
 
     typedef std::unordered_set<Node*> NodeSet;

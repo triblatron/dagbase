@@ -7,6 +7,48 @@
 
 namespace dagbase
 {
+    //STATUS_OK,
+    //    //! A file could not be located.
+    //    STATUS_FILE_NOT_FOUND,
+    //    //! An object could not be located.
+    //    STATUS_OBJECT_NOT_FOUND,
+    //    //! An invalid port was specified.
+    //    STATUS_INVALID_PORT,
+    //    //! An invalid selection was specified.
+    //    STATUS_INVALID_SELECTION,
+    //    //! An attempt was made to create a connection that resulted in a cycle.
+    //    STATUS_CYCLE_DETECTED,
+    //    //! An initial invalid status.
+    //    STATUS_UNKNOWN
+
+    const char* Status::statusCodeToString(Status::StatusCode value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(STATUS_OK)
+            ENUM_NAME(STATUS_FILE_NOT_FOUND)
+            ENUM_NAME(STATUS_OBJECT_NOT_FOUND)
+            ENUM_NAME(STATUS_INVALID_PORT)
+            ENUM_NAME(STATUS_INVALID_SELECTION)
+            ENUM_NAME(STATUS_CYCLE_DETECTED)
+            ENUM_NAME(STATUS_UNKNOWN)
+        }
+        return "<error>";
+    }
+
+    Status::StatusCode Status::parseStatusCode(const char* value)
+    {
+        TEST_ENUM(STATUS_OK, value);
+        TEST_ENUM(STATUS_FILE_NOT_FOUND, value);
+        TEST_ENUM(STATUS_OBJECT_NOT_FOUND, value);
+        TEST_ENUM(STATUS_INVALID_PORT, value);
+        TEST_ENUM(STATUS_INVALID_SELECTION, value);
+        TEST_ENUM(STATUS_CYCLE_DETECTED, value);
+        TEST_ENUM(STATUS_UNKNOWN, value);
+
+        return STATUS_UNKNOWN;
+    }
+
 	PortType::Type PortType::parseFromString(const char* str)
 	{
 	    TEST_ENUM(TYPE_UINT8, str);

@@ -138,3 +138,27 @@ INSTANTIATE_TEST_SUITE_P(PortType, PortType_testRoundTrip, ::testing::Values(
     std::make_tuple("TYPE_BOOL", dagbase::PortType::TYPE_BOOL, "TypedPort<bool>"),
     std::make_tuple("TYPE_OPAQUE", dagbase::PortType::TYPE_OPAQUE, "TypedPort<void*>")
 ));
+
+class StatusCode_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::StatusCode>>
+{
+
+};
+
+TEST_P(StatusCode_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Status::statusCodeToString(value));
+    EXPECT_EQ(value, dagbase::Status::parseStatusCode(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
+    std::make_tuple("STATUS_OK", dagbase::Status::STATUS_OK),
+    std::make_tuple("STATUS_FILE_NOT_FOUND", dagbase::Status::STATUS_FILE_NOT_FOUND),
+    std::make_tuple("STATUS_OBJECT_NOT_FOUND", dagbase::Status::STATUS_OBJECT_NOT_FOUND),
+    std::make_tuple("STATUS_INVALID_PORT", dagbase::Status::STATUS_INVALID_PORT),
+    std::make_tuple("STATUS_INVALID_SELECTION", dagbase::Status::STATUS_INVALID_SELECTION),
+    std::make_tuple("STATUS_CYCLE_DETECTED", dagbase::Status::STATUS_CYCLE_DETECTED),
+    std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
+));
