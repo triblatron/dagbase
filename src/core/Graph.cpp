@@ -240,7 +240,7 @@ namespace dagbase
     {
         if (_nodeLib!=nullptr)
         {
-            return _nodeLib->instantiateNode(nextNodeID(), className, name);
+            return _nodeLib->instantiateNode(*this, className, name);
         }
         return nullptr;
     }
@@ -519,10 +519,9 @@ namespace dagbase
             {
                 dagbase::Table nodeTable = nodesTable.tableForIndex(i);
 
-                dagbase::NodeID id = nodeTable.integerForNameOrDefault("id", -1);
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
-                dagbase::Node* node = nodeLib.instantiateNode(id, className, name);
+                dagbase::Node* node = nodeLib.instantiateNode(*output, className, name);
 
                 if (node != nullptr)
                 {

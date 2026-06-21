@@ -8,6 +8,7 @@
 #include "core/NodeLibrary.h"
 #include "util/DebugPrinter.h"
 #include "core/CloningFacility.h"
+#include "core/KeyGenerator.h"
 //#include "imgui.h"
 
 namespace dagbase
@@ -64,6 +65,10 @@ namespace dagbase
         std::uint64_t otherId = 0;
         facility.putOrig(const_cast<Port*>(&other), &otherId);
         facility.addClone(otherId, this);
+        if ((copyOp & CopyOp::GENERATE_UNIQUE_ID_BIT) != 0x0 && keyGen != nullptr)
+        {
+            _id = keyGen->nextPortID();
+        }
         if (copyOp & CopyOp::DEEP_COPY_INPUTS_BIT)
         {
             setFlag(OWN_INPUTS_BIT);
