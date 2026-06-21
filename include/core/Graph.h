@@ -262,9 +262,9 @@ namespace dagbase
 		NodeMap _nodes;
         typedef std::unordered_map<std::string, dagbase::Node*> NameToNodeMap;
         NameToNodeMap _nodeLookupByName;
-		typedef dagbase::VectorMap<std::int64_t, dagbase::SignalPath*> SignalPathMap;
+		typedef dagbase::VectorMapFromId<std::int64_t, dagbase::SignalPath*> SignalPathMap;
 		SignalPathMap _signalPaths;
-        typedef dagbase::VectorMap<std::int64_t, dagbase::Port*> PortMap;
+        typedef dagbase::VectorMapFromId<std::int64_t, dagbase::Port*> PortMap;
         PortMap _ports;
 		typedef std::vector<Graph*> GraphArray;
 		GraphArray _children;
@@ -274,7 +274,7 @@ namespace dagbase
         dagbase::NodeLibrary* _nodeLib{nullptr};
 		dagbase::Node* _lastAddedNode{ nullptr };
 
-        void readPort(dagbase::Table &portTable, dagbase::Node *node, dagbase::Port *existingPort);
+        void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
         std::ostream& toLuaHelper(std::ostream & str);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib);
         static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output);

@@ -15,6 +15,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <string_view>
 
 namespace dagbase
 {
@@ -332,6 +333,8 @@ namespace dagbase
         {
             return "Port";
         }
+
+        Variant find(std::string_view path) const;
     protected:
 		PortArray _outgoingConnections;
 		PortArray _incomingConnections;

@@ -138,7 +138,7 @@ namespace dagbase
     }
 
     template<typename PortClass>
-    void readTypedPort(dagbase::NodeLibrary& nodeLib, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
+    void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
     {
         auto* port = dynamic_cast<TypedPort<PortClass>*>(existingPort);
 
@@ -153,7 +153,7 @@ namespace dagbase
             dagbase::PortType::Type portType = dagbase::PortType::parseFromString(portTypeStr.c_str());
             std::string dirStr = portTable.stringForNameOrDefault("direction", "DIR_UNKNOWN");
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
-            port = new TypedPort<PortClass>(nodeLib.nextPortID(), node, new dagbase::MetaPort(portName, portType, portDir),value,dagbase::Port::OWN_META_PORT_BIT);
+            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, new dagbase::MetaPort(portName, portType, portDir),value,dagbase::Port::OWN_META_PORT_BIT);
             node->addDynamicPort(port);
         }
         else
@@ -163,25 +163,25 @@ namespace dagbase
         }
     }
 
-    void Graph::readPort(dagbase::Table &portTable, dagbase::Node* node, dagbase::Port* existingPort)
+    void dagbase::Graph::readPort(dagbase::Table &portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen)
     {
         std::string portClass = portTable.stringForNameOrDefault("class", "<unknown>");
 
         if (portClass == "TypedPort<double>")
         {
-            readTypedPort<double>(*_nodeLib, portTable, node, existingPort, portTable.numberForNameOrDefault("value", 0.0));
+            readTypedPort<double>(rootKeyGen, portTable, node, existingPort, portTable.numberForNameOrDefault("value", 0.0));
         }
         else if (portClass == "TypedPort<int64_t>")
         {
-            readTypedPort<std::int64_t>(*_nodeLib, portTable, node, existingPort, portTable.integerForNameOrDefault("value", 0));
+            readTypedPort<std::int64_t>(rootKeyGen, portTable, node, existingPort, portTable.integerForNameOrDefault("value", 0));
         }
         else if (portClass == "TypedPort<string>")
         {
-            readTypedPort<std::string>(*_nodeLib, portTable, node, existingPort, portTable.stringForNameOrDefault("value", ""));
+            readTypedPort<std::string>(rootKeyGen, portTable, node, existingPort, portTable.stringForNameOrDefault("value", ""));
         }
         else if (portClass == "TypedPort<bool>")
         {
-            readTypedPort<bool>(*_nodeLib, portTable, node, existingPort, portTable.booleanForNameOrDefault("value", false));
+            readTypedPort<bool>(rootKeyGen, portTable, node, existingPort, portTable.booleanForNameOrDefault("value", false));
         }
     }
 
@@ -306,25 +306,21 @@ namespace dagbase
 
     void Graph::deleteNode(dagbase::Node* node)
     {
-        // Remove any SignalPaths this Node is involved in.
-        //eachSignalPath([this, node](SignalPath* signalPath) {
-        //    if (signalPath->sourceNode() == node || signalPath->destNode() == node)
-        //    {
-        //        signalPath->markRemoved();
-        //    }
-        //    return true;
-        //    });
-        depthFirstTraversal([node](Graph* child) {
-            child->eachSignalPath([child, node](SignalPath* signalPath) {
-                if (signalPath->sourceNode() == node || signalPath->destNode() == node)
-                {
-                    signalPath->markRemoved();
-                }
+        if (node)
+            // Remove any SignalPaths this Node is involved in.
+            depthFirstTraversal([node](Graph* child) {
+                child->eachSignalPath([child, node](SignalPath* signalPath) {
+                    if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+                    {
+                        signalPath->markRemoved();
+                        signalPath->dest()->removeIncomingConnection(signalPath->source());
+                        signalPath->source()->removeOutgoingConnection(signalPath->dest());
+                    }
+                    return true;
+                    });
+                child->removeMarkedSignalPaths();
                 return true;
-                });
-            child->removeMarkedSignalPaths();
-            return true;
-        });
+            });
         removeNode(node);
     }
 
@@ -635,13 +631,6 @@ namespace dagbase
                 if (node != nullptr)
                 {
                     std::size_t numNodesBefore = output->numNodes();
-                    output->addNode(node);
-                    if (output->numNodes() != numNodesBefore + 1)
-                    {
-                        delete node;
-                        delete output;
-                        return nullptr;
-                    }
                     nodes.insert(std::map<std::string, dagbase::Node*>::value_type(name, node));
                     {
                         dagbase::Table portsTable = nodeTable.tableForName("ports");
@@ -650,8 +639,15 @@ namespace dagbase
                         {
                             dagbase::Table portTable = portsTable.tableForIndex(portIndex);
 
-                            output->readPort(portTable, node, node->dynamicPort(portIndex - 1));
+                            output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootKeyGen);
                         }
+                    }
+                    output->addNode(node);
+                    if (output->numNodes() != numNodesBefore + 1)
+                    {
+                        delete node;
+                        delete output;
+                        return nullptr;
                     }
                 }
             }
@@ -862,6 +858,16 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findInternal(path, "ports", _ports);
+        if (retval.has_value())
+            return retval;
+
+        for (auto child : _children)
+        {
+            retval = child->find(path);
+            if (retval.has_value())
+                return retval;
+        }
         return {};
     }
 }

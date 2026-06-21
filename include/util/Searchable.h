@@ -159,6 +159,30 @@ namespace dagbase
     	return {};
     }
 
+	template<typename Map>
+	ConfigurationElement::ValueType findMapFromInteger(std::string_view path, const Map& obj)
+	{
+		if (path.length() > 1 && path[0] == '[')
+		{
+			std::size_t firstIndex = 1;
+			Map::key_type index = 0;
+			char* endPtr = nullptr;
+			if (firstIndex < path.length())
+			{
+				index = strtoll(&path[firstIndex], &endPtr, 10);
+			}
+			if (auto it = obj.find(index); it!=obj.end())
+			{
+				auto dotPos = path.find('.');
+				if (dotPos < path.length() - 1)
+				{
+					return std::invoke(&std::remove_pointer_t<typename Map::mapped_type>::find, it->second, path.substr(dotPos + 1));
+				}
+			}
+		}
+
+		return {};
+	}
     //! Variation of findMap() for maps indexed by Atom
     template<typename Map>
 	ConfigurationElement::ValueType findMapFromAtom(std::string_view path, const Map& obj)

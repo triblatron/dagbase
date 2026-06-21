@@ -9,7 +9,7 @@
 #include "util/DebugPrinter.h"
 #include "core/CloningFacility.h"
 #include "core/KeyGenerator.h"
-//#include "imgui.h"
+#include "util/Searchable.h"
 
 namespace dagbase
 {
@@ -409,6 +409,20 @@ namespace dagbase
         return true;
     }
 
+    Variant Port::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "numIncomingConnections", std::uint32_t(numIncomingConnections()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "numOutgoingConnections", std::uint32_t(numOutgoingConnections()));
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
 /*
     TypedPortBase::TypedPortBase(Node* parent, MetaPort* metaPort)
 		:
