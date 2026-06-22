@@ -135,18 +135,13 @@ namespace dagbase
             if (auto it = selection.find(oldInput->parent()); it == selection.end())
             {
                 // Create a new input port in newDest, without deep copying inputs and outputs.
-                Port *newInput = nullptr;
-                std::uint64_t newInputId = 0;
-                newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
+                Port *newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 // Connect the output port to the new input port
                 // Disconnect the old input port
                 newDest->addDynamicPort(newInput);
-
+                newInput->_incomingConnections.emplace_back(this);
                 // Create a new output from this, without deep copying inputs and outputs.
-                Port *newOutput = nullptr;
-                std::uint64_t newOutputId = 0;
-
-                newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
+                Port *newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newDest->addDynamicPort(newOutput);
                 newOutput->_outgoingConnections.emplace_back(oldInput);
                 auto itOld = oldInput->findIncomingConnection(*this);
@@ -172,6 +167,7 @@ namespace dagbase
             {
                 Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newSource->addDynamicPort(newOutput);
+                newOutput->_outgoingConnections.emplace_back(this);
 
                 Port *newInput = this->clone(facility, CopyOp{ dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT }, &keyGen);
                 newSource->addDynamicPort(newInput);
