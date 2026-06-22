@@ -362,6 +362,14 @@ namespace dagbase
         return false;
     }
 
+    void ConfigurationElement::readConfig(ConfigurationElement& config, const char* name, PortID* value)
+    {
+        std::int64_t temp{ PortID::INVALID_ID };
+        readConfig(config, name, &temp);
+        if (value)
+            *value = PortID(temp);
+    }
+
     void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::uint32_t *value)
     {
         if (value)

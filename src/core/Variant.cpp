@@ -150,6 +150,21 @@ namespace dagbase
         return str;
     }
 
+    Variant Variant::cast(Index type) const
+    {
+        switch (type)
+        {
+        case TYPE_UINT:
+            switch (index())
+            {
+            case TYPE_INTEGER:
+                return Variant(std::uint32_t(as<std::int64_t>()));
+            }
+            break;
+        }
+        return Variant();
+    }
+
     bool Variant::operator!=(const Variant& other) const
     {
         if (has_value())

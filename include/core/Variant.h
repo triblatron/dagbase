@@ -154,6 +154,8 @@ namespace dagbase
             }
         }
 
+        Variant cast(Index type) const;
+
         bool has_value() const
         {
             return _value.has_value();
