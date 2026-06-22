@@ -60,7 +60,7 @@ namespace dagbase
     }
 
     //! Reconnect from newSource to each input Port whose parent is in selection by adding new Ports.
-    void Node::reconnectInputs(NodeSet const& selection, Node *newSource)
+    void dagbase::Node::reconnectInputs(NodeSet const& selection, Node *newSource, KeyGenerator& keyGen)
     {
         // for each output port do
         for (auto portIndex = 0; portIndex < totalPorts(); ++portIndex)
@@ -68,14 +68,14 @@ namespace dagbase
             Port* p = dynamicPort(portIndex);
             if (p->dir() == PortDirection::DIR_IN)
             {
-                p->reconnectFrom(selection, newSource);
+                p->reconnectFrom(selection, newSource, keyGen);
             }
 
         }
     }
 
     //! Reconnect from each output Port whose parent is in selection to newDest by adding new Ports.
-    void Node::reconnectOutputs(NodeSet const& selection, Node *newDest)
+    void dagbase::Node::reconnectOutputs(NodeSet const& selection, Node *newDest, KeyGenerator& keyGen)
     {
         // for each output port do
         for (auto portIndex=0; portIndex<totalPorts(); ++portIndex)
@@ -83,7 +83,7 @@ namespace dagbase
             Port* p = dynamicPort(portIndex);
             if (p->dir() == PortDirection::DIR_OUT)
             {
-                p->reconnectTo(selection, newDest);
+                p->reconnectTo(selection, newDest, keyGen);
             }
 
         }

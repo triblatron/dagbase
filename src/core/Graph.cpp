@@ -298,10 +298,6 @@ namespace dagbase
     {
         if (node != nullptr)
         {
-            // TODO:
-            // Disconnect the ports
-            // node->disonnect();
-            // Remove corresponding SignalPaths
             if (auto it=_nodes.find(node->id()); it!=_nodes.end())
             {
                 _nodes.erase(it);
@@ -310,6 +306,24 @@ namespace dagbase
             {
                 _nodeLookupByName.erase(it);
             }
+        }
+    }
+
+    void Graph::removePortsForNode(dagbase::Node* node)
+    {
+        std::vector<PortMap::iterator> toRemove;
+
+        for (auto it=_ports.begin(); it!=_ports.end(); ++it)
+        {
+            if (it->second->parent() == node)
+            {
+                toRemove.emplace_back(it);
+            }
+        }
+
+        for (auto p : toRemove)
+        {
+            _ports.erase(p);
         }
     }
 
@@ -802,7 +816,7 @@ namespace dagbase
             }
             // We know we have a number of digits, so atoi should do.
             size_t index = std::atoi(indexStr.c_str());
-            auto child = _children[index];
+            auto child = _children.a[index];
             if (pos+1<rest.length() && rest[pos] == ']' && rest[pos+1]=='.')
             {
                 rest = rest.substr(pos+2);
@@ -887,7 +901,7 @@ namespace dagbase
 
             if (copy != nullptr)
             {
-                _children.emplace_back(copy);
+                _children.a.emplace_back(copy);
             }
         }
     }
@@ -913,6 +927,10 @@ namespace dagbase
             return retval;
 
         retval = findInternal(path, "ports", _ports);
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "children", _children);
         if (retval.has_value())
             return retval;
 

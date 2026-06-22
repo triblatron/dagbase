@@ -164,9 +164,9 @@ namespace dagbase
             return size_t{~0ULL};
         }
 
-        void reconnectInputs(NodeSet const& selection, Node* newSource);
+        void reconnectInputs(NodeSet const& selection, Node* newSource, KeyGenerator& keyGen);
 
-        void reconnectOutputs(NodeSet const& NodeSet, Node* newDest);
+        void reconnectOutputs(NodeSet const& NodeSet, Node* newDest, KeyGenerator& keyGen);
         
         [[nodiscard]]bool hasNoDependencies()
         {

@@ -125,7 +125,7 @@ namespace dagbase
 
     //! Reconnect to nodes of our output connections that are in the selection by adding new Ports
     //! on the new destination Node.
-    void Port::reconnectTo(NodeSet const &selection, Node *newDest)
+    void dagbase::Port::reconnectTo(NodeSet const &selection, Node *newDest, KeyGenerator& keyGen)
     {
         //   if the destination input port has a parent of oldDest then
         CloningFacility facility;
@@ -137,7 +137,7 @@ namespace dagbase
                 // Create a new input port in newDest, without deep copying inputs and outputs.
                 Port *newInput = nullptr;
                 std::uint64_t newInputId = 0;
-                newInput = oldInput->clone(facility, CopyOp{0}, nullptr);
+                newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 // Connect the output port to the new input port
                 // Disconnect the old input port
                 newDest->addDynamicPort(newInput);
@@ -146,7 +146,7 @@ namespace dagbase
                 Port *newOutput = nullptr;
                 std::uint64_t newOutputId = 0;
 
-                newOutput = this->clone(facility, CopyOp{0}, nullptr);
+                newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newDest->addDynamicPort(newOutput);
                 newOutput->_outgoingConnections.emplace_back(oldInput);
                 auto itOld = oldInput->findIncomingConnection(*this);
@@ -163,17 +163,17 @@ namespace dagbase
 
     //! Reconnect from nodes of our incoming connections that are in the selection by  adding Ports on the new source
     //! \note newSource is typically a Boundary node used during an AddChild operation.
-    void Port::reconnectFrom(NodeSet const &selection, Node *newSource)
+    void dagbase::Port::reconnectFrom(NodeSet const &selection, Node *newSource, KeyGenerator& keyGen)
     {
         CloningFacility facility;
         for (auto &oldOutput: _incomingConnections)
         {
             if (auto it = selection.find(oldOutput->parent()); it == selection.end())
             {
-                Port *newOutput = oldOutput->clone(facility, CopyOp{0}, nullptr);
+                Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newSource->addDynamicPort(newOutput);
 
-                Port *newInput = this->clone(facility, CopyOp{0}, nullptr);
+                Port *newInput = this->clone(facility, CopyOp{ dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT }, &keyGen);
                 newSource->addDynamicPort(newInput);
                 newInput->_incomingConnections.emplace_back(oldOutput);
                 if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())

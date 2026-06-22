@@ -294,9 +294,9 @@ namespace dagbase
 
         virtual Transfer* connectTo(Port& dest) = 0;
 
-        void reconnectTo(NodeSet const& selection, Node* newDest);
+        void reconnectTo(NodeSet const& selection, Node* newDest, KeyGenerator& keyGen);
 
-        void reconnectFrom(NodeSet const& selection, Node* newSource);
+        void reconnectFrom(NodeSet const& selection, Node* newSource, KeyGenerator& keyGen);
 
         void disconnect(Port& dest)
         {

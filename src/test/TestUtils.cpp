@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase::ConfigurationElement::ValueType actual, double tolerance, dagbase::ConfigurationElement::RelOp op)
+void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase::ConfigurationElement::ValueType actual, double tolerance, dagbase::ConfigurationElement::RelOp op, const char* path)
 {
     switch (op)
     {
@@ -15,31 +15,31 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
         ASSERT_TRUE(actual.has_value());
         if (expected.value()->index() == dagbase::Variant::TYPE_DOUBLE && actual.value()->index() == dagbase::Variant::TYPE_DOUBLE)
         {
-            EXPECT_NEAR(actual.asDouble(), expected.asDouble(), tolerance);
+            EXPECT_NEAR(actual.asDouble(), expected.asDouble(), tolerance) << path;
         }
         else if (expected.has_value() && actual.has_value())
         {
-            EXPECT_EQ(expected.value(), actual.value());
+            EXPECT_EQ(expected.value(), actual.value()) << path;
         }
         else if ((!expected.has_value() && actual.has_value()) || (expected.has_value() && !actual.has_value()))
         {
-            FAIL();
+            FAIL() << path;
         }
         break;
     case dagbase::ConfigurationElement::RELOP_NE:
-        EXPECT_NE(expected, actual);
+        EXPECT_NE(expected, actual) << path;
         break;
     case dagbase::ConfigurationElement::RELOP_LT:
-        EXPECT_LT(actual.value(), expected.value());
+        EXPECT_LT(actual.value(), expected.value()) << path;
         break;
     case dagbase::ConfigurationElement::RELOP_LE:
-        EXPECT_LE(actual.value(), expected.value());
+        EXPECT_LE(actual.value(), expected.value()) << path;
         break;
     case dagbase::ConfigurationElement::RELOP_GT:
-        EXPECT_GT(actual.value(), expected.value());
+        EXPECT_GT(actual.value(), expected.value()) << path;
         break;
     case dagbase::ConfigurationElement::RELOP_GE:
-        EXPECT_GE(actual.value(), expected.value());
+        EXPECT_GE(actual.value(), expected.value()) << path;
         break;
     default:
         assert(false);

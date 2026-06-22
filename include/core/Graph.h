@@ -6,6 +6,7 @@
 #include "core/KeyGenerator.h"
 #include "core/Variant.h"
 #include "util/VectorMap.h"
+#include "util/SearchableArray.h"
 
 #include <unordered_map>
 #include <vector>
@@ -79,6 +80,9 @@ namespace dagbase
         //! Remove a non-null node.
         void removeNode(dagbase::Node* node);
 
+        void removePortsForNode(dagbase::Node* node);
+
+        //! Destroy any SignalPaths this Node is involved in, then remove it using removeNode().
         void deleteNode(dagbase::Node* node);
 
         void setNodeLibrary(dagbase::NodeLibrary* nodeLib)
@@ -187,7 +191,7 @@ namespace dagbase
 			if (child != nullptr)
 			{
                 child->setParent(this);
-				_children.emplace_back(child);
+				_children.a.emplace_back(child);
 			}
 		}
 
@@ -197,7 +201,7 @@ namespace dagbase
 			if (auto it = std::find(_children.begin(), _children.end(), child); it != _children.end())
 			{
                 child->setParent(nullptr);
-				_children.erase(it);
+				_children.a.erase(it);
 			}
 		}
 
@@ -206,7 +210,7 @@ namespace dagbase
 		{
 			if (index < _children.size())
 			{
-				return _children[index];
+				return _children.a[index];
 			}
 
 			return nullptr;
@@ -258,7 +262,7 @@ namespace dagbase
 		SignalPathMap _signalPaths;
         typedef dagbase::VectorMapFromId<std::int64_t, dagbase::Port*> PortMap;
         PortMap _ports;
-		typedef std::vector<Graph*> GraphArray;
+		typedef dagbase::SearchableArray<std::vector<Graph*>> GraphArray;
 		GraphArray _children;
         dagbase::NodeID _nextNodeID{0};
         dagbase::PortID _nextPortID{0};
