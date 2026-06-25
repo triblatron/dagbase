@@ -5,6 +5,7 @@
 #include "NodeCategory.h"
 #include "Port.h"
 #include "MetaPort.h"
+#include "Variant.h"
 
 #include <string>
 #include <stdexcept>
@@ -224,6 +225,8 @@ namespace dagbase
 
         //! Pretty-print this node for debugging purposes.
         virtual void debug(dagbase::DebugPrinter& printer) const;
+
+	    Variant find(std::string_view path) const;
 
         //! Convert this Node to a Lua representation.
         virtual std::ostream& toLua(std::ostream& str);

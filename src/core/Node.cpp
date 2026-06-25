@@ -1,7 +1,7 @@
 #include "config/config.h"
 
 #include "core/Node.h"
-#include "../../include/core/NodeDescriptor.h"
+#include "core/NodeDescriptor.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
 #include "util/DebugPrinter.h"
@@ -13,6 +13,8 @@
 #include "imgui.h"
 
 #include <iostream>
+
+#include "util/Searchable.h"
 
 namespace dagbase
 {
@@ -170,6 +172,17 @@ namespace dagbase
         printer.println("name: " + _name);
         printer.println("category: " + std::string(NodeCategory::toString(_category)));
         printer.println("flags: " + std::string(Node::flagsToString(_flags)));
+    }
+
+    Variant Node::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "class", std::string(className()));
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 
     std::ostream &Node::toLua(std::ostream &str)

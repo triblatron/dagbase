@@ -926,6 +926,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+	    retval = findInternal(path, "nodes", _nodes);
+	    if (retval.has_value())
+	        return retval;
+
         retval = findInternal(path, "ports", _ports);
         if (retval.has_value())
             return retval;
