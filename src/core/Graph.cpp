@@ -311,19 +311,20 @@ namespace dagbase
 
     void Graph::removePortsForNode(dagbase::Node* node)
     {
-        std::vector<PortMap::iterator> toRemove;
+        std::vector<PortID> toRemove;
 
-        for (auto it=_ports.begin(); it!=_ports.end(); ++it)
+        for (auto p : _ports)
         {
-            if (it->second->parent() == node)
-            {
-                toRemove.emplace_back(it);
-            }
+            if (p.second->parent() == node)
+                toRemove.emplace_back(p.first);
         }
 
         for (auto p : toRemove)
         {
-            _ports.erase(p);
+            if (auto port = _ports.find(p); port!=_ports.end())
+            {
+                _ports.erase(port);
+            }
         }
     }
 
