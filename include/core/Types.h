@@ -202,10 +202,7 @@ namespace dagbase
         };
         Result result;
         
-        Status()
-        {
-            // Do nothing.
-		}
+        Status() = default;
 
         explicit Status(StatusCode code)
         :

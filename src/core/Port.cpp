@@ -410,6 +410,10 @@ namespace dagbase
     {
         Variant retval;
 
+        retval = findEndpoint(path, "direction", std::uint32_t(_metaPort->direction));
+        if (retval.has_value())
+            return retval;
+
         retval = findEndpoint(path, "numIncomingConnections", std::uint32_t(numIncomingConnections()));
         if (retval.has_value())
             return retval;
