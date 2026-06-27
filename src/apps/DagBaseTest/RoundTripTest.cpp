@@ -164,3 +164,27 @@ INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
     std::make_tuple("STATUS_FAILED_TO_CREATE_GRAPH", dagbase::Status::STATUS_FAILED_TO_CREATE_GRAPH),
     std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
 ));
+
+class PortFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Port::PortFlags>>
+{
+
+};
+
+TEST_P(PortFlags_testRoundTrip, testRoundTrip)
+{
+    std::string str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::Port::portFlagsToString(value));
+    EXPECT_EQ(value, dagbase::Port::parsePortFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(PortFlags, PortFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("FLAGS_NONE", dagbase::Port::FLAGS_NONE),
+    std::make_tuple("OWN_META_PORT_BIT", dagbase::Port::OWN_META_PORT_BIT),
+    std::make_tuple("OWN_INPUTS_BIT", dagbase::Port::OWN_INPUTS_BIT),
+    std::make_tuple("OWN_OUTPUTS_BIT", dagbase::Port::OWN_OUTPUTS_BIT),
+    std::make_tuple("REMOVED_BIT", dagbase::Port::REMOVED_BIT),
+    std::make_tuple("OWN_INPUTS_BIT OWN_OUTPUTS_BIT", static_cast<dagbase::Port::PortFlags>(dagbase::Port::OWN_INPUTS_BIT | dagbase::Port::OWN_OUTPUTS_BIT))
+    ));
+

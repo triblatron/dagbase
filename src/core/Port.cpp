@@ -10,6 +10,7 @@
 #include "core/CloningFacility.h"
 #include "core/KeyGenerator.h"
 #include "util/Searchable.h"
+#include "util/enums.h"
 
 namespace dagbase
 {
@@ -419,7 +420,38 @@ namespace dagbase
 
         return {};
     }
-/*
+
+    std::string Port::portFlagsToString(PortFlags flags)
+    {
+        std::string retval;
+
+        if (flags == PortFlags::FLAGS_NONE)
+            return "FLAGS_NONE";
+
+        BIT_NAME(flags, OWN_META_PORT_BIT, retval)
+        BIT_NAME(flags, OWN_INPUTS_BIT, retval)
+        BIT_NAME(flags, OWN_OUTPUTS_BIT, retval)
+        BIT_NAME(flags, REMOVED_BIT, retval)
+
+        if (!retval.empty() && retval.back() == ' ')
+            retval.pop_back();
+
+        return retval;
+    }
+
+    Port::PortFlags Port::parsePortFlags(const std::string& str)
+    {
+        PortFlags retval{FLAGS_NONE};
+
+        TEST_BIT(OWN_META_PORT_BIT, str, retval )
+        TEST_BIT(OWN_INPUTS_BIT, str, retval )
+        TEST_BIT(OWN_OUTPUTS_BIT, str, retval )
+        TEST_BIT(REMOVED_BIT, str, retval )
+
+        return retval;
+    }
+
+    /*
     TypedPortBase::TypedPortBase(Node* parent, MetaPort* metaPort)
 		:
 		Port(parent, metaPort)

@@ -98,7 +98,8 @@ namespace dagbase
             FLAGS_NONE          = 0,
             OWN_META_PORT_BIT   = (1<<0),
             OWN_INPUTS_BIT      = (1<<1),
-            OWN_OUTPUTS_BIT     = (1<<2)
+            OWN_OUTPUTS_BIT     = (1<<2),
+            REMOVED_BIT         = (1<<3)
         };
     public:
 	    Port() = default;
@@ -183,6 +184,16 @@ namespace dagbase
             {
                 p->_removed = false;
             }
+        }
+
+	    void markRemoved()
+        {
+            _flags = static_cast<PortFlags>(_flags | REMOVED_BIT);
+        }
+
+	    bool isMarkedRemoved() const
+        {
+            return (_flags & REMOVED_BIT) != 0;
         }
 
         void markIncomingRemoved(Port *n)
@@ -335,6 +346,10 @@ namespace dagbase
         }
 
         Variant find(std::string_view path) const;
+
+	    static std::string portFlagsToString(PortFlags flags);
+
+	    static PortFlags parsePortFlags(const std::string& str);
     protected:
 		PortArray _outgoingConnections;
 		PortArray _incomingConnections;
