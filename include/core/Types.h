@@ -5,6 +5,7 @@
 #pragma once
 
 #include "config/DagBaseExport.h"
+#include "util/VectorSet.h"
 
 #include <unordered_set>
 #include <cstdint>
@@ -216,7 +217,7 @@ namespace dagbase
         static StatusCode parseStatusCode(const char* str);
     };
 
-    typedef std::unordered_set<Node*> NodeSet;
+    typedef dagbase::VectorSet<Node*> NodeSet;
 
     enum CopyOp : std::uint32_t
     {

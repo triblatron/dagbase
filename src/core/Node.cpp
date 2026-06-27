@@ -178,6 +178,10 @@ namespace dagbase
     {
         Variant retval;
 
+        retval = findEndpoint(path, "id", id());
+        if (retval.has_value())
+            return retval;
+
         retval = findEndpoint(path, "class", std::string(className()));
         if (retval.has_value())
             return retval;

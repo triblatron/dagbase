@@ -11,12 +11,12 @@
 #include "util/SearchableMap.h"
 #include "core/Signal.h"
 #include "core/Function.h"
+#include "core/ConfigurationElement.h"
 
 #include <string_view>
 
 namespace dagbase
 {
-    class ConfigurationElement;
     class HierarchicalStateMachine;
 
     class DAGBASE_API HierarchicalInput

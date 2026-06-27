@@ -6,8 +6,8 @@
 
 #include "config/DagBaseExport.h"
 
-#include "core/ConfigurationElement.h"
 #include "core/Atom.h"
+#include "core/Variant.h"
 
 #include <string_view>
 #include <cstring>
@@ -19,7 +19,7 @@ namespace dagbase
 	//! \param[in] key : const char* The key to check against.
 	//! \param[in] value : Value The value to return if the key is in the path.
     template<typename Value>
-	dagbase::ConfigurationElement::ValueType findEndpoint(std::string_view path, const char* key, Value value)
+	dagbase::Variant findEndpoint(std::string_view path, const char* key, Value value)
 	{
 		if (path == key)
 		{
@@ -71,7 +71,7 @@ namespace dagbase
 	//! \note We use std::invoke() to handle pointers and references uniformly.
 	//! \note We can avoid an initial string_view::find() because we are only interested in the first element of path.
 	template<typename Array>
-	dagbase::ConfigurationElement::ValueType findArray(std::string_view path, const Array& obj)
+	dagbase::Variant findArray(std::string_view path, const Array& obj)
 	{
 		if (path.length()>1 && path[0]=='[')
 		{
@@ -142,7 +142,7 @@ namespace dagbase
     //! \param[in] map : The map-like object on which to perform the lookup
     //! \note The key of the map is typically a string
 	template<typename Map>
-	ConfigurationElement::ValueType findMap(std::string_view path, const Map& obj)
+	dagbase::Variant findMap(std::string_view path, const Map& obj)
     {
     	if (!path.empty())
     	{
@@ -160,7 +160,7 @@ namespace dagbase
     }
 
 	template<typename Map>
-	ConfigurationElement::ValueType findMapFromInteger(std::string_view path, const Map& obj)
+	dagbase::Variant findMapFromInteger(std::string_view path, const Map& obj)
 	{
 		if (path.length() > 1 && path[0] == '[')
 		{
@@ -185,7 +185,7 @@ namespace dagbase
 	}
     //! Variation of findMap() for maps indexed by Atom
     template<typename Map>
-	ConfigurationElement::ValueType findMapFromAtom(std::string_view path, const Map& obj)
+	dagbase::Variant findMapFromAtom(std::string_view path, const Map& obj)
     {
     	if (!path.empty())
     	{
@@ -205,7 +205,7 @@ namespace dagbase
 
     //! Variation of findMap() for maps indexed by a pair of Atom.
 	template<typename Map>
-	ConfigurationElement::ValueType findMapFromAtomPair(std::string_view path, const Map& obj)
+	dagbase::Variant findMapFromAtomPair(std::string_view path, const Map& obj)
     {
     	if (!path.empty())
     	{

@@ -32,6 +32,11 @@ namespace dagbase
             _set.resize(n);
         }
 
+        void clear()
+        {
+            _set.clear();
+        }
+
         size_type size() const
         {
             return _set.size();
@@ -83,6 +88,13 @@ namespace dagbase
             }
         }
 
+        void insert(iterator first, iterator last)
+        {
+            for (auto it=first; it!=last; ++it)
+            {
+                insert(*it);
+            }
+        }
         template<typename... Args>
         std::pair<iterator, bool> emplace(Args&&... args)
         {
@@ -136,6 +148,7 @@ namespace dagbase
 
             _set.erase(it);
         }
+
         Variant find(std::string_view path) const
         {
             Variant retval;

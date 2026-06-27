@@ -47,6 +47,31 @@ namespace dagbase
             return m.emplace(std::forward<Args>(args)...);
         }
 
+        iterator begin()
+        {
+            return m.begin();
+        }
+
+        iterator end()
+        {
+            return m.end();
+        }
+
+        const_iterator begin() const
+        {
+            return m.begin();
+        }
+
+        const_iterator end() const
+        {
+            return m.end();
+        }
+
+        std::pair<iterator,bool> insert(value_type const& value)
+        {
+            return m.insert(value);
+        }
+        
         //! \note Assumes mapped_type is a pointer.
         value_type lookup(const value_type& key)
         {

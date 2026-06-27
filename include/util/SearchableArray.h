@@ -20,6 +20,16 @@ namespace dagbase
 
         Array a;
 
+        void clear()
+        {
+            a.clear();
+        }
+
+        bool empty() const
+        {
+            return a.empty();
+        }
+
         std::size_t size() const
         {
             return a.size();

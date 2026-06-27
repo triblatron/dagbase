@@ -9,6 +9,7 @@
 #include "core/Variant.h"
 #include "util/SearchableMap.h"
 #include "core/Atom.h"
+#include "core/ConfigurationElement.h"
 
 #include <string_view>
 #include <unordered_map>

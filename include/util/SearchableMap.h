@@ -39,9 +39,9 @@ namespace dagbase
             return m.emplace(std::forward<Args>(args)...);
         }
 
-        dagbase::ConfigurationElement::ValueType find(std::string_view path) const
+        dagbase::Variant find(std::string_view path) const
         {
-            dagbase::ConfigurationElement::ValueType retval;
+            dagbase::Variant retval;
 
             retval = findMap(path, m);
             if (retval.has_value())
@@ -128,7 +128,7 @@ namespace dagbase
 
         dagbase::Variant find(std::string_view path) const
         {
-            dagbase::ConfigurationElement::ValueType retval;
+            dagbase::Variant retval;
 
             retval = findMapFromAtom(path, m);
             if (retval.has_value())
@@ -199,7 +199,7 @@ namespace dagbase
 
         dagbase::Variant find(std::string_view path) const
         {
-            dagbase::ConfigurationElement::ValueType retval;
+            dagbase::Variant retval;
 
             retval = findMapFromAtomPair(path, m);
             if (retval.has_value())
