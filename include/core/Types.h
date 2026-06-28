@@ -6,12 +6,13 @@
 
 #include "config/DagBaseExport.h"
 #include "util/VectorSet.h"
+#include "util/SearchableSet.h"
+#include "core/ConfigurationElement.h"
 
 #include <unordered_set>
 #include <cstdint>
 #include <string>
 
-#include "util/SearchableSet.h"
 
 namespace dagbase
 {
@@ -137,6 +138,11 @@ namespace dagbase
             return id;\
         }                    \
                              \
+        void configure(dagbase::ConfigurationElement& config)                     \
+        {\
+            id = config.asInteger();\
+        }\
+        \
         bool valid() const   \
         {                    \
             return id!=-1;   \

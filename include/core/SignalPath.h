@@ -101,6 +101,11 @@ namespace dagbase
         std::ostream& toLua(std::ostream& str);
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+
+        static void resetID()
+        {
+            _nextID = 0;
+        }
     private:
         SignalPathID _id;
         Port* _source{nullptr};

@@ -6,8 +6,6 @@
 
 #include "config/DagBaseExport.h"
 
-#include "core/Colour.h"
-
 #include <string>
 #include <string_view>
 

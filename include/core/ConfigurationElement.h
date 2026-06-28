@@ -7,7 +7,6 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Variant.h"
-#include "core/Types.h"
 
 extern "C" {
 #include <lua.h>
@@ -242,8 +241,6 @@ namespace dagbase
                     *value = element->value();
                 }
         }
-
-        static void readConfig(ConfigurationElement& config, const char* name, PortID* value);
 
         template<typename Associative>
         static void readConfigSet(ConfigurationElement& config, const char* name, Associative* value)
