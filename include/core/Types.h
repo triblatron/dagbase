@@ -185,15 +185,13 @@ namespace dagbase
         enum ResultType
         {
             RESULT_NONE,
-            RESULT_NODE,
-            RESULT_PORT,
             RESULT_GRAPH,
             RESULT_NODE_ID,
             RESULT_PORT_ID,
             RESULT_SIGNAL_PATH_ID
         };
         ResultType resultType{RESULT_NONE};
-        typedef std::variant<Node*, Port*, Graph*, NodeID, PortID, TemplateID, SignalPathID> Result;
+        typedef std::variant<Graph*, NodeID, PortID, TemplateID, SignalPathID> Result;
         Result result;
         
         Status() = default;

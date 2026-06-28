@@ -181,8 +181,6 @@ TEST_P(ResultType_testRoundTrip, testRoundTrip)
 
 INSTANTIATE_TEST_SUITE_P(Status, ResultType_testRoundTrip, ::testing::Values(
     std::make_tuple("RESULT_NONE", dagbase::Status::RESULT_NONE),
-    std::make_tuple("RESULT_NODE", dagbase::Status::RESULT_NODE),
-    std::make_tuple("RESULT_PORT", dagbase::Status::RESULT_PORT),
     std::make_tuple("RESULT_GRAPH", dagbase::Status::RESULT_GRAPH),
     std::make_tuple("RESULT_NODE_ID", dagbase::Status::RESULT_NODE_ID),
     std::make_tuple("RESULT_PORT_ID", dagbase::Status::RESULT_PORT_ID),

@@ -66,8 +66,6 @@ namespace dagbase
         switch (value)
         {
             ENUM_NAME(RESULT_NONE)
-            ENUM_NAME(RESULT_NODE)
-            ENUM_NAME(RESULT_PORT)
             ENUM_NAME(RESULT_GRAPH)
             ENUM_NAME(RESULT_NODE_ID)
             ENUM_NAME(RESULT_PORT_ID)
@@ -79,8 +77,6 @@ namespace dagbase
     Status::ResultType Status::parseResultType(const char *str)
     {
         TEST_ENUM(RESULT_NONE, str);
-        TEST_ENUM(RESULT_NODE, str);
-        TEST_ENUM(RESULT_PORT, str);
         TEST_ENUM(RESULT_GRAPH, str);
         TEST_ENUM(RESULT_NODE_ID, str);
         TEST_ENUM(RESULT_PORT_ID, str);
