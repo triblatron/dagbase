@@ -188,24 +188,6 @@ namespace dagbase
         };
         ResultType resultType{RESULT_NONE};
         typedef std::variant<Node*, Port*, Graph*, NodeID, PortID, TemplateID, SignalPathID> Result;
-   //      {
-   //          Node* node{nullptr};
-   //          Port* port;
-   //          Graph* graph;
-   //          NodeID nodeId;
-   //          PortID portId;
-   //          TemplateID templateId;
-   //          SignalPathID signalPathId;
-   //
-   //          Result()
-   //          :
-   //          node(nullptr)
-   //          {
-			// 	// Do nothing.
-			// }
-   //
-   //          Result(const Result& other) = default;
-   //      };
         Result result;
         
         Status() = default;
