@@ -149,6 +149,16 @@ namespace dagbase
             _set.erase(it);
         }
 
+        const value_type& operator[](std::size_t index) const
+        {
+            return _set[index];
+        }
+
+        value_type& operator[](std::size_t index)
+        {
+            return _set[index];
+        }
+
         Variant find(std::string_view path) const
         {
             Variant retval;
