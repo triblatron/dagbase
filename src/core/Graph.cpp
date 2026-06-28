@@ -307,6 +307,7 @@ namespace dagbase
                 _nodeLookupByName.erase(it);
             }
         }
+	    removePortsForNode(node);
     }
 
     void Graph::removePortsForNode(dagbase::Node* node)

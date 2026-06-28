@@ -80,8 +80,6 @@ namespace dagbase
         //! Remove a non-null node.
         void removeNode(dagbase::Node* node);
 
-        void removePortsForNode(dagbase::Node* node);
-
         //! Destroy any SignalPaths this Node is involved in, then remove it using removeNode().
         void deleteNode(dagbase::Node* node);
 
@@ -275,5 +273,6 @@ namespace dagbase
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);
         static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();
+	    void removePortsForNode(dagbase::Node* node);
     };
 }
