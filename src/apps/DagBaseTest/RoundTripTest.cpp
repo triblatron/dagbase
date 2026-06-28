@@ -165,6 +165,30 @@ INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
     std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
 ));
 
+class ResultType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::ResultType>>
+{
+
+};
+
+TEST_P(ResultType_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Status::resultTypeToString(value));
+    EXPECT_EQ(value, dagbase::Status::parseResultType(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Status, ResultType_testRoundTrip, ::testing::Values(
+    std::make_tuple("RESULT_NONE", dagbase::Status::RESULT_NONE),
+    std::make_tuple("RESULT_NODE", dagbase::Status::RESULT_NODE),
+    std::make_tuple("RESULT_PORT", dagbase::Status::RESULT_PORT),
+    std::make_tuple("RESULT_GRAPH", dagbase::Status::RESULT_GRAPH),
+    std::make_tuple("RESULT_NODE_ID", dagbase::Status::RESULT_NODE_ID),
+    std::make_tuple("RESULT_PORT_ID", dagbase::Status::RESULT_PORT_ID),
+    std::make_tuple("RESULT_SIGNAL_PATH_ID", dagbase::Status::RESULT_SIGNAL_PATH_ID)
+));
+
 class PortFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Port::PortFlags>>
 {
 

@@ -15,6 +15,7 @@
 
 namespace dagbase
 {
+    class ConfigurationElement;
     class Graph;
     class Node;
     class Port;
@@ -186,23 +187,25 @@ namespace dagbase
             RESULT_SIGNAL_PATH_ID
         };
         ResultType resultType{RESULT_NONE};
-        union Result
-        {
-            Node* node{nullptr};
-            Port* port;
-            Graph* graph;
-            NodeID nodeId;
-            PortID portId;
-            TemplateID templateId;
-            SignalPathID signalPathId;
-            
-            Result()
-            :
-            node(nullptr)
-            {
-				// Do nothing.
-			}
-        };
+        typedef std::variant<Node*, Port*, Graph*, NodeID, PortID, TemplateID, SignalPathID> Result;
+   //      {
+   //          Node* node{nullptr};
+   //          Port* port;
+   //          Graph* graph;
+   //          NodeID nodeId;
+   //          PortID portId;
+   //          TemplateID templateId;
+   //          SignalPathID signalPathId;
+   //
+   //          Result()
+   //          :
+   //          node(nullptr)
+   //          {
+			// 	// Do nothing.
+			// }
+   //
+   //          Result(const Result& other) = default;
+   //      };
         Result result;
         
         Status() = default;
@@ -214,9 +217,19 @@ namespace dagbase
             // Do nothing.
         }
 
+        Status(const Status& other) = default;
+
+        Status& operator=(const Status& other) = default;
+
+        void configure(dagbase::ConfigurationElement& config);
+
         static const char* statusCodeToString(StatusCode value);
 
         static StatusCode parseStatusCode(const char* str);
+
+        static const char* resultTypeToString(ResultType value);
+
+        static ResultType parseResultType(const char* str);
     };
 
     struct CompareNodesById;

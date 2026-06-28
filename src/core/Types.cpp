@@ -2,6 +2,7 @@
 
 #include "core/Types.h"
 #include "util/enums.h"
+#include "core/ConfigurationElement.h"
 
 #include <cstring>
 
@@ -20,6 +21,12 @@ namespace dagbase
     //    STATUS_CYCLE_DETECTED,
     //    //! An initial invalid status.
     //    STATUS_UNKNOWN
+
+    void Status::configure(dagbase::ConfigurationElement &config)
+    {
+        ConfigurationElement::readConfig<StatusCode>(config, "statusCode", &parseStatusCode, &status);
+        ConfigurationElement::readConfig<ResultType>(config, "resultType", &parseResultType, &resultType);
+    }
 
     const char* Status::statusCodeToString(Status::StatusCode value)
     {
@@ -54,7 +61,35 @@ namespace dagbase
         return STATUS_UNKNOWN;
     }
 
-	PortType::Type PortType::parseFromString(const char* str)
+    const char * Status::resultTypeToString(ResultType value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(RESULT_NONE)
+            ENUM_NAME(RESULT_NODE)
+            ENUM_NAME(RESULT_PORT)
+            ENUM_NAME(RESULT_GRAPH)
+            ENUM_NAME(RESULT_NODE_ID)
+            ENUM_NAME(RESULT_PORT_ID)
+            ENUM_NAME(RESULT_SIGNAL_PATH_ID)
+        }
+        return "<error>";
+    }
+
+    Status::ResultType Status::parseResultType(const char *str)
+    {
+        TEST_ENUM(RESULT_NONE, str);
+        TEST_ENUM(RESULT_NODE, str);
+        TEST_ENUM(RESULT_PORT, str);
+        TEST_ENUM(RESULT_GRAPH, str);
+        TEST_ENUM(RESULT_NODE_ID, str);
+        TEST_ENUM(RESULT_PORT_ID, str);
+        TEST_ENUM(RESULT_SIGNAL_PATH_ID, str);
+
+        return RESULT_NONE;
+    }
+
+    PortType::Type PortType::parseFromString(const char* str)
 	{
 	    TEST_ENUM(TYPE_UINT8, str);
 	    TEST_ENUM(TYPE_INT8, str);
