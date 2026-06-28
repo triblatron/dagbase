@@ -25,7 +25,7 @@ namespace dagbase
 			return "Group";
 		}
 
-		return "Unknown";
+		return "<error>";
 	}
 
 	NodeCategory::Category NodeCategory::parse(const char* categoryString)

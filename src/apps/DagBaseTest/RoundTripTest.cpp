@@ -188,3 +188,25 @@ INSTANTIATE_TEST_SUITE_P(PortFlags, PortFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("OWN_INPUTS_BIT OWN_OUTPUTS_BIT", static_cast<dagbase::Port::PortFlags>(dagbase::Port::OWN_INPUTS_BIT | dagbase::Port::OWN_OUTPUTS_BIT))
     ));
 
+class NodeCategory_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::NodeCategory::Category>>
+{
+
+};
+
+TEST_P(NodeCategory_testRoundTrip, testRoundTrip)
+{
+    const char* categoryString = std::get<0>(GetParam());
+    dagbase::NodeCategory::Category category = std::get<1>(GetParam());
+    EXPECT_STREQ(categoryString, dagbase::NodeCategory::toString(category));
+    EXPECT_EQ(category, dagbase::NodeCategory::parse(categoryString));
+}
+
+INSTANTIATE_TEST_SUITE_P(NodeCategory, NodeCategory_testRoundTrip, ::testing::Values(
+    std::make_tuple("None",dagbase::NodeCategory::CAT_NONE),
+    std::make_tuple("Source",dagbase::NodeCategory::CAT_SOURCE),
+    std::make_tuple("Sink",dagbase::NodeCategory::CAT_SINK),
+    std::make_tuple("Condition",dagbase::NodeCategory::CAT_CONDITION),
+    std::make_tuple("Action",dagbase::NodeCategory::CAT_ACTION),
+    std::make_tuple("Group",dagbase::NodeCategory::CAT_GROUP),
+    std::make_tuple("Unknown",dagbase::NodeCategory::CAT_UNKNOWN)
+));
