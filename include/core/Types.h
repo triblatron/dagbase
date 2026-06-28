@@ -148,7 +148,7 @@ namespace dagbase
             return id!=-1;   \
         }\
     private:             \
-        std::int64_t id;     \
+        std::int64_t id{INVALID_ID};     \
                              \
     }
     INF_ID_DECLARE(NodeID);

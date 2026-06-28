@@ -334,7 +334,7 @@ namespace dagbase
         if (node)
             // Remove any SignalPaths this Node is involved in.
             depthFirstTraversal([node](Graph* child) {
-                child->eachSignalPath([child, node](SignalPath* signalPath) {
+                child->eachSignalPath([node](SignalPath* signalPath) {
                     if (signalPath->sourceNode() == node || signalPath->destNode() == node)
                     {
                         signalPath->markRemoved();
