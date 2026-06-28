@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "core/ConfigurationElement.h"
+#include "core/Variant.h"
 
 #include <cstdlib>
 #include <utility>
@@ -71,7 +71,7 @@ namespace dagbase
         {
             return m.insert(value);
         }
-        
+
         //! \note Assumes mapped_type is a pointer.
         value_type lookup(const value_type& key)
         {
@@ -83,7 +83,7 @@ namespace dagbase
 
         dagbase::Variant find(std::string_view path) const
         {
-            dagbase::ConfigurationElement::ValueType retval;
+            dagbase::Variant retval;
 
             retval = findSetFromAtom(path, m);
             if (retval.has_value())

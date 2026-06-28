@@ -10,6 +10,8 @@
 #include <string>
 #include <stdexcept>
 
+#include "util/SearchableSet.h"
+
 struct ImGuiContext;
 
 namespace dagbase
@@ -25,7 +27,7 @@ namespace dagbase
 	class DAGBASE_API Node : public dagbase::Class, public Editable
 	{
 	public:
-		enum NodeFlags : std::uint32_t
+	    enum NodeFlags : std::uint32_t
 		{
             NODE_NONE           = 0,
 			NODE_INPUT_BIT		= 1<<0,
@@ -242,4 +244,13 @@ namespace dagbase
 		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
         NodeFlags _flags{ NODE_NONE };
 	};
+
+    struct CompareNodesById
+    {
+        bool operator()(const Node* a, const Node* b) const
+        {
+            return a->id() < b->id();
+        }
+    };
+    typedef SearchableSet<VectorSet<Node*, CompareNodesById>> NodeSet;
 }

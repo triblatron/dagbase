@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <string>
 
+#include "util/SearchableSet.h"
+
 namespace dagbase
 {
     class Graph;
@@ -217,7 +219,8 @@ namespace dagbase
         static StatusCode parseStatusCode(const char* str);
     };
 
-    typedef dagbase::VectorSet<Node*> NodeSet;
+    struct CompareNodesById;
+    typedef SearchableSet<VectorSet<Node*, CompareNodesById>> NodeSet;
 
     enum CopyOp : std::uint32_t
     {

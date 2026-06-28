@@ -133,7 +133,7 @@ namespace dagbase
 
         for (auto &oldInput: _outgoingConnections)
         {
-            if (auto it = selection.find(oldInput->parent()); it == selection.end())
+            if (auto it = selection.m.find(oldInput->parent()); it == selection.end())
             {
                 // Create a new input port in newDest, without deep copying inputs and outputs.
                 Port *newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
@@ -164,7 +164,7 @@ namespace dagbase
         CloningFacility facility;
         for (auto &oldOutput: _incomingConnections)
         {
-            if (auto it = selection.find(oldOutput->parent()); it == selection.end())
+            if (auto it = selection.m.find(oldOutput->parent()); it == selection.end())
             {
                 Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newSource->addDynamicPort(newOutput);

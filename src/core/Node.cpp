@@ -65,7 +65,7 @@ namespace dagbase
     void dagbase::Node::reconnectInputs(NodeSet const& selection, Node *newSource, KeyGenerator& keyGen)
     {
         // for each output port do
-        for (auto portIndex = 0; portIndex < totalPorts(); ++portIndex)
+        for (std::size_t portIndex = 0; portIndex < totalPorts(); ++portIndex)
         {
             Port* p = dynamicPort(portIndex);
             if (p->dir() == PortDirection::DIR_IN)
@@ -80,7 +80,7 @@ namespace dagbase
     void dagbase::Node::reconnectOutputs(NodeSet const& selection, Node *newDest, KeyGenerator& keyGen)
     {
         // for each output port do
-        for (auto portIndex=0; portIndex<totalPorts(); ++portIndex)
+        for (std::size_t portIndex=0; portIndex<totalPorts(); ++portIndex)
         {
             Port* p = dynamicPort(portIndex);
             if (p->dir() == PortDirection::DIR_OUT)
