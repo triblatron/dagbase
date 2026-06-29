@@ -11,8 +11,7 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
     switch (op)
     {
     case dagbase::ConfigurationElement::RELOP_EQ:
-        ASSERT_TRUE(expected.has_value()) << path;
-        ASSERT_TRUE(actual.has_value()) << path;
+        ASSERT_EQ(expected.has_value(), actual.has_value()) << path;
         if (expected.value()->index() == dagbase::Variant::TYPE_DOUBLE && actual.value()->index() == dagbase::Variant::TYPE_DOUBLE)
         {
             EXPECT_NEAR(actual.asDouble(), expected.asDouble(), tolerance) << path;

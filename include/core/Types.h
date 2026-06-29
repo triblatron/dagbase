@@ -191,7 +191,7 @@ namespace dagbase
             RESULT_SIGNAL_PATH_ID
         };
         ResultType resultType{RESULT_NONE};
-        typedef std::variant<Graph*, NodeID, PortID, TemplateID, SignalPathID> Result;
+        typedef std::optional<std::variant<Graph*, NodeID, PortID, TemplateID, SignalPathID>> Result;
         Result result;
         
         Status() = default;
@@ -208,6 +208,8 @@ namespace dagbase
         Status& operator=(const Status& other) = default;
 
         void configure(dagbase::ConfigurationElement& config);
+
+        Variant find(std::string_view path) const;
 
         static const char* statusCodeToString(StatusCode value);
 

@@ -21,11 +21,75 @@ namespace dagbase
     //    STATUS_CYCLE_DETECTED,
     //    //! An initial invalid status.
     //    STATUS_UNKNOWN
-
     void Status::configure(dagbase::ConfigurationElement &config)
     {
         ConfigurationElement::readConfig<StatusCode>(config, "statusCode", &parseStatusCode, &status);
         ConfigurationElement::readConfig<ResultType>(config, "resultType", &parseResultType, &resultType);
+        switch (resultType)
+        {
+            case RESULT_NONE:
+                break;
+            case RESULT_GRAPH:
+                break;
+            case RESULT_NODE_ID:
+            {
+                NodeID value;
+                ConfigurationElement::readConfig<NodeID>(config, "nodeID", &value);
+                result.emplace(value);
+                break;
+            }
+            case RESULT_PORT_ID:
+            {
+                PortID value;
+                ConfigurationElement::readConfig<PortID>(config, "portID", &value);
+                result.emplace(value);
+                break;
+            }
+            case RESULT_SIGNAL_PATH_ID:
+            {
+                SignalPathID value;
+                ConfigurationElement::readConfig<SignalPathID>(config, "signalPathID", &value);
+                result.emplace(value);
+                break;
+            }
+        }
+    }
+
+    Variant Status::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "statusCode", std::uint32_t{status});
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "resultType", std::uint32_t{resultType});
+        if (retval.has_value())
+            return retval;
+
+        switch (resultType)
+        {
+            case RESULT_NONE:
+                break;
+            case RESULT_GRAPH:
+                break;
+            case RESULT_NODE_ID:
+                retval = findEndpoint(path, "nodeID", std::get<NodeID>(result.value()));
+
+                break;
+            case RESULT_PORT_ID:
+                retval = findEndpoint(path, "portID", std::get<PortID>(result.value()));
+
+                break;
+            case RESULT_SIGNAL_PATH_ID:
+                retval = findEndpoint(path, "signalPathID", std::get<SignalPathID>(result.value()));
+
+                break;
+        }
+        if (retval.has_value())
+            return retval;
+
+        return {};
     }
 
     const char* Status::statusCodeToString(Status::StatusCode value)
