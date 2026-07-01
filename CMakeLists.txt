@@ -98,6 +98,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Graph.h
         include/core/Editable.h
         include/core/CloningFacility.h
+        include/core/GraphNode.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -165,6 +166,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/Property.cpp
         src/core/TypeRegistry.cpp
 		src/core/Editable.cpp
+        src/core/GraphNode.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

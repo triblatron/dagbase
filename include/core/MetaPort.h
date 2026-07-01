@@ -23,6 +23,7 @@ namespace dagbase
         std::string name;
         PortType::Type type;
         PortDirection::Direction direction;
+        bool isOwned{true};
 
         MetaPort()
         :
@@ -47,6 +48,7 @@ namespace dagbase
             name = other.name;
             type = other.type;
             direction = other.direction;
+            isOwned = other.isOwned;
         }
 
         explicit MetaPort(dagbase::InputStream& str);

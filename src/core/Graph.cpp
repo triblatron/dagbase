@@ -52,7 +52,9 @@ namespace dagbase
             }
             for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
             {
-                addPort(node->dynamicPort(portIndex));
+                auto port = node->dynamicPort(portIndex);
+                if (node->dynamicMetaPort(portIndex)->isOwned)
+                    addPort(port);
             }
         }
 	}

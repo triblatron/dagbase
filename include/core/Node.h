@@ -79,6 +79,12 @@ namespace dagbase
         //! dynamic_cast<>() or similar.
         virtual Node* create(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& Lua) = 0;
 
+	    //! Clone ourself to support the Prototype pattern
+	    //! \note A deep copy of Ports is required.
+	    //! \note Since this method is virtual, we know the exact type
+	    //! and can just call the copy constructor on *this.
+	    virtual Node* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
+
         //! Write ourself to a binary output stream
         //! \param[in] str The stream
 	    //! \param[in] nodeLib : NodeLibrary The library from which the node came
@@ -102,12 +108,6 @@ namespace dagbase
         //! Base class implementation of operator==().
         //! \note Typically called by a concrete implementation of equals().
         bool operator==(const Node& other) const;
-
-        //! Clone ourself to support the Prototype pattern
-        //! \note A deep copy of Ports is required.
-        //! \note Since this method is virtual, we know the exact type
-        //! and can just call the copy constructor on *this.
-        virtual Node* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
 
         void setId(NodeID id)
         {
@@ -228,7 +228,7 @@ namespace dagbase
         //! Pretty-print this node for debugging purposes.
         virtual void debug(dagbase::DebugPrinter& printer) const;
 
-	    Variant find(std::string_view path) const;
+	    virtual Variant find(std::string_view path) const;
 
         //! Convert this Node to a Lua representation.
         virtual std::ostream& toLua(std::ostream& str);

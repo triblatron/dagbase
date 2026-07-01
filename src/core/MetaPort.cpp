@@ -32,6 +32,8 @@ namespace dagbase
         std::uint32_t rawDirection{0};
         str.readUInt32(&rawDirection);
         direction = static_cast<PortDirection::Direction>(rawDirection);
+        str.readField(&fieldName);
+        str.readBool(&isOwned);
         str.readFooter();
     }
 
@@ -44,6 +46,8 @@ namespace dagbase
         str.writeUInt32(type);
         str.writeField("direction");
         str.writeUInt32(direction);
+        str.writeField("isOwned");
+        str.writeBool(isOwned);
         str.writeFooter();
 
         return str;
@@ -64,6 +68,8 @@ namespace dagbase
         str.readField(&fieldName);
         str.readUInt32(&rawDirection);
         direction = static_cast<PortDirection::Direction>(rawDirection);
+        str.readField(&fieldName);
+        str.readBool(&isOwned);
         str.readFooter();
 
         return str;
@@ -85,6 +91,9 @@ namespace dagbase
         {
             return false;
         }
+
+        if (isOwned != other.isOwned)
+            return false;
 
         return true;
     }

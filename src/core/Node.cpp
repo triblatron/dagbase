@@ -186,6 +186,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "totalPorts", static_cast<std::uint32_t>(totalPorts()));
+        if (retval.has_value())
+            return retval;
+
         return {};
     }
 
