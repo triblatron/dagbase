@@ -185,7 +185,6 @@ namespace dagbase
         enum ResultType
         {
             RESULT_NONE,
-            RESULT_GRAPH,
             RESULT_NODE_ID,
             RESULT_PORT_ID,
             RESULT_SIGNAL_PATH_ID

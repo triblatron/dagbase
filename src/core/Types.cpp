@@ -29,8 +29,6 @@ namespace dagbase
         {
             case RESULT_NONE:
                 break;
-            case RESULT_GRAPH:
-                break;
             case RESULT_NODE_ID:
             {
                 NodeID value;
@@ -70,8 +68,6 @@ namespace dagbase
         switch (resultType)
         {
             case RESULT_NONE:
-                break;
-            case RESULT_GRAPH:
                 break;
             case RESULT_NODE_ID:
                 retval = findEndpoint(path, "nodeID", std::get<NodeID>(result.value()));
@@ -130,7 +126,6 @@ namespace dagbase
         switch (value)
         {
             ENUM_NAME(RESULT_NONE)
-            ENUM_NAME(RESULT_GRAPH)
             ENUM_NAME(RESULT_NODE_ID)
             ENUM_NAME(RESULT_PORT_ID)
             ENUM_NAME(RESULT_SIGNAL_PATH_ID)
@@ -141,7 +136,6 @@ namespace dagbase
     Status::ResultType Status::parseResultType(const char *str)
     {
         TEST_ENUM(RESULT_NONE, str);
-        TEST_ENUM(RESULT_GRAPH, str);
         TEST_ENUM(RESULT_NODE_ID, str);
         TEST_ENUM(RESULT_PORT_ID, str);
         TEST_ENUM(RESULT_SIGNAL_PATH_ID, str);
