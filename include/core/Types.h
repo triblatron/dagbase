@@ -159,7 +159,7 @@ namespace dagbase
     //! A return value from an RPC.
     struct DAGBASE_API Status
     {
-        enum StatusCode
+        enum StatusCode : std::uint32_t
         {
             //! Success
             STATUS_OK,
@@ -182,7 +182,7 @@ namespace dagbase
         };
 
         StatusCode status{STATUS_UNKNOWN};
-        enum ResultType
+        enum ResultType : std::uint32_t
         {
             RESULT_NONE,
             RESULT_NODE_ID,
