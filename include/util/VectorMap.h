@@ -43,7 +43,6 @@ namespace dagbase
 				
 				if (!equalKey)
 				{
-					auto d = std::distance(_map.begin(), it);
 					auto itInsert = _map.insert(it, value);
 					return std::make_pair(itInsert, true);
 				}
@@ -207,7 +206,6 @@ namespace dagbase
 				
 				if (!equalKey)
 				{
-					auto d = std::distance(_map.begin(), it);
 					auto itInsert = _map.insert(it, value);
 					return std::make_pair(itInsert, true);
 				}

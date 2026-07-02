@@ -29,6 +29,16 @@ namespace dagbase
 
         GraphNode& operator=(GraphNode&& other) = default;
 
+        void setGraph(Graph* graph)
+        {
+            _graph = graph;
+        }
+
+        Graph* graph()
+        {
+            return _graph;
+        }
+
         [[nodiscard]]const char* className() const override
         {
             return "GraphNode";
@@ -103,6 +113,7 @@ namespace dagbase
         MetaPortArray _dynamicMetaPorts;
         typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;
         PortArray _dynamicPorts;
+        Graph* _graph{nullptr};
     };
 }
 #endif //DAGUI_GRAPHNODE_H

@@ -60,7 +60,7 @@ namespace dagbase
         	str.readFooter();
         }
 
-        void edit(ImGuiContext* context)
+        void edit(ImGuiContext* context) override
         {
             editType(metaPort()->name.c_str(), &_value);
         }

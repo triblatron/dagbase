@@ -62,7 +62,7 @@ namespace dagbase
     std::size_t Graph::totalSignalPaths() const
     {
         std::size_t total = 0;
-        depthFirstTraversal([this, &total](const SignalPath* signalPath) {
+        depthFirstTraversal([&total](const SignalPath* signalPath) {
             ++total;
             return true;
             });
@@ -930,7 +930,7 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-	    retval = findInternal(path, "nodes", _nodes);
+        retval = findInternal(path, "nodes", _nodes);
 	    if (retval.has_value())
 	        return retval;
 
