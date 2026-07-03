@@ -144,7 +144,7 @@ namespace dagbase
         //! Add a non-null dynamic port
         //! This is in addition to the intrinsic ports described by MetaPorts.
         //! \note The default implementation throws an exception
-		virtual void addDynamicPort(Port* port)
+		virtual void addDynamicPort(Port* port, MetaPort::Flags flags)
 		{
 			throw std::runtime_error("addDynamicPort():Not implemented for " + std::string(className()));
 		}

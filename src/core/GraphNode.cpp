@@ -21,11 +21,12 @@ namespace dagbase
             :
     Node(other, facility, copyOp, keyGen)
     {
-        for (auto p : other._dynamicPorts)
+        for (std::size_t i=0; i<other.totalPorts(); ++i)
         {
+            auto* p = other._dynamicPorts.a[i];
             auto portClone = p->clone(facility, copyOp, keyGen);
 
-            GraphNode::addDynamicPort(portClone);
+            GraphNode::addDynamicPort(portClone, other._dynamicMetaPorts[i].flags);
         }
     }
 
@@ -70,9 +71,10 @@ namespace dagbase
             dagbase::CloningFacility facility;
             Node::operator=(other);
 
-            for (auto p : other._dynamicPorts)
+            for (std::size_t i=0; i<other.totalPorts(); ++i)
             {
-                addDynamicPort(p->clone(facility, dagbase::CopyOp{0}, nullptr));
+                auto* p = other._dynamicPorts.a[i];
+                addDynamicPort(p->clone(facility, dagbase::CopyOp{0}, nullptr), other._dynamicMetaPorts[i].flags);
             }
         }
 

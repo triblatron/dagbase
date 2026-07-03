@@ -57,14 +57,14 @@ namespace dagbase
             return nullptr;
         }
 
-        void addDynamicPort(dagbase::Port* port) override
+        void addDynamicPort(dagbase::Port* port, MetaPort::Flags flags) override
         {
             if (port != nullptr)
             {
                 // We do not own the Port, so we are not its parent.
                 _dynamicPorts.a.emplace_back(port);
                 MetaPort desc;
-                desc.setIsOwned(false);
+                desc.flags = flags;
                 _dynamicMetaPorts.emplace_back(desc);
             }
         }

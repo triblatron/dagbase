@@ -30,14 +30,16 @@ namespace dagbase
 
         MetaPort() = default;
 
-        MetaPort(bool isOwned)
+        explicit MetaPort(Flags flags)
+            :
+        flags(flags)
         {
-            setIsOwned(isOwned);
+            // Do nothing
         }
 
         MetaPort(const MetaPort& other)
         {
-            setIsOwned(other.isOwned());
+            flags = other.flags;
         }
 
         void setFlag(Flags flag)

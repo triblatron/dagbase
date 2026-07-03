@@ -139,11 +139,11 @@ namespace dagbase
                 Port *newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 // Connect the output port to the new input port
                 // Disconnect the old input port
-                newDest->addDynamicPort(newInput);
+                newDest->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
                 newInput->_incomingConnections.emplace_back(this);
                 // Create a new output from this, without deep copying inputs and outputs.
                 Port *newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
-                newDest->addDynamicPort(newOutput);
+                newDest->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
                 newOutput->_outgoingConnections.emplace_back(oldInput);
                 auto itOld = oldInput->findIncomingConnection(*this);
                 if (itOld != oldInput->_incomingConnections.end())
@@ -167,11 +167,11 @@ namespace dagbase
             if (auto it = selection.m.find(oldOutput->parent()); it == selection.end())
             {
                 Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
-                newSource->addDynamicPort(newOutput);
+                newSource->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
                 newOutput->_outgoingConnections.emplace_back(this);
 
                 Port *newInput = this->clone(facility, CopyOp{ dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT }, &keyGen);
-                newSource->addDynamicPort(newInput);
+                newSource->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
                 newInput->_incomingConnections.emplace_back(oldOutput);
                 if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())
                 {
