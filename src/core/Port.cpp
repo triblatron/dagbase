@@ -14,12 +14,14 @@
 
 namespace dagbase
 {
-    Port::Port(PortID id, Node *parent, MetaPort *metaPort, PortFlags flags)
-            :
-            _id(id),
-            _metaPort(metaPort),
-            _parent(parent),
-            _flags(flags)
+    Port::Port(PortID id, Node *parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags)
+        :
+        _name(std::move(name)),
+        _type(type),
+        _direction(dir),
+        _id(id),
+        _parent(parent),
+        _flags(flags)
     {
         // Do nothing.
     }
@@ -34,10 +36,6 @@ namespace dagbase
                                {
                                    port->removeOutgoingConnection(this);
                                });
-        if (ownMetaPort())
-        {
-            delete _metaPort;
-        }
 
 //        if (_flags & OWN_INPUTS_BIT)
 //        {
@@ -57,10 +55,12 @@ namespace dagbase
     }
 
     Port::Port(const Port &other, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen)
-            :
-            _id(other._id),
-            _metaPort(new MetaPort(*other._metaPort)),
-            _parent(other._parent),
+        :
+        _name(other._name),
+        _type(other._type),
+        _direction(other._direction),
+        _id(other._id),
+        _parent(other._parent),
         _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
     {
         std::uint64_t otherId = 0;
@@ -187,13 +187,12 @@ namespace dagbase
         str.writeHeader("Port");
         str.writeField("id");
         str.writeInt64(_id);
-
-        str.writeField("metaPort");
-        if (str.writeRef(_metaPort))
-        {
-            _metaPort->write(str);
-        }
-
+        str.writeField("name");
+        str.writeString(_name, true);
+        str.writeField("type");
+        str.writeUInt32(_type);
+        str.writeField("direction");
+        str.writeUInt32(_direction);
         str.writeField("parent");
         if (str.writeRef(_parent))
         {
@@ -229,8 +228,10 @@ namespace dagbase
 
     std::ostream& Port::toLua(std::ostream &str)
     {
-        str << "id = " << std::int64_t(_id) << ", ";
-        _metaPort->toLua(str);
+        str << "id = " << _id << ", ";
+        str << "name = " << _name << ", ";
+        str << "type = " << PortType::toString(_type) << ", ";
+        str << "direction = " << PortDirection::toString(_direction) << ", ";
         str << "class = \"" << className() << "\", ";
         if (_parent!=nullptr)
         {
@@ -249,15 +250,9 @@ namespace dagbase
         printer.printIndent().print(this);
         printer.println("");
         printer.println("id: " + std::to_string(_id));
-        printer.println("metaPort:");
-        if (_metaPort!=nullptr)
-        {
-            printer.println("{");
-            printer.indent();
-            _metaPort->debug(printer);
-            printer.outdent();
-            printer.println("}");
-        }
+        printer.println("name: " + _name);
+        printer.println("type: " + std::string(PortType::toString(_type)));
+        printer.println("direction: " + std::string(PortDirection::toString(_direction)));
         if (_parent!=nullptr)
         {
             printer.println("parent:" + _parent->name() + "(" + std::to_string(_parent->id()) + ")");
@@ -304,11 +299,8 @@ namespace dagbase
     }
 
     Port::Port(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
-    :
-    _metaPort(nullptr),
-    _parent(nullptr)
     {
-        readFromStream(str, nodeLib, lua);
+        Port::readFromStream(str, nodeLib, lua);
     }
 
     dagbase::InputStream& Port::readFromStream(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua)
@@ -321,10 +313,17 @@ namespace dagbase
         std::int64_t id{0};
         str.readInt64(&id);
         _id = id;
-        dagbase::Stream::ObjId metaPortId = 0;
         str.readField(&fieldName);
-        _metaPort = str.readRef<MetaPort>(&metaPortId);
-        setOwnMetaPort(true);
+        str.readString(&_name, true);
+        str.readField(&fieldName);
+        std::uint32_t rawType{0};
+        str.readUInt32(&rawType);
+        _type = static_cast<PortType::Type>(rawType);
+        str.readField(&fieldName);
+        std::uint32_t rawDirection{0};
+        str.readUInt32(&rawDirection);
+        _direction = static_cast<PortDirection::Direction>(rawDirection);
+        dagbase::Stream::ObjId metaPortId = 0;
         //        dagbase::Stream::ObjId parentId = 0;
         str.readField(&fieldName);
         _parent = str.readRef<Node>("Node", nodeLib, lua);
@@ -359,14 +358,14 @@ namespace dagbase
 
     bool Port::operator==(const Port &other) const
     {
-        if ((_metaPort != nullptr && other._metaPort == nullptr) || (_metaPort == nullptr && other._metaPort != nullptr))
-        {
+        if (_name != other._name)
             return false;
-        }
-        if (_metaPort != nullptr && !(*_metaPort == *other._metaPort))
-        {
+
+        if (_type != other._type)
             return false;
-        }
+
+        if (_direction != other._direction)
+            return false;
 
         if (_parent!=nullptr && other._parent!=nullptr && _parent->id() != other._parent->id())
         {
@@ -410,7 +409,7 @@ namespace dagbase
     {
         Variant retval;
 
-        retval = findEndpoint(path, "direction", std::uint32_t(_metaPort->direction));
+        retval = findEndpoint(path, "direction", std::uint32_t(_direction));
         if (retval.has_value())
             return retval;
 

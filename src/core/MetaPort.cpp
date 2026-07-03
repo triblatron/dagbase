@@ -13,25 +13,12 @@
 namespace dagbase
 {
     MetaPort::MetaPort(dagbase::InputStream &str)
-    :
-    type(PortType::TYPE_UNKNOWN),
-    direction(PortDirection::DIR_UNKNOWN)
     {
         std::string className;
         std::string fieldName;
         str.readHeader(&className);
 
         str.addObj(this);
-        str.readField(&fieldName);
-        str.readString(&name, true);
-        std::uint32_t rawType{0};
-        str.readField(&fieldName);
-        str.readUInt32(&rawType);
-        str.readField(&fieldName);
-        type = static_cast<PortType::Type>(rawType);
-        std::uint32_t rawDirection{0};
-        str.readUInt32(&rawDirection);
-        direction = static_cast<PortDirection::Direction>(rawDirection);
         str.readField(&fieldName);
         str.readBool(&isOwned);
         str.readFooter();
@@ -40,12 +27,6 @@ namespace dagbase
     dagbase::OutputStream& MetaPort::write(dagbase::OutputStream& str) const
     {
         str.writeHeader("MetaPort");
-        str.writeField("name");
-        str.writeString(name, true);
-        str.writeField("type");
-        str.writeUInt32(type);
-        str.writeField("direction");
-        str.writeUInt32(direction);
         str.writeField("isOwned");
         str.writeBool(isOwned);
         str.writeFooter();
@@ -59,16 +40,6 @@ namespace dagbase
         std::string fieldName;
         str.readHeader(&className);
         str.readField(&fieldName);
-        str.readString(&name, true);
-        std::uint32_t rawType{0};
-        str.readField(&fieldName);
-        str.readUInt32(&rawType);
-        type = static_cast<PortType::Type>(rawType);
-        std::uint32_t rawDirection{0};
-        str.readField(&fieldName);
-        str.readUInt32(&rawDirection);
-        direction = static_cast<PortDirection::Direction>(rawDirection);
-        str.readField(&fieldName);
         str.readBool(&isOwned);
         str.readFooter();
 
@@ -77,21 +48,6 @@ namespace dagbase
 
     bool MetaPort::operator==(const MetaPort &other) const
     {
-        if (name != other.name)
-        {
-            return false;
-        }
-
-        if (type != other.type)
-        {
-            return false;
-        }
-
-        if (direction != other.direction)
-        {
-            return false;
-        }
-
         if (isOwned != other.isOwned)
             return false;
 
@@ -100,16 +56,12 @@ namespace dagbase
 
     void MetaPort::debug(dagbase::DebugPrinter& printer) const
     {
-        printer.println("name: " + name);
-        printer.println("type: " + std::to_string(type));
-        printer.println("direction: " + std::to_string(direction));
+        printer.println("isOwned: " + std::to_string(isOwned));
     }
 
     std::ostream &MetaPort::toLua(std::ostream &str) const
     {
-        str << "name = \"" << name << "\", ";
-        str << "type = \"" << PortType::toString(type) << "\", ";
-        str << "direction = \"" << PortDirection::toString(direction) << "\", ";
+        str << "isOwned = " << isOwned;
 
         return str;
     }

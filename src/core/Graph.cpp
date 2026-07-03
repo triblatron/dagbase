@@ -155,7 +155,7 @@ namespace dagbase
             dagbase::PortType::Type portType = dagbase::PortType::parseFromString(portTypeStr.c_str());
             std::string dirStr = portTable.stringForNameOrDefault("direction", "DIR_UNKNOWN");
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
-            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, new dagbase::MetaPort(portName, portType, portDir),value,dagbase::Port::OWN_META_PORT_BIT);
+            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, portName, portType, portDir,value,dagbase::Port::OWN_META_PORT_BIT);
             node->addDynamicPort(port);
         }
         else

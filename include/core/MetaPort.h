@@ -20,34 +20,19 @@ namespace dagbase
 
     struct DAGBASE_API MetaPort
     {
-        std::string name;
-        PortType::Type type;
-        PortDirection::Direction direction;
         bool isOwned{true};
 
-        MetaPort()
-        :
-        name("<unnamed>"),
-        type(PortType::TYPE_UNKNOWN),
-        direction(dagbase::PortDirection::DIR_UNKNOWN)
-        {
-            // Do nothing.
-        }
+        MetaPort() = default;
 
-        MetaPort(std::string name, PortType::Type type, PortDirection::Direction direction)
+        MetaPort(bool isOwned)
         :
-        name(std::move(name)),
-        type(type),
-        direction(direction)
+        isOwned(isOwned)
         {
             // Do nothing.
         }
 
         MetaPort(const MetaPort& other)
         {
-            name = other.name;
-            type = other.type;
-            direction = other.direction;
             isOwned = other.isOwned;
         }
 

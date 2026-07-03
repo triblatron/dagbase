@@ -68,9 +68,6 @@ namespace dagbase
                 // We do not own the Port, so we are not its parent.
                 _dynamicPorts.a.emplace_back(port);
                 MetaPort desc;
-                desc.name = port->name();
-                desc.type = port->type();
-                desc.direction = port->dir();
                 desc.isOwned = false;
                 _dynamicMetaPorts.emplace_back(desc);
             }

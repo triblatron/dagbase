@@ -104,7 +104,7 @@ namespace dagbase
     public:
 	    Port() = default;
 
-        explicit Port(PortID id, Node* parent, MetaPort *metaPort, PortFlags flags=FLAGS_NONE);
+        explicit Port(PortID id, Node* parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE);
 
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -132,22 +132,22 @@ namespace dagbase
 
         [[nodiscard]] const std::string &name() const
         {
-            return _metaPort->name;
+            return _name;
         }
 
         [[nodiscard]] PortType::Type type() const
         {
-            return _metaPort->type;
+            return _type;
         }
 
         void setDir(PortDirection::Direction dir)
         {
-            _metaPort->direction = dir;
+            _direction = dir;
         }
 
         [[nodiscard]] PortDirection::Direction dir() const
         {
-            return _metaPort->direction;
+            return _direction;
         }
 
         [[nodiscard]] const PortArray& outgoingConnections() const
@@ -288,11 +288,6 @@ namespace dagbase
 			}
 		}
 
-        [[nodiscard]]MetaPort* metaPort() const
-        {
-            return _metaPort;
-        }
-
         void setParent(Node* parent)
         {
             _parent = parent;
@@ -376,11 +371,13 @@ namespace dagbase
             return (_flags & OWN_META_PORT_BIT) != 0x0;
         }
 	private:
+        std::string _name;
+	    PortType::Type _type{PortType::TYPE_UNKNOWN};
+	    PortDirection::Direction _direction{PortDirection::DIR_UNKNOWN};
         PortID _id{ 0 };
-        MetaPort* _metaPort{nullptr};
         Node* _parent{nullptr};
         bool _removed{false};
 //        Value _value{0.0};
-        PortFlags _flags{0x0};
+        PortFlags _flags{FLAGS_NONE};
 	};
 }

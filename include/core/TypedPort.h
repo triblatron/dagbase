@@ -23,15 +23,15 @@ namespace dagbase
 		static_assert(std::is_convertible_v<T, std::string> || std::is_convertible_v<T, std::int64_t> || std::is_convertible_v<T, bool> || std::is_convertible_v<T, double>);
         TypedPort(dagbase::PortID id, std::string name, dagbase::PortType::Type type, dagbase::PortDirection::Direction dir, T value, dagbase::Node* parent = nullptr, std::uint32_t flags=0x0)
         :
-        Port(id, parent, new dagbase::MetaPort(std::move(name), type, dir), static_cast<PortFlags>(flags|Port::OWN_META_PORT_BIT)),
+        Port(id, parent, std::move(name), type, dir),
         _value(value)
         {
             setOwnMetaPort(true);
         }
 
-        TypedPort(dagbase::PortID id, dagbase::Node* parent, dagbase::MetaPort* metaPort, T value, PortFlags flags=FLAGS_NONE)
+        TypedPort(dagbase::PortID id, dagbase::Node* parent, std::string name, PortType::Type type, PortDirection::Direction direction, T value, PortFlags flags=FLAGS_NONE)
 			:
-			Port(id, parent, metaPort, flags),
+			Port(id, parent, name, type, direction, flags),
 			_value(value)
 		{
 			// Do nothing.
@@ -62,7 +62,7 @@ namespace dagbase
 
         void edit(ImGuiContext* context) override
         {
-            editType(metaPort()->name.c_str(), &_value);
+            editType(name().c_str(), &_value);
         }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override
@@ -158,7 +158,7 @@ namespace dagbase
                 return false;
             }
 
-            const TypedPort<T> & typed = dynamic_cast<const TypedPort<T>&>(other);
+            const auto & typed = dynamic_cast<const TypedPort<T>&>(other);
 
             if (_value != typed._value)
             {
