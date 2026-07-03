@@ -59,10 +59,6 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]virtual bool equals(const Node& other) const = 0;
 
-        //! Describe ourself
-	    //! \note This method is implemented in Node but is also abstract to force derived classes to implement it too.
-        virtual void describeNode(NodeDescriptor& descriptor) const = 0;
-
         //! \return A MetaPort corresponding to a given index.
         //! \param[in] index The index of the port, zero-based.
         [[nodiscard]]virtual const MetaPort * dynamicMetaPort(size_t index) const = 0;

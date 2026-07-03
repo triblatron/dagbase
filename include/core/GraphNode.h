@@ -47,10 +47,6 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]bool equals(const Node& other) const override;
 
-        //! Describe ourself
-        //! \note This method is implemented in Node but is also abstract to force derived classes to implement it too.
-        void describeNode(NodeDescriptor& descriptor) const override;
-
         [[nodiscard]]dagbase::MetaPort const* dynamicMetaPort(size_t index) const override
         {
             if (index<_dynamicMetaPorts.size())

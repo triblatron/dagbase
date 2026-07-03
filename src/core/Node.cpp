@@ -1,7 +1,6 @@
 #include "config/config.h"
 
 #include "core/Node.h"
-#include "core/NodeDescriptor.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
 #include "util/DebugPrinter.h"
@@ -51,14 +50,6 @@ namespace dagbase
 
             port->edit(context);
         }
-    }
-
-    //! Include ID, name and category.
-    void Node::describeNode(NodeDescriptor& descriptor) const
-    {
-        descriptor.id = _id;
-        descriptor.name = _name;
-        descriptor.category = _category;
     }
 
     //! Reconnect from newSource to each input Port whose parent is in selection by adding new Ports.

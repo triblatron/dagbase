@@ -84,10 +84,6 @@ namespace dagbase
         return operator==(other);
     }
 
-    void GraphNode::describeNode(NodeDescriptor &descriptor) const
-    {
-    }
-
     Node * GraphNode::create(dagbase::InputStream &str, NodeLibrary &nodeLib, dagbase::Lua &Lua)
     {
         return new GraphNode(str, nodeLib, Lua);

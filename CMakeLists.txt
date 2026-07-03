@@ -84,7 +84,6 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Node.h
         include/core/MetaPort.h
         include/core/NodeCategory.h
-        include/core/NodeDescriptor.h
         include/core/NodeLibrary.h
         include/core/Port.h
         include/core/SignalPath.h
@@ -154,7 +153,6 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/MetaPort.cpp
         src/core/Node.cpp
         src/core/NodeCategory.cpp
-        src/core/NodeDescriptor.cpp
         src/core/NodeLibrary.cpp
         src/core/SignalPath.cpp
         src/core/SignalPathDef.cpp
