@@ -8,27 +8,17 @@
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
 #include "util/DebugPrinter.h"
+#include "util/enums.h"
+
 #include <iostream>
 
 namespace dagbase
 {
-    MetaPort::MetaPort(dagbase::InputStream &str)
-    {
-        std::string className;
-        std::string fieldName;
-        str.readHeader(&className);
-
-        str.addObj(this);
-        str.readField(&fieldName);
-        str.readBool(&isOwned);
-        str.readFooter();
-    }
-
     dagbase::OutputStream& MetaPort::write(dagbase::OutputStream& str) const
     {
         str.writeHeader("MetaPort");
-        str.writeField("isOwned");
-        str.writeBool(isOwned);
+        str.writeField("flags");
+        str.writeUInt32(flags);
         str.writeFooter();
 
         return str;
@@ -40,7 +30,9 @@ namespace dagbase
         std::string fieldName;
         str.readHeader(&className);
         str.readField(&fieldName);
-        str.readBool(&isOwned);
+        std::uint32_t rawFlags;
+        str.readUInt32(&rawFlags);
+        flags = static_cast<Flags>(rawFlags);
         str.readFooter();
 
         return str;
@@ -48,7 +40,7 @@ namespace dagbase
 
     bool MetaPort::operator==(const MetaPort &other) const
     {
-        if (isOwned != other.isOwned)
+        if (flags != other.flags)
             return false;
 
         return true;
@@ -56,13 +48,37 @@ namespace dagbase
 
     void MetaPort::debug(dagbase::DebugPrinter& printer) const
     {
-        printer.println("isOwned: " + std::to_string(isOwned));
+        printer.println("flags: " + flagsToString(flags));
     }
 
     std::ostream &MetaPort::toLua(std::ostream &str) const
     {
-        str << "isOwned = " << isOwned;
+        str << "flags = \"" << flagsToString(flags) << '\"';
 
         return str;
+    }
+
+    std::string MetaPort::flagsToString(Flags flags)
+    {
+        std::string retval;
+
+        if (flags == FLAGS_NONE)
+            return "FLAGS_NONE";
+
+        BIT_NAME(flags, FLAGS_OWN_BIT, retval);
+
+        if (!retval.empty() && retval.back() == ' ')
+            retval.pop_back();
+
+        return retval;
+    }
+
+    MetaPort::Flags MetaPort::parseFlags(std::string const &str)
+    {
+        Flags value{FLAGS_NONE};
+
+        TEST_BIT(FLAGS_OWN_BIT, str, value);
+
+        return value;
     }
 }

@@ -231,3 +231,22 @@ INSTANTIATE_TEST_SUITE_P(NodeCategory, NodeCategory_testRoundTrip, ::testing::Va
     std::make_tuple("Group",dagbase::NodeCategory::CAT_GROUP),
     std::make_tuple("Unknown",dagbase::NodeCategory::CAT_UNKNOWN)
 ));
+
+class MetaPortFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char *, dagbase::MetaPort::Flags>>
+{
+
+};
+
+TEST_P(MetaPortFlags_testRoundTrip, testRoundTrip)
+{
+    std::string str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::MetaPort::flagsToString(value));
+    EXPECT_EQ(value, dagbase::MetaPort::parseFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(MetaPort, MetaPortFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("FLAGS_NONE", dagbase::MetaPort::FLAGS_NONE),
+    std::make_tuple("FLAGS_OWN_BIT", dagbase::MetaPort::FLAGS_OWN_BIT)
+    ));
