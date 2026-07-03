@@ -261,7 +261,7 @@ namespace dagbase
         {
             printer.println("parent:\"<none>\"");
         }
-        printer.println("remove: " + std::to_string(_removed));
+        printer.println("remove: " + std::to_string(isMarkedRemoved()));
         printer.println("value:");
         printer.println("outgoingConnections:");
         printer.println("{");

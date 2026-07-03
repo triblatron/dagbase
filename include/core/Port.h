@@ -169,7 +169,7 @@ namespace dagbase
         {
             return _incomingConnections.size() -
                    std::count_if(_incomingConnections.begin(), _incomingConnections.end(), [](Port *p) {
-                       return p->_removed;
+                       return p->isMarkedRemoved();
                    });
         }
 
@@ -177,18 +177,23 @@ namespace dagbase
         {
             for (auto p : _incomingConnections)
             {
-                p->_removed = false;
+                p->unmarkRemoved();
             }
 
             for (auto p : _outgoingConnections)
             {
-                p->_removed = false;
+                p->unmarkRemoved();
             }
         }
 
 	    void markRemoved()
         {
             _flags = static_cast<PortFlags>(_flags | REMOVED_BIT);
+        }
+
+	    void unmarkRemoved()
+        {
+            _flags = static_cast<PortFlags>(_flags & ~REMOVED_BIT);
         }
 
 	    bool isMarkedRemoved() const
@@ -202,7 +207,7 @@ namespace dagbase
             {
                 if (n==p)
                 {
-                    n->_removed = true;
+                    n->markRemoved();
                 }
             }
         }
@@ -213,7 +218,7 @@ namespace dagbase
             {
                 if (n==p)
                 {
-                    n->_removed = true;
+                    n->markRemoved();
                 }
             }
         }
@@ -376,8 +381,6 @@ namespace dagbase
 	    PortDirection::Direction _direction{PortDirection::DIR_UNKNOWN};
         PortID _id{ 0 };
         Node* _parent{nullptr};
-        bool _removed{false};
-//        Value _value{0.0};
         PortFlags _flags{FLAGS_NONE};
 	};
 }
