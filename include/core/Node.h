@@ -68,6 +68,8 @@ namespace dagbase
         //! \param[in] index The index of the Port, zero-based.
         virtual Port* dynamicPort(size_t index) = 0;
 
+	    virtual const Port* dynamicPort(size_t index) const = 0;
+
         //! Create a Node of the same type as this from a stream.
         //! \param[in] str The stream from which to read the data required to create the Node.
         //! \param[in] nodeLib The NodeLibrary to create Ports

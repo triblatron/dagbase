@@ -327,7 +327,7 @@ namespace dagbase
                    std::find(_outgoingConnections.begin(), _outgoingConnections.end(), other) != _outgoingConnections.end());
         }
 
-        virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
+        virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) const = 0;
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const override;
 
