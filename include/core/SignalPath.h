@@ -11,6 +11,7 @@
 #include "core/Variant.h"
 
 #include <string_view>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -54,12 +55,22 @@ namespace dagbase
             return _source;
         }
 
+        const Port* source() const
+        {
+            return _source;
+        }
+
         void setDest(Port* dest)
         {
             _dest = dest;
         }
 
         Port* dest()
+        {
+            return _dest;
+        }
+
+        const Port* dest() const
         {
             return _dest;
         }
@@ -116,4 +127,6 @@ namespace dagbase
         Flags _flags{0};
         static SignalPathID _nextID;
     };
+
+    std::ostream DAGBASE_API& operator<<(std::ostream& str, const dagbase::SignalPath& obj);
 }

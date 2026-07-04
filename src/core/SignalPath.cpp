@@ -14,6 +14,13 @@ namespace dagbase
 {
     SignalPathID SignalPath::_nextID = 0;
 
+    std::ostream & operator<<(std::ostream &str, const dagbase::SignalPath &obj)
+    {
+        str << "SignalPath { id: " << obj.id() << ", source: " << obj.source()->id() << ", dest: " << obj.dest()->id() << " }";
+
+        return str;
+    }
+
     dagbase::OutputStream &SignalPath::writeToStream(dagbase::OutputStream &str, NodeLibrary& nodeLib, Lua& lua) const
     {
         str.writeHeader("SignalPath");
@@ -53,7 +60,7 @@ namespace dagbase
             if (retval.has_value())
                 return retval;
         }
-        
+
         return {};
     }
 

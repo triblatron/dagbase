@@ -409,10 +409,24 @@ namespace dagbase
     {
         Variant retval;
 
+        retval = findEndpoint(path, "name", _name);
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "type", std::uint32_t(_type));
+        if (retval.has_value())
+            return retval;
+
         retval = findEndpoint(path, "direction", std::uint32_t(_direction));
         if (retval.has_value())
             return retval;
 
+        if (_parent)
+        {
+            retval = findEndpoint(path, "parentClass", _parent->className());
+            if (retval.has_value())
+                return retval;
+        }
         retval = findEndpoint(path, "numIncomingConnections", std::uint32_t(numIncomingConnections()));
         if (retval.has_value())
             return retval;

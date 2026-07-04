@@ -312,6 +312,36 @@ namespace dagbase
 	    removePortsForNode(node);
     }
 
+    void Graph::moveNode(dagbase::Node *node, dagbase::Graph *dest)
+    {
+	    if (node && dest)
+	    {
+//	        std::cerr << "Moving node " << node->id() << " of class " << node->className() << " with " << node->totalPorts() << " ports\n";
+
+	        std::vector<dagbase::SignalPath*> toMove;
+	        // Find all the SignalPaths this Node was involved in and transfer them to the destination Graph
+	        for (auto p : _signalPaths)
+	        {
+	            auto signalPath = p.second;
+	            if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+	            {
+	                toMove.emplace_back(signalPath);
+	            }
+	        }
+	        for (auto signalPath : toMove)
+	        {
+	            if (auto it=_signalPaths.find(signalPath->id()); it!=_signalPaths.end())
+	            {
+	                // std::cerr << "moveNode():Moving " << *it->second << '\n';
+	                _signalPaths.erase(it);
+	                dest->addSignalPath(signalPath);
+	            }
+	        }
+	        removeNode(node);
+	        dest->addNode(node);
+	    }
+    }
+
     void Graph::removePortsForNode(dagbase::Node* node)
     {
         std::vector<PortID> toRemove;
@@ -376,6 +406,7 @@ namespace dagbase
 
         return nullptr;
     }
+
 
     dagbase::Port* Graph::port(dagbase::PortID id)
     {
@@ -938,7 +969,7 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-	    retval = findInternal(path, "signalPaths", _signalPaths);
+        retval = findInternal(path, "signalPaths", _signalPaths);
 	    if (retval.has_value())
 	        return retval;
 
