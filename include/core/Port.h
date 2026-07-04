@@ -317,7 +317,7 @@ namespace dagbase
 
         virtual Transfer* setDestination(Transfer* transfer) = 0;
 
-        virtual void accept(ValueVisitor& visitor) = 0;
+        virtual void accept(ValueVisitor& visitor) const = 0;
 
         virtual void accept(SetValueVisitor& visitor) = 0;
 
@@ -345,7 +345,7 @@ namespace dagbase
             return "Port";
         }
 
-        Variant find(std::string_view path) const;
+        virtual Variant find(std::string_view path) const;
 
 	    static std::string portFlagsToString(PortFlags flags);
 

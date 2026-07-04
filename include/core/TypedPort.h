@@ -141,7 +141,7 @@ namespace dagbase
 			return transfer;
 		}
 
-        void accept(dagbase::ValueVisitor& visitor) override
+        void accept(dagbase::ValueVisitor& visitor) const override
         {
             visitor.setValue(_value);
         }
@@ -176,7 +176,22 @@ namespace dagbase
         }
 
         std::ostream& toLua(std::ostream& str) override;
-    private:
+
+		Variant find(std::string_view path) const override
+		{
+			Variant retval = Port::find(path);
+
+			if (retval.has_value())
+				return retval;
+
+			retval = findEndpoint(path, "value", _value);
+			if (retval.has_value())
+				return retval;
+
+			return {};
+		}
+
+	private:
 		T _value;
 	};
 
