@@ -65,6 +65,11 @@ namespace dagbase
             });
         }
 
+        bool contains(value_type value) const
+        {
+            return std::find(a.begin(), a.end(), value) != a.end();
+        }
+
         Variant find(std::string_view path) const
         {
             ConfigurationElement::ValueType retval;

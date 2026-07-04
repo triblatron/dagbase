@@ -36,6 +36,27 @@ namespace dagbase
         return str;
     }
 
+    dagbase::Variant SignalPath::find(std::string_view path) const
+    {
+        Variant retval;
+
+        if (_source)
+        {
+            retval = findEndpoint(path, "fromPort", _source->id());
+            if (retval.has_value())
+                return retval;
+        }
+
+        if (_dest)
+        {
+            retval = findEndpoint(path, "toPort", _dest->id());
+            if (retval.has_value())
+                return retval;
+        }
+        
+        return {};
+    }
+
 
     SignalPath::SignalPath(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
     :

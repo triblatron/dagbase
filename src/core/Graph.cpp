@@ -938,6 +938,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+	    retval = findInternal(path, "signalPaths", _signalPaths);
+	    if (retval.has_value())
+	        return retval;
+
         retval = findInternal(path, "children", _children);
         if (retval.has_value())
             return retval;

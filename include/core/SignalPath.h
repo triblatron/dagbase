@@ -8,8 +8,9 @@
 
 #include "core/Types.h"
 #include "core/Port.h"
+#include "core/Variant.h"
 
-#include <cstdint>
+#include <string_view>
 
 namespace dagbase
 {
@@ -101,6 +102,8 @@ namespace dagbase
         std::ostream& toLua(std::ostream& str);
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+
+        dagbase::Variant find(std::string_view path) const;
 
         static void resetID()
         {
