@@ -129,6 +129,15 @@ namespace dagbase
 		}
 	}
 
+    void Graph::removeSignalPath(dagbase::SignalPath *signalPath)
+    {
+	    if (signalPath)
+	        if (auto it=_signalPaths.find(signalPath->id()); it!=_signalPaths.end())
+	        {
+	            _signalPaths.erase(it);
+	        }
+    }
+
     void Graph::eachSignalPath(std::function<bool(SignalPath*)> f)
     {
         if (f)
@@ -288,12 +297,9 @@ namespace dagbase
     {
         if (signalPath != nullptr)
         {
-            if (auto it=_signalPaths.find(signalPath->id()); it!=_signalPaths.end())
-            {
-                _signalPaths.erase(it);
-            }
+            removeSignalPath(signalPath);
+            delete signalPath;
         }
-        delete signalPath;
     }
 
     void Graph::removeNode(dagbase::Node *node)
