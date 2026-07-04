@@ -79,6 +79,16 @@ namespace dagbase
             return nullptr;
         }
 
+        const dagbase::Port* dynamicPort(size_t index) const override
+        {
+            if (index<_dynamicPorts.size())
+            {
+                return _dynamicPorts.a[index];
+            }
+
+            return nullptr;
+        }
+
         std::size_t totalPorts() const override
         {
             return _dynamicPorts.size();

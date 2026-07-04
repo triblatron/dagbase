@@ -98,7 +98,7 @@ namespace dagbase
             return str;
         }
 
-        TypedPort* clone(dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen) override
+        TypedPort* clone(dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen) const override
         {
             return new TypedPort(*this, facility, copyOp, keyGen);
         }
