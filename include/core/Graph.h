@@ -138,7 +138,7 @@ namespace dagbase
         //! Add a non-null SignalPath
 		void addSignalPath(dagbase::SignalPath* signalPath);
 
-        void removeSignalPath(dagbase::SignalPath* signalPath);
+        void deleteSignalPath(dagbase::SignalPath* signalPath);
 
 		[[nodiscard]] dagbase::SignalPath* signalPath(dagbase::SignalPathID id)
 		{

@@ -284,7 +284,7 @@ namespace dagbase
         }
     }
 
-    void Graph::removeSignalPath(dagbase::SignalPath *signalPath)
+    void Graph::deleteSignalPath(dagbase::SignalPath *signalPath)
     {
         if (signalPath != nullptr)
         {
