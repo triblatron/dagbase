@@ -30,7 +30,8 @@ namespace dagbase
     :
     _id(other._id),
     _name(other._name),
-    _category(other._category)
+    _category(other._category),
+    _flags(other._flags)
     {
         std::uint64_t otherId = 0;
         bool shouldClone = facility.putOrig(const_cast<Node*>(&other), &otherId);
@@ -39,6 +40,8 @@ namespace dagbase
         {
             _id = keyGen->nextNodeID();
         }
+        _pos[0] = other._pos[0];
+        _pos[1] = other._pos[1];
     }
 
     void Node::edit(ImGuiContext* context)
