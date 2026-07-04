@@ -62,6 +62,13 @@ namespace dagbase
     GraphNode::~GraphNode()
     {
         // Do not delete our shared Ports.
+        for (std::size_t i=0; i<_dynamicPorts.size(); ++i)
+        {
+            if (_dynamicMetaPorts[i].isOwned())
+            {
+                delete _dynamicPorts.a[i];
+            }
+        }
     }
 
     GraphNode & GraphNode::operator=(const GraphNode &other)
