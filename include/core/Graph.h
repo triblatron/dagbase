@@ -30,7 +30,7 @@ namespace dagbase
     class Port;
 	class SignalPath;
     class SelectionInterface;
-    typedef std::vector<dagbase::Node*> NodeArray;
+    typedef dagbase::SearchableArray<std::vector<dagbase::Node*>> NodeArray;
 
     //! A collection of Nodes, SignalPaths and child Graphs.
 	class DAGBASE_API Graph : public KeyGenerator
@@ -53,6 +53,8 @@ namespace dagbase
         bool operator==(const Graph& other) const;
 
         Graph* clone(dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, KeyGenerator* keyGen);
+
+		Status cloneNodes(const NodeArray& internals, KeyGenerator& keyGen);
 
         [[nodiscard]]Graph* parent()
         {
