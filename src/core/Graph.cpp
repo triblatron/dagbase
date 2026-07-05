@@ -148,6 +148,16 @@ namespace dagbase
             }
     }
 
+    void Graph::eachSignalPath(std::function<bool(const SignalPath *)> f) const
+    {
+	    if (f)
+	        for (auto signalPath : _signalPaths)
+	        {
+	            if (!f(signalPath.second))
+	                break;
+	        }
+    }
+
     template<typename PortClass>
     void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
     {
@@ -913,12 +923,11 @@ namespace dagbase
         return new Graph(*this, facility, copyOp, keyGen);
     }
 
-    Status Graph::cloneNodes(const NodeArray &internals, KeyGenerator& keyGen)
+    Status Graph::cloneNodes(const NodeArray &internals, const Graph& sourceGraph, dagbase::CloningFacility& facility, KeyGenerator& keyGen)
     {
 	    Status status;
-        dagbase::CloningFacility facility;
         auto copyOp = dagbase::GENERATE_UNIQUE_ID_BIT;
-        std::unordered_set<dagbase::SignalPath*> originalSignalPaths;
+        std::unordered_set<const dagbase::SignalPath*> originalSignalPaths;
         std::unordered_set<dagbase::SignalPath*> clonedSignalPaths;
         std::vector<dagbase::Node*> clonedNodes;
         for (auto node : internals)
@@ -937,12 +946,12 @@ namespace dagbase
             }
 
             // Clone SignalPath we have not seen yet.
-            eachSignalPath([this, &clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](dagbase::SignalPath* signalPath) {
-                if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+            sourceGraph.eachSignalPath([this, &clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](const dagbase::SignalPath* signalPath) {
+                if (signalPath->sourceNode() == node || signalPath->destNode() == node || signalPath->source()->sharedParent() == node || signalPath->dest()->sharedParent() == node)
                 {
                     // Get the cloned nodes corresponding to source and destination
-                    dagbase::Node* fromOrig = signalPath->sourceNode();
-                    dagbase::Node* toOrig = signalPath->destNode();
+                    auto fromOrig = const_cast<Node*>(signalPath->sourceNode());
+                    auto toOrig = const_cast<Node*>(signalPath->destNode());
                     dagbase::Node* fromClone = nullptr;
                     dagbase::Node* toClone = nullptr;
                     std::uint64_t fromId = 0;
@@ -1010,27 +1019,36 @@ namespace dagbase
 
     Graph::Graph(const Graph & other, dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen)
     {
-        for (auto it=other._nodes.begin(); it!=other._nodes.end(); ++it)
-        {
-            std::uint64_t nodeId = 0;
+	    _nodeLib = other._nodeLib;
+	    NodeArray origNodes;
+	    for (auto p : other._nodes)
+	    {
+	        origNodes.a.emplace_back(p.second);
+	    }
 
-            dagbase::Node* copy = nullptr;
-
-            if (facility.putOrig(it->second,&nodeId))
-            {
-                copy = it->second->clone(facility, copyOp, keyGen);
-            }
-            else
-            {
-                copy = static_cast<dagbase::Node*>(facility.getClone(nodeId));
-            }
-
-            if (copy!=nullptr)
-            {
-                _nodes.insert(NodeMap::value_type (copy->id(), copy));
-            }
-        }
-
+	    cloneNodes(origNodes, other, facility, *this);
+        // for (auto it=other._nodes.begin(); it!=other._nodes.end(); ++it)
+        // {
+        //     std::uint64_t nodeId = 0;
+        //
+        //     dagbase::Node* copy = nullptr;
+        //
+        //     if (facility.putOrig(it->second,&nodeId))
+        //     {
+        //         copy = it->second->clone(facility, copyOp, keyGen);
+        //     }
+        //     else
+        //     {
+        //         copy = static_cast<dagbase::Node*>(facility.getClone(nodeId));
+        //     }
+        //
+        //     if (copy!=nullptr)
+        //     {
+        //         addNode(copy);
+        //         //_nodes.insert(NodeMap::value_type (copy->id(), copy));
+        //     }
+        // }
+        //
         for (auto it=other._children.begin(); it!=other._children.end(); ++it)
         {
             Graph* copy = (*it)->clone(facility, copyOp, keyGen);

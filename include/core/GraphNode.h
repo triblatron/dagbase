@@ -62,6 +62,7 @@ namespace dagbase
             if (port != nullptr)
             {
                 // We do not own the Port, so we are not its parent.
+                port->setSharedParent(this);
                 _dynamicPorts.a.emplace_back(port);
                 MetaPort desc;
                 desc.flags = flags;

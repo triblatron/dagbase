@@ -87,9 +87,29 @@ namespace dagbase
             return nullptr;
         }
 
+        [[nodiscard]]const Node* sourceNode() const
+        {
+            if (_source!=nullptr)
+            {
+                return _source->parent();
+            }
+
+            return nullptr;
+        }
+
         std::size_t destIndex() const;
 
         [[nodiscard]]Node* destNode()
+        {
+            if (_dest!=nullptr)
+            {
+                return _dest->parent();
+            }
+
+            return nullptr;
+        }
+
+        [[nodiscard]]const Node* destNode() const
         {
             if (_dest!=nullptr)
             {

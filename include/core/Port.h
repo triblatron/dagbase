@@ -303,6 +303,21 @@ namespace dagbase
             return _parent;
         }
 
+	    void setSharedParent(Node* parent)
+        {
+            _sharedParent = parent;
+        }
+
+	    Node* sharedParent()
+        {
+            return _sharedParent;
+        }
+
+	    const Node* sharedParent() const
+        {
+            return _sharedParent;
+        }
+
         virtual Transfer* connectTo(Port& dest) = 0;
 
         void reconnectTo(NodeSet const& selection, Node* newDest, KeyGenerator& keyGen);
@@ -381,6 +396,7 @@ namespace dagbase
 	    PortDirection::Direction _direction{PortDirection::DIR_UNKNOWN};
         PortID _id{ 0 };
         Node* _parent{nullptr};
+	    Node* _sharedParent{nullptr};
         PortFlags _flags{FLAGS_NONE};
 	};
 }

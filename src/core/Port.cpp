@@ -61,6 +61,7 @@ namespace dagbase
         _direction(other._direction),
         _id(other._id),
         _parent(other._parent),
+        _sharedParent(other._sharedParent),
         _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
     {
         std::uint64_t otherId = 0;
@@ -201,6 +202,14 @@ namespace dagbase
             str.writeString(className, true);
             _parent->writeToStream(str, nodeLib, lua);
         }
+        str.writeField("sharedParent");
+        if (str.writeRef(_sharedParent))
+        {
+            std::string className = _sharedParent->className();
+            str.writeField("sharedParent");
+            str.writeString(className, true);
+            _sharedParent->writeToStream(str, nodeLib, lua);
+        }
         str.writeField("numOutgoingConnections");
         str.writeUInt32(_outgoingConnections.size());
         str.writeField("outgoingConnections");
@@ -241,6 +250,14 @@ namespace dagbase
         {
             str << "parent = nil, ";
         }
+        if (_sharedParent!=nullptr)
+        {
+            str << "sharedParent = \"" << _sharedParent->name() << "\", ";
+        }
+        else
+        {
+            str << "sharedParent = nil, ";
+        }
 
         return str;
     }
@@ -260,6 +277,14 @@ namespace dagbase
         else
         {
             printer.println("parent:\"<none>\"");
+        }
+        if (_sharedParent!=nullptr)
+        {
+            printer.println("sharedParent:" + _parent->name() + "(" + std::to_string(_sharedParent->id()) + ")");
+        }
+        else
+        {
+            printer.println("sharedParent:\"<none>\"");
         }
         printer.println("remove: " + std::to_string(isMarkedRemoved()));
         printer.println("value:");
@@ -327,6 +352,8 @@ namespace dagbase
         //        dagbase::Stream::ObjId parentId = 0;
         str.readField(&fieldName);
         _parent = str.readRef<Node>("Node", nodeLib, lua);
+        str.readField(&fieldName);
+        _sharedParent = str.readRef<Node>("Node", nodeLib, lua);
         std::uint32_t numOutgoingConnections = 0;
         str.readField(&fieldName);
         str.readUInt32(&numOutgoingConnections);
@@ -430,6 +457,14 @@ namespace dagbase
             if (retval.has_value())
                 return retval;
         }
+
+        if (_sharedParent)
+        {
+            retval = findEndpoint(path, "sharedParentClass", _sharedParent->className());
+            if (retval.has_value())
+                return retval;
+        }
+
         retval = findEndpoint(path, "numIncomingConnections", std::uint32_t(numIncomingConnections()));
         if (retval.has_value())
             return retval;

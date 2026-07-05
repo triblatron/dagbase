@@ -54,7 +54,7 @@ namespace dagbase
 
         Graph* clone(dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, KeyGenerator* keyGen);
 
-		Status cloneNodes(const NodeArray& internals, KeyGenerator& keyGen);
+		Status cloneNodes(const NodeArray& internals, const Graph& sourceGraph, dagbase::CloningFacility& facility, KeyGenerator& keyGen);
 
         [[nodiscard]]Graph* parent()
         {
@@ -155,6 +155,8 @@ namespace dagbase
 		}
 
         void eachSignalPath(std::function<bool(SignalPath*)> f);
+
+        void eachSignalPath(std::function<bool(const SignalPath*)> f) const;
 
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.

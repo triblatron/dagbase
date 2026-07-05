@@ -7,6 +7,7 @@
 #include "core/GraphNode.h"
 #include "io/InputStream.h"
 #include "core/CloningFacility.h"
+#include "core/Graph.h"
 
 namespace dagbase
 {
@@ -21,6 +22,16 @@ namespace dagbase
             :
     Node(other, facility, copyOp, keyGen)
     {
+        std::uint64_t graphId{0};
+        bool shouldCloneGraph = facility.putOrig(other._graph, &graphId);
+        if (shouldCloneGraph)
+        {
+            _graph = other._graph->clone(facility, copyOp, keyGen);
+        }
+        else
+        {
+            _graph = static_cast<Graph*>(facility.getClone(graphId));
+        }
         for (std::size_t i=0; i<other.totalPorts(); ++i)
         {
             auto* p = other._dynamicPorts.a[i];

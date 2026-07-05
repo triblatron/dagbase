@@ -153,7 +153,7 @@ namespace dagbase
 
         //! Find the index of a given Port.
         //! \retval ~0ULL if the Port cannot be found.
-        [[nodiscard]]size_t indexOfPort(Port* port)
+        [[nodiscard]]size_t indexOfPort(const Port* port) const
         {
             for (std::size_t i=0; i<totalPorts(); ++i)
             {
