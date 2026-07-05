@@ -135,6 +135,8 @@ namespace dagbase
 
     bool Node::operator==(const Node &other) const
     {
+        if (this == &other)
+            return true;
         // if (_id != other._id)
         // {
         //     return false;
