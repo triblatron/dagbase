@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 #include <cstdint>
+#include <functional>
 
 namespace dagbase
 {
@@ -41,6 +42,8 @@ namespace dagbase
         {
             return _cloned.size();
         }
+
+        void eachClone(std::function<bool(void*)> f);
     private:
         typedef std::unordered_map<void*, std::int64_t> PointerToIdMap;
         PointerToIdMap _idLookup;

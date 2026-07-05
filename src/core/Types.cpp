@@ -100,6 +100,7 @@ namespace dagbase
             ENUM_NAME(STATUS_CYCLE_DETECTED)
             ENUM_NAME(STATUS_SYNTAX_ERROR)
             ENUM_NAME(STATUS_FAILED_TO_CREATE_GRAPH)
+            ENUM_NAME(STATUS_INTERNAL_ERROR)
             ENUM_NAME(STATUS_UNKNOWN)
         }
 
@@ -116,6 +117,7 @@ namespace dagbase
         TEST_ENUM(STATUS_CYCLE_DETECTED, value);
         TEST_ENUM(STATUS_SYNTAX_ERROR, value);
         TEST_ENUM(STATUS_FAILED_TO_CREATE_GRAPH, value);
+        TEST_ENUM(STATUS_INTERNAL_ERROR, value);
         TEST_ENUM(STATUS_UNKNOWN, value);
 
         return STATUS_UNKNOWN;

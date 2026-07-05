@@ -89,6 +89,30 @@ namespace dagbase
         str.readFooter();
     }
 
+    std::size_t SignalPath::sourceIndex() const
+    {
+        if (_source)
+        {
+            return _source->parent()->indexOfPort(_source);
+        }
+        else
+        {
+            return std::numeric_limits<std::size_t>::max();
+        }
+    }
+
+    std::size_t SignalPath::destIndex() const
+    {
+        if (_dest)
+        {
+            return _dest->parent()->indexOfPort(_dest);
+        }
+        else
+        {
+            return std::numeric_limits<std::size_t>::max();
+        }
+    }
+
     std::ostream &SignalPath::toLua(std::ostream &str)
     {
         str << "{ ";

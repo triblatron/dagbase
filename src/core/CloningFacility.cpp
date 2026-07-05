@@ -19,15 +19,13 @@ namespace dagbase
                 }
                 return false;
             }
-            else
+
+            if (id!= nullptr)
             {
-                if (id!= nullptr)
-                {
-                    *id = _idLookup.size()+1;
-                    _idLookup.insert(PointerToIdMap::value_type (ptr, *id));
-                }
-                return true;
+                *id = _idLookup.size()+1;
+                _idLookup.emplace(ptr, *id);
             }
+            return true;
         }
         else
         {
@@ -37,6 +35,21 @@ namespace dagbase
             }
 
             return false;
+        }
+    }
+
+    void CloningFacility::eachClone(std::function<bool(void *)> f)
+    {
+        if (f)
+        {
+            for (auto clone : _cloned)
+            {
+                if (clone)
+                {
+                    if (!f(clone))
+                        return;
+                }
+            }
         }
     }
 }

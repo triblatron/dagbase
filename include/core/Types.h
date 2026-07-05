@@ -177,6 +177,8 @@ namespace dagbase
             STATUS_SYNTAX_ERROR,
             //! We failed to create a Graph
             STATUS_FAILED_TO_CREATE_GRAPH,
+            //! Something went wrong in our internal structures
+            STATUS_INTERNAL_ERROR,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };

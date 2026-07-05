@@ -75,6 +75,8 @@ namespace dagbase
             return _dest;
         }
 
+        std::size_t sourceIndex() const;
+
         [[nodiscard]]Node* sourceNode()
         {
             if (_source!=nullptr)
@@ -84,6 +86,8 @@ namespace dagbase
 
             return nullptr;
         }
+
+        std::size_t destIndex() const;
 
         [[nodiscard]]Node* destNode()
         {
@@ -124,7 +128,7 @@ namespace dagbase
         SignalPathID _id;
         Port* _source{nullptr};
         Port* _dest{nullptr};
-        Flags _flags{0};
+        Flags _flags{FLAGS_NONE};
         static SignalPathID _nextID;
     };
 
