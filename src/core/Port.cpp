@@ -367,40 +367,40 @@ namespace dagbase
         if (_direction != other._direction)
             return false;
 
-        if (_parent!=nullptr && other._parent!=nullptr && _parent->id() != other._parent->id())
-        {
-            return false;
-        }
+        // if (_parent!=nullptr && other._parent!=nullptr && _parent->id() != other._parent->id())
+        // {
+        //     return false;
+        // }
 
-        if (_outgoingConnections.size() != other._outgoingConnections.size())
-        {
-            return false;
-        }
-
-        for (auto it=_outgoingConnections.begin(); it!=_outgoingConnections.end(); ++it)
-        {
-            auto it2 = other._outgoingConnections.begin() + std::distance(_outgoingConnections.begin(), it);
-
-            if ((*it)->id() != (*it2)->id())
-            {
-                return false;
-            }
-        }
-
-        if (_incomingConnections.size() != other._incomingConnections.size())
-        {
-            return false;
-        }
-
-        for (auto it=_incomingConnections.begin(); it!=_incomingConnections.end(); ++it)
-        {
-            auto it2 = other._incomingConnections.begin() + std::distance(_incomingConnections.begin(), it);
-
-            if ((*it)->id() != (*it2)->id())
-            {
-                return false;
-            }
-        }
+        // if (_outgoingConnections.size() != other._outgoingConnections.size())
+        // {
+        //     return false;
+        // }
+        //
+        // for (auto it=_outgoingConnections.begin(); it!=_outgoingConnections.end(); ++it)
+        // {
+        //     auto it2 = other._outgoingConnections.begin() + std::distance(_outgoingConnections.begin(), it);
+        //
+        //     if ((*it)->id() != (*it2)->id())
+        //     {
+        //         return false;
+        //     }
+        // }
+        //
+        // if (_incomingConnections.size() != other._incomingConnections.size())
+        // {
+        //     return false;
+        // }
+        //
+        // for (auto it=_incomingConnections.begin(); it!=_incomingConnections.end(); ++it)
+        // {
+        //     auto it2 = other._incomingConnections.begin() + std::distance(_incomingConnections.begin(), it);
+        //
+        //     if ((*it)->id() != (*it2)->id())
+        //     {
+        //         return false;
+        //     }
+        // }
 
         return true;
     }

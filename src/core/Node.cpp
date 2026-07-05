@@ -135,15 +135,15 @@ namespace dagbase
 
     bool Node::operator==(const Node &other) const
     {
-        if (_id != other._id)
-        {
-            return false;
-        }
-
-        if (_name != other._name)
-        {
-            return false;
-        }
+        // if (_id != other._id)
+        // {
+        //     return false;
+        // }
+        //
+        // if (_name != other._name)
+        // {
+        //     return false;
+        // }
 
         if (_category != other._category)
         {
