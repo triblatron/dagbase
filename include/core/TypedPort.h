@@ -62,7 +62,7 @@ namespace dagbase
 
         void edit(ImGuiContext* context) override
         {
-            editType(name().c_str(), &_value);
+            editType(std::to_string(id()).c_str(), &_value);
         }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua) const override

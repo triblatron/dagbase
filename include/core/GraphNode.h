@@ -112,6 +112,8 @@ namespace dagbase
         }
 
         dagbase::Variant find(std::string_view path) const override;
+
+        void debug(dagbase::DebugPrinter& printer) const override;
     private:
         typedef std::vector<dagbase::MetaPort> MetaPortArray;
         MetaPortArray _dynamicMetaPorts;

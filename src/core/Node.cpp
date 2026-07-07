@@ -47,6 +47,7 @@ namespace dagbase
     void Node::edit(ImGuiContext* context)
     {
         ImGui::SetCurrentContext(context);
+
         for (std::size_t i = 0; i < totalPorts(); ++i)
         {
             auto port = dynamicPort(i);
@@ -165,6 +166,7 @@ namespace dagbase
         printer.printIndent().print(this);
         printer.println("");
         printer.println("id: " + std::to_string(_id));
+        printer.println("class: " + std::string(className()));
         printer.println("name: " + _name);
         printer.println("category: " + std::string(NodeCategory::toString(_category)));
         printer.println("flags: " + std::string(Node::flagsToString(_flags)));

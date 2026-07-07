@@ -35,7 +35,17 @@ namespace dagbase
         for (std::size_t i=0; i<other.totalPorts(); ++i)
         {
             auto* p = other._dynamicPorts.a[i];
-            auto portClone = p->clone(facility, copyOp, keyGen);
+            std::uint64_t portId{0};
+            auto shouldClone = facility.putOrig(p, &portId);
+            Port* portClone = nullptr;
+            if (shouldClone)
+            {
+                portClone = p->clone(facility, copyOp, keyGen);
+            }
+            else
+            {
+                portClone = static_cast<Port*>(facility.getClone(portId));
+            }
 
             GraphNode::addDynamicPort(portClone, other._dynamicMetaPorts[i].flags);
         }
@@ -121,5 +131,28 @@ namespace dagbase
             return retval;
 
         return {};
+    }
+
+    void GraphNode::debug(dagbase::DebugPrinter &printer) const
+    {
+        Node::debug(printer);
+        printer.indent();
+        for (const auto port : _dynamicPorts)
+        {
+            port->debug(printer);
+        }
+        printer.outdent();
+        printer.indent();
+        for (const auto& metaPort : _dynamicMetaPorts)
+        {
+            metaPort.debug(printer);
+        }
+        printer.outdent();
+        if (_graph)
+        {
+            printer.indent();
+            _graph->debug(printer);
+            printer.outdent();
+        }
     }
 }

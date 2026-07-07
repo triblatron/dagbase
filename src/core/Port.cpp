@@ -267,6 +267,7 @@ namespace dagbase
         printer.printIndent().print(this);
         printer.println("");
         printer.println("id: " + std::to_string(_id));
+        printer.println("class: " + std::string(className()));
         printer.println("name: " + _name);
         printer.println("type: " + std::string(PortType::toString(_type)));
         printer.println("direction: " + std::string(PortDirection::toString(_direction)));
