@@ -49,6 +49,9 @@ namespace dagbase
 
             GraphNode::addDynamicPort(portClone, other._dynamicMetaPorts[i].flags);
         }
+        // The other will not have a Graph if we are cloning from a NodeLibrary.
+        if (other._graph && other._graph->parent())
+            other._graph->parent()->addChild(_graph);
     }
 
     GraphNode::GraphNode(dagbase::InputStream &str, dagbase::NodeLibrary &nodeLib, dagbase::Lua &lua)

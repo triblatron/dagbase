@@ -583,7 +583,7 @@ namespace dagbase
         }
         for (auto it=_nodes.begin(); it!=_nodes.end(); ++it)
         {
-            auto it2 = other._nodes.find(it->first);
+            auto it2 = other._nodes.begin() + std::distance(_nodes.begin(),it);
             if (it2 == other._nodes.end() || !it->second->equals(*(it2->second)))
             {
                 return false;
