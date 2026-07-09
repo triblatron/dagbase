@@ -281,7 +281,7 @@ namespace dagbase
         }
         if (_sharedParent!=nullptr)
         {
-            printer.println("sharedParent:" + _parent->name() + "(" + std::to_string(_sharedParent->id()) + ")");
+            printer.println("sharedParent:" + _sharedParent->name() + "(" + std::to_string(_sharedParent->id()) + ")");
         }
         else
         {
