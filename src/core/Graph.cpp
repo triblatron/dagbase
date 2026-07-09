@@ -1026,7 +1026,7 @@ namespace dagbase
 	        origNodes.a.emplace_back(p.second);
 	    }
 
-	    cloneNodes(origNodes, other, facility, *this);
+	    cloneNodes(origNodes, other, facility, *keyGen);
         // for (auto it=other._nodes.begin(); it!=other._nodes.end(); ++it)
         // {
         //     std::uint64_t nodeId = 0;
