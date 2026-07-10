@@ -199,7 +199,10 @@ namespace dagbase
     std::ostream &TypedPort<T>::toLua(std::ostream &str)
     {
         Port::toLua(str);
-        str << std::boolalpha << "value = " << _value;
+        if (type() == PortType::TYPE_STRING)
+            str << "value = \"" << _value << "\",";
+        else
+            str << std::boolalpha << "value = " << _value;
 
         return str;
     }

@@ -202,6 +202,7 @@ namespace dagbase
         str << "ports = { ";
         for (size_t i=0; i<totalPorts(); ++i)
         {
+            str << '[' << i+1 << "] = ";
             str << "{ ";
             dynamicPort(i)->toLua(str);
             str << " }, ";

@@ -124,14 +124,14 @@ TEST_P(PortType_testRoundTrip, testRoundTrip)
 }
 
 INSTANTIATE_TEST_SUITE_P(PortType, PortType_testRoundTrip, ::testing::Values(
-    std::make_tuple("TYPE_UINT8", dagbase::PortType::TYPE_UINT8, "TypedPort<uint8>"),
-    std::make_tuple("TYPE_INT8", dagbase::PortType::TYPE_INT8, "TypedPort<int8>"),
-    std::make_tuple("TYPE_UINT16", dagbase::PortType::TYPE_UINT16, "TypedPort<uint16>"),
-    std::make_tuple("TYPE_INT16", dagbase::PortType::TYPE_INT16, "TypedPort<int16>"),
-    std::make_tuple("TYPE_UINT32", dagbase::PortType::TYPE_UINT32, "TypedPort<uint32>"),
-    std::make_tuple("TYPE_INT32", dagbase::PortType::TYPE_INT32, "TypedPort<int32>"),
-    std::make_tuple("TYPE_UINT64", dagbase::PortType::TYPE_UINT64, "TypedPort<uint64>"),
-    std::make_tuple("TYPE_INT64", dagbase::PortType::TYPE_INT64, "TypedPort<int64>"),
+    std::make_tuple("TYPE_UINT8", dagbase::PortType::TYPE_UINT8, "TypedPort<uint8_t>"),
+    std::make_tuple("TYPE_INT8", dagbase::PortType::TYPE_INT8, "TypedPort<int8_t>"),
+    std::make_tuple("TYPE_UINT16", dagbase::PortType::TYPE_UINT16, "TypedPort<uint16_t>"),
+    std::make_tuple("TYPE_INT16", dagbase::PortType::TYPE_INT16, "TypedPort<int16_t>"),
+    std::make_tuple("TYPE_UINT32", dagbase::PortType::TYPE_UINT32, "TypedPort<uint32_t>"),
+    std::make_tuple("TYPE_INT32", dagbase::PortType::TYPE_INT32, "TypedPort<int32_t>"),
+    std::make_tuple("TYPE_UINT64", dagbase::PortType::TYPE_UINT64, "TypedPort<uint64_t>"),
+    std::make_tuple("TYPE_INT64", dagbase::PortType::TYPE_INT64, "TypedPort<int64_t>"),
     std::make_tuple("TYPE_FLOAT", dagbase::PortType::TYPE_FLOAT, "TypedPort<float>"),
     std::make_tuple("TYPE_DOUBLE", dagbase::PortType::TYPE_DOUBLE, "TypedPort<double>"),
     std::make_tuple("TYPE_STRING", dagbase::PortType::TYPE_STRING, "TypedPort<string>"),

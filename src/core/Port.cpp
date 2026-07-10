@@ -238,9 +238,9 @@ namespace dagbase
     std::ostream& Port::toLua(std::ostream &str)
     {
         str << "id = " << _id << ", ";
-        str << "name = " << _name << ", ";
-        str << "type = " << PortType::toString(_type) << ", ";
-        str << "direction = " << PortDirection::toString(_direction) << ", ";
+        str << "name = \"" << _name << "\", ";
+        str << "type = \"" << PortType::toString(_type) << "\", ";
+        str << "direction = \"" << PortDirection::toString(_direction) << "\", ";
         str << "class = \"" << className() << "\", ";
         if (_parent!=nullptr)
         {
