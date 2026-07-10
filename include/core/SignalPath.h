@@ -32,13 +32,14 @@ namespace dagbase
         :
         _id(_nextID++),
         _source(source),
-        _dest(dest),
-        _flags(FLAGS_NONE)
+        _dest(dest)
         {
             // Do nothing.
         }
 
         SignalPath(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
+
+        bool equals(const SignalPath& other) const;
 
         [[nodiscard]]SignalPathID id() const
         {

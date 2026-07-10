@@ -114,7 +114,18 @@ namespace dagbase
 
     bool GraphNode::equals(const Node &other) const
     {
-        return operator==(other);
+        bool baseEqual = operator==(other);
+        if (!baseEqual)
+            return false;
+
+        const auto& otherNode = dynamic_cast<const GraphNode&>(other);
+        if (!_graph && otherNode._graph)
+            return false;
+
+        if (_graph && !otherNode._graph)
+            return false;
+
+        return *_graph == *otherNode._graph;
     }
 
     Node * GraphNode::create(dagbase::InputStream &str, NodeLibrary &nodeLib, dagbase::Lua &Lua)

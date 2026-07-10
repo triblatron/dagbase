@@ -590,6 +590,24 @@ namespace dagbase
             }
         }
 
+	    for (auto it=_ports.begin(); it!=_ports.end(); ++it)
+	    {
+	        auto it2 = other._ports.begin() + std::distance(_ports.begin(),it);
+	        if (it2 == other._ports.end() || !it->second->equals(*(it2->second)))
+	        {
+	            return false;
+	        }
+	    }
+
+	    for (auto it=_signalPaths.begin(); it!=_signalPaths.end(); ++it)
+	    {
+	        auto it2 = other._signalPaths.begin() + std::distance(_signalPaths.begin(),it);
+	        if (it2 == other._signalPaths.end() || !it->second->equals(*(it2->second)))
+	        {
+	            return false;
+	        }
+	    }
+
         if (numChildren()!=other.numChildren())
         {
             return false;
@@ -986,7 +1004,7 @@ namespace dagbase
                     if (originalSignalPaths.find(signalPath) == originalSignalPaths.end())
                     {
                         originalSignalPaths.emplace(signalPath);
-                        auto clonedSignalPath = new dagbase::SignalPath(fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
+                        auto clonedSignalPath = new SignalPath(fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
                         clonedSignalPaths.emplace(clonedSignalPath);
                     }
                 }

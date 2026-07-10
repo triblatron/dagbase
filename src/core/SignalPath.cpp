@@ -89,6 +89,23 @@ namespace dagbase
         str.readFooter();
     }
 
+    bool SignalPath::equals(const SignalPath &other) const
+    {
+        if (_source && !other._source)
+            return false;
+
+        if (!_source && other._source)
+            return false;
+
+        // The unique identifier does not participate in equality.
+        if (_source && !_source->equals(*other._source))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     std::size_t SignalPath::sourceIndex() const
     {
         if (_source)
