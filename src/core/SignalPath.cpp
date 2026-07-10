@@ -91,6 +91,9 @@ namespace dagbase
 
     bool SignalPath::equals(const SignalPath &other) const
     {
+        if (this == &other)
+            return true;
+
         if (_source && !other._source)
             return false;
 
