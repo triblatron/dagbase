@@ -5,8 +5,10 @@
 
 #include "Types.h"
 #include "Value.h"
+#include "core/KeyGenerator.h"
 
 #include <string>
+#include <string_view>
 #include <array>
 
 namespace dagbase
@@ -21,7 +23,7 @@ namespace dagbase
     //! |class NodeLibrary
     //! A set of Nodes that can be instantiated by class name
     //! \note Uses the Prototype pattern.
-	class DAGBASE_API NodeLibrary
+	class DAGBASE_API NodeLibrary : public KeyGenerator
 	{
 	public:
         NodeLibrary() = default;
@@ -38,6 +40,8 @@ namespace dagbase
 
         //! Used by plugins to register a new node type.
         virtual void registerNode(Node* node) = 0;
+
+	    virtual void registerTemplate(std::string className, Node* templ) = 0;
 
         [[nodiscard]]virtual std::size_t numNodes() const = 0;
 
@@ -57,8 +61,10 @@ namespace dagbase
 
         virtual Port* instantiatePort(dagbase::InputStream& str, dagbase::Lua &lua) = 0;
 
+	    virtual Variant find(std::string_view path) const = 0;
+
 //        virtual NodeID nextNodeID() = 0;
 
-        virtual PortID nextPortID() = 0;
+        // virtual PortID nextPortID() = 0;
 	};
 }

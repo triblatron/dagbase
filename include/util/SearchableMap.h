@@ -33,6 +33,36 @@ namespace dagbase
             m.reserve(n);
         }
 
+        typename Map::size_type size() const
+        {
+            return m.size();
+        }
+
+        typename Map::value_type operator[](const typename Map::key_type& key) const
+        {
+            return m[key];
+        }
+
+        iterator begin()
+        {
+            return m.begin();
+        }
+
+        const_iterator begin() const
+        {
+            return m.begin();
+        }
+
+        iterator end()
+        {
+            return m.end();
+        }
+
+        const_iterator end() const
+        {
+            return m.end();
+        }
+
         template<typename... Args>
         std::pair<typename Map::iterator,bool> emplace(Args&&... args)
         {
