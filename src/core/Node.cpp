@@ -200,6 +200,7 @@ namespace dagbase
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
         printer.printIndent().print("category = \"").print(NodeCategory::toString(_category)).print("\",\n");
         printer.printIndent().print("flags = ").print(_flags).print(", \n");
+        printer.printIndent().print("position = {").print(_pos[0]).print(", ").print(_pos[1]).print("},\n");
         printer.println("ports =");
         printer.println("{");
         printer.indent();
