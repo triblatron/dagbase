@@ -28,6 +28,7 @@ namespace dagbase
     class Node;
     class NodeLibrary;
     class Port;
+    class DebugPrinter;
 	class SignalPath;
     class SelectionInterface;
     typedef dagbase::SearchableArray<std::vector<dagbase::Node*>> NodeArray;
@@ -166,7 +167,7 @@ namespace dagbase
         //! \retval nullptr if the file could not be found or there is a syntax error.
         static Graph* fromFile(dagbase::NodeLibrary& nodeLib, const char* filename, Status* status = nullptr);
 
-        std::ostream& toLua(std::ostream& str);
+        dagbase::DebugPrinter& toLua(dagbase::DebugPrinter& printer);
 
         enum TopoSortResult
         {
@@ -278,7 +279,7 @@ namespace dagbase
 		dagbase::Node* _lastAddedNode{ nullptr };
 
         void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
-        std::ostream& toLuaHelper(std::ostream & str);
+        DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);
         static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();

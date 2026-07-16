@@ -132,13 +132,13 @@ namespace dagbase
 			return _category;
 		}
 
-        void setPosition(std::int64_t x, std::int64_t y)
+        void setPosition(float x, float y)
         {
             _pos[0] = x;
             _pos[1] = y;
         }
 
-        [[nodiscard]]const std::int64_t* position() const
+        [[nodiscard]]const float* position() const
         {
             return _pos;
         }
@@ -229,7 +229,7 @@ namespace dagbase
 	    virtual Variant find(std::string_view path) const;
 
         //! Convert this Node to a Lua representation.
-        virtual std::ostream& toLua(std::ostream& str);
+        virtual DebugPrinter &toLua(DebugPrinter &printer);
 
         static std::string flagsToString(NodeFlags value);
 
@@ -238,7 +238,7 @@ namespace dagbase
         NodeID _id{NodeID::INVALID_ID};
         std::string _name;
         // Position to allow for manual layout
-        std::int64_t _pos[2]{0,0};
+        float _pos[2]{0,0};
 		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
         NodeFlags _flags{ NODE_NONE };
 	};

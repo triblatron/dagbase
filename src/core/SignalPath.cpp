@@ -133,15 +133,17 @@ namespace dagbase
         }
     }
 
-    std::ostream &SignalPath::toLua(std::ostream &str)
+    DebugPrinter &SignalPath::toLua(DebugPrinter &printer)
     {
-        str << "{ ";
-        str << "sourceNode = \"" << _source->parent()->name() << "\", ";
-        str << "sourcePort = " << _source->parent()->indexOfPort(_source) << ", ";
-        str << "destNode = \"" << _dest->parent()->name() << "\", ";
-        str << "destPort = " << _dest->parent()->indexOfPort(_dest);
-        str << " }";
+        printer.println("{");
+        printer.indent();
+        printer.printIndent().print("sourceNode = \"").print(_source->parent()->name()).print("\",\n");
+        printer.printIndent().print("sourcePort = ").print(_source->parent()->indexOfPort(_source)).print(", \n");
+        printer.printIndent().print("destNode = \"").print(_dest->parent()->name()).print("\",\n");
+        printer.printIndent().print("destPort = ").print(_dest->parent()->indexOfPort(_dest)).print(",\n");
+        printer.outdent();
+        printer.println("}");
 
-        return str;
+        return printer;
     }
 }

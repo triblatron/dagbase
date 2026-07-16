@@ -191,26 +191,33 @@ namespace dagbase
         return {};
     }
 
-    std::ostream &Node::toLua(std::ostream &str)
+    DebugPrinter &Node::toLua(DebugPrinter &printer)
     {
-        str << "{ ";
-        str << "id = " << _id << ", ";
-        str << "class = \"" << className() << "\", ";
-        str << "name = \"" << _name << "\", ";
-        str << "category = \"" << NodeCategory::toString(_category) << "\", ";
-        str << "flags = " << _flags << ", ";
-        str << "ports = { ";
+        printer.println("{");
+        printer.indent();
+        printer.printIndent().print("id = ").print(_id).print(",\n");
+        printer.printIndent().print("class = \"").print(className()).print("\",\n");
+        printer.printIndent().print("name = \"").print(_name).print("\",\n");
+        printer.printIndent().print("category = \"").print(NodeCategory::toString(_category)).print("\",\n");
+        printer.printIndent().print("flags = ").print(_flags).print(", \n");
+        printer.println("ports =");
+        printer.println("{");
+        printer.indent();
         for (size_t i=0; i<totalPorts(); ++i)
         {
-            str << '[' << i+1 << "] = ";
-            str << "{ ";
-            dynamicPort(i)->toLua(str);
-            str << " }, ";
+            printer.printIndent().print("[").print(i+1).print("] = \n");
+            printer.println("{ ");
+            printer.indent();
+            dynamicPort(i)->toLua(printer);
+            printer.outdent();
+            printer.println("},");
         }
-        str << " }";
-        str << " }";
+        printer.outdent();
+        printer.println("}");
+        printer.outdent();
+        printer.println("},");
 
-        return str;
+        return printer;
     }
 
     std::string Node::flagsToString(NodeFlags value)

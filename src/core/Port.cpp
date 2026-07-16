@@ -235,31 +235,31 @@ namespace dagbase
         return str;
     }
 
-    std::ostream& Port::toLua(std::ostream &str)
+    DebugPrinter &Port::toLua(DebugPrinter &printer)
     {
-        str << "id = " << _id << ", ";
-        str << "name = \"" << _name << "\", ";
-        str << "type = \"" << PortType::toString(_type) << "\", ";
-        str << "direction = \"" << PortDirection::toString(_direction) << "\", ";
-        str << "class = \"" << className() << "\", ";
+        printer.printIndent().print("id = ").print(_id).print(",\n");
+        printer.printIndent().print("name = \"").print(_name).print("\",\n");
+        printer.printIndent().print("type = \"").print(PortType::toString(_type)).print("\",\n");
+        printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
+        printer.printIndent().print("class = \"").print(className()).print("\",\n");
         if (_parent!=nullptr)
         {
-            str << "parent = \"" << _parent->name() << "\", ";
+            printer.printIndent().print("parent = \"").print(_parent->name()).print("\",\n");
         }
         else
         {
-            str << "parent = nil, ";
+            printer.println("parent = nil, ");
         }
         if (_sharedParent!=nullptr)
         {
-            str << "sharedParent = \"" << _sharedParent->name() << "\", ";
+            printer.printIndent().print("sharedParent = \"").print(_sharedParent->name()).print("\",\n");
         }
         else
         {
-            str << "sharedParent = nil, ";
+            printer.println("sharedParent = nil, ");
         }
 
-        return str;
+        return printer;
     }
 
     void Port::debug(dagbase::DebugPrinter& printer) const

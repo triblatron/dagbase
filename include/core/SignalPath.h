@@ -135,7 +135,7 @@ namespace dagbase
             return (_flags & REMOVED_BIT)!=0x0;
         }
 
-        std::ostream& toLua(std::ostream& str);
+        DebugPrinter &toLua(DebugPrinter &printer);
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 

@@ -353,7 +353,7 @@ namespace dagbase
 
         virtual void debug(dagbase::DebugPrinter& printer) const;
 
-        virtual std::ostream& toLua(std::ostream& str);
+        virtual DebugPrinter &toLua(DebugPrinter &printer);
 
         [[nodiscard]]const char* className() const override
         {

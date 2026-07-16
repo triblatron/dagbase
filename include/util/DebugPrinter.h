@@ -37,8 +37,16 @@ namespace dagbase
             }
         }
 
+        DebugPrinter& boolalpha()
+        {
+            if (_str)
+                (*_str) << std::boolalpha;
+
+            return *this;
+        }
+
         template<typename T>
-        DebugPrinter& print(T value)
+        DebugPrinter &print(T value)
         {
             if (_str!=nullptr)
             {

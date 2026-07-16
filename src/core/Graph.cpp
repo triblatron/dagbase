@@ -12,6 +12,7 @@
 #include "core/Types.h"
 #include "core/CloningFacility.h"
 #include "util/Searchable.h"
+#include "util/DebugPrinter.h"
 
 #include <queue>
 #include <algorithm>
@@ -655,44 +656,50 @@ namespace dagbase
         std::cout << std::flush;
     }
 
-    std::ostream& Graph::toLua(std::ostream& str)
+    DebugPrinter& Graph::toLua(DebugPrinter& printer)
     {
-        str << "graph = ";
-        toLuaHelper(str);
+        printer.println("graph = ");
+        toLuaHelper(printer);
 
-        return str;
+        return printer;
     }
 
-    std::ostream &Graph::toLuaHelper(std::ostream &str)
+    DebugPrinter &Graph::toLuaHelper(DebugPrinter &printer)
     {
-        str << "{";
-        str << "nodes = {";
+        printer.println("{");
+	    printer.indent();
+        printer.println("nodes = ");
+	    printer.println("{");
+	    printer.indent();
         for (auto node : _nodes)
         {
-            node.second->toLua(str);
-            str << ", ";
+            node.second->toLua(printer);
         }
+        printer.outdent();
+        printer.printIndent().print("},\n");
 
-        str << "},";
-
-        str << "signalpaths = {";
-
+        printer.println("signalpaths =").println("{");
+        printer.indent();
         for (auto sp : _signalPaths)
         {
-            sp.second->toLua(str);
+            sp.second->toLua(printer);
         }
-        str << "},";
-        str << "children = {";
-
+	    printer.outdent();
+        printer.println("},");
+        printer.println("children =").println("{");
+        printer.indent();
         for (auto child : _children)
         {
-            child->toLuaHelper(str);
+            child->toLuaHelper(printer);
         }
-        str << "}";
-        str << "}";
+	    printer.outdent();
+        printer.println("}");
+	    printer.outdent();
+        printer.println("}");
 
-        return str;
+        return printer;
     }
+
 
     Graph *Graph::fromFile(dagbase::NodeLibrary &nodeLib, const char *filename, Status* status)
     {
