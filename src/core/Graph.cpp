@@ -758,14 +758,20 @@ namespace dagbase
 
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
+                float x{};
+                float y{};
+                auto posTable = nodeTable.tableForName("position");
+                x = static_cast<float>(posTable.numberForIndexOrDefault(1, x));
+                y = static_cast<float>(posTable.numberForIndexOrDefault(2, y));
 
                 try
                 {
                     dagbase::Node* node = nodeLib.instantiateNode(rootKeyGen, className, name);
                     if (node != nullptr)
                     {
+                        node->setPosition(x, y);
                         std::size_t numNodesBefore = output->numNodes();
-                        nodes.insert(std::map<std::string, dagbase::Node*>::value_type(name, node));
+                        nodes.emplace(name, node);
                         {
                             dagbase::Table portsTable = nodeTable.tableForName("ports");
 

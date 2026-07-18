@@ -158,6 +158,12 @@ namespace dagbase
             return false;
         }
 
+        if (_pos[0] != other._pos[0])
+            return false;
+
+        if (_pos[1] != other._pos[1])
+            return false;
+
         return true;
     }
 
