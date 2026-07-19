@@ -176,7 +176,10 @@ namespace dagbase
             dagbase::PortType::Type portType = dagbase::PortType::parseFromString(portTypeStr.c_str());
             std::string dirStr = portTable.stringForNameOrDefault("direction", "DIR_UNKNOWN");
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
-            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, portName, portType, portDir,value,dagbase::Port::OWN_META_PORT_BIT);
+            std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
+
+            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, portName, portType, portDir,value, Port::parsePortFlags(portFlags));
+            // The metaPort flags are to be set later when we separately read the MetaPorts.
             node->addDynamicPort(port, dagbase::MetaPort::FLAGS_OWN_BIT);
         }
         else
@@ -842,8 +845,6 @@ namespace dagbase
                                 PortID portId = portTable.integerForNameOrDefault("id", -1);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
                                 node->dynamicPort(portIndex-1)->setId(portId);
-                                std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
-                                node->dynamicPort(portIndex-1)->setFlags(Port::parsePortFlags(portFlags));
                             }
                         }
                         {
@@ -857,6 +858,7 @@ namespace dagbase
                                 auto metaPort = node->dynamicMetaPort(portIndex-1);
                                 if (metaPort)
                                 {
+                                    // Can change ownership which is assumed in readTypedPort<>().
                                     metaPort->setFlags(MetaPort::parseFlags(flags));
                                 }
                             }
