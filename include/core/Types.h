@@ -237,4 +237,15 @@ namespace dagbase
     std::string DAGBASE_API copyOpToString(CopyOp op);
 
     CopyOp DAGBASE_API parseCopyOp(std::string_view str);
+
+    enum ComparisonFlags : std::uint32_t
+    {
+        CMP_NONE,
+        CMP_IDENT_BIT = 1U<<0U
+    };
+
+    std::string DAGBASE_API comparisonFlagsToString(ComparisonFlags value);
+
+    ComparisonFlags DAGBASE_API parseComparisonFlags(const std::string& str);
+
 };

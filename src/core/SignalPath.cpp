@@ -12,8 +12,6 @@
 
 namespace dagbase
 {
-    SignalPathID SignalPath::_nextID = 0;
-
     std::ostream & operator<<(std::ostream &str, const dagbase::SignalPath &obj)
     {
         str << "SignalPath { id: " << obj.id() << ", source: " << obj.source()->id() << ", dest: " << obj.dest()->id() << " }";
@@ -65,6 +63,15 @@ namespace dagbase
     }
 
 
+    SignalPath::SignalPath(SignalPathID id, Port *source, Port *dest)
+    :
+    _id(id),
+    _source(source),
+    _dest(dest)
+    {
+        // Do nothing.§
+    }
+
     SignalPath::SignalPath(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
     :
     _source(nullptr),
@@ -89,10 +96,16 @@ namespace dagbase
         str.readFooter();
     }
 
-    bool SignalPath::equals(const SignalPath &other) const
+    bool SignalPath::equals(const SignalPath &other, ComparisonFlags flags) const
     {
         if (this == &other)
             return true;
+
+        if ((flags & CMP_IDENT_BIT)!=0)
+        {
+            if (_id != other._id)
+                return false;
+        }
 
         if (_source && !other._source)
             return false;
@@ -101,7 +114,18 @@ namespace dagbase
             return false;
 
         // The unique identifier does not participate in equality.
-        if (_source && !_source->equals(*other._source))
+        if (_source && !_source->equals(*other._source, flags))
+        {
+            return false;
+        }
+
+        if (_dest && !other._dest)
+            return false;
+
+        if (!_dest && other._dest)
+            return false;
+
+        if (_dest && !_dest->equals(*other._dest, flags))
         {
             return false;
         }
@@ -137,10 +161,11 @@ namespace dagbase
     {
         printer.println("{");
         printer.indent();
-        printer.printIndent().print("sourceNode = \"").print(_source->parent()->name()).print("\",\n");
-        printer.printIndent().print("sourcePort = ").print(_source->parent()->indexOfPort(_source)).print(", \n");
-        printer.printIndent().print("destNode = \"").print(_dest->parent()->name()).print("\",\n");
-        printer.printIndent().print("destPort = ").print(_dest->parent()->indexOfPort(_dest)).print(",\n");
+        printer.printIndent().print("id = ").print(_id).print(",\n");
+        printer.printIndent().print("sourceNode = ").print(_source->parent()->id()).print(",\n");
+        printer.printIndent().print("sourcePort = ").print(_source->id()).print(", \n");
+        printer.printIndent().print("destNode = ").print(_dest->parent()->id()).print(",\n");
+        printer.printIndent().print("destPort = ").print(_dest->id()).print(",\n");
         printer.outdent();
         printer.println("}");
 

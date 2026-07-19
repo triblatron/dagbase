@@ -18,5 +18,7 @@ namespace dagbase
         virtual NodeID nextNodeID() = 0;
 
         virtual PortID nextPortID() = 0;
+
+        virtual SignalPathID nextSignalPathID() = 0;
     };
 }

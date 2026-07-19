@@ -151,7 +151,7 @@ namespace dagbase
             _value = visitor.value().operator T();
         }
 
-        [[nodiscard]]bool equals(const Port& other) const override
+        [[nodiscard]]bool equals(const Port& other, ComparisonFlags flags) const override
         {
             if (!Port::operator==(other))
             {

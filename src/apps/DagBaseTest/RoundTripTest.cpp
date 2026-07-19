@@ -251,3 +251,22 @@ INSTANTIATE_TEST_SUITE_P(MetaPort, MetaPortFlags_testRoundTrip, ::testing::Value
     std::make_tuple("FLAGS_NONE", dagbase::MetaPort::FLAGS_NONE),
     std::make_tuple("FLAGS_OWN_BIT", dagbase::MetaPort::FLAGS_OWN_BIT)
     ));
+
+class ComparisonFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string, dagbase::ComparisonFlags>>
+{
+
+};
+
+TEST_P(ComparisonFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::comparisonFlagsToString(value));
+    EXPECT_EQ(value, dagbase::parseComparisonFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(ComparisonFlags, ComparisonFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("CMP_NONE", dagbase::ComparisonFlags::CMP_NONE),
+    std::make_tuple("CMP_IDENT_BIT", dagbase::ComparisonFlags::CMP_IDENT_BIT)
+    ));

@@ -238,6 +238,8 @@ namespace dagbase
         //! Rstore this Graph from a buffer.
         void restore(dagbase::ByteBuffer* memento);
 
+	    bool equals(const dagbase::Graph& other, ComparisonFlags flags) const;
+
         //! Write this Graph to a stream.
         dagbase::OutputStream& write(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
@@ -254,6 +256,11 @@ namespace dagbase
         dagbase::PortID nextPortID() override
         {
             return _nextPortID++;
+        }
+
+	    dagbase::SignalPathID nextSignalPathID() override
+        {
+            return _nextSignalPathID++;
         }
 
         dagbase::Variant find(std::string_view path) const;
@@ -274,14 +281,16 @@ namespace dagbase
 		GraphArray _children;
         dagbase::NodeID _nextNodeID{0};
         dagbase::PortID _nextPortID{0};
+	    dagbase::SignalPathID _nextSignalPathID{0};
         Graph* _parent{nullptr};
         dagbase::NodeLibrary* _nodeLib{nullptr};
-		dagbase::Node* _lastAddedNode{ nullptr };
+
+	    dagbase::Node* _lastAddedNode{ nullptr };
 
         void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
         DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);
-        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status=nullptr);
+        static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph& rootGraph, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();
 	    void removePortsForNode(dagbase::Node* node);
     };

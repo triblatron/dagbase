@@ -28,18 +28,20 @@ namespace dagbase
             REMOVED_BIT = 1<<0
         };
     public:
-        SignalPath(Port* source, Port* dest)
+        SignalPath(KeyGenerator& keyGen, Port* source, Port* dest)
         :
-        _id(_nextID++),
+        _id(keyGen.nextSignalPathID()),
         _source(source),
         _dest(dest)
         {
             // Do nothing.
         }
 
+        SignalPath(SignalPathID id, Port* source, Port* dest);
+
         SignalPath(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
 
-        bool equals(const SignalPath& other) const;
+        bool equals(const SignalPath& other, ComparisonFlags flags) const;
 
         [[nodiscard]]SignalPathID id() const
         {
@@ -140,17 +142,11 @@ namespace dagbase
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         dagbase::Variant find(std::string_view path) const;
-
-        static void resetID()
-        {
-            _nextID = 0;
-        }
     private:
         SignalPathID _id;
         Port* _source{nullptr};
         Port* _dest{nullptr};
         Flags _flags{FLAGS_NONE};
-        static SignalPathID _nextID;
     };
 
     std::ostream DAGBASE_API& operator<<(std::ostream& str, const dagbase::SignalPath& obj);

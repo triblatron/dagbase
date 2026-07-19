@@ -463,6 +463,57 @@ namespace dagbase
         // Do nothing.
     }
 
+    bool Graph::equals(const dagbase::Graph &other, ComparisonFlags flags) const
+    {
+	    if (_nodes.size() != other._nodes.size())
+	    {
+	        return false;
+	    }
+	    for (auto it=_nodes.begin(); it!=_nodes.end(); ++it)
+	    {
+	        auto it2 = other._nodes.begin() + std::distance(_nodes.begin(),it);
+	        if (it2 == other._nodes.end() || !it->second->equals(*(it2->second), flags))
+	        {
+	            return false;
+	        }
+	    }
+
+	    for (auto it=_ports.begin(); it!=_ports.end(); ++it)
+	    {
+	        auto it2 = other._ports.begin() + std::distance(_ports.begin(),it);
+	        if (it2 == other._ports.end() || !it->second->equals(*(it2->second), flags))
+	        {
+	            return false;
+	        }
+	    }
+
+	    for (auto it=_signalPaths.begin(); it!=_signalPaths.end(); ++it)
+	    {
+	        auto it2 = other._signalPaths.begin() + std::distance(_signalPaths.begin(),it);
+	        if (it2 == other._signalPaths.end() || !it->second->equals(*(it2->second),flags))
+	        {
+	            return false;
+	        }
+	    }
+
+	    if (numChildren()!=other.numChildren())
+	    {
+	        return false;
+	    }
+
+	    for (auto it=_children.begin(); it!=_children.end(); ++it)
+	    {
+	        auto it2 = other._children.begin() + std::distance(_children.begin(),it);
+
+	        if (!(*it)->equals(*(*it2), flags))
+	        {
+	            return false;
+	        }
+	    }
+
+	    return true;
+    }
+
     dagbase::OutputStream& Graph::write(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const
     {
 	    str.writeHeader("Graph");
@@ -585,7 +636,7 @@ namespace dagbase
         for (auto it=_nodes.begin(); it!=_nodes.end(); ++it)
         {
             auto it2 = other._nodes.begin() + std::distance(_nodes.begin(),it);
-            if (it2 == other._nodes.end() || !it->second->equals(*(it2->second)))
+            if (it2 == other._nodes.end() || !it->second->equals(*(it2->second),CMP_NONE))
             {
                 return false;
             }
@@ -594,7 +645,7 @@ namespace dagbase
 	    for (auto it=_ports.begin(); it!=_ports.end(); ++it)
 	    {
 	        auto it2 = other._ports.begin() + std::distance(_ports.begin(),it);
-	        if (it2 == other._ports.end() || !it->second->equals(*(it2->second)))
+	        if (it2 == other._ports.end() || !it->second->equals(*(it2->second), CMP_NONE))
 	        {
 	            return false;
 	        }
@@ -603,7 +654,7 @@ namespace dagbase
 	    for (auto it=_signalPaths.begin(); it!=_signalPaths.end(); ++it)
 	    {
 	        auto it2 = other._signalPaths.begin() + std::distance(_signalPaths.begin(),it);
-	        if (it2 == other._signalPaths.end() || !it->second->equals(*(it2->second)))
+	        if (it2 == other._signalPaths.end() || !it->second->equals(*(it2->second), CMP_NONE))
 	        {
 	            return false;
 	        }
@@ -745,7 +796,7 @@ namespace dagbase
         return output;
     }
 
-    Graph* dagbase::Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, KeyGenerator& rootKeyGen, Graph* output, Status* status)
+    Graph* dagbase::Graph::fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph& rootGraph, Graph* output, Status* status)
     {
         std::map<std::string, dagbase::Node*> nodes;
         if (auto hasNodes = graphTable.isTable("nodes"); hasNodes)
@@ -756,19 +807,24 @@ namespace dagbase
             {
                 dagbase::Table nodeTable = nodesTable.tableForIndex(i);
 
+                NodeID id = nodeTable.integerForNameOrDefault("id", -1);
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
                 float x{};
                 float y{};
-                auto posTable = nodeTable.tableForName("position");
-                x = static_cast<float>(posTable.numberForIndexOrDefault(1, x));
-                y = static_cast<float>(posTable.numberForIndexOrDefault(2, y));
+                {
+                    auto posTable = nodeTable.tableForName("position");
+                    x = static_cast<float>(posTable.numberForIndexOrDefault(1, x));
+                    y = static_cast<float>(posTable.numberForIndexOrDefault(2, y));
+                }
 
                 try
                 {
-                    dagbase::Node* node = nodeLib.instantiateNode(rootKeyGen, className, name);
-                    if (node != nullptr)
+                    dagbase::Node* node = nodeLib.instantiateNode(rootGraph, className, name);
+
+                    if (node != nullptr && id.valid())
                     {
+                        node->setId(id);
                         node->setPosition(x, y);
                         std::size_t numNodesBefore = output->numNodes();
                         nodes.emplace(name, node);
@@ -778,8 +834,9 @@ namespace dagbase
                             for (int portIndex = 1; portIndex <= portsTable.length(); ++portIndex)
                             {
                                 dagbase::Table portTable = portsTable.tableForIndex(portIndex);
-
-                                output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootKeyGen);
+                                PortID portId = portTable.integerForNameOrDefault("id", -1);
+                                output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
+                                node->dynamicPort(portIndex-1)->setId(portId);
                             }
                         }
                         output->addNode(node);
@@ -812,9 +869,9 @@ namespace dagbase
 
                 auto* childGraph = new Graph();
                 childGraph->setNodeLibrary(&nodeLib);
-
-                childGraph = fromLuaGraphTable(childTable, nodeLib, rootKeyGen, childGraph);
                 output->addChild(childGraph);
+
+                childGraph = fromLuaGraphTable(childTable, nodeLib, rootGraph, childGraph);
             }
         }
         if (auto hasSignalPaths = graphTable.isTable("signalpaths"); hasSignalPaths)
@@ -824,29 +881,28 @@ namespace dagbase
             for (int i = 1; i <= signalPathsTable.length(); ++i)
             {
                 dagbase::Table signalPathTable = signalPathsTable.tableForIndex(i);
-
                 dagbase::Port* sourcePort = nullptr;
                 dagbase::Port* destPort = nullptr;
-                std::string sourceNodeID = signalPathTable.stringForNameOrDefault("sourceNode", "");
-                size_t sourcePortIndex = signalPathTable.integerForNameOrDefault("sourcePort", 0);
-                std::string destNodeID = signalPathTable.stringForNameOrDefault("destNode", "");
-                size_t destPortIndex = signalPathTable.integerForNameOrDefault("destPort", 0);
+                SignalPathID id = signalPathTable.integerForNameOrDefault("id", -1);
+                NodeID sourceNodeID = signalPathTable.integerForNameOrDefault("sourceNode", -1);
+                PortID sourcePortID = signalPathTable.integerForNameOrDefault("sourcePort", -1);
+                NodeID destNodeID = signalPathTable.integerForNameOrDefault("destNode", -1);
+                PortID destPortID = signalPathTable.integerForNameOrDefault("destPort", 0);
                 // Look up sourceNode and destNode
-                auto sourceNode = output->findNode(sourceNodeID);
+                auto sourceNode = rootGraph.node(sourceNodeID);
                 if (sourceNode != nullptr)
                 {
-                    sourcePort = sourceNode->dynamicPort(sourcePortIndex);
+                    sourcePort = rootGraph.port(sourcePortID);
                 }
-                auto destNode = output->findNode(destNodeID);
+                auto destNode = rootGraph.node(destNodeID);
                 if (destNode != nullptr)
                 {
-                    destPort = destNode->dynamicPort(destPortIndex);
+                    destPort = rootGraph.port(destPortID);
                 }
-                if (sourcePort != nullptr && destPort != nullptr)
+                if (id >=0 && sourcePort != nullptr && sourceNode==sourcePort->parent() && destPort != nullptr && destNode==destPort->parent())
                 {
-                    auto* signalPath = new dagbase::SignalPath(sourcePort, destPort);
-                    sourcePort->addOutgoingConnection(destPort);
-                    destPort->addIncomingConnection(sourcePort);
+                    auto* signalPath = new dagbase::SignalPath(id, sourcePort, destPort);
+                    sourcePort->connectTo(*destPort);
                     output->addSignalPath(signalPath);
                 }
             }
@@ -1017,7 +1073,7 @@ namespace dagbase
                     if (originalSignalPaths.find(signalPath) == originalSignalPaths.end())
                     {
                         originalSignalPaths.emplace(signalPath);
-                        auto clonedSignalPath = new SignalPath(fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
+                        auto clonedSignalPath = new SignalPath(keyGen, fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
                         clonedSignalPaths.emplace(clonedSignalPath);
                     }
                 }

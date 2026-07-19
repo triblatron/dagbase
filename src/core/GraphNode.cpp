@@ -112,7 +112,7 @@ namespace dagbase
         return *this;
     }
 
-    bool GraphNode::equals(const Node &other) const
+    bool GraphNode::equals(const Node &other, ComparisonFlags flags) const
     {
         bool baseEqual = operator==(other);
         if (!baseEqual)

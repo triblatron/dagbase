@@ -134,6 +134,17 @@ namespace dagbase
         return str;
     }
 
+    bool Node::equals(const Node &other, ComparisonFlags flags) const
+    {
+        if ((flags & CMP_IDENT_BIT)!=0)
+        {
+            if (_id != other._id)
+                return false;
+        }
+
+        return operator==(other);
+    }
+
     bool Node::operator==(const Node &other) const
     {
         if (this == &other)

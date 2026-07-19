@@ -246,6 +246,30 @@ namespace dagbase
         return value;
     }
 
+    std::string comparisonFlagsToString(ComparisonFlags value)
+    {
+        std::string retval;
+
+        if (value == CMP_NONE)
+            return "CMP_NONE";
+
+        BIT_NAME(value, CMP_IDENT_BIT, retval);
+
+        if (!retval.empty() && retval.back() == ' ')
+            retval.pop_back();
+
+        return retval;
+    }
+
+    ComparisonFlags parseComparisonFlags(const std::string& str)
+    {
+        ComparisonFlags value{CMP_NONE};
+
+        TEST_BIT(CMP_IDENT_BIT, str, value);
+
+        return value;
+    }
+
     PortDirection::Direction PortDirection::parseFromString(const char* str)
 	{
 		Direction dir = DIR_UNKNOWN;

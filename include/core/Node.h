@@ -30,9 +30,9 @@ namespace dagbase
 	    enum NodeFlags : std::uint32_t
 		{
             NODE_NONE           = 0,
-			NODE_INPUT_BIT		= 1<<0,
-			NODE_OUTPUT_BIT		= 1<<1,
-			NODE_INTERNAL_BIT	= 1<<2
+			NODE_INPUT_BIT		= 1U<<0U,
+			NODE_OUTPUT_BIT		= 1U<<1U,
+			NODE_INTERNAL_BIT	= 1U<<2U
 		};
 	public:
 		Node() = default;
@@ -57,7 +57,7 @@ namespace dagbase
 
         //! Compare for equality with another Node.
         //! \note Typically downcasts to a concrete type to determine a result.
-        [[nodiscard]]virtual bool equals(const Node& other) const = 0;
+        [[nodiscard]]virtual bool equals(const Node& other, ComparisonFlags flags) const;
 
         //! \return A MetaPort corresponding to a given index.
         //! \param[in] index The index of the port, zero-based.

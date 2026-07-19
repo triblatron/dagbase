@@ -45,7 +45,7 @@ namespace dagbase
         }
         //! Compare for equality with another Node.
         //! \note Typically downcasts to a concrete type to determine a result.
-        [[nodiscard]]bool equals(const Node& other) const override;
+        [[nodiscard]]bool equals(const Node& other, ComparisonFlags flags) const override;
 
         [[nodiscard]]dagbase::MetaPort const* dynamicMetaPort(size_t index) const override
         {

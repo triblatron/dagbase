@@ -346,9 +346,14 @@ namespace dagbase
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const override;
 
-        [[nodiscard]]virtual bool equals(const Port& other) const
+        [[nodiscard]]virtual bool equals(const Port& other, ComparisonFlags flags) const
         {
-            return false;
+            if ((flags & CMP_IDENT_BIT) != 0)
+            {
+                if (_id != other._id)
+                    return false;
+            }
+            return *this == other;
         }
 
         virtual void debug(dagbase::DebugPrinter& printer) const;
