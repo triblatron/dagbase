@@ -842,6 +842,8 @@ namespace dagbase
                                 PortID portId = portTable.integerForNameOrDefault("id", -1);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
                                 node->dynamicPort(portIndex-1)->setId(portId);
+                                std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
+                                node->dynamicPort(portIndex-1)->setFlags(Port::parsePortFlags(portFlags));
                             }
                         }
                         {

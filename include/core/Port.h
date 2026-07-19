@@ -150,6 +150,16 @@ namespace dagbase
             return _direction;
         }
 
+	    void setFlags(PortFlags flags)
+        {
+            _flags = flags;
+        }
+
+	    PortFlags flags() const
+        {
+            return _flags;
+        }
+
         [[nodiscard]] const PortArray& outgoingConnections() const
         {
             return _outgoingConnections;

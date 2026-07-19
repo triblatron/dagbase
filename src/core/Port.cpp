@@ -242,6 +242,7 @@ namespace dagbase
         printer.printIndent().print("type = \"").print(PortType::toString(_type)).print("\",\n");
         printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
         printer.printIndent().print("class = \"").print(className()).print("\",\n");
+        printer.printIndent().print("flags = \"").print(portFlagsToString(_flags)).print("\",\n");
         if (_parent!=nullptr)
         {
             printer.printIndent().print("parent = \"").print(_parent->name()).print("\",\n");
