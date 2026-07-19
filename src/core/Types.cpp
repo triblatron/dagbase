@@ -254,6 +254,7 @@ namespace dagbase
             return "CMP_NONE";
 
         BIT_NAME(value, CMP_IDENT_BIT, retval);
+        BIT_NAME(value, CMP_NAME_BIT, retval);
 
         if (!retval.empty() && retval.back() == ' ')
             retval.pop_back();
@@ -266,6 +267,7 @@ namespace dagbase
         ComparisonFlags value{CMP_NONE};
 
         TEST_BIT(CMP_IDENT_BIT, str, value);
+        TEST_BIT(CMP_NAME_BIT, str, value);
 
         return value;
     }

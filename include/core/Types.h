@@ -241,7 +241,8 @@ namespace dagbase
     enum ComparisonFlags : std::uint32_t
     {
         CMP_NONE,
-        CMP_IDENT_BIT = 1U<<0U
+        CMP_IDENT_BIT = 1U<<0U,
+        CMP_NAME_BIT = 1U<<1U,
     };
 
     std::string DAGBASE_API comparisonFlagsToString(ComparisonFlags value);

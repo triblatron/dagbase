@@ -142,6 +142,12 @@ namespace dagbase
                 return false;
         }
 
+        if ((flags & CMP_NAME_BIT)!=0)
+        {
+            if (_name != other._name)
+                return false;
+        }
+
         return operator==(other);
     }
 
@@ -154,6 +160,7 @@ namespace dagbase
         //     return false;
         // }
         //
+        // We cannot compare names for templates and their instantiations
         // if (_name != other._name)
         // {
         //     return false;
