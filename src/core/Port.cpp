@@ -62,7 +62,7 @@ namespace dagbase
         _id(other._id),
         _parent(other._parent),
         _sharedParent(other._sharedParent),
-        _flags(static_cast<PortFlags>(other._flags|OWN_META_PORT_BIT))
+        _flags(static_cast<PortFlags>(other._flags))
     {
         std::uint64_t otherId = 0;
         facility.putOrig(const_cast<Port*>(&other), &otherId);
@@ -397,6 +397,9 @@ namespace dagbase
             return false;
 
         if (_direction != other._direction)
+            return false;
+
+        if (_flags != other._flags)
             return false;
 
         // if (_parent!=nullptr && other._parent!=nullptr && _parent->id() != other._parent->id())
