@@ -59,6 +59,8 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]virtual bool equals(const Node& other, ComparisonFlags flags) const;
 
+	    virtual MetaPort* dynamicMetaPort(std::size_t index) = 0;
+
         //! \return A MetaPort corresponding to a given index.
         //! \param[in] index The index of the port, zero-based.
         [[nodiscard]]virtual const MetaPort * dynamicMetaPort(size_t index) const = 0;
@@ -127,10 +129,25 @@ namespace dagbase
 			return _name;
 		}
 
+	    void setCategory(NodeCategory::Category category)
+        {
+            _category = category;
+        }
+
         [[nodiscard]]NodeCategory::Category category() const
 		{
 			return _category;
 		}
+
+	    void setFlags(NodeFlags flags)
+        {
+            _flags = flags;
+        }
+
+	    NodeFlags flags() const
+        {
+            return _flags;
+        }
 
         void setPosition(float x, float y)
         {

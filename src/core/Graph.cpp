@@ -54,7 +54,8 @@ namespace dagbase
             for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
             {
                 auto port = node->dynamicPort(portIndex);
-                if (node->dynamicMetaPort(portIndex)->isOwned())
+                auto metaPort = node->dynamicMetaPort(portIndex);
+                if (port && metaPort && metaPort->isOwned())
                     addPort(port);
             }
         }
@@ -810,6 +811,8 @@ namespace dagbase
                 NodeID id = nodeTable.integerForNameOrDefault("id", -1);
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
+                std::string category = nodeTable.stringForNameOrDefault("category", "CAT_UNKNOWN");
+                std::string flags = nodeTable.stringForNameOrDefault("flags", "FLAGS_NONE");
                 float x{};
                 float y{};
                 {
@@ -825,7 +828,9 @@ namespace dagbase
                     if (node != nullptr && id.valid())
                     {
                         node->setId(id);
+                        node->setCategory(NodeCategory::parse(category.c_str()));
                         node->setPosition(x, y);
+                        node->setFlags(Node::parseFlags(flags));
                         std::size_t numNodesBefore = output->numNodes();
                         nodes.emplace(name, node);
                         {
@@ -837,6 +842,21 @@ namespace dagbase
                                 PortID portId = portTable.integerForNameOrDefault("id", -1);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
                                 node->dynamicPort(portIndex-1)->setId(portId);
+                            }
+                        }
+                        {
+                            dagbase::Table metaPortsTable = nodeTable.tableForName("metaPorts");
+
+                            for (int portIndex = 1; portIndex <= metaPortsTable.length(); ++portIndex)
+                            {
+                                dagbase::Table metaPortTable = metaPortsTable.tableForIndex(portIndex);
+                                auto flags = metaPortTable.stringForNameOrDefault("flags", "FLAGS_NONE");
+
+                                auto metaPort = node->dynamicMetaPort(portIndex-1);
+                                if (metaPort)
+                                {
+                                    metaPort->setFlags(MetaPort::parseFlags(flags));
+                                }
                             }
                         }
                         output->addNode(node);

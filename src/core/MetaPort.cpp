@@ -51,11 +51,11 @@ namespace dagbase
         printer.println("flags: " + flagsToString(flags));
     }
 
-    std::ostream &MetaPort::toLua(std::ostream &str) const
+    DebugPrinter& MetaPort::toLua(DebugPrinter& printer) const
     {
-        str << "flags = \"" << flagsToString(flags) << '\"';
+        printer.printIndent().print("flags = \"").print(flagsToString(flags)).print("\",\n");
 
-        return str;
+        return printer;
     }
 
     std::string MetaPort::flagsToString(Flags flags)

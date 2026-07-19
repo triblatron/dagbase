@@ -42,6 +42,11 @@ namespace dagbase
             flags = other.flags;
         }
 
+        void setFlags(Flags value)
+        {
+            flags = value;
+        }
+
         void setFlag(Flags flag)
         {
             flags = static_cast<Flags>(flags | flag);
@@ -82,7 +87,7 @@ namespace dagbase
 
         void debug(dagbase::DebugPrinter& printer) const;
 
-        std::ostream& toLua(std::ostream& str) const;
+        DebugPrinter& toLua(DebugPrinter& printer) const;
 
         static std::string flagsToString(Flags flags);
 

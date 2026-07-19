@@ -216,7 +216,7 @@ namespace dagbase
         printer.printIndent().print("class = \"").print(className()).print("\",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
         printer.printIndent().print("category = \"").print(NodeCategory::toString(_category)).print("\",\n");
-        printer.printIndent().print("flags = ").print(_flags).print(", \n");
+        printer.printIndent().print("flags = \"").print(flagsToString(_flags)).print("\", \n");
         printer.printIndent().print("position = {").print(_pos[0]).print(", ").print(_pos[1]).print("},\n");
         printer.println("ports =");
         printer.println("{");
@@ -231,7 +231,21 @@ namespace dagbase
             printer.println("},");
         }
         printer.outdent();
-        printer.println("}");
+        printer.println("},");
+        printer.println("metaPorts=");
+        printer.println("{");
+        printer.indent();
+        for (size_t i=0; i<totalPorts(); ++i)
+        {
+            printer.printIndent().print("[").print(i+1).print("] = \n");
+            printer.println("{ ");
+            printer.indent();
+            dynamicMetaPort(i)->toLua(printer);
+            printer.outdent();
+            printer.println("},");
+        }
+        printer.outdent();
+        printer.println("},");
         printer.outdent();
         printer.println("},");
 
