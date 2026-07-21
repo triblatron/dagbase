@@ -253,6 +253,11 @@ namespace dagbase
             return _nextNodeID++;
         }
 
+	    dagbase::NodeID currentNodeID() const
+        {
+            return _nextNodeID;
+        }
+
         dagbase::PortID nextPortID() override
         {
             return _nextPortID++;
@@ -293,5 +298,17 @@ namespace dagbase
         static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph& rootGraph, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();
 	    void removePortsForNode(dagbase::Node* node);
+	    void setNextNodeID(dagbase::NodeID id)
+	    {
+	        _nextNodeID = id;
+	    }
+	    void setNextPortID(dagbase::PortID id)
+	    {
+	        _nextPortID = id;
+	    }
+	    void setNextSignalPathID(dagbase::SignalPathID id)
+	    {
+	        _nextSignalPathID = id;
+	    }
     };
 }

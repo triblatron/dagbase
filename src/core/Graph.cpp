@@ -812,6 +812,10 @@ namespace dagbase
                 dagbase::Table nodeTable = nodesTable.tableForIndex(i);
 
                 NodeID id = nodeTable.integerForNameOrDefault("id", -1);
+                // if (id>rootGraph.currentNodeID())
+                // {
+                rootGraph.setNextNodeID(id);
+                // }
                 std::string className = nodeTable.stringForNameOrDefault("class", "NotFound");
                 std::string name = nodeTable.stringForNameOrDefault("name", "<unnamed>");
                 std::string category = nodeTable.stringForNameOrDefault("category", "CAT_UNKNOWN");
@@ -843,6 +847,7 @@ namespace dagbase
                             {
                                 dagbase::Table portTable = portsTable.tableForIndex(portIndex);
                                 PortID portId = portTable.integerForNameOrDefault("id", -1);
+                                rootGraph.setNextPortID(portId);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
                                 node->dynamicPort(portIndex-1)->setId(portId);
                             }
@@ -908,6 +913,7 @@ namespace dagbase
                 dagbase::Port* sourcePort = nullptr;
                 dagbase::Port* destPort = nullptr;
                 SignalPathID id = signalPathTable.integerForNameOrDefault("id", -1);
+                rootGraph.setNextSignalPathID(id);
                 NodeID sourceNodeID = signalPathTable.integerForNameOrDefault("sourceNode", -1);
                 PortID sourcePortID = signalPathTable.integerForNameOrDefault("sourcePort", -1);
                 NodeID destNodeID = signalPathTable.integerForNameOrDefault("destNode", -1);
