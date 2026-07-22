@@ -78,6 +78,8 @@ namespace dagbase
         //! Parse a string representation of a port type.
         static Type parseFromString(const char* str);
 
+        static Type parseClass(const char* str);
+
         //! Convert a port type to a string.
         static const char* toString(Type type);
 

@@ -854,7 +854,11 @@ namespace dagbase
                                 {
                                     rootGraph.nextPortID();
                                 }
-                                node->dynamicPort(portIndex-1)->setId(portId);
+                                auto port = node->dynamicPort(portIndex-1);
+                                if (port)
+                                {
+                                    port->setId(portId);
+                                }
                             }
                         }
                         {

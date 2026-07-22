@@ -46,3 +46,8 @@
 		return needle;\
 	}
 
+#define TEST_ALT_ENUM(needle, value, haystack) \
+    if (std::strcmp(needle, haystack)==0)\
+    {\
+        return value;\
+    }

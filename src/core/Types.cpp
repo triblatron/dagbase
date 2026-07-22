@@ -167,6 +167,27 @@ namespace dagbase
 		return TYPE_UNKNOWN;
 	}
 
+    PortType::Type PortType::parseClass(const char *str)
+    {
+	    TEST_ALT_ENUM("TypedPort<uint8_t", TYPE_UINT8, str);
+	    TEST_ALT_ENUM("TypedPort<int8_t>", TYPE_INT8, str);
+	    TEST_ALT_ENUM("TypedPort<uint16_t>", TYPE_UINT16, str);
+	    TEST_ALT_ENUM("TypedPort<int16_t>", TYPE_INT16, str);
+	    TEST_ALT_ENUM("TypedPort<uint32_t", TYPE_UINT32, str);
+	    TEST_ALT_ENUM("TypedPort<int32_t>", TYPE_INT32, str);
+	    TEST_ALT_ENUM("TypedPort<uint64_t>", TYPE_UINT64, str);
+	    TEST_ALT_ENUM("TypedPort<int64_t>", TYPE_INT64, str);
+	    TEST_ALT_ENUM("TypedPort<float", TYPE_FLOAT, str);
+	    TEST_ALT_ENUM("TypedPort<double>", TYPE_DOUBLE, str);
+	    TEST_ALT_ENUM("TypedPort<string>", TYPE_STRING, str);
+	    TEST_ALT_ENUM("TypedPort<bool>", TYPE_BOOL, str);
+	    TEST_ALT_ENUM("TypedPort<Vec3d>", TYPE_VEC3D, str);
+	    TEST_ALT_ENUM("TypedPort<void*>", TYPE_OPAQUE, str);
+	    TEST_ALT_ENUM("TypedPort<vector>", TYPE_VECTOR, str);
+
+        return TYPE_UNKNOWN;
+    }
+
     const char *PortType::toString(Type type)
     {
         switch (type)
@@ -209,6 +230,8 @@ namespace dagbase
             ENUM_ALT_NAME(PortType::TYPE_STRING, "TypedPort<string>")
             ENUM_ALT_NAME(PortType::TYPE_BOOL, "TypedPort<bool>")
             ENUM_ALT_NAME(PortType::TYPE_OPAQUE, "TypedPort<void*>")
+            ENUM_ALT_NAME(PortType::TYPE_VEC3D, "TypedPort<Vec3d>")
+            ENUM_ALT_NAME(PortType::TYPE_VECTOR, "TypedPort<vector>")
         }
 
         return "<error>";
