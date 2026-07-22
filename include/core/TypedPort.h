@@ -153,7 +153,7 @@ namespace dagbase
 
         [[nodiscard]]bool equals(const Port& other, ComparisonFlags flags) const override
         {
-            if (!Port::operator==(other))
+            if (!Port::equals(other, flags))
             {
                 return false;
             }

@@ -363,6 +363,13 @@ namespace dagbase
                 if (_id != other._id)
                     return false;
             }
+
+            if ((flags & CMP_NAME_BIT) != 0)
+            {
+                if (_name != other._name)
+                    return false;
+            }
+
             return *this == other;
         }
 
