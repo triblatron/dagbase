@@ -263,9 +263,19 @@ namespace dagbase
             return _nextPortID++;
         }
 
+	    dagbase::PortID currentPortID() const
+        {
+            return _nextPortID;
+        }
+
 	    dagbase::SignalPathID nextSignalPathID() override
         {
             return _nextSignalPathID++;
+        }
+
+	    dagbase::SignalPathID currentSignalPathID() const
+        {
+            return _nextSignalPathID;
         }
 
         dagbase::Variant find(std::string_view path) const;

@@ -849,6 +849,11 @@ namespace dagbase
                                 PortID portId = portTable.integerForNameOrDefault("id", -1);
                                 rootGraph.setNextPortID(portId);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
+                                // If we didn't allocate an ID, force it.
+                                if (rootGraph.currentPortID() == portId)
+                                {
+                                    rootGraph.nextPortID();
+                                }
                                 node->dynamicPort(portIndex-1)->setId(portId);
                             }
                         }
