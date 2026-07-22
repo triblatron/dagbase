@@ -245,6 +245,7 @@ namespace dagbase
         CMP_NONE,
         CMP_IDENT_BIT = 1U<<0U,
         CMP_NAME_BIT = 1U<<1U,
+        CMP_CONNECTIONS_BIT = 1U<<2U
     };
 
     std::string DAGBASE_API comparisonFlagsToString(ComparisonFlags value);

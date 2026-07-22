@@ -370,6 +370,29 @@ namespace dagbase
                     return false;
             }
 
+            if ((flags & CMP_CONNECTIONS_BIT) != 0)
+            {
+                for (auto it = _outgoingConnections.begin(); it != _outgoingConnections.end(); ++it)
+                {
+                    auto it2 = other._outgoingConnections.begin() + std::distance(_outgoingConnections.begin(), it);
+
+                    if ((*it)->id() != (*it2)->id())
+                    {
+                        return false;
+                    }
+                }
+
+                for (auto it = _incomingConnections.begin(); it != _incomingConnections.end(); ++it)
+                {
+                    auto it2 = other._incomingConnections.begin() + std::distance(_incomingConnections.begin(), it);
+
+                    if ((*it)->id() != (*it2)->id())
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return *this == other;
         }
 
