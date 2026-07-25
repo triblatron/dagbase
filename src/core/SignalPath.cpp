@@ -113,7 +113,6 @@ namespace dagbase
         if (!_source && other._source)
             return false;
 
-        // The unique identifier does not participate in equality.
         if (_source && !_source->equals(*other._source, flags))
         {
             return false;
