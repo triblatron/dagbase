@@ -890,7 +890,7 @@ namespace dagbase
                 {
                     if (status)
                     {
-                        status->status = Status::STATUS_OBJECT_NOT_FOUND;
+                        status->status = Status::STATUS_OBJECT_NOT_FOUND;                       
                     }
                     return nullptr;
                 }
@@ -922,7 +922,7 @@ namespace dagbase
                 dagbase::Port* sourcePort = nullptr;
                 dagbase::Port* destPort = nullptr;
                 SignalPathID id = signalPathTable.integerForNameOrDefault("id", -1);
-                rootGraph.setNextSignalPathID(id);
+                rootGraph.setNextSignalPathID(std::max(id+1, std::int64_t(rootGraph.currentSignalPathID())));
                 NodeID sourceNodeID = signalPathTable.integerForNameOrDefault("sourceNode", -1);
                 PortID sourcePortID = signalPathTable.integerForNameOrDefault("sourcePort", -1);
                 NodeID destNodeID = signalPathTable.integerForNameOrDefault("destNode", -1);
