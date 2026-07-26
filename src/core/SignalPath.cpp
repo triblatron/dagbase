@@ -166,7 +166,7 @@ namespace dagbase
         printer.printIndent().print("destNode = ").print(_dest->parent()->id()).print(",\n");
         printer.printIndent().print("destPort = ").print(_dest->id()).print(",\n");
         printer.outdent();
-        printer.println("}");
+        printer.println("},");
 
         return printer;
     }
