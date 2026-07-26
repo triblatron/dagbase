@@ -178,13 +178,16 @@ ADD_LIBRARY( imgui STATIC 		include/imgui/imconfig.h
         include/imgui/imstb_truetype.h
         include/imnodes/imnodes.h
         include/imnodes/imnodes_internal.h
+        include/imguifd/ImGuiFileDialog.h
+        include/imguifd/ImGuiFileDialogConfig.h
         src/imgui/imgui.cpp
         src/imgui/imgui_draw.cpp
         src/imgui/imgui_tables.cpp
         src/imgui/imgui_widgets.cpp
         src/imnodes/imnodes.cpp
+        src/imguifd/ImGuiFileDialog.cpp
 )
-TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes)
+TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_SOURCE_DIR}/include/imguifd )
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
 TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES} imgui)
