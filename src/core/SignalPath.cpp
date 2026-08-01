@@ -83,7 +83,7 @@ namespace dagbase
         str.readHeader(&className);
         str.readField(&fieldName);
         std::int64_t id{0};
-        str.read(&id);
+        str.readInt64(&id);
         _id = id;
         str.readField(&fieldName);
         _source = str.readRef<Port>("Port", nodeLib, lua);

@@ -121,7 +121,11 @@ namespace dagbase
             return new GraphNode(*this, facility, copyOp, keyGen);
         }
 
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;
+
         dagbase::Variant find(std::string_view path) const override;
+
+        DebugPrinter& toLua(DebugPrinter& printer) const override;
 
         void debug(dagbase::DebugPrinter& printer) const override;
     private:

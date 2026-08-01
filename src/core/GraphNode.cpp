@@ -8,6 +8,7 @@
 #include "io/InputStream.h"
 #include "core/CloningFacility.h"
 #include "core/Graph.h"
+#include "io/OutputStream.h"
 
 namespace dagbase
 {
@@ -56,7 +57,7 @@ namespace dagbase
 
     GraphNode::GraphNode(dagbase::InputStream &str, dagbase::NodeLibrary &nodeLib, dagbase::Lua &lua)
         :
-    Node(str, nodeLib, lua)
+    Node()
     {
         std::string className;
         std::string fieldName;
@@ -78,7 +79,34 @@ namespace dagbase
         str.readField(&fieldName);
         for (std::size_t i=0; i<numDynamicPorts; ++i)
         {
-            _dynamicPorts.a[i] = nodeLib.instantiatePort(str, lua);
+            dagbase::Stream::ObjId portId{~0U};
+            auto portRef = str.readRef(&portId);
+            if (portId != 0)
+            {
+                if (portRef != nullptr)
+                {
+                    _dynamicPorts.a[i] = static_cast<dagbase::Port*>(portRef);
+                }
+                else
+                {
+                    _dynamicPorts.a[i] = nodeLib.instantiatePort(str, lua);
+                }
+            }
+        }
+        str.readField(&fieldName);
+        dagbase::Stream::ObjId id = 0;
+        Graph* child = nullptr;
+        auto ref = str.readRef(&id);
+        if (id != 0)
+        {
+            if (ref != nullptr)
+            {
+                _graph = static_cast<Graph*>(ref);
+            }
+            else
+            {
+                _graph = new Graph(str, nodeLib, lua);
+            }
         }
         str.readFooter();
     }
@@ -133,6 +161,34 @@ namespace dagbase
         return new GraphNode(str, nodeLib, Lua);
     }
 
+    dagbase::OutputStream & GraphNode::writeToStream(dagbase::OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+        str.writeHeader("GraphNode");
+        Node::writeToStream(str, nodeLib, lua);
+        str.writeField("numDynamicMetaPorts");
+        str.writeUInt32(_dynamicMetaPorts.size());
+        str.writeField("dynamicMetaPorts");
+        for (auto const & p : _dynamicMetaPorts)
+        {
+            p.write(str);
+        }
+        str.writeField("numDynamicPorts");
+        str.writeUInt32(_dynamicPorts.size());
+        str.writeField("dynamicPorts");
+        for (auto p : _dynamicPorts)
+        {
+            if (str.writeRef(p))
+                p->writeToStream(str, nodeLib, lua);
+        }
+        str.writeField("graph");
+        if (str.writeRef(_graph))
+        {
+            _graph->write(str, nodeLib, lua);
+        }
+        str.writeFooter();
+        return str;
+    }
+
     dagbase::Variant GraphNode::find(std::string_view path) const
     {
         Variant retval = Node::find(path);
@@ -144,7 +200,28 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        if (_graph)
+        {
+            retval = findInternal(path, "graph", _graph);
+            if (retval.has_value())
+                return retval;
+        }
         return {};
+    }
+
+    DebugPrinter & GraphNode::toLua(DebugPrinter &printer) const
+    {
+        Node::toLua(printer);
+        printer.println("graph=");
+        printer.println("{");
+        printer.indent();
+        if (_graph)
+        {
+            _graph->toLuaHelper(printer);
+        }
+        printer.outdent();
+        printer.println("}");
+        return printer;
     }
 
     void GraphNode::debug(dagbase::DebugPrinter &printer) const

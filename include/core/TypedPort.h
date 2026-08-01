@@ -175,7 +175,7 @@ namespace dagbase
             return PortType::className(type());
         }
 
-        DebugPrinter &toLua(DebugPrinter &printer) override;
+        DebugPrinter &toLua(DebugPrinter &printer) const override;
 
 		Variant find(std::string_view path) const override
 		{
@@ -196,7 +196,7 @@ namespace dagbase
 	};
 
     template<typename T>
-    DebugPrinter &TypedPort<T>::toLua(DebugPrinter &printer)
+    DebugPrinter &TypedPort<T>::toLua(DebugPrinter &printer) const
     {
         Port::toLua(printer);
         if (type() == PortType::TYPE_STRING)

@@ -533,6 +533,18 @@ namespace dagbase
                 p.second->writeToStream(str, nodeLib, lua);
             }
         }
+        str.writeField("numPorts");
+	    str.writeUInt32(_ports.size());
+	    for (auto p : _ports)
+	    {
+	        if (str.writeRef(p.second))
+	        {
+	            std::string className = p.second->className();
+	            str.writeField("className");
+	            str.writeString(className, true);
+	            p.second->writeToStream(str, nodeLib, lua);
+	        }
+	    }
 
 	    str.writeField("numSignalPaths");
         str.writeUInt32(_signalPaths.size());
@@ -572,7 +584,8 @@ namespace dagbase
             for (std::size_t i=0; i<numNodes; ++i)
             {
                 auto node = str.readRef<dagbase::Node>("Node", *_nodeLib, lua);
-                //auto node = _nodeLib->instantiateNode(str);
+                // str.readField(&fieldName);
+                // str.readString(&className, true);
 
                 if (node!=nullptr)
                 {
@@ -580,6 +593,21 @@ namespace dagbase
                 }
             }
         }
+
+	    std::uint32_t numPorts = 0;
+	    str.readField(&fieldName);
+	    str.readUInt32(&numPorts);
+
+	    for (std::uint32_t i=0; i<numPorts; ++i)
+	    {
+	        auto port = str.readRef<Port>("Port", *_nodeLib, lua);
+
+	        if (port)
+	        {
+	            addPort(port);
+	        }
+	    }
+
         std::uint32_t numSignalPaths=0;
 	    str.readField(&fieldName);
         str.readUInt32(&numSignalPaths);
@@ -645,6 +673,9 @@ namespace dagbase
                 return false;
             }
         }
+
+	    if (_ports.size() != other._ports.size())
+	        return false;
 
 	    for (auto it=_ports.begin(); it!=_ports.end(); ++it)
 	    {
@@ -728,8 +759,15 @@ namespace dagbase
 	    printer.indent();
         for (auto node : _nodes)
         {
+            printer.println("{");
+            printer.indent();
+
             node.second->toLua(printer);
+
+            printer.outdent();
+            printer.println("},");
         }
+
         printer.outdent();
         printer.printIndent().print("},\n");
 
@@ -1201,6 +1239,10 @@ namespace dagbase
         retval = findEndpoint(path, "numSignalPaths", std::uint32_t(numSignalPaths()));
         if (retval.has_value())
             return retval;
+
+        retval = findEndpoint(path, "numChildren", std::uint32_t(numChildren()));
+	    if (retval.has_value())
+	        return retval;
 
         retval = findEndpoint(path, "totalSignalPaths", std::uint32_t(totalSignalPaths()));
         if (retval.has_value())

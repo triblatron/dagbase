@@ -168,6 +168,7 @@ namespace dagbase
         static Graph* fromFile(dagbase::NodeLibrary& nodeLib, const char* filename, Status* status = nullptr);
 
         dagbase::DebugPrinter& toLua(dagbase::DebugPrinter& printer);
+	    DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
 
         enum TopoSortResult
         {
@@ -303,7 +304,6 @@ namespace dagbase
 	    dagbase::Node* _lastAddedNode{ nullptr };
 
         void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
-        DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);
         static Graph* fromLuaGraphTable(dagbase::Table& graphTable, dagbase::NodeLibrary& nodeLib, Graph& rootGraph, Graph* output, Status* status=nullptr);
         void removeMarkedSignalPaths();

@@ -206,7 +206,7 @@ namespace dagbase
         if (str.writeRef(_sharedParent))
         {
             std::string className = _sharedParent->className();
-            str.writeField("sharedParent");
+            str.writeField("className");
             str.writeString(className, true);
             _sharedParent->writeToStream(str, nodeLib, lua);
         }
@@ -235,7 +235,7 @@ namespace dagbase
         return str;
     }
 
-    DebugPrinter &Port::toLua(DebugPrinter &printer)
+    DebugPrinter &Port::toLua(DebugPrinter &printer) const
     {
         printer.printIndent().print("id = ").print(_id).print(",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");

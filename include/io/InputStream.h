@@ -34,7 +34,7 @@ namespace dagbase
         template<typename T, typename ClassLibrary>
         T* readRef(const char*baseClassName, ClassLibrary& nodeLib, dagbase::Lua& lua)
         {
-            ObjId id;
+            ObjId id{~0U};
             readUInt32(&id);
 
             if (id != 0)

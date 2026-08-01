@@ -215,10 +215,8 @@ namespace dagbase
         return {};
     }
 
-    DebugPrinter &Node::toLua(DebugPrinter &printer)
+    DebugPrinter &Node::toLua(DebugPrinter &printer) const
     {
-        printer.println("{");
-        printer.indent();
         printer.printIndent().print("id = ").print(_id).print(",\n");
         printer.printIndent().print("class = \"").print(className()).print("\",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
@@ -251,8 +249,6 @@ namespace dagbase
             printer.outdent();
             printer.println("},");
         }
-        printer.outdent();
-        printer.println("},");
         printer.outdent();
         printer.println("},");
 

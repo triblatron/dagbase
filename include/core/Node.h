@@ -246,7 +246,7 @@ namespace dagbase
 	    virtual Variant find(std::string_view path) const;
 
         //! Convert this Node to a Lua representation.
-        virtual DebugPrinter &toLua(DebugPrinter &printer);
+        virtual DebugPrinter &toLua(DebugPrinter &printer) const;
 
         static std::string flagsToString(NodeFlags value);
 
