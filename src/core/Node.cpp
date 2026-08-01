@@ -99,6 +99,10 @@ namespace dagbase
         str.writeUInt32(_category);
         str.writeField("flags");
         str.writeUInt32(_flags);
+        str.writeField("x");
+        str.writeFloat(_pos[0]);
+        str.writeField("y");
+        str.writeFloat(_pos[1]);
         str.writeFooter();
 
         return str;
@@ -130,6 +134,10 @@ namespace dagbase
         std::uint32_t flags{0};
         str.readUInt32(&flags);
         _flags = static_cast<Node::NodeFlags>(flags);
+        str.readField(&fieldName);
+        str.readFloat(&_pos[0]);
+        str.readField(&fieldName);
+        str.readFloat(&_pos[1]);
         str.readFooter();
         return str;
     }
@@ -209,6 +217,14 @@ namespace dagbase
             return retval;
 
         retval = findEndpoint(path, "totalPorts", static_cast<std::uint32_t>(totalPorts()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "x", _pos[0]);
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "y", _pos[1]);
         if (retval.has_value())
             return retval;
 
