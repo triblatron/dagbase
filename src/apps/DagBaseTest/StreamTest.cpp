@@ -12,6 +12,7 @@
 #include "io/BinaryOutputStream.h"
 #include "io/TextOutputStream.h"
 #include "io/BinaryInputStream.h"
+#include "io/StreamFactory.h"
 #include "io/TextInputStream.h"
 
 struct TestNode
@@ -102,12 +103,11 @@ TEST(OutputStream, testOutput)
     node2.b = true;
     node1.value = dagbase::Variant(2.0);
     node2.value = dagbase::Variant(1.0);
-    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
-
-    dagbase::TextOutputStream sut(&store);
-    node2.write(sut);
-    sut.flush();
-    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    dagbase::MemoryBackingStore store;
+    dagbase::OutputStream* sut = dagbase::createOutputStream("TextFormat", store, "");
+    node2.write(*sut);
+    sut->flush();
+    store.open(dagbase::BackingStore::MODE_INPUT_BIT, "");
     std::string_view output = "TestNode\n{\n  parent : 1\n  TestNode\n  {\n    parent : 0\n    i : 0\n    s : \"\"\n    b : false\n    value : true\n1\n2\n    numChildren : 0\n    children :     ChildrenArray\n    {\n    }\n  }\n  i : 0\n  s : \"test\"\n  b : true\n  value : true\n1\n1\n  numChildren : 0\n  children :   ChildrenArray\n  {\n  }\n}\n";
     std::string actualOutput;
     actualOutput.resize(store.numBytesAvailable());
@@ -115,7 +115,7 @@ TEST(OutputStream, testOutput)
     EXPECT_EQ(output, actualOutput);
 }
 
-class FormatAgnosticOutputToInput_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string_view>>
+class FormatAgnosticOutputToInput_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*>>
 {
 
 };
@@ -123,17 +123,12 @@ class FormatAgnosticOutputToInput_testRoundTrip : public ::testing::TestWithPara
 TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
 {
     dagbase::Lua lua;
-    auto formatClass = std::get<0>(GetParam());
-    dagbase::OutputStream* sut = nullptr;
-    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
-    if (formatClass == "TextFormat")
-    {
-        sut = new dagbase::TextOutputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        sut = new dagbase::BinaryOutputStream(&store);
-    }
+    std::string formatClass = std::get<0>(GetParam());
+    std::string storeClass = std::get<1>(GetParam());
+    auto filename = std::get<2>(GetParam());
+    dagbase::MemoryBackingStore store;
+    dagbase::OutputStream* sut = dagbase::createOutputStream(formatClass, store, filename);
+
     ASSERT_NE(nullptr, sut);
     TestNode node1;
     node1.i = 3141;
@@ -146,17 +141,8 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
         node2.write(*sut);
     }
     sut->flush();
-    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
-    dagbase::InputStream *istr{nullptr};
+    auto istr = dagbase::createInputStream(formatClass, store, filename);
 
-    if (formatClass == "TextFormat")
-    {
-        istr = new dagbase::TextInputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        istr = new dagbase::BinaryInputStream(&store);
-    }
     ASSERT_NE(nullptr, istr);
     dagbase::Stream::ObjId id{~0U};
     auto actual = (istr->readRef<TestNode>(&id, lua));
@@ -167,11 +153,13 @@ TEST_P(FormatAgnosticOutputToInput_testRoundTrip, testRef)
 }
 
 INSTANTIATE_TEST_SUITE_P(FormatAgnosticInputStream, FormatAgnosticOutputToInput_testRoundTrip, ::testing::Values(
-    std::make_tuple("TextFormat"),
-    std::make_tuple("BinaryFormat")
+    std::make_tuple("TextFormat", "MemoryStore", "scratch/FormatAgnosticOutputToInput_testRoundTrip0.txt"),
+    std::make_tuple("BinaryFormat", "MemoryStore", "scratch/FormatAgnosticOutputToInput_testRoundTrip1.bin"),
+    std::make_tuple("TextFormat", "FileStore", "scratch/FormatAgnosticOutputToInput_testRoundTrip0.txt"),
+    std::make_tuple("BinaryFormat", "FileStore", "scratch/FormatAgnosticOutputToInput_testRoundTrip1.bin")
     ));
 
-class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant>>
+class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*, dagbase::Variant>>
 {
 
 };
@@ -179,31 +167,16 @@ class OutputStream_testWriteVariant : public ::testing::TestWithParam<std::tuple
 TEST_P(OutputStream_testWriteVariant, testExpectedValue)
 {
     std::string formatClass = std::get<0>(GetParam());
-    dagbase::OutputStream* sut = nullptr;
-    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
-    if (formatClass == "TextFormat")
-    {
-        sut = new dagbase::TextOutputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        sut = new dagbase::BinaryOutputStream(&store);
-    }
+    std::string storeClass = std::get<1>(GetParam());
+    auto filename = std::get<2>(GetParam());
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass,dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    dagbase::OutputStream* sut = dagbase::createOutputStream(formatClass, *store, filename);
     ASSERT_NE(nullptr, sut);
-    auto value = std::get<1>(GetParam());
+    auto value = std::get<3>(GetParam());
     dagbase::Lua lua;
     sut->write(value);
     sut->flush();
-    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
-    dagbase::InputStream *istr{nullptr};
-    if (formatClass == "TextFormat")
-    {
-        istr = new dagbase::TextInputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        istr = new dagbase::BinaryInputStream(&store);
-    }
+    dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, filename);
     ASSERT_NE(nullptr, istr);
     dagbase::Variant actualValue{std::numeric_limits<std::uint32_t>::max()};
     istr->read(lua, &actualValue);
@@ -213,25 +186,41 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testWriteVariant, ::testing::Values(
-        std::make_tuple("TextFormat", dagbase::Variant()),
-        std::make_tuple("BinaryFormat", dagbase::Variant()),
-        std::make_tuple("TextFormat", std::uint32_t{1}),
-        std::make_tuple("BinaryFormat", std::uint32_t{1}),
-        std::make_tuple("TextFormat", std::int64_t{-1}),
-        std::make_tuple("BinaryFormat", std::int64_t{-1}),
-        std::make_tuple("TextFormat", double{1.5}),
-        std::make_tuple("BinaryFormat", double{1.5}),
-        std::make_tuple("TextFormat", true),
-        std::make_tuple("BinaryFormat", true),
-        std::make_tuple("TextFormat", "test"),
-        std::make_tuple("BinaryFormat", "test"),
-        std::make_tuple("TextFormat", dagbase::Vec2{1.0f, 2.0f}),
-        std::make_tuple("BinaryFormat", dagbase::Vec2{1.0f, 2.0f}),
-        std::make_tuple("TextFormat", dagbase::Colour{1.0f, 0.0f, 1.0f}),
-        std::make_tuple("BinaryFormat", dagbase::Colour{1.0f, 0.0f, 1.0f})
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant0.txt", dagbase::Variant()),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant1.bin", dagbase::Variant()),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant2.txt", std::uint32_t{1}),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant3.bin", std::uint32_t{1}),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant4.txt", std::int64_t{-1}),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant5.bin", std::int64_t{-1}),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant6.txt", double{1.5}),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant7.bin", double{1.5}),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant8.txt", true),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant9.bin", true),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant10.txt", "test"),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant11.bin", "test"),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant12.txt", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant13.bin", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("TextFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant14.txt", dagbase::Colour{1.0f, 0.0f, 1.0f}),
+        std::make_tuple("BinaryFormat", "MemoryBackingStore", "scratch/OutputStream_testWriteVariant15.bin", dagbase::Colour{1.0f, 0.0f, 1.0f}),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant16.txt", dagbase::Variant()),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant17.bin", dagbase::Variant()),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant18.txt", std::uint32_t{1}),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant19.bin", std::uint32_t{1}),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant20.txt", std::int64_t{-1}),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant21.bin", std::int64_t{-1}),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant22.txt", double{1.5}),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant23.bin", double{1.5}),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant24.txt", true),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant25.bin", true),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant26.txt", "test"),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant27.bin", "test"),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant28.txt", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant29.bin", dagbase::Vec2{1.0f, 2.0f}),
+        std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant30.txt", dagbase::Colour{1.0f, 0.0f, 1.0f}),
+        std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testWriteVariant31.bin", dagbase::Colour{1.0f, 0.0f, 1.0f})
         ));
 
-class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std::tuple<const char*>>
+class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*>>
 {
 
 };
@@ -239,17 +228,13 @@ class OutputStream_testSerialisePrimitive : public ::testing::TestWithParam<std:
 TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
 {
     std::string formatClass = std::get<0>(GetParam());
-    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_OUTPUT_BIT);
-    dagbase::OutputStream* sut = nullptr;
+    std::string storeClass = std::get<1>(GetParam());
+    auto filename = std::get<2>(GetParam());
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass, dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    ASSERT_NE(nullptr, store);
+    dagbase::OutputStream* sut = dagbase::createOutputStream(formatClass, *store, filename);
     dagbase::InputStream* istr = nullptr;
-    if (formatClass == "TextFormat")
-    {
-        sut = new dagbase::TextOutputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        sut = new dagbase::BinaryOutputStream(&store);
-    }
+
     ASSERT_NE(nullptr, sut);
     dagbase::Lua lua;
     sut->writeUInt8(1);
@@ -263,15 +248,8 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
     sut->writeFloat(1.5f);
     sut->writeDouble(1.5);
     sut->flush();
-    store.open(dagbase::BackingStore::MODE_INPUT_BIT);
-    if (formatClass == "TextFormat")
-    {
-        istr = new dagbase::TextInputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        istr = new dagbase::BinaryInputStream(&store);
-    }
+    istr = createInputStream(formatClass, *store, filename);
+
     ASSERT_NE(nullptr, istr);
     std::uint8_t actualUint8 = 0;
     istr->readUInt8(&actualUint8);
@@ -300,28 +278,26 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(OutputStream, OutputStream_testSerialisePrimitive, ::testing::Values(
-    std::make_tuple("TextFormat"),
-    std::make_tuple("BinaryFormat")
+    std::make_tuple("TextFormat", "MemoryBackingStore", ""),
+    std::make_tuple("BinaryFormat", "MemoryBackingStore", ""),
+    std::make_tuple("TextFormat", "FileBackingStore", "scratch/OutputStream_testSerialisePrimitive2.txt"),
+    std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/OutputStream_testSerialisePrimitive3.bin")
     ));
 
-class InputStream_testReadEmptyBuffer : public ::testing::TestWithParam<std::tuple<const char*>>
+class InputStream_testReadEmptyBuffer : public ::testing::TestWithParam<std::tuple<const char*, const char*, const char*>>
 {
 
 };
 
 TEST_P(InputStream_testReadEmptyBuffer, testExpectedValue)
 {
-    dagbase::MemoryBackingStore store(dagbase::BackingStore::MODE_INPUT_BIT);
     std::string formatClass = std::get<0>(GetParam());
+    std::string storeClass = std::get<1>(GetParam());
+    auto filename = std::get<2>(GetParam());
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass, dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    ASSERT_NE(nullptr, store);
     dagbase::InputStream* sut = nullptr;
-    if (formatClass == "TextFormat")
-    {
-        sut = new dagbase::TextInputStream(&store);
-    }
-    else if (formatClass == "BinaryFormat")
-    {
-        sut = new dagbase::BinaryInputStream(&store);
-    }
+    sut = dagbase::createInputStream(formatClass, *store, filename);
     ASSERT_NE(nullptr, sut);
     std::int32_t actual{0};
     sut->readInt32(&actual);
@@ -329,6 +305,8 @@ TEST_P(InputStream_testReadEmptyBuffer, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(InputStream, InputStream_testReadEmptyBuffer, ::testing::Values(
-    std::make_tuple("TextFormat"),
-    std::make_tuple("BinaryFormat")
+    std::make_tuple("TextFormat", "MemoryBackingStore", ""),
+    std::make_tuple("BinaryFormat", "MemoryBackingStore", ""),
+    std::make_tuple("TextFormat", "FileBackingStore", "scratch/InputStream_testReadEmptyBuffer2.txt"),
+    std::make_tuple("BinaryFormat", "FileBackingStore", "scratch/InputStream_testReadEmptyBuffer3.txt")
     ));

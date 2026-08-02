@@ -70,7 +70,6 @@ namespace dagbase
         BackingStore* _store{ nullptr };
         ByteBuffer _subBuffer;
         bool _inSubBuffer{false};
-        std::ostringstream* _ostr{nullptr};
         DebugPrinter* _printer{ nullptr };
         std::vector<std::uint8_t> _output;
     };

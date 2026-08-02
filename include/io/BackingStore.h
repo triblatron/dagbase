@@ -27,14 +27,15 @@ namespace dagbase
             MODE_BINARY_BIT = 1<<3,
         };
     public:
-        BackingStore(Mode mode)
-            :
-        _mode(mode)
-        {
-            // Do nothing.
-        }
+        BackingStore() = default;
 
         virtual ~BackingStore() = default;
+
+        virtual void open(Mode mode, const char* filename) = 0;
+
+        virtual std::ostream* ostr() = 0;
+
+        virtual std::istream* istr() = 0;
 
         virtual void put(const unsigned char* buffer, std::size_t bufferSize) = 0;
 
@@ -42,11 +43,7 @@ namespace dagbase
 
         virtual void get(std::string& buffer, unsigned char delim) = 0;
 
-        virtual const unsigned char* buffer() const = 0;
-
-        virtual std::size_t bufferSize() const = 0;
-
-        virtual void flipBuffer() = 0;
+        virtual void flush() = 0;
     protected:
         void setMode(Mode mode)
         {

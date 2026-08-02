@@ -58,14 +58,14 @@ namespace dagbase
             if (_position + len <= _buf.size())
             {
                 auto diff = static_cast<BufferType::difference_type>(_position);
-                std::copy(_buf.begin()+diff, _buf.begin()+diff+BufferType::difference_type(len), buf);
+                std::copy(_buf.begin()+diff, _buf.begin()+diff+static_cast<BufferType::difference_type>(len), buf);
                 _position += len;
             }
 
             return *this;
         }
 
-        BufferType::value_type const* buffer() const
+        [[nodiscard]] BufferType::value_type const* buffer() const
         {
             if (!_buf.empty())
                 return _buf.data();

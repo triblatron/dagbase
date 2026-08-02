@@ -1,30 +1,27 @@
 //
-// Created by Tony Horrobin on 02/03/2025.
+// Created by tony on 02/08/2026.
 //
 
 #pragma once
-
-#ifndef MEMORYBACKINGSTORE_H
-#define MEMORYBACKINGSTORE_H
 
 #include "config/DagBaseExport.h"
 
 #include "io/BackingStore.h"
 #include "core/ByteBuffer.h"
 
-#include <string>
-#include <sstream>
+#include <fstream>
+
 
 namespace dagbase
 {
-    class DAGBASE_API MemoryBackingStore : public BackingStore
+    class DAGBASE_API FileBackingStore : public BackingStore
     {
     public:
-        MemoryBackingStore();
+        FileBackingStore();
 
         void open(Mode mode, const char* filename) override;
 
-        void setStream(std::ostringstream* ostr)
+        void setStream(std::ofstream* ostr)
         {
             _ostr = ostr;
         }
@@ -47,28 +44,10 @@ namespace dagbase
 
         void put(const unsigned char* buffer, std::size_t bufferSize) override;
 
-        [[nodiscard]] const unsigned char* buffer() const
-        {
-            return  _buffer.buffer();
-        }
-
-        [[nodiscard]] std::size_t numBytesAvailable() const
-        {
-            return _buffer.size();
-        }
-
-        [[nodiscard]] std::size_t bufferSize() const
-        {
-            return _buffer.size();
-        }
-
         void flush() override;
     private:
-        std::stringbuf* _streamBuf{nullptr};
-        std::ostream* _ostr{nullptr};
-        std::istream* _istr{nullptr};
         ByteBuffer _buffer;
+        std::ofstream* _ostr{nullptr};
+        std::ifstream* _istr{nullptr};
     };
 }
-
-#endif //MEMORYBACKINGSTORE_H

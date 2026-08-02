@@ -206,6 +206,11 @@ namespace dagbase
     {
         // Do nothing.
 
+        if (_store)
+        {
+            _store->flush();
+        }
+
         return *this;
     }
 }
