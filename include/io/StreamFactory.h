@@ -16,5 +16,5 @@ namespace dagbase
 
     InputStream DAGBASE_API* createInputStream(const std::string& className, BackingStore& store, const char* filename);
     OutputStream DAGBASE_API* createOutputStream(const std::string& className, BackingStore& store, const char* filename);
-    BackingStore* DAGBASE_API createBackingStore(const std::string& className, BackingStore::Mode mode, const char* filename);
+    BackingStore* DAGBASE_API createBackingStore(const std::string& className);
 }

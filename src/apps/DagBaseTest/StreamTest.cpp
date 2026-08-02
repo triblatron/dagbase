@@ -169,7 +169,7 @@ TEST_P(OutputStream_testWriteVariant, testExpectedValue)
     std::string formatClass = std::get<0>(GetParam());
     std::string storeClass = std::get<1>(GetParam());
     auto filename = std::get<2>(GetParam());
-    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass,dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass);
     dagbase::OutputStream* sut = dagbase::createOutputStream(formatClass, *store, filename);
     ASSERT_NE(nullptr, sut);
     auto value = std::get<3>(GetParam());
@@ -230,7 +230,7 @@ TEST_P(OutputStream_testSerialisePrimitive, testExpectedValue)
     std::string formatClass = std::get<0>(GetParam());
     std::string storeClass = std::get<1>(GetParam());
     auto filename = std::get<2>(GetParam());
-    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass, dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass);
     ASSERT_NE(nullptr, store);
     dagbase::OutputStream* sut = dagbase::createOutputStream(formatClass, *store, filename);
     dagbase::InputStream* istr = nullptr;
@@ -294,7 +294,7 @@ TEST_P(InputStream_testReadEmptyBuffer, testExpectedValue)
     std::string formatClass = std::get<0>(GetParam());
     std::string storeClass = std::get<1>(GetParam());
     auto filename = std::get<2>(GetParam());
-    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass, dagbase::BackingStore::MODE_OUTPUT_BIT, filename);
+    dagbase::BackingStore* store = dagbase::createBackingStore(storeClass);
     ASSERT_NE(nullptr, store);
     dagbase::InputStream* sut = nullptr;
     sut = dagbase::createInputStream(formatClass, *store, filename);

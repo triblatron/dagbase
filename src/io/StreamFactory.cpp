@@ -14,7 +14,7 @@
 
 namespace dagbase
 {
-    BackingStore* createBackingStore(const std::string& className, BackingStore::Mode mode, const char* filename)
+    BackingStore* createBackingStore(const std::string& className)
     {
         if (className == "MemoryBackingStore")
         {
