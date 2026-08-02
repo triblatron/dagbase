@@ -142,7 +142,7 @@ namespace dagbase
 
     bool GraphNode::equals(const Node &other, ComparisonFlags flags) const
     {
-        bool baseEqual = operator==(other);
+        bool baseEqual = Node::equals(other, flags);
         if (!baseEqual)
             return false;
 
@@ -153,7 +153,7 @@ namespace dagbase
         if (_graph && !otherNode._graph)
             return false;
 
-        return *_graph == *otherNode._graph;
+        return _graph->equals(*otherNode._graph, flags);
     }
 
     Node * GraphNode::create(dagbase::InputStream &str, NodeLibrary &nodeLib, dagbase::Lua &Lua)

@@ -156,24 +156,6 @@ namespace dagbase
                 return false;
         }
 
-        return operator==(other);
-    }
-
-    bool Node::operator==(const Node &other) const
-    {
-        if (this == &other)
-            return true;
-        // if (_id != other._id)
-        // {
-        //     return false;
-        // }
-        //
-        // We cannot compare names for templates and their instantiations
-        // if (_name != other._name)
-        // {
-        //     return false;
-        // }
-
         if (_category != other._category)
         {
             return false;
@@ -191,6 +173,24 @@ namespace dagbase
             return false;
 
         return true;
+    }
+
+    bool Node::operator==(const Node &other) const
+    {
+        if (this == &other)
+            return true;
+        // if (_id != other._id)
+        // {
+        //     return false;
+        // }
+        //
+        // We cannot compare names for templates and their instantiations
+        // if (_name != other._name)
+        // {
+        //     return false;
+        // }
+
+        return equals(other, static_cast<ComparisonFlags>(CMP_IDENT_BIT|CMP_NAME_BIT|CMP_CONNECTIONS_BIT));
     }
 
     void Node::debug(dagbase::DebugPrinter& printer) const
