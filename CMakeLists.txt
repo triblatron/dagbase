@@ -12,7 +12,7 @@ FIND_PACKAGE(Lua 5.4)
 include(FetchContent)
 FetchContent_Declare(googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG main)
+        GIT_TAG v1.17.0)
 FetchContent_Declare(googlebenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
         GIT_TAG main) # need main for benchmark::benchmark
@@ -187,6 +187,7 @@ ADD_LIBRARY( imgui STATIC 		include/imgui/imconfig.h
         src/imnodes/imnodes.cpp
         src/imguifd/ImGuiFileDialog.cpp
 )
+TARGET_COMPILE_DEFINITIONS( imgui PUBLIC USE_STD_FILESYSTEM )
 TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_SOURCE_DIR}/include/imguifd )
 TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
