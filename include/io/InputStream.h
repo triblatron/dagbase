@@ -147,28 +147,6 @@ namespace dagbase
             }
         }
 
-        // template<typename BaseClass, typename ClassLibrary>
-        // BaseClass* readPort(const char* baseClassName, ClassLibrary& nodeLib)
-        // {
-        //     ObjId id{0};
-        //     Ref ref = readRef(&id);
-        //     if (id != 0)
-        //     {
-        //         if (ref!=nullptr)
-        //         {
-        //             return static_cast<BaseClass*>(ref);
-        //         }
-        //         else
-        //         {
-        //             return nodeLib.instantiate(baseClassName, *this);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         return nullptr;
-        //     }
-        //}
-
         void addObj(void* ref)
         {
             if (_lastReadId>_ptrLookup.size())

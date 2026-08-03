@@ -63,36 +63,7 @@ namespace dagbase
         std::string fieldName;
         str.readHeader(&className);
         Node::readFromStream(str, nodeLib, lua);
-        std::uint32_t numDynamicMetaPorts = 0;
-        str.readField(&fieldName);
-        str.readUInt32(&numDynamicMetaPorts);
-        _dynamicMetaPorts.resize(numDynamicMetaPorts);
-        str.readField(&fieldName);
-        for (std::size_t i=0; i<numDynamicMetaPorts; ++i)
-        {
-            _dynamicMetaPorts[i].read(str);
-        }
-        std::uint32_t numDynamicPorts = 0;
-        str.readField(&fieldName);
-        str.readUInt32(&numDynamicPorts);
-        _dynamicPorts.a.resize(numDynamicPorts);
-        str.readField(&fieldName);
-        for (std::size_t i=0; i<numDynamicPorts; ++i)
-        {
-            dagbase::Stream::ObjId portId{~0U};
-            auto portRef = str.readRef(&portId);
-            if (portId != 0)
-            {
-                if (portRef != nullptr)
-                {
-                    _dynamicPorts.a[i] = static_cast<dagbase::Port*>(portRef);
-                }
-                else
-                {
-                    _dynamicPorts.a[i] = nodeLib.instantiatePort(str, lua);
-                }
-            }
-        }
+        readDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.readField(&fieldName);
         dagbase::Stream::ObjId id = 0;
         Graph* child = nullptr;
@@ -165,21 +136,7 @@ namespace dagbase
     {
         str.writeHeader("GraphNode");
         Node::writeToStream(str, nodeLib, lua);
-        str.writeField("numDynamicMetaPorts");
-        str.writeUInt32(_dynamicMetaPorts.size());
-        str.writeField("dynamicMetaPorts");
-        for (auto const & p : _dynamicMetaPorts)
-        {
-            p.write(str);
-        }
-        str.writeField("numDynamicPorts");
-        str.writeUInt32(_dynamicPorts.size());
-        str.writeField("dynamicPorts");
-        for (auto p : _dynamicPorts)
-        {
-            if (str.writeRef(p))
-                p->writeToStream(str, nodeLib, lua);
-        }
+        writeDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.writeField("graph");
         if (str.writeRef(_graph))
         {
