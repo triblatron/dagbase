@@ -23,7 +23,7 @@ namespace dagbase
         enum Flags : std::uint32_t
         {
             FLAGS_NONE    = 0,
-            FLAGS_OWN_BIT = 1<<0
+            FLAGS_OWN_BIT = 1U<<0U
         };
 
         Flags flags{FLAGS_OWN_BIT};
