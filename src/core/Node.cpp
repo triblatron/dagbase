@@ -156,24 +156,6 @@ namespace dagbase
                 return false;
         }
 
-        return operator==(other);
-    }
-
-    bool Node::operator==(const Node &other) const
-    {
-        if (this == &other)
-            return true;
-        // if (_id != other._id)
-        // {
-        //     return false;
-        // }
-        //
-        // We cannot compare names for templates and their instantiations
-        // if (_name != other._name)
-        // {
-        //     return false;
-        // }
-
         if (_category != other._category)
         {
             return false;
@@ -191,6 +173,24 @@ namespace dagbase
             return false;
 
         return true;
+    }
+
+    bool Node::operator==(const Node &other) const
+    {
+        if (this == &other)
+            return true;
+        // if (_id != other._id)
+        // {
+        //     return false;
+        // }
+        //
+        // We cannot compare names for templates and their instantiations
+        // if (_name != other._name)
+        // {
+        //     return false;
+        // }
+
+        return equals(other, static_cast<ComparisonFlags>(CMP_IDENT_BIT|CMP_NAME_BIT|CMP_CONNECTIONS_BIT));
     }
 
     void Node::debug(dagbase::DebugPrinter& printer) const
@@ -297,5 +297,59 @@ namespace dagbase
         TEST_BIT(NODE_INTERNAL_BIT, str, value)
 
         return value;
+    }
+
+    void Node::writeDynamicPorts(OutputStream &str, NodeLibrary &nodeLib, Lua &lua, const PortArray &_dynamicPorts, const MetaPortArray &_dynamicMetaPorts)
+    {
+        str.writeField("numDynamicMetaPorts");
+        str.writeUInt32(_dynamicMetaPorts.size());
+        str.writeField("dynamicMetaPorts");
+        for (auto const & p : _dynamicMetaPorts)
+        {
+            p.write(str);
+        }
+        str.writeField("numDynamicPorts");
+        str.writeUInt32(_dynamicPorts.size());
+        str.writeField("dynamicPorts");
+        for (auto p : _dynamicPorts)
+        {
+            if (str.writeRef(p))
+                p->writeToStream(str, nodeLib, lua);
+        }
+    }
+
+    void Node::readDynamicPorts(InputStream &str, NodeLibrary& nodeLib, Lua& lua, PortArray &_dynamicPorts, MetaPortArray &_dynamicMetaPorts)
+    {
+        std::string fieldName;
+        std::uint32_t numDynamicMetaPorts = 0;
+        str.readField(&fieldName);
+        str.readUInt32(&numDynamicMetaPorts);
+        _dynamicMetaPorts.resize(numDynamicMetaPorts);
+        str.readField(&fieldName);
+        for (std::size_t i=0; i<numDynamicMetaPorts; ++i)
+        {
+            _dynamicMetaPorts[i].read(str);
+        }
+        std::uint32_t numDynamicPorts = 0;
+        str.readField(&fieldName);
+        str.readUInt32(&numDynamicPorts);
+        _dynamicPorts.a.resize(numDynamicPorts);
+        str.readField(&fieldName);
+        for (std::size_t i=0; i<numDynamicPorts; ++i)
+        {
+            dagbase::Stream::ObjId portId{~0U};
+            auto portRef = str.readRef(&portId);
+            if (portId != 0)
+            {
+                if (portRef != nullptr)
+                {
+                    _dynamicPorts.a[i] = static_cast<dagbase::Port*>(portRef);
+                }
+                else
+                {
+                    _dynamicPorts.a[i] = nodeLib.instantiatePort(str, lua);
+                }
+            }
+        }
     }
 }

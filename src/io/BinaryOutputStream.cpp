@@ -38,13 +38,6 @@ namespace dagbase
         return *this;
     }
 
-    OutputStream & BinaryOutputStream::write(Variant value)
-    {
-        value.write(*this);
-
-        return *this;
-    }
-
     OutputStream & BinaryOutputStream::writeUInt8(std::uint8_t value)
     {
         if (_store)
@@ -205,6 +198,11 @@ namespace dagbase
     OutputStream & BinaryOutputStream::flush()
     {
         // Do nothing.
+
+        if (_store)
+        {
+            _store->flush();
+        }
 
         return *this;
     }

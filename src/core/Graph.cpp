@@ -661,56 +661,7 @@ namespace dagbase
 
     bool Graph::operator==(const Graph &other) const
     {
-        if (_nodes.size() != other._nodes.size())
-        {
-            return false;
-        }
-        for (auto it=_nodes.begin(); it!=_nodes.end(); ++it)
-        {
-            auto it2 = other._nodes.begin() + std::distance(_nodes.begin(),it);
-            if (it2 == other._nodes.end() || !it->second->equals(*(it2->second),CMP_NONE))
-            {
-                return false;
-            }
-        }
-
-	    if (_ports.size() != other._ports.size())
-	        return false;
-
-	    for (auto it=_ports.begin(); it!=_ports.end(); ++it)
-	    {
-	        auto it2 = other._ports.begin() + std::distance(_ports.begin(),it);
-	        if (it2 == other._ports.end() || !it->second->equals(*(it2->second), CMP_NONE))
-	        {
-	            return false;
-	        }
-	    }
-
-	    for (auto it=_signalPaths.begin(); it!=_signalPaths.end(); ++it)
-	    {
-	        auto it2 = other._signalPaths.begin() + std::distance(_signalPaths.begin(),it);
-	        if (it2 == other._signalPaths.end() || !it->second->equals(*(it2->second), CMP_NONE))
-	        {
-	            return false;
-	        }
-	    }
-
-        if (numChildren()!=other.numChildren())
-        {
-            return false;
-        }
-
-        for (auto it=_children.begin(); it!=_children.end(); ++it)
-        {
-            auto it2 = other._children.begin() + std::distance(_children.begin(),it);
-
-            if (!(*it)->operator==(*(*it2)))
-            {
-                return false;
-            }
-        }
-
-        return true;
+	    return equals(other, static_cast<dagbase::ComparisonFlags>(CMP_IDENT_BIT|CMP_NAME_BIT|CMP_CONNECTIONS_BIT));
     }
 
     void Graph::debug() const

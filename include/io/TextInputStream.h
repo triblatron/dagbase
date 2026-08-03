@@ -64,7 +64,7 @@ namespace dagbase
         InputStream& readFooter() override;
     private:
         BackingStore* _store{ nullptr };
-        std::istringstream* _istr{nullptr};
+        std::istream* _istr{nullptr};
         //! The result of base64 encoding
         std::vector<std::uint8_t> _output;
     };

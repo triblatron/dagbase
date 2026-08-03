@@ -129,9 +129,7 @@ namespace dagbase
 
         void debug(dagbase::DebugPrinter& printer) const override;
     private:
-        typedef std::vector<dagbase::MetaPort> MetaPortArray;
         MetaPortArray _dynamicMetaPorts;
-        typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;
         PortArray _dynamicPorts;
         Graph* _graph{nullptr};
     };

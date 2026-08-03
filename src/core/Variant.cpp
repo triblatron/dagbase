@@ -110,11 +110,14 @@ namespace dagbase
 
     OutputStream &Variant::write(OutputStream &str) const
     {
-        //str.writeHeader("Variant");
+        str.writeHeader("Variant");
+        str.writeField("hasValue");
         str.writeBool(has_value());
         if (has_value())
         {
+            str.writeField("type");
             str.writeUInt8(std::uint8_t(_value->index()));
+            str.writeField("value");
             switch (_value->index())
             {
                 case Variant::TYPE_DOUBLE:
@@ -145,7 +148,7 @@ namespace dagbase
 
         }
 
-        //str.writeFooter();
+        str.writeFooter();
 
         return str;
     }
@@ -191,14 +194,17 @@ namespace dagbase
 
     InputStream &Variant::read(InputStream &str, Lua &lua)
     {
-//        std::string name;
-//        str.readHeader(&name);
+        std::string name;
+        str.readHeader(&name);
         bool hasValue{false};
+        str.readField(&name);
         str.readBool(&hasValue);
         if (hasValue)
         {
             std::uint8_t type{0};
+            str.readField(&name);
             str.readUInt8(&type);
+            str.readField(&name);
             switch (type)
             {
                 case Variant::TYPE_DOUBLE:
@@ -265,7 +271,7 @@ namespace dagbase
         {
             *this = Variant();
         }
-        //str.readFooter();
+        str.readFooter();
         return str;
     }
 

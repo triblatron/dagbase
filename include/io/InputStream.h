@@ -21,6 +21,24 @@ namespace dagbase
     class DAGBASE_API InputStream : public Stream
     {
     public:
+        struct Header
+        {
+            InputStream& _str;
+
+            Header(InputStream& str)
+                :
+                _str(str)
+            {
+                std::string name;
+                str.readHeader(&name);
+            }
+
+            ~Header()
+            {
+                _str.readFooter();
+            }
+        };
+    public:
         virtual InputStream& readBuf(value_type* buf, std::size_t len) = 0;
 
         template<typename T>
@@ -29,13 +47,16 @@ namespace dagbase
             return readBuf(reinterpret_cast<value_type*>(value), sizeof(T));
         }
 
-        //virtual void* readRef(ObjId* id) = 0;
-
         template<typename T, typename ClassLibrary>
         T* readRef(const char*baseClassName, ClassLibrary& nodeLib, dagbase::Lua& lua)
         {
             ObjId id{~0U};
-            readUInt32(&id);
+            {
+                Header header(*this);
+                std::string name;
+                readField(&name);
+                readUInt32(&id);
+            }
 
             if (id != 0)
             {
@@ -51,7 +72,12 @@ namespace dagbase
 
         Ref readRef(ObjId* id)
         {
-            readUInt32(id);
+            {
+                Header header(*this);
+                std::string name;
+                readField(&name);
+                readUInt32(id);
+            }
 
             if (*id != 0)
             {
@@ -68,7 +94,12 @@ namespace dagbase
         template<typename T>
         T* readRef(ObjId* id)
         {
-            readUInt32(id);
+            {
+                Header header(*this);
+                std::string name;
+                readField(&name);
+                readUInt32(id);
+            }
 
             if (*id != 0)
             {
@@ -91,7 +122,12 @@ namespace dagbase
         template<typename T>
         T* readRef(ObjId* id, Lua& lua)
         {
-            readUInt32(id);
+            {
+                Header header(*this);
+                std::string name;
+                readField(&name);
+                readUInt32(id);
+            }
 
             if (*id != 0)
             {
@@ -110,28 +146,6 @@ namespace dagbase
                 return nullptr;
             }
         }
-
-        // template<typename BaseClass, typename ClassLibrary>
-        // BaseClass* readPort(const char* baseClassName, ClassLibrary& nodeLib)
-        // {
-        //     ObjId id{0};
-        //     Ref ref = readRef(&id);
-        //     if (id != 0)
-        //     {
-        //         if (ref!=nullptr)
-        //         {
-        //             return static_cast<BaseClass*>(ref);
-        //         }
-        //         else
-        //         {
-        //             return nodeLib.instantiate(baseClassName, *this);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         return nullptr;
-        //     }
-        //}
 
         void addObj(void* ref)
         {

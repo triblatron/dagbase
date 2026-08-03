@@ -6,7 +6,7 @@
 #include "Port.h"
 #include "MetaPort.h"
 #include "Variant.h"
-
+#include "util/SearchableArray.h"
 #include <string>
 #include <stdexcept>
 
@@ -251,6 +251,11 @@ namespace dagbase
         static std::string flagsToString(NodeFlags value);
 
         static NodeFlags parseFlags(const std::string& str);
+	protected:
+		typedef std::vector<dagbase::MetaPort> MetaPortArray;
+		typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;
+		static void writeDynamicPorts(OutputStream& str, NodeLibrary& nodeLib, Lua& lua, const PortArray& ports, const MetaPortArray& metaPorts);
+	    static void readDynamicPorts(InputStream& str, NodeLibrary& nodeLib, Lua& lua, PortArray& ports, MetaPortArray& metaPorts);
 	private:
         NodeID _id{NodeID::INVALID_ID};
         std::string _name;

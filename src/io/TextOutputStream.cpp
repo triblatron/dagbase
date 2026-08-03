@@ -17,14 +17,13 @@ namespace dagbase
         :
     _store(store)
     {
-        _ostr = new std::ostringstream();
         _printer = new DebugPrinter();
-        _printer->setStr(_ostr);
+        if (_store)
+            _printer->setStr(_store->ostr());
     }
 
     TextOutputStream::~TextOutputStream()
     {
-        delete _ostr;
         delete _printer;
     }
 
@@ -195,14 +194,9 @@ namespace dagbase
 
     OutputStream & TextOutputStream::flush()
     {
-        if (_ostr && _store)
+        if (_store)
         {
-            std::string strValue = _ostr->str();
-            if (!strValue.empty())
-            {
-                std::vector<std::uint8_t> buf(strValue.begin(), strValue.end());
-                _store->put(buf.data(), buf.size());
-            }
+            _store->flush();
         }
 
         return *this;

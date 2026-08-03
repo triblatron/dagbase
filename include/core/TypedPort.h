@@ -5,11 +5,8 @@
 #include "io/OutputStream.h"
 #include "Transfer.h"
 #include "core/Types.h"
-#include "util/enums.h"
 
-#include <atomic>
 #include <cassert>
-#include <iostream>
 #include <type_traits>
 
 namespace dagbase
@@ -92,7 +89,7 @@ namespace dagbase
         	str.writeHeader(className);
             Port::writeToStream(str, nodeLib, lua);
         	str.writeField("value");
-        	str.write(dagbase::ConfigurationElement::ValueType(_value));
+        	str.write(Variant(_value));
         	str.writeFooter();
 
             return str;

@@ -21,6 +21,23 @@ namespace dagbase
     class DAGBASE_API OutputStream : public Stream
     {
     public:
+        struct Header
+        {
+            OutputStream& _str;
+
+            Header(OutputStream& str, const std::string_view name)
+                :
+                _str(str)
+            {
+                str.writeHeader(name);
+            }
+
+            ~Header()
+            {
+                _str.writeFooter();
+            }
+        };
+    public:
         //! Write a buffer of bytes to the stream.
         virtual OutputStream& writeBuf(const value_type* buf, std::size_t len) = 0;
 
@@ -31,6 +48,8 @@ namespace dagbase
         template<typename T>
         bool writeRef(T* ptr)
         {
+            Header header(*this, "SerialId");
+            writeField("id");
             if (ptr != nullptr)
             {
                 if (auto it=_idLookup.find(ptr); it!=_idLookup.end())
@@ -41,7 +60,7 @@ namespace dagbase
                 else
                 {
                     std::size_t id = _idLookup.size() + 1;
-                    _idLookup.insert(PtrToIdMap::value_type(ptr, id));
+                    _idLookup.emplace(ptr, id);
                     writeUInt32(id);
                     return true;
                 }

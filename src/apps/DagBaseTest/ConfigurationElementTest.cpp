@@ -172,7 +172,8 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
     }
     std::string className = std::get<1>(GetParam());
     dagbase::OutputStream* sut = nullptr;
-    dagbase::MemoryBackingStore backingStore(dagbase::BackingStore::MODE_OUTPUT_BIT);
+    dagbase::MemoryBackingStore backingStore;
+    backingStore.open(dagbase::MemoryBackingStore::MODE_OUTPUT_BIT, "");
     if (className == "TextFormat")
         sut = new dagbase::TextOutputStream(&backingStore);
     else if (className == "BinaryFormat")
@@ -183,7 +184,7 @@ TEST_P(ConfigurationElement_testSerialise, testExpectedEquality)
         config->write(*sut);
     }
     sut->flush();
-    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT);
+    backingStore.open(dagbase::BackingStore::MODE_INPUT_BIT, "");
     dagbase::InputStream* istr{nullptr};
 
     dagbase::ConfigurationElement* configFromStream = nullptr;
