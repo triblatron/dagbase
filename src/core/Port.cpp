@@ -212,23 +212,29 @@ namespace dagbase
         }
         str.writeField("numOutgoingConnections");
         str.writeUInt32(_outgoingConnections.size());
-        str.writeField("outgoingConnections");
-        for (auto c: _outgoingConnections)
+         if (!_outgoingConnections.empty())
         {
-            if (str.writeRef(c))
+            str.writeField("outgoingConnections");
+            for (auto c: _outgoingConnections)
             {
-                c->writeToStream(str, nodeLib, lua);
+                if (str.writeRef(c))
+                {
+                    c->writeToStream(str, nodeLib, lua);
+                }
             }
         }
 
         str.writeField("numIncomingConnections");
         str.writeUInt32(_incomingConnections.size());
-        str.writeField("incomingConnections");
-        for (auto c : _incomingConnections)
+        if (!_incomingConnections.empty())
         {
-            if (str.writeRef(c))
+            str.writeField("incomingConnections");
+            for (auto c : _incomingConnections)
             {
-                c->writeToStream(str, nodeLib, lua);
+                if (str.writeRef(c))
+                {
+                    c->writeToStream(str, nodeLib, lua);
+                }
             }
         }
         str.writeFooter();
@@ -359,27 +365,33 @@ namespace dagbase
         std::uint32_t numOutgoingConnections = 0;
         str.readField(&fieldName);
         str.readUInt32(&numOutgoingConnections);
-        str.readField(&fieldName);
-        for (std::uint32_t i=0; i<numOutgoingConnections; ++i)
+        if (numOutgoingConnections > 0)
         {
-            Port* port = str.readRef<Port>("Port",nodeLib, lua);
-            if (port!=nullptr)
+            str.readField(&fieldName);
+            for (std::uint32_t i=0; i<numOutgoingConnections; ++i)
             {
-                addOutgoingConnection(port);
+                Port* port = str.readRef<Port>("Port",nodeLib, lua);
+                if (port!=nullptr)
+                {
+                    addOutgoingConnection(port);
+                }
             }
         }
         std::uint32_t numIncomingConnections = 0;
         str.readField(&fieldName);
         str.readUInt32(&numIncomingConnections);
-        str.readField(&fieldName);
-        for (std::uint32_t i=0; i<numIncomingConnections; ++i)
+        if (numIncomingConnections > 0)
         {
-            Port* port = str.readRef<Port>("Port", nodeLib, lua);
-            if (port != nullptr)
+            str.readField(&fieldName);
+            for (std::uint32_t i=0; i<numIncomingConnections; ++i)
             {
-                addIncomingConnection(port);
-            }
+                Port* port = str.readRef<Port>("Port", nodeLib, lua);
+                if (port != nullptr)
+                {
+                    addIncomingConnection(port);
+                }
 
+            }
         }
         str.readFooter();
         return str;
