@@ -271,3 +271,29 @@ INSTANTIATE_TEST_SUITE_P(ComparisonFlags, ComparisonFlags_testRoundTrip, ::testi
     std::make_tuple("CMP_IDENT_BIT", dagbase::ComparisonFlags::CMP_IDENT_BIT),
     std::make_tuple("CMP_NAME_BIT", dagbase::ComparisonFlags::CMP_NAME_BIT)
     ));
+
+
+class CopyOp_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string, dagbase::CopyOp>>
+{
+
+};
+
+TEST_P(CopyOp_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::copyOpToString(value));
+    EXPECT_EQ(value, dagbase::parseCopyOp(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(CopyOp, CopyOp_testRoundTrip, ::testing::Values(
+    std::make_tuple("DEEP_COPY_NONE", dagbase::DEEP_COPY_NONE),
+    std::make_tuple("DEEP_COPY_NODES_BIT", dagbase::DEEP_COPY_NODES_BIT),
+    std::make_tuple("DEEP_COPY_INPUTS_BIT", dagbase::DEEP_COPY_INPUTS_BIT),
+    std::make_tuple("DEEP_COPY_OUTPUTS_BIT", dagbase::DEEP_COPY_OUTPUTS_BIT),
+    std::make_tuple("GENERATE_UNIQUE_ID_BIT", dagbase::GENERATE_UNIQUE_ID_BIT),
+    std::make_tuple("DEEP_COPY_PARENT_BIT", dagbase::DEEP_COPY_PARENT_BIT),
+    std::make_tuple("ADD_CHILD_GRAPHS_BIT", dagbase::ADD_CHILD_GRAPHS_BIT),
+    std::make_tuple("DEEP_COPY_NODES_BIT DEEP_COPY_INPUTS_BIT DEEP_COPY_OUTPUTS_BIT", static_cast<dagbase::CopyOp>(dagbase::DEEP_COPY_NODES_BIT | dagbase::DEEP_COPY_INPUTS_BIT | dagbase::DEEP_COPY_OUTPUTS_BIT))
+));

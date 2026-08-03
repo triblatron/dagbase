@@ -4,9 +4,10 @@
 
 #pragma once
 
+#include "config/DagBaseExport.h"
+
 #include <string>
 
-#include "config/DagBaseExport.h"
 
 namespace dagbase
 {
@@ -14,7 +15,7 @@ namespace dagbase
     class InputStream;
     class OutputStream;
 
-    InputStream DAGBASE_API* createInputStream(const std::string& className, BackingStore& store, const char* filename);
-    OutputStream DAGBASE_API* createOutputStream(const std::string& className, BackingStore& store, const char* filename);
-    BackingStore* DAGBASE_API createBackingStore(const std::string& className);
+    extern InputStream DAGBASE_API* createInputStream(const std::string& className, BackingStore& store, const char* filename);
+    extern OutputStream DAGBASE_API* createOutputStream(const std::string& className, BackingStore& store, const char* filename);
+    extern BackingStore DAGBASE_API* createBackingStore(const std::string& className);
 }

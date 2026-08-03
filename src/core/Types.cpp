@@ -249,6 +249,7 @@ namespace dagbase
         BIT_NAME(op, DEEP_COPY_OUTPUTS_BIT, str);
         BIT_NAME(op, GENERATE_UNIQUE_ID_BIT, str);
         BIT_NAME(op, DEEP_COPY_PARENT_BIT, str);
+        BIT_NAME(op, ADD_CHILD_GRAPHS_BIT, str);
 
         if (!str.empty() && str.back() == ' ')
             str.pop_back();
@@ -265,6 +266,7 @@ namespace dagbase
         TEST_BIT(DEEP_COPY_OUTPUTS_BIT, str, value);
         TEST_BIT(GENERATE_UNIQUE_ID_BIT, str, value);
         TEST_BIT(DEEP_COPY_PARENT_BIT, str, value);
+        TEST_BIT(ADD_CHILD_GRAPHS_BIT, str, value);
 
         return value;
     }

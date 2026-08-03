@@ -1042,6 +1042,10 @@ namespace dagbase
     {
 	    Status status;
         auto copyOp = dagbase::GENERATE_UNIQUE_ID_BIT;
+        if (this == &sourceGraph)
+        {
+            copyOp = static_cast<dagbase::CopyOp>(copyOp | dagbase::ADD_CHILD_GRAPHS_BIT);
+        }
         std::unordered_set<const dagbase::SignalPath*> originalSignalPaths;
         std::unordered_set<dagbase::SignalPath*> clonedSignalPaths;
         std::vector<dagbase::Node*> clonedNodes;
@@ -1053,6 +1057,7 @@ namespace dagbase
             if (shouldClone)
             {
                 cloned = node->clone(facility, copyOp, &keyGen);
+                facility.addClone(nodeId, cloned);
                 clonedNodes.emplace_back(cloned);
             }
             else
@@ -1082,6 +1087,7 @@ namespace dagbase
                     if (shouldCloneFrom)
                     {
                         fromClone = fromOrig->clone(facility, copyOp, &keyGen);
+                        facility.addClone(fromId, fromClone);
                         clonedNodes.emplace_back(fromClone);
                     }
                     else
@@ -1092,6 +1098,7 @@ namespace dagbase
                     if (shouldCloneTo)
                     {
                         toClone = toOrig->clone(facility, copyOp, &keyGen);
+                        facility.addClone(toId, toClone);
                         clonedNodes.emplace_back(toClone);
                     }
                     else
@@ -1166,11 +1173,22 @@ namespace dagbase
         //
         for (auto it=other._children.begin(); it!=other._children.end(); ++it)
         {
-            Graph* copy = (*it)->clone(facility, copyOp, keyGen);
+            std::uint64_t graphId{ 0 };
+            bool shouldCloneGraph = facility.putOrig(*it, &graphId);
+            Graph* copy = nullptr;
+            if (shouldCloneGraph)
+            {
+                copy = (*it)->clone(facility, copyOp, keyGen);
+                facility.addClone(graphId, copy);
+            }
+            else
+            {
+                copy = static_cast<Graph*>(facility.getClone(graphId));
+            }
 
             if (copy != nullptr)
             {
-                _children.a.emplace_back(copy);
+                addChild(copy);
             }
         }
     }

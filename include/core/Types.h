@@ -233,7 +233,8 @@ namespace dagbase
         DEEP_COPY_INPUTS_BIT    = 1<<1,
         DEEP_COPY_OUTPUTS_BIT   = 1<<2,
         GENERATE_UNIQUE_ID_BIT  = 1<<3,
-        DEEP_COPY_PARENT_BIT    = 1<<4
+        DEEP_COPY_PARENT_BIT    = 1<<4,
+        ADD_CHILD_GRAPHS_BIT    = 1<<5
     };
 
     std::string DAGBASE_API copyOpToString(CopyOp op);

@@ -33,9 +33,9 @@ namespace dagbase
     _category(other._category),
     _flags(other._flags)
     {
-        std::uint64_t otherId = 0;
-        bool shouldClone = facility.putOrig(const_cast<Node*>(&other), &otherId);
-        facility.addClone(otherId, this);
+        //std::uint64_t otherId = 0;
+        //bool shouldClone = facility.putOrig(const_cast<Node*>(&other), &otherId);
+        //facility.addClone(otherId, this);
         if ((copyOp & CopyOp::GENERATE_UNIQUE_ID_BIT)!=0x0 && keyGen!=nullptr)
         {
             _id = keyGen->nextNodeID();

@@ -2,15 +2,17 @@
 // Created by tony on 02/08/2026.
 //
 
-#include <string>
-
 #include "config/config.h"
+
+#include "io/StreamFactory.h"
 #include "io/BinaryOutputStream.h"
 #include "io/TextOutputStream.h"
 #include "io/BinaryInputStream.h"
 #include "io/TextInputStream.h"
 #include "io/MemoryBackingStore.h"
 #include "io/FileBackingStore.h"
+
+#include <string>
 
 namespace dagbase
 {
