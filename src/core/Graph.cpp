@@ -160,6 +160,24 @@ namespace dagbase
 	        }
     }
 
+    void Graph::adjustNextID()
+    {
+	    for (auto p : _nodes)
+	    {
+	        _nextNodeID = std::max(std::int64_t(p.second->id()), _nextNodeID+ 1);
+	    }
+
+	    for (auto p : _ports)
+	    {
+	        _nextPortID = std::max(std::int64_t(p.second->id()), _nextPortID+1);
+	    }
+
+	    for (auto p : _signalPaths)
+	    {
+	        _nextSignalPathID = std::max(std::int64_t(p.second->id()), _nextSignalPathID+1);
+	    }
+    }
+
     template<typename PortClass>
     void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
     {

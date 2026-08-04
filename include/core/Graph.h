@@ -159,6 +159,8 @@ namespace dagbase
 
         void eachSignalPath(std::function<bool(const SignalPath*)> f) const;
 
+        void adjustNextID();
+
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
 		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str, Status* status = nullptr);
