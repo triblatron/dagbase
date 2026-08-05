@@ -17,6 +17,8 @@
 #include <queue>
 #include <algorithm>
 
+#include "core/GraphNode.h"
+
 namespace dagbase
 {
 	Graph::~Graph()
@@ -58,6 +60,10 @@ namespace dagbase
                 if (port && metaPort && metaPort->isOwned())
                     addPort(port);
             }
+		    if (auto graphNode = dynamic_cast<GraphNode*>(node); graphNode)
+		    {
+		        addChild(graphNode->graph());
+		    }
         }
 	}
 
