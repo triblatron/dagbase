@@ -356,8 +356,6 @@ namespace dagbase
         std::uint32_t rawDirection{0};
         str.readUInt32(&rawDirection);
         _direction = static_cast<PortDirection::Direction>(rawDirection);
-        dagbase::Stream::ObjId metaPortId = 0;
-        //        dagbase::Stream::ObjId parentId = 0;
         str.readField(&fieldName);
         _parent = str.readRef<Node>("Node", nodeLib, lua);
         str.readField(&fieldName);

@@ -132,6 +132,10 @@ namespace dagbase
         //! \return The total number of SignalPaths in this and its children
         std::size_t totalSignalPaths() const;
 
+	    void depthFirstTraversal(std::function<bool(const Node*)> f) const;
+
+	    void depthFirstTraversal(std::function<bool(const Port*)> f) const;
+
         void depthFirstTraversal(std::function<bool(const SignalPath*)> f) const;
 
         void depthFirstTraversal(std::function<bool(SignalPath*)> f);

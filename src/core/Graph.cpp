@@ -71,6 +71,44 @@ namespace dagbase
         return total;
     }
 
+    void Graph::depthFirstTraversal(std::function<bool(const Node *)> f) const
+    {
+	    if (f)
+	    {
+	        for (const Graph* child : _children)
+	        {
+	            child->depthFirstTraversal(f);
+	        }
+
+	        for (auto p : _nodes)
+	        {
+	            if (!f(p.second))
+	            {
+	                return;
+	            }
+	        }
+	    }
+    }
+
+    void Graph::depthFirstTraversal(std::function<bool(const Port *)> f) const
+    {
+	    if (f)
+	    {
+	        for (const Graph* child : _children)
+	        {
+	            child->depthFirstTraversal(f);
+	        }
+
+	        for (auto p : _ports)
+	        {
+	            if (!f(p.second))
+	            {
+	                return;
+	            }
+	        }
+	    }
+    }
+
     void Graph::depthFirstTraversal(std::function<bool(const SignalPath*)> f) const
     {
         if (f)
@@ -162,21 +200,26 @@ namespace dagbase
 
     void Graph::adjustNextID()
     {
-	    for (auto p : _nodes)
-	    {
-	        _nextNodeID = std::max(std::int64_t(p.second->id()), _nextNodeID+ 1);
-	    }
-
-	    for (auto p : _ports)
-	    {
-	        _nextPortID = std::max(std::int64_t(p.second->id()), _nextPortID+1);
-	    }
-
-	    for (auto p : _signalPaths)
-	    {
-	        _nextSignalPathID = std::max(std::int64_t(p.second->id()), _nextSignalPathID+1);
-	    }
+	    NodeID maxNodeID = _nextNodeID;
+        depthFirstTraversal([&maxNodeID](const Node* node) {
+            maxNodeID = std::max(node->id() + NodeID(1), maxNodeID);
+            return true;
+        });
+        _nextNodeID = maxNodeID;
+	    PortID maxPortID = _nextPortID;
+        depthFirstTraversal([&maxPortID](const Port* port) {
+            maxPortID = std::max(port->id() + PortID(1), maxPortID);
+            return true;
+        });
+        _nextPortID = maxPortID;
+	    SignalPathID maxSignalPathID = _nextSignalPathID;
+	    depthFirstTraversal([&maxSignalPathID](const SignalPath* signalPath) {
+	        maxSignalPathID = std::max(signalPath->id() + SignalPathID(1), maxSignalPathID);
+	        return true;
+	    });
+	    _nextSignalPathID = maxSignalPathID;
     }
+
 
     template<typename PortClass>
     void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
@@ -929,7 +972,7 @@ namespace dagbase
                 dagbase::Port* sourcePort = nullptr;
                 dagbase::Port* destPort = nullptr;
                 SignalPathID id = signalPathTable.integerForNameOrDefault("id", -1);
-                rootGraph.setNextSignalPathID(std::max(id+1, std::int64_t(rootGraph.currentSignalPathID())));
+                rootGraph.setNextSignalPathID(std::max(id+SignalPathID(1), rootGraph.currentSignalPathID()));
                 NodeID sourceNodeID = signalPathTable.integerForNameOrDefault("sourceNode", -1);
                 PortID sourcePortID = signalPathTable.integerForNameOrDefault("sourcePort", -1);
                 NodeID destNodeID = signalPathTable.integerForNameOrDefault("destNode", -1);
@@ -1084,7 +1127,7 @@ namespace dagbase
             }
 
             // Clone SignalPath we have not seen yet.
-            sourceGraph.eachSignalPath([this, &clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](const dagbase::SignalPath* signalPath) {
+            sourceGraph.eachSignalPath([&clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](const dagbase::SignalPath* signalPath) {
                 if (signalPath->sourceNode() == node || signalPath->destNode() == node || signalPath->source()->sharedParent() == node || signalPath->dest()->sharedParent() == node)
                 {
                     // Get the cloned nodes corresponding to source and destination

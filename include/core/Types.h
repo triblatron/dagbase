@@ -135,6 +135,13 @@ namespace dagbase
             return old;      \
         }                    \
                              \
+        Name operator+(const Name& op2)\
+        {                    \
+            std::int64_t result = id + op2.id;\
+            \
+            return result;\
+        }\
+        \
         operator std::int64_t() const       \
         {                    \
             return id;\
@@ -246,7 +253,9 @@ namespace dagbase
         CMP_NONE,
         CMP_IDENT_BIT = 1U<<0U,
         CMP_NAME_BIT = 1U<<1U,
-        CMP_CONNECTIONS_BIT = 1U<<2U
+        CMP_CONNECTIONS_IDENT_BIT = 1U<<3U,
+        CMP_CONNECTIONS_COUNT_BIT = 1U<<4U,
+        CMP_CONNECTIONS_BIT = CMP_CONNECTIONS_IDENT_BIT|CMP_CONNECTIONS_COUNT_BIT,
     };
 
     std::string DAGBASE_API comparisonFlagsToString(ComparisonFlags value);

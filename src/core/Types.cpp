@@ -280,6 +280,16 @@ namespace dagbase
 
         BIT_NAME(value, CMP_IDENT_BIT, retval);
         BIT_NAME(value, CMP_NAME_BIT, retval);
+        // Handle an enum which is a combination of other enums so that it resolves correctly without duplication
+        if ((value & CMP_CONNECTIONS_BIT) == CMP_CONNECTIONS_BIT)
+        {
+            BIT_NAME(value, CMP_CONNECTIONS_BIT, retval);
+        }
+        else
+        {
+            BIT_NAME(value, CMP_CONNECTIONS_COUNT_BIT, retval);
+            BIT_NAME(value, CMP_CONNECTIONS_IDENT_BIT, retval);
+        }
 
         if (!retval.empty() && retval.back() == ' ')
             retval.pop_back();
@@ -293,6 +303,9 @@ namespace dagbase
 
         TEST_BIT(CMP_IDENT_BIT, str, value);
         TEST_BIT(CMP_NAME_BIT, str, value);
+        TEST_BIT(CMP_CONNECTIONS_BIT, str, value);
+        TEST_BIT(CMP_CONNECTIONS_COUNT_BIT, str, value);
+        TEST_BIT(CMP_CONNECTIONS_IDENT_BIT, str, value);
 
         return value;
     }

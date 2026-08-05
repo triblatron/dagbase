@@ -9,7 +9,7 @@
 #include <cstring>
 
 #define BIT_NAME(mask, bit, str) \
-    if (mask & bit) \
+    if ((mask & bit)==bit) \
     {                            \
         str += #bit;             \
         str += ' ';              \

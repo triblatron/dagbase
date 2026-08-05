@@ -370,7 +370,16 @@ namespace dagbase
                     return false;
             }
 
-            if ((flags & CMP_CONNECTIONS_BIT) != 0)
+            if ((flags & CMP_CONNECTIONS_COUNT_BIT) != 0)
+            {
+                if (_outgoingConnections.size() != other._outgoingConnections.size())
+                    return false;
+
+                if (_incomingConnections.size() != other._incomingConnections.size())
+                    return false;
+            }
+
+            if ((flags & CMP_CONNECTIONS_IDENT_BIT)!=0)
             {
                 for (auto it = _outgoingConnections.begin(); it != _outgoingConnections.end(); ++it)
                 {
@@ -391,8 +400,8 @@ namespace dagbase
                         return false;
                     }
                 }
-            }
 
+            }
             return *this == other;
         }
 

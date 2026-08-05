@@ -269,7 +269,10 @@ TEST_P(ComparisonFlags_testRoundTrip, testRoundTrip)
 INSTANTIATE_TEST_SUITE_P(ComparisonFlags, ComparisonFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("CMP_NONE", dagbase::ComparisonFlags::CMP_NONE),
     std::make_tuple("CMP_IDENT_BIT", dagbase::ComparisonFlags::CMP_IDENT_BIT),
-    std::make_tuple("CMP_NAME_BIT", dagbase::ComparisonFlags::CMP_NAME_BIT)
+    std::make_tuple("CMP_NAME_BIT", dagbase::ComparisonFlags::CMP_NAME_BIT),
+    std::make_tuple("CMP_CONNECTIONS_BIT", dagbase::ComparisonFlags::CMP_CONNECTIONS_BIT),
+    std::make_tuple("CMP_CONNECTIONS_COUNT_BIT", dagbase::ComparisonFlags::CMP_CONNECTIONS_COUNT_BIT),
+    std::make_tuple("CMP_CONNECTIONS_IDENT_BIT", dagbase::ComparisonFlags::CMP_CONNECTIONS_IDENT_BIT)
     ));
 
 
