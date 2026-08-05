@@ -1,0 +1,9 @@
+[submodule "ThirdParty/imnodes"]
+	path = ThirdParty/imnodes
+	url = https://github.com/Nelarius/imnodes.git
+[submodule "ThirdParty/imguiFileDialog"]
+	path = ThirdParty/imguiFileDialog
+	url = https://github.com/aiekick/ImGuiFileDialog.git
+[submodule "ThirdParty/imguifd"]
+	path = ThirdParty/imguifd
+	url = https://github.com/aiekick/ImGuiFileDialog.git

@@ -1,7 +1,7 @@
 #include "config/config.h"
 
 #include "core/Editable.h"
-#include "imgui/imgui.h"
+#include "imgui.h"
 
 namespace dagbase
 {

@@ -174,26 +174,26 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
         include/util/VectorSet.h)
 
-ADD_LIBRARY( imgui STATIC 		include/imgui/imconfig.h
-        include/imgui/imgui.h
-        include/imgui/imgui_internal.h
-        include/imgui/imstb_rectpack.h
-        include/imgui/imstb_textedit.h
-        include/imgui/imstb_truetype.h
-        include/imnodes/imnodes.h
-        include/imnodes/imnodes_internal.h
-        include/imguifd/ImGuiFileDialog.h
-        include/imguifd/ImGuiFileDialogConfig.h
-        src/imgui/imgui.cpp
-        src/imgui/imgui_draw.cpp
-        src/imgui/imgui_tables.cpp
-        src/imgui/imgui_widgets.cpp
-        src/imnodes/imnodes.cpp
-        src/imguifd/ImGuiFileDialog.cpp
+ADD_LIBRARY( imgui STATIC 		ThirdParty/imgui/imconfig.h
+        ThirdParty/imgui/imgui.h
+		ThirdParty/imgui/imgui_internal.h
+		ThirdParty/imgui/imstb_rectpack.h
+		ThirdParty/imgui/imstb_textedit.h
+		ThirdParty/imgui/imstb_truetype.h
+		ThirdParty/imnodes/imnodes.h
+		ThirdParty/imnodes/imnodes_internal.h
+		ThirdParty/imguifd/ImGuiFileDialog.h
+		ThirdParty/imguifd/ImGuiFileDialogConfig.h
+		ThirdParty/imgui/imgui.cpp
+		ThirdParty/imgui/imgui_draw.cpp
+		ThirdParty/imgui/imgui_tables.cpp
+		ThirdParty/imgui/imgui_widgets.cpp
+		ThirdParty/imnodes/imnodes.cpp
+		ThirdParty/imguifd/ImGuiFileDialog.cpp
 )
 TARGET_COMPILE_DEFINITIONS( imgui PUBLIC USE_STD_FILESYSTEM )
-TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_SOURCE_DIR}/include/imguifd )
-TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui ${CMAKE_CURRENT_SOURCE_DIR}/include/imnodes ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
+TARGET_INCLUDE_DIRECTORIES( imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imnodes ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imguifd )
+TARGET_INCLUDE_DIRECTORIES( dagbase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imnodes ${CMAKE_CURRENT_LIST_DIR}/include ${PROJECT_BINARY_DIR}/include ${LUA_INCLUDE_DIR})
 TARGET_LINK_DIRECTORIES( dagbase PUBLIC ${DEP_ROOT}/lib )
 TARGET_LINK_LIBRARIES( dagbase PRIVATE ${LUA_LIBRARIES} imgui)
 SET_TARGET_PROPERTIES( dagbase PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib" )
