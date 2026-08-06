@@ -455,7 +455,7 @@ namespace dagbase
             // Remove any SignalPaths this Node is involved in.
             depthFirstTraversal([node](Graph* child) {
                 child->eachSignalPath([node](SignalPath* signalPath) {
-                    if (signalPath->sourceNode() == node || signalPath->destNode() == node)
+                    if (signalPath->sourceNode() == node || signalPath->destNode() == node || signalPath->source()->sharedParent() == node || signalPath->dest()->sharedParent() == node)
                     {
                         signalPath->markRemoved();
                         signalPath->dest()->removeIncomingConnection(signalPath->source());

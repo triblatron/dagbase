@@ -88,11 +88,20 @@ namespace dagbase
         // Do not delete our shared Ports.
         for (std::size_t i=0; i<_dynamicPorts.size(); ++i)
         {
+            if (_dynamicPorts.a[i]->sharedParent() == this)
+            {
+                _dynamicPorts.a[i]->setSharedParent(nullptr);
+            }
             if (_dynamicMetaPorts[i].isOwned())
             {
                 delete _dynamicPorts.a[i];
             }
         }
+        if (_graph && _graph->parent())
+        {
+            _graph->parent()->removeChild(_graph);
+        }
+        delete _graph;
     }
 
     GraphNode & GraphNode::operator=(const GraphNode &other)
