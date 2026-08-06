@@ -716,11 +716,8 @@ namespace dagbase
                 else
                 {
                     child = new Graph(str, nodeLib, lua);
+                    addChild(child);
                 }
-            }
-            if (child != nullptr)
-            {
-                addChild(child);
             }
         }
 	    str.readFooter();
