@@ -14,7 +14,7 @@ struct Assertion
     std::string path;
     dagbase::Variant value;
     double tolerance{ 0.0 };
-    dagbase::ConfigurationElement::RelOp op{ dagbase::ConfigurationElement::RELOP_UNKNOWN };
+    dagbase::ConfigurationElement::RelOp op{ dagbase::ConfigurationElement::RELOP_EQ };
     dagbase::Variant::Index typeIndex{ dagbase::Variant::TYPE_UNKNOWN };
 
     void configure(dagbase::ConfigurationElement& config)
