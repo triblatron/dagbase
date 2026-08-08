@@ -45,6 +45,6 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
         EXPECT_GE(actual.value(), expected.value()) << path;
         break;
     default:
-        assert(false);
+        FAIL() << "Cannot compare using RELOP_UNKNOWN" << path;
     }
 }

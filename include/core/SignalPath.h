@@ -37,6 +37,15 @@ namespace dagbase
             // Do nothing.
         }
 
+        SignalPath(KeyGenerator& keyGen, PortID source, PortID dest)
+            :
+        _id(keyGen.nextSignalPathID()),
+        _sourceId(source),
+        _destId(dest)
+        {
+            // Do nothing.
+        }
+
         SignalPath(SignalPathID id, Port* source, Port* dest);
 
         SignalPath(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
@@ -122,6 +131,16 @@ namespace dagbase
             return nullptr;
         }
 
+        PortID from() const
+        {
+            return _sourceId;
+        }
+
+        PortID to() const
+        {
+            return _destId;
+        }
+
         void markRemoved()
         {
             _flags = static_cast<Flags>(_flags | REMOVED_BIT);
@@ -146,6 +165,8 @@ namespace dagbase
         SignalPathID _id;
         Port* _source{nullptr};
         Port* _dest{nullptr};
+        PortID _sourceId{PortID::INVALID_ID};
+        PortID _destId{PortID::INVALID_ID};
         Flags _flags{FLAGS_NONE};
     };
 
