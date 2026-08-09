@@ -47,9 +47,10 @@ namespace dagbase
             SignalPath temp(sourceID, PortID::INVALID_ID);
 
             auto it = _signalPaths.findPartial(&temp);
-            if (it!=_signalPaths.end() && (*it)->from() == sourceID)
+            while (it != _signalPaths.end() && (*it)->from() == sourceID)
             {
                 result->a.emplace_back(*it);
+                ++it;
             }
         }
     }
@@ -61,9 +62,10 @@ namespace dagbase
             SignalPath temp( PortID::INVALID_ID, destID);
 
             auto it = _signalPaths.findPartial(&temp);
-            if (it!=_signalPaths.end() && (*it)->to() == destID)
+            while (it != _signalPaths.end() && (*it)->to() == destID)
             {
                 result->a.emplace_back(*it);
+                ++it;
             }
         }
     }

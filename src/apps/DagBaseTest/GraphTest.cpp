@@ -161,5 +161,6 @@ TEST_P(SignalPathTable_testScripted, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(SignalPathTable, SignalPathTable_testScripted, ::testing::Values(
     std::make_tuple("data/tests/SignalPathTable/InsertInvalid.lua"),
-    std::make_tuple("data/tests/SignalPathTable/InsertValid.lua")
+    std::make_tuple("data/tests/SignalPathTable/InsertValid.lua"),
+    std::make_tuple("data/tests/SignalPathTable/Query.lua")
     ));
