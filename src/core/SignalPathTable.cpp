@@ -20,6 +20,22 @@ namespace dagbase
         return false;
     }
 
+
+    Variant SignalPathTable::FindResult::find(std::string_view path) const
+    {
+        Variant retval;
+
+        retval = findEndpoint(path, "size", std::uint32_t(std::distance(p.first,p.second)));
+        if (retval.has_value())
+            return retval;
+
+        retval = findArray(path, *this);
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
+
     Status SignalPathTable::add(SignalPath *signalPath)
     {
         Status status{dagbase::Status::STATUS_UNKNOWN};
@@ -46,12 +62,9 @@ namespace dagbase
         {
             SignalPath temp(sourceID, PortID::INVALID_ID);
 
-            auto it = _signalPaths.findPartial(&temp);
-            while (it != _signalPaths.end() && (*it)->from() == sourceID)
-            {
-                result->a.emplace_back(*it);
-                ++it;
-            }
+            result->p.first = _signalPaths.findPartial(&temp);
+
+            for (result->p.second=result->p.first; result->p.second != _signalPaths.end() && (*result->p.second)->from() == sourceID; ++result->p.second);
         }
     }
 
@@ -61,12 +74,9 @@ namespace dagbase
         {
             SignalPath temp( PortID::INVALID_ID, destID);
 
-            auto it = _signalPaths.findPartial(&temp);
-            while (it != _signalPaths.end() && (*it)->to() == destID)
-            {
-                result->a.emplace_back(*it);
-                ++it;
-            }
+            result->p.first = _signalPaths.findPartial(&temp);
+
+            for (result->p.second=result->p.first; result->p.second != _signalPaths.end() && (*result->p.second)->to() == destID; ++result->p.second);
         }
     }
 

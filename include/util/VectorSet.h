@@ -21,6 +21,7 @@ namespace dagbase
         using iterator = typename container::iterator;
         using const_iterator = typename container::const_iterator;
         using size_type = typename container::size_type;
+        using difference_type = typename container::difference_type;
     public:
         void reserve(size_type n)
         {

@@ -58,5 +58,17 @@ root=
 				},
 			},
 		},
+		{
+			command="COMMAND_FIND_TO",
+			to=-1,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=0,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
 	},
 }

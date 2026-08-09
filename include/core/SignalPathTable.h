@@ -25,9 +25,28 @@ namespace dagbase
     class DAGBASE_API SignalPathTable
     {
     public:
-        using FindResult = SearchableArray<std::vector<SignalPath*>>;
-    public:
         using LookupTable = VectorSet<SignalPath*, CompareSignalPaths>;
+        struct FindResult
+        {
+            using value_type = SignalPath *;
+            Variant find(std::string_view path) const;
+
+            std::size_t size() const
+            {
+                return std::size_t(std::distance(p.first,p.second));
+            }
+
+            const SignalPath* operator[](std::size_t index) const
+            {
+                if (index<std::size_t(std::distance(p.first,p.second)))
+                    return *(p.first+LookupTable::difference_type(index));
+
+                return nullptr;
+            }
+
+            std::pair<LookupTable::const_iterator, LookupTable::const_iterator> p;
+        };
+    public:
 
         Status add(SignalPath* signalPath);
 
