@@ -33,7 +33,7 @@ namespace dagbase
         using LookupTableFrom = VectorSet<SignalPath*, CompareSignalPathsByFrom>;
         using LookupTableTo = VectorSet<SignalPath*, CompareSignalPathsByTo>;
 
-        struct FindResult
+        struct DAGBASE_API FindResult
         {
             using value_type = SignalPath *;
             Variant find(std::string_view path) const;
