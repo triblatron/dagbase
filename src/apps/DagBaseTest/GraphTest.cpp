@@ -21,7 +21,8 @@ struct SignalPathScriptItem
         COMMAND_UNKNOWN,
         COMMAND_ADD,
         COMMAND_FIND_FROM,
-        COMMAND_FIND_TO
+        COMMAND_FIND_TO,
+        COMMAND_FIND
     };
 
     void configure(dagbase::ConfigurationElement& config)
@@ -60,6 +61,12 @@ struct SignalPathScriptItem
 
                 break;
             }
+            case COMMAND_FIND:
+            {
+                sut.findFull(from, to, &result);
+
+                break;
+            }
             default:
                 FAIL() << "Handling unknown command";
                 break;
@@ -83,6 +90,7 @@ struct SignalPathScriptItem
             ENUM_NAME(COMMAND_ADD)
             ENUM_NAME(COMMAND_FIND_FROM)
             ENUM_NAME(COMMAND_FIND_TO)
+            ENUM_NAME(COMMAND_FIND)
         }
 
         return "<error>";
@@ -93,6 +101,7 @@ struct SignalPathScriptItem
         TEST_ENUM(COMMAND_ADD, str);
         TEST_ENUM(COMMAND_FIND_FROM, str);
         TEST_ENUM(COMMAND_FIND_TO, str);
+        TEST_ENUM(COMMAND_FIND, str);
 
         return COMMAND_UNKNOWN;
     }

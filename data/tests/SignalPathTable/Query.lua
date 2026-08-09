@@ -39,6 +39,24 @@ root=
 			},
 		},
 		{
+			command="COMMAND_ADD",
+			from=3,
+			to=2,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="numSignalPaths",
+					value=3,
+					typeIndex="TYPE_UINT",
+					op="RELOP_EQ",
+				},
+			},
+		},
+		{
 			command="COMMAND_FIND_FROM",
 			from=0,
 			assertions=
@@ -60,6 +78,26 @@ root=
 		},
 		{
 			command="COMMAND_FIND_TO",
+			to=2,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=2,
+					typeIndex="TYPE_UINT",
+				},
+				{
+					path="result[0].to",
+					value=2,
+				},
+				{
+					path="result[1].to",
+					value=2,
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND_TO",
 			to=-1,
 			assertions=
 			{
@@ -67,6 +105,64 @@ root=
 					path="result.size",
 					value=0,
 					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND_FROM",
+			from=5,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=0,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND_TO",
+			to=5,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=0,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND",
+			from=0,
+			to=3,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=0,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND",
+			from=0,
+			to=1,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=1,
+					typeIndex="TYPE_UINT",
+				},
+				{
+					path="result[0].from",
+					value=0,
+				},
+				{
+					path="result[0].to",
+					value=1,
 				},
 			},
 		},

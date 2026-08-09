@@ -17,7 +17,12 @@ namespace dagbase
 {
     class SignalPath;
 
-    struct CompareSignalPaths
+    struct CompareSignalPathsByFrom
+    {
+        bool operator()(const SignalPath* op1, const SignalPath* op2) const;
+    };
+
+    struct CompareSignalPathsByTo
     {
         bool operator()(const SignalPath* op1, const SignalPath* op2) const;
     };
@@ -25,7 +30,9 @@ namespace dagbase
     class DAGBASE_API SignalPathTable
     {
     public:
-        using LookupTable = VectorSet<SignalPath*, CompareSignalPaths>;
+        using LookupTableFrom = VectorSet<SignalPath*, CompareSignalPathsByFrom>;
+        using LookupTableTo = VectorSet<SignalPath*, CompareSignalPathsByTo>;
+
         struct FindResult
         {
             using value_type = SignalPath *;
@@ -39,30 +46,32 @@ namespace dagbase
             const SignalPath* operator[](std::size_t index) const
             {
                 if (index<std::size_t(std::distance(p.first,p.second)))
-                    return *(p.first+LookupTable::difference_type(index));
+                    return *(p.first+LookupTableFrom::difference_type(index));
 
                 return nullptr;
             }
 
-            std::pair<LookupTable::const_iterator, LookupTable::const_iterator> p;
+            std::pair<LookupTableFrom::const_iterator, LookupTableFrom::const_iterator> p;
         };
     public:
-
         Status add(SignalPath* signalPath);
 
         void remove(SignalPath* signalPath);
 
         std::size_t size() const
         {
-            return _signalPaths.size();
+            return _signalPathsFrom.size();
         }
 
         void findBySource(PortID sourceID, FindResult* result) const;
 
         void findByDest(PortID destID, FindResult* result) const;
 
+        void findFull(PortID sourceID, PortID destID, FindResult* result) const;
+
         Variant find(std::string_view path) const;
     private:
-        LookupTable _signalPaths;
+        LookupTableFrom _signalPathsFrom;
+        LookupTableTo _signalPathsTo;
     };
 }
