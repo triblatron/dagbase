@@ -9,7 +9,7 @@
 
 namespace dagbase
 {
-    bool CompareSignalPaths::operator()(const SignalPath *op1, const SignalPath * op2) const
+    bool CompareSignalPathsByFrom::operator()(const SignalPath *op1, const SignalPath * op2) const
     {
         if (op1->from() < op2->from())
             return true;
@@ -20,6 +20,16 @@ namespace dagbase
         return false;
     }
 
+    bool CompareSignalPathsByTo::operator()(const SignalPath *op1, const SignalPath * op2) const
+    {
+        if (op1->to() < op2->to())
+            return true;
+
+        if (op1->to() == op2->to() && op1->from() < op2->from())
+            return true;
+
+        return false;
+    }
 
     Variant SignalPathTable::FindResult::find(std::string_view path) const
     {
@@ -42,7 +52,8 @@ namespace dagbase
 
         if (signalPath->from().valid() && signalPath->to().valid())
         {
-            _signalPaths.emplace(signalPath);
+            _signalPathsFrom.emplace(signalPath);
+            _signalPathsTo.emplace(signalPath);
             status.status = dagbase::Status::STATUS_OK;
         }
         else
@@ -62,9 +73,9 @@ namespace dagbase
         {
             SignalPath temp(sourceID, PortID::INVALID_ID);
 
-            result->p.first = _signalPaths.findPartial(&temp);
+            result->p.first = _signalPathsFrom.findPartial(&temp);
 
-            for (result->p.second=result->p.first; result->p.second != _signalPaths.end() && (*result->p.second)->from() == sourceID; ++result->p.second);
+            for (result->p.second=result->p.first; result->p.second != _signalPathsFrom.end() && (*result->p.second)->from() == sourceID; ++result->p.second);
         }
     }
 
@@ -74,9 +85,21 @@ namespace dagbase
         {
             SignalPath temp( PortID::INVALID_ID, destID);
 
-            result->p.first = _signalPaths.findPartial(&temp);
+            result->p.first = _signalPathsTo.findPartial(&temp);
 
-            for (result->p.second=result->p.first; result->p.second != _signalPaths.end() && (*result->p.second)->to() == destID; ++result->p.second);
+            for (result->p.second=result->p.first; result->p.second != _signalPathsTo.end() && (*result->p.second)->to() == destID; ++result->p.second);
+        }
+    }
+
+    void SignalPathTable::findFull(PortID sourceID, PortID destID, FindResult *result) const
+    {
+        if (result)
+        {
+            SignalPath temp(sourceID, destID);
+
+            result->p.first = _signalPathsFrom.findPartial(&temp);
+
+            for (result->p.second=result->p.first; result->p.second != _signalPathsFrom.end() && (*result->p.second)->from() == sourceID && (*result->p.second)->to() == destID; ++result->p.second);
         }
     }
 
