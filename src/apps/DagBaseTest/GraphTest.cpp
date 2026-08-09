@@ -12,14 +12,16 @@
 #include "core/Graph.h"
 #include "test/TestUtils.h"
 
-using SignalPathAssertion = Assertion<dagbase::SignalPathTable>;
+using SignalPathAssertion = Assertion<dagbase::SignalPathTable, dagbase::SignalPathTable::FindResult>;
 
 struct SignalPathScriptItem
 {
     enum Command
     {
         COMMAND_UNKNOWN,
-        COMMAND_ADD
+        COMMAND_ADD,
+        COMMAND_FIND_FROM,
+        COMMAND_FIND_TO
     };
 
     void configure(dagbase::ConfigurationElement& config)
@@ -34,6 +36,7 @@ struct SignalPathScriptItem
     void makeItSo(dagbase::SignalPathTable& sut, dagbase::KeyGenerator& keyGen, const std::string& caseName)
     {
         dagbase::Status actualStatus;
+        dagbase::SignalPathTable::FindResult result;
 
         switch (cmd)
         {
@@ -42,6 +45,18 @@ struct SignalPathScriptItem
                 auto* signalPath = new dagbase::SignalPath(keyGen, from, to);
 
                 actualStatus = sut.add(signalPath);
+
+                break;
+            }
+            case COMMAND_FIND_FROM:
+            {
+                sut.findBySource(from, &result);
+
+                break;
+            }
+            case COMMAND_FIND_TO:
+            {
+                sut.findByDest(to, &result);
 
                 break;
             }
@@ -56,7 +71,7 @@ struct SignalPathScriptItem
 
         for (const auto& a : assertions)
         {
-            a.makeItSo(sut, caseName + ':' + commandToString(cmd));
+            a.makeItSo(sut, result, caseName + ':' + commandToString(cmd));
         }
     }
 
@@ -66,6 +81,8 @@ struct SignalPathScriptItem
         {
             ENUM_NAME(COMMAND_UNKNOWN)
             ENUM_NAME(COMMAND_ADD)
+            ENUM_NAME(COMMAND_FIND_FROM)
+            ENUM_NAME(COMMAND_FIND_TO)
         }
 
         return "<error>";
@@ -74,6 +91,8 @@ struct SignalPathScriptItem
     static Command parseCommand(const char* str)
     {
         TEST_ENUM(COMMAND_ADD, str);
+        TEST_ENUM(COMMAND_FIND_FROM, str);
+        TEST_ENUM(COMMAND_FIND_TO, str);
 
         return COMMAND_UNKNOWN;
     }
@@ -141,5 +160,6 @@ TEST_P(SignalPathTable_testScripted, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(SignalPathTable, SignalPathTable_testScripted, ::testing::Values(
-    std::make_tuple("data/tests/SignalPathTable/InsertInvalid.lua")
+    std::make_tuple("data/tests/SignalPathTable/InsertInvalid.lua"),
+    std::make_tuple("data/tests/SignalPathTable/InsertValid.lua")
     ));

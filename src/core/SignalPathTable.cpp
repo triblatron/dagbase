@@ -9,13 +9,24 @@
 
 namespace dagbase
 {
+    bool CompareSignalPaths::operator()(const SignalPath *op1, const SignalPath * op2) const
+    {
+        if (op1->from() < op2->from())
+            return true;
+
+        if (op1->from() == op2->from() && op1->to() < op2->to())
+            return true;
+
+        return false;
+    }
+
     Status SignalPathTable::add(SignalPath *signalPath)
     {
         Status status{dagbase::Status::STATUS_UNKNOWN};
 
         if (signalPath->from().valid() && signalPath->to().valid())
         {
-            _signalPaths.emplace(signalPath->id(), signalPath);
+            _signalPaths.emplace(signalPath);
             status.status = dagbase::Status::STATUS_OK;
         }
         else
@@ -29,14 +40,32 @@ namespace dagbase
     {
     }
 
-    VectorMap<SignalPathID, SignalPath *>::const_iterator SignalPathTable::findBySource(PortID sourceID) const
+    void SignalPathTable::findBySource(PortID sourceID, FindResult *result) const
     {
-        return _signalPaths.end();
+        if (result)
+        {
+            SignalPath temp(sourceID, PortID::INVALID_ID);
+
+            auto it = _signalPaths.findPartial(&temp);
+            if (it!=_signalPaths.end() && (*it)->from() == sourceID)
+            {
+                result->a.emplace_back(*it);
+            }
+        }
     }
 
-    VectorMap<SignalPathID, SignalPath *>::const_iterator SignalPathTable::findByDest(PortID destID) const
+    void SignalPathTable::findByDest(PortID destID, FindResult *result) const
     {
-        return _signalPaths.end();
+        if (result)
+        {
+            SignalPath temp( PortID::INVALID_ID, destID);
+
+            auto it = _signalPaths.findPartial(&temp);
+            if (it!=_signalPaths.end() && (*it)->to() == destID)
+            {
+                result->a.emplace_back(*it);
+            }
+        }
     }
 
     Variant SignalPathTable::find(std::string_view path) const

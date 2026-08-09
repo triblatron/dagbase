@@ -141,6 +141,12 @@ namespace dagbase
             return it;
         }
 
+        const_iterator findPartial(const Value& value) const
+        {
+            auto it = std::lower_bound(_set.begin(), _set.end(), value_type(value), _cmp);
+            return it;
+        }
+
         void erase(const_iterator it)
         {
             if (it==_set.end())

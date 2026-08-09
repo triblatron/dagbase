@@ -46,6 +46,14 @@ namespace dagbase
             // Do nothing.
         }
 
+        SignalPath(PortID from, PortID to)
+            :
+        _sourceId(from),
+        _destId(to)
+        {
+            // Do noting.
+        }
+
         SignalPath(SignalPathID id, Port* source, Port* dest);
 
         SignalPath(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);

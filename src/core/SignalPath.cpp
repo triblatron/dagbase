@@ -59,6 +59,14 @@ namespace dagbase
                 return retval;
         }
 
+        retval = findEndpoint(path, "from", _sourceId);
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "to", _destId);
+        if (retval.has_value())
+            return retval;
+
         return {};
     }
 

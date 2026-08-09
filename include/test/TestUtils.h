@@ -5,11 +5,11 @@
 #pragma once
 
 #include "core/ConfigurationElement.h"
+#include "util/Searchable.h"
 
 extern void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase::ConfigurationElement::ValueType actual, double tolerance, dagbase::ConfigurationElement::RelOp op, const char* path="unspecified");
 
-template<typename Sut>
-struct Assertion
+struct AssertionBase
 {
     std::string path;
     dagbase::Variant value;
@@ -41,7 +41,27 @@ struct Assertion
             value = newValue.cast(typeIndex);
         }
     }
+};
 
+template<typename Sut, typename Result=void>
+struct Assertion : AssertionBase
+{
+    void makeItSo(Sut& sut, Result& result, const std::string& cmd) const
+    {
+        auto actual = dagbase::findInternal(path, "result", result);
+        if (actual.has_value())
+            assertComparison(value, actual, tolerance, op, (path + " " + cmd).c_str());
+        else
+        {
+            actual = sut.find(path);
+            assertComparison(value, actual, tolerance, op, (path + " " + cmd).c_str());
+        }
+    }
+};
+
+template<typename Sut>
+struct Assertion<Sut, void> : public AssertionBase
+{
     void makeItSo(Sut& sut, const std::string& cmd) const
     {
         auto actual = sut.find(path);

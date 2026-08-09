@@ -7,19 +7,27 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Types.h"
-
-#include "util/VectorMap.h"
+#include "util/VectorSet.h"
+#include "util/SearchableArray.h"
 
 #include <string_view>
+
 
 namespace dagbase
 {
     class SignalPath;
 
+    struct CompareSignalPaths
+    {
+        bool operator()(const SignalPath* op1, const SignalPath* op2) const;
+    };
+
     class DAGBASE_API SignalPathTable
     {
     public:
-        using LookupTable = VectorMap<SignalPathID, SignalPath*>;
+        using FindResult = SearchableArray<std::vector<SignalPath*>>;
+    public:
+        using LookupTable = VectorSet<SignalPath*, CompareSignalPaths>;
 
         Status add(SignalPath* signalPath);
 
@@ -30,9 +38,9 @@ namespace dagbase
             return _signalPaths.size();
         }
 
-        LookupTable::const_iterator findBySource(PortID sourceID) const;
+        void findBySource(PortID sourceID, FindResult* result) const;
 
-        LookupTable::const_iterator findByDest(PortID destID) const;
+        void findByDest(PortID destID, FindResult* result) const;
 
         Variant find(std::string_view path) const;
     private:
