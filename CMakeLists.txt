@@ -101,6 +101,7 @@ SET( ALL_PUBLIC_HEADERS
 		include/io/FileBackingStore.h
 		include/io/StreamFactory.h
         include/core/SignalPathTable.h
+        include/core/NodesPortsTable.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -171,6 +172,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
 		src/io/FileBackingStore.cpp
 		src/io/StreamFactory.cpp
         src/core/SignalPathTable.cpp
+        src/core/NodesPortsTable.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

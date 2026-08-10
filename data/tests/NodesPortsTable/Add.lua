@@ -1,0 +1,23 @@
+root=
+{
+	items=
+	{
+		{
+			cmd="COMMAND_ADD_PORT",
+			nodeID=0,
+			portID=0,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="size",
+					value=1,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+	},
+}
