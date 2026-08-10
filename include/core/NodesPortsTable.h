@@ -11,7 +11,6 @@
 
 #include <vector>
 
-
 namespace dagbase
 {
     class Port;
@@ -39,11 +38,11 @@ namespace dagbase
                 return std::size_t(std::distance(p.first, p.second));
             }
 
-            Table::value_type operator[](std::size_t index) const
+            Table::mapped_type operator[](std::size_t index) const
             {
                 if (index < size())
                 {
-                    return *(p.first+index);
+                    return (p.first+index)->second;
                 }
 
                 return {};

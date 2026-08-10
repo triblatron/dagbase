@@ -19,5 +19,46 @@ root=
 				},
 			},
 		},
+		{
+			cmd="COMMAND_ADD_PORT",
+			nodeID=0,
+			portID=1,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="size",
+					value=2,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			cmd="COMMAND_QUERY_PORTS",
+			nodeID=0,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="result.size",
+					value=2,
+					typeIndex="TYPE_UINT",
+				},
+				{
+					path="result[0]",
+					value=0,
+				},
+				{
+					path="result[1]",
+					value=0,
+				},
+			},
+		},
 	},
 }

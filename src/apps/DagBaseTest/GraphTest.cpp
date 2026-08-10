@@ -183,6 +183,7 @@ struct NodesPortsScriptItem
     {
         COMMAND_UNKNOWN,
         COMMAND_ADD_PORT,
+        COMMAND_QUERY_PORTS,
         COMMAND_REMOVE_PORT
     };
 
@@ -225,6 +226,12 @@ void NodesPortsScriptItem::makeItSo(dagbase::NodesPortsTable &sut, const std::st
         {
             break;
         }
+        case COMMAND_QUERY_PORTS:
+        {
+            sut.portsForNode(nodeID, &result);
+
+            break;
+        }
         default:
             FAIL() << "Got into unknown command";
 
@@ -244,6 +251,7 @@ const char * NodesPortsScriptItem::commandToString(Command value)
         ENUM_NAME(COMMAND_UNKNOWN)
         ENUM_NAME(COMMAND_ADD_PORT)
         ENUM_NAME(COMMAND_REMOVE_PORT)
+        ENUM_NAME(COMMAND_QUERY_PORTS)
     }
 
     return "<error>";
@@ -254,6 +262,7 @@ NodesPortsScriptItem::Command NodesPortsScriptItem::parseCommand(const char *str
     TEST_ENUM(COMMAND_UNKNOWN, str);
     TEST_ENUM(COMMAND_ADD_PORT, str);
     TEST_ENUM(COMMAND_REMOVE_PORT, str);
+    TEST_ENUM(COMMAND_QUERY_PORTS, str);
 
     return COMMAND_UNKNOWN;
 }

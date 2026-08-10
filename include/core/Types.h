@@ -142,6 +142,11 @@ namespace dagbase
             return result;\
         }\
         \
+        bool operator<(const Name& op2) const\
+        {\
+            return id<op2.id;\
+        }\
+        \
         operator std::int64_t() const       \
         {                    \
             return id;\
@@ -155,6 +160,17 @@ namespace dagbase
         bool valid() const   \
         {                    \
             return id!=-1;   \
+        }\
+        \
+        Variant find(std::string_view path) const\
+        {\
+            Variant retval;\
+            \
+            retval = findEndpoint(path, "id", id);\
+            if (retval.has_value())\
+                return retval;\
+            \
+            return {};\
         }\
     private:             \
         std::int64_t id{INVALID_ID};     \

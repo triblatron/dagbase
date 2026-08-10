@@ -41,7 +41,7 @@ namespace dagbase
 
         std::pair<iterator, bool> insert(const value_type& value)
         {
-            auto it = std::upper_bound(_map.begin(), _map.end(), value_type(value.first,Value()), _cmp);
+            auto it = std::lower_bound(_map.begin(), _map.end(), value_type(value.first,Value()), _cmp);
             if (it != _map.end())
             {
                 auto equalKey = it->first == value.first;
@@ -49,26 +49,21 @@ namespace dagbase
                 if (!equalKey)
                 {
                     auto d = std::distance(_map.begin(), it);
-                    _map.insert(it, value);
+                    _map.emplace(it, value);
                     return std::make_pair(_map.begin()+d, true);
                 }
-                else
-                {
-                    return std::make_pair(it, false);
-                }
-            }
-            else
-            {
-                _map.insert(it, value);
 
-                return std::make_pair(_map.end() - 1, true);
+                auto d = std::distance(_map.begin(), it)+1;
+
+                return std::make_pair(_map.emplace(_map.begin()+d, value), true);
             }
+            _map.insert(it, value);
         }
         template<typename... Args>
         std::pair<iterator, bool> emplace(Args&&... args)
         {
             auto temp = std::pair<Key,Value>(std::forward<Args>(args)...);
-            auto it = std::upper_bound(_map.begin(), _map.end(), temp, _cmp);
+            auto it = std::lower_bound(_map.begin(), _map.end(), temp, _cmp);
             if (it != _map.end())
             {
                 auto equalKey = it->first == temp.first;
@@ -79,17 +74,13 @@ namespace dagbase
                     _map.emplace(it, std::move(temp));
                     return std::make_pair(_map.begin()+d, true);
                 }
-                else
-                {
-                    return std::make_pair(it, false);
-                }
-            }
-            else
-            {
-                _map.emplace(it, std::move(temp));
 
-                return std::make_pair(_map.end() - 1, true);
+                auto d = std::distance(_map.begin(), it)+1;
+
+                return std::make_pair(_map.emplace(_map.begin()+d, std::move(temp)), true);
             }
+            _map.emplace(it, std::move(temp));
+            return std::make_pair(_map.end() - 1, true);
         }
 
         std::pair<iterator,iterator> equal_range(const key_type& key)
@@ -107,6 +98,11 @@ namespace dagbase
 //                }
 //            }
             return p;
+        }
+
+        std::pair<const_iterator,const_iterator> equal_range(const key_type& key) const
+        {
+            return std::equal_range(_map.begin(), _map.end(), value_type(key, Value()), _cmp);
         }
 
         const_iterator find(const key_type& key) const
