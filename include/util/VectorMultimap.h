@@ -58,7 +58,9 @@ namespace dagbase
                 return std::make_pair(_map.emplace(_map.begin()+d, value), true);
             }
             _map.insert(it, value);
+            return std::make_pair(_map.end() - 1, true);
         }
+
         template<typename... Args>
         std::pair<iterator, bool> emplace(Args&&... args)
         {
