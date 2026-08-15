@@ -51,12 +51,12 @@ root=
 					typeIndex="TYPE_UINT",
 				},
 				{
-					path="result[0]",
+					path="result[0].id",
 					value=0,
 				},
 				{
-					path="result[1]",
-					value=0,
+					path="result[1].id",
+					value=1,
 				},
 			},
 		},

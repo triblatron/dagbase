@@ -13,11 +13,11 @@ namespace dagbase
         Variant retval;
 
 
-        retval = findEndpoint(path, "size", std::uint32_t(std::distance(p.first,p.second)));
+        retval = findEndpoint(path, "size", std::uint32_t(size()));
         if (retval.has_value())
             return retval;
 
-        auto result = findArray(path, *this);
+        retval = findArray(path, *this);
         if (retval.has_value())
             return retval;
 

@@ -21,7 +21,7 @@ namespace dagbase
         using PortArray = std::vector<Port*>;
         using Table = VectorMultimap<NodeID, PortID>;
 
-        struct FindResult
+        struct DAGBASE_API FindResult
         {
             using value_type = Table::mapped_type;
             NodesPortsTable& table;
