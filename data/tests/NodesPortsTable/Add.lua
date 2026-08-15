@@ -37,6 +37,23 @@ root=
 			},
 		},
 		{
+			cmd="COMMAND_ADD_PORT",
+			nodeID=0,
+			portID=2,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="size",
+					value=3,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
 			cmd="COMMAND_QUERY_PORTS",
 			nodeID=0,
 			status=
@@ -47,7 +64,7 @@ root=
 			{
 				{
 					path="result.size",
-					value=2,
+					value=3,
 					typeIndex="TYPE_UINT",
 				},
 				{
@@ -57,6 +74,10 @@ root=
 				{
 					path="result[1].id",
 					value=1,
+				},
+				{
+					path="result[2].id",
+					value=2,
 				},
 			},
 		},

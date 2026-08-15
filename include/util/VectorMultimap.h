@@ -41,43 +41,43 @@ namespace dagbase
 
         std::pair<iterator, bool> insert(const value_type& value)
         {
-            auto it = std::lower_bound(_map.begin(), _map.end(), value_type(value.first,Value()), _cmp);
+            auto it = std::upper_bound(_map.begin(), _map.end(), value_type(value.first,Value()), _cmp);
             if (it != _map.end())
             {
                 auto equalKey = it->first == value.first;
 
                 if (!equalKey)
                 {
-                    auto d = std::distance(_map.begin(), it);
-                    _map.emplace(it, value);
+                    auto d = std::distance(_map.begin(), it) + 1;
+                    _map.insert(it, value);
                     return std::make_pair(_map.begin()+d, true);
                 }
 
-                auto d = std::distance(_map.begin(), it)+1;
+                auto d = std::distance(_map.begin(), it) + 1;
 
                 return std::make_pair(_map.emplace(_map.begin()+d, value), true);
             }
-            _map.insert(it, value);
-            return std::make_pair(_map.end() - 1, true);
+            auto retval = _map.insert(it, value);
+            return std::make_pair(retval, true);
         }
 
         template<typename... Args>
         std::pair<iterator, bool> emplace(Args&&... args)
         {
             auto temp = std::pair<Key,Value>(std::forward<Args>(args)...);
-            auto it = std::lower_bound(_map.begin(), _map.end(), temp, _cmp);
+            auto it = std::upper_bound(_map.begin(), _map.end(), temp, _cmp);
             if (it != _map.end())
             {
                 auto equalKey = it->first == temp.first;
 
                 if (!equalKey)
                 {
-                    auto d = std::distance(_map.begin(), it);
+                    auto d = std::distance(_map.begin(), it) + 1;
                     _map.emplace(it, std::move(temp));
                     return std::make_pair(_map.begin()+d, true);
                 }
 
-                auto d = std::distance(_map.begin(), it)+1;
+                auto d = std::distance(_map.begin(), it) + 1;
 
                 return std::make_pair(_map.emplace(_map.begin()+d, std::move(temp)), true);
             }

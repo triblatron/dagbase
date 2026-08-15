@@ -32,7 +32,8 @@ namespace dagbase
 
     void NodesPortsTable::addPort(NodeID nodeId, PortID portId)
     {
-        _lut.insert(Table::value_type(nodeId, portId));
+        //_lut.insert(Table::value_type(nodeId, portId));
+        _lut.emplace(nodeId, portId);
     }
 
     Variant NodesPortsTable::find(std::string_view path) const
