@@ -102,6 +102,7 @@ SET( ALL_PUBLIC_HEADERS
 		include/io/StreamFactory.h
         include/core/SignalPathTable.h
         include/core/NodesPortsTable.h
+        include/util/SlotMap.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
