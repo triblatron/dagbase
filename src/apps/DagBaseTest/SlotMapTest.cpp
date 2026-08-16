@@ -24,6 +24,7 @@ struct SlotMapScriptItem
 
     using Sut = dagbase::SlotMap<int>;
     Sut::Ident id;
+    bool exists{false};
     using Assertions = std::vector<Assertion<dagbase::SlotMap<int>>>;
     Assertions assertions;
 
@@ -31,6 +32,7 @@ struct SlotMapScriptItem
     {
         dagbase::ConfigurationElement::readConfig<Command>(config, "cmd", &parseCommand, &cmd);
         dagbase::ConfigurationElement::readConfig(config, "id", &id);
+        dagbase::ConfigurationElement::readConfig(config, "exists", &exists);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
     }
 
@@ -51,6 +53,12 @@ struct SlotMapScriptItem
                 sut.free(sut.get(id));
                 ASSERT_EQ(nullptr, sut.tryGet(id));
 
+                break;
+            }
+            case COMMAND_TRY_GET:
+            {
+                auto actual = sut.tryGet(id);
+                ASSERT_EQ(exists, actual!=nullptr);
                 break;
             }
             default:
