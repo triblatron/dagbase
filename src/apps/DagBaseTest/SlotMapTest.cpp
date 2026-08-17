@@ -17,7 +17,8 @@ struct SlotMapScriptItem
         COMMAND_UNKNOWN,
         COMMAND_ALLOC,
         COMMAND_FREE,
-        COMMAND_TRY_GET
+        COMMAND_TRY_GET,
+        COMMAND_IS_VALID
     };
 
     Command cmd{COMMAND_UNKNOWN};
@@ -59,6 +60,14 @@ struct SlotMapScriptItem
             {
                 auto actual = sut.tryGet(id);
                 ASSERT_EQ(exists, actual!=nullptr);
+
+                break;
+            }
+            case COMMAND_IS_VALID:
+            {
+                auto actual = sut.isValid(id);
+                ASSERT_EQ(exists, actual);
+
                 break;
             }
             default:
@@ -79,6 +88,7 @@ struct SlotMapScriptItem
             ENUM_NAME(COMMAND_ALLOC)
             ENUM_NAME(COMMAND_FREE)
             ENUM_NAME(COMMAND_TRY_GET)
+            ENUM_NAME(COMMAND_IS_VALID)
         }
 
         return "<error>";
@@ -90,6 +100,7 @@ struct SlotMapScriptItem
         TEST_ENUM(COMMAND_ALLOC, str);
         TEST_ENUM(COMMAND_FREE, str);
         TEST_ENUM(COMMAND_TRY_GET, str);
+        TEST_ENUM(COMMAND_IS_VALID, str);
 
         return COMMAND_UNKNOWN;
     }

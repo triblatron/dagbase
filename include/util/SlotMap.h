@@ -109,12 +109,17 @@ namespace dagbase
 
         T* tryGet(Ident id)
         {
-            if (id.index<_data.size() &&_data[id.index].id.gen == id.gen)
+            if (isValid(id))
             {
                 return &_data[id.index].item;
             }
 
             return nullptr;
+        }
+
+        bool isValid(Ident id) const
+        {
+            return id.index < _data.size() && _data[id.index].id.gen == id.gen;
         }
 
         std::uint32_t size() const

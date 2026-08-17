@@ -38,6 +38,15 @@ root=
 			exists=true,
 		},
 		{
+			cmd="COMMAND_IS_VALID",
+			id=
+			{
+				index=0,
+				gen=1,
+			},
+			exists=true,
+		},
+		{
 			cmd="COMMAND_FREE",
 			id=
 			{
@@ -65,6 +74,15 @@ root=
 		},
 		{
 			cmd="COMMAND_TRY_GET",
+			id=
+			{
+				index=0,
+				gen=1,
+			},
+			exists=false,
+		},
+		{
+			cmd="COMMAND_IS_VALID",
 			id=
 			{
 				index=0,
@@ -103,6 +121,15 @@ root=
 			exists=true,
 		},
 		{
+			cmd="COMMAND_IS_VALID",
+			id=
+			{
+				index=0,
+				gen=2,
+			},
+			exists=true,
+		},
+		{
 			cmd="COMMAND_ALLOC",
 			id=
 			{
@@ -125,6 +152,15 @@ root=
 		},		
 		{
 			cmd="COMMAND_TRY_GET",
+			id=
+			{
+				index=1,
+				gen=2,
+			},
+			exists=true,
+		},
+		{
+			cmd="COMMAND_IS_VALID",
 			id=
 			{
 				index=1,
@@ -168,6 +204,15 @@ root=
 			exists=false,
 		},
 		{
+			cmd="COMMAND_IS_VALID",
+			id=
+			{
+				index=0,
+				gen=2,
+			},
+			exists=false,
+		},
+		{
 			cmd="COMMAND_FREE",
 			id=
 			{
@@ -203,7 +248,25 @@ root=
 			exists=false,
 		},
 		{
+			cmd="COMMAND_IS_VALID",
+			id=
+			{
+				index=1,
+				gen=2,
+			},
+			exists=false,
+		},
+		{
 			cmd="COMMAND_TRY_GET",
+			id=
+			{
+				index=1,
+				gen=3,
+			},
+			exists=false,
+		},
+		{
+			cmd="COMMAND_IS_VALID",
 			id=
 			{
 				index=1,
