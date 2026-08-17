@@ -16,6 +16,12 @@ namespace dagbase
 {
     //! \class SlotMap
     //! A class template for a growable slot map
+    //! This is backed by an array providing contiguous storage so that
+    //! insertion is amortised O(1)
+    //! erasure is O(1)
+    //! access is O(1)
+    //! handles are stable and validated when used to access an element.
+    //! \note T must be default-constructible
     //! \note references are invalidated when the underlying array grows
     template<typename T>
     class SlotMap
@@ -66,6 +72,10 @@ namespace dagbase
             Ident id;
         };
 
+        static_assert(std::is_standard_layout_v<Item>, "Item must be standard-layout");
+
+        //! \constructor Takes a count and allocates space for that many items
+        //! but does not run the constructor.
         explicit SlotMap(std::size_t count)
         {
             _data.reserve(count);
@@ -73,7 +83,7 @@ namespace dagbase
 
         //! Allocate an item, either by growing the array or using a free entry.
         //! \note Runs in amortised constant time because an allocation may be necessary.
-        //! \note Invalidates references if an allocation occurs.
+        //! \note Invalidates references if an allocation in the underlying array occurs.
         T& alloc()
         {
             if (_freeHead == Ident::INVALID_INDEX)
