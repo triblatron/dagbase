@@ -14,25 +14,35 @@
 
 namespace dagbase
 {
+    //! \class SlotMap
+    //! A class template for a growable slot map
+    //! \note references are invalidated when the underlying array grows
     template<typename T>
     class SlotMap
     {
     public:
+        //! \class Ident
+        //! An identifier for a slot
         struct Ident
         {
+            //! A sentinal value for an index, used to mean there is nothing there.
+            //! \note The freeHead takes on this value if there are no free slots.
             static constexpr std::uint32_t INVALID_INDEX = ~0U;
 
+            //! Configure members from a config tree.
             void configure(ConfigurationElement& config)
             {
                 ConfigurationElement::readConfig(config, "index", &index);
                 ConfigurationElement::readConfig(config, "gen", &gen);
             }
 
+            //! Equality comparison, required to satisfy the compiler.
             bool operator==(const Ident& other) const
             {
                 return index == other.index && gen == other.gen;
             }
 
+            //! Output operator, useful for pretty-printing in tests.
             friend
             std::ostream& operator<<(std::ostream& str, const typename SlotMap<T>::Ident& value)
             {
@@ -41,10 +51,15 @@ namespace dagbase
                 return str;
             }
 
+            //! The index into the slot map backing array.
             std::uint32_t index{INVALID_INDEX};
+            //! The generation, used to determine the validity of an identifer against a slot.
+            //! \note Zero means a slot is free and the index points to the next free slot.
             std::uint32_t gen{0};
         };
 
+        //! \class Item
+        //! Put the item first so we can cast a pointer to T to a pointer to Item safely.
         struct Item
         {
             T item;
@@ -56,6 +71,9 @@ namespace dagbase
             _data.reserve(count);
         }
 
+        //! Allocate an item, either by growing the array or using a free entry.
+        //! \note Runs in amortised constant time because an allocation may be necessary.
+        //! \note Invalidates references if an allocation occurs.
         T& alloc()
         {
             if (_freeHead == Ident::INVALID_INDEX)
@@ -73,6 +91,8 @@ namespace dagbase
             return _data[_size++].item;
         }
 
+        //! Deallocate an item, rendering identifiers to it invalid.
+        //! \note This is accomplished by incrementing the generation counter.
         void free(T& value)
         {
             Item* item = (Item*)&value;
@@ -95,6 +115,9 @@ namespace dagbase
             --_size;
         }
 
+        //! \return The identifier for a value.
+        //! \note Uses the fact that an Item has the T as its first element 
+        //! so that a cast between pointers is safe.
         Ident id(T& value)
         {
             Item * item = (Item*)&value;
@@ -102,11 +125,16 @@ namespace dagbase
             return item->id;
         }
 
+        //! \return A reference to an item
+        //! \note The identifier must be valid
         T& get(Ident id)
         {
             return _data[id.index].item;
         }
 
+        //! Try to get an item.
+        //! \retval A pointer to the item if the identifier is valid, as determined by isValid().
+        //! \retval nullptr otherwise.
         T* tryGet(Ident id)
         {
             if (isValid(id))
@@ -117,16 +145,22 @@ namespace dagbase
             return nullptr;
         }
 
+        //! Determine whether a given identifier is valid
+        //! \note The index must be in range and the generation must match the one in the slot.
         bool isValid(Ident id) const
         {
             return id.index < _data.size() && _data[id.index].id.gen == id.gen;
         }
 
+        //! \return The number of elements in the array.
         std::uint32_t size() const
         {
             return _size;
         }
 
+        //! \return An attribute given by the path
+        //! Supported attributes:size, nextGen, freeHead
+        //! \note Typically used to support assertions in tests.
         Variant find(std::string_view path) const
         {
             Variant retval;
@@ -147,9 +181,13 @@ namespace dagbase
         }
     private:
         using Array = std::vector<Item>;
+        //! The data array, consisting of the element type and an identifier.
         Array _data;
+        //! The number of elements in use.
         std::uint32_t _size{0};
+        //! The next generation to be used, indicates a free slot if zero.
         std::uint32_t _nextGen{1};
+        //! The start of the free slot list.
         std::uint32_t _freeHead{Ident::INVALID_INDEX};
     };
 
