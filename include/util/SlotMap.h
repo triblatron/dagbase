@@ -50,7 +50,8 @@ namespace dagbase
             T item;
             Ident id;
 
-            template<typename... Args>
+            static_assert(std::is_standard_layout_v<T>, "T must have a standard layout");
+            template<typename ...Args>
             Item(Args&&... args)
                 :
                 item(std::forward<Args>(args)...)
@@ -58,6 +59,7 @@ namespace dagbase
                 // Do nothing.
             }
         };
+        static_assert(std::is_standard_layout_v<Item>, "Item must have a standard layout");
 
         explicit SlotMap(std::size_t count)
         {
@@ -86,6 +88,8 @@ namespace dagbase
         void free(T& value)
         {
             Item* item = (Item*)&value;
+
+            item->item.T::~T();
 
             if (_freeHead == Ident::INVALID_INDEX)
             {

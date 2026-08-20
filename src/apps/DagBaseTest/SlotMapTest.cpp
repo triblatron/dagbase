@@ -19,6 +19,16 @@ struct SlotMapElement
 
     }
 
+    ~SlotMapElement()
+    {
+        std::cerr << "SlotMapElement::<dtor>\n";
+    }
+
+    void foo()
+    {
+
+    }
+
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfig(config, "i", &i);
