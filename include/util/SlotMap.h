@@ -49,6 +49,14 @@ namespace dagbase
         {
             T item;
             Ident id;
+
+            template<typename... Args>
+            Item(Args&&... args)
+                :
+                item(std::forward<Args>(args)...)
+            {
+                // Do nothing.
+            }
         };
 
         explicit SlotMap(std::size_t count)
@@ -56,17 +64,19 @@ namespace dagbase
             _data.reserve(count);
         }
 
-        T& alloc()
+        template<typename... Args>
+        T& alloc(Args&&... args)
         {
             if (_freeHead == Ident::INVALID_INDEX)
             {
-                _data.emplace_back();
+                _data.emplace_back(std::forward<Args>(args)...);
                 _data.back().id.index = _data.size()-1;
                 _data.back().id.gen = _nextGen;
                 ++_size;
                 return _data.back().item;
             }
             auto lastIndex = _data[_freeHead].id.index;
+            new (&_data[_size]) Item(std::forward<Args>(args)...);
             _data[_freeHead].id.gen = _nextGen;
             _data[_freeHead].id.index = _size;
             _freeHead = lastIndex;

@@ -10,6 +10,23 @@
 #include "test/TestUtils.h"
 #include "util/enums.h"
 
+struct SlotMapElement
+{
+    SlotMapElement(int i_)
+        :
+        i(i_)
+    {
+
+    }
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig(config, "i", &i);
+    }
+
+    int i{0};
+};
+
 struct SlotMapScriptItem
 {
     enum Command : std::uint32_t
@@ -23,16 +40,18 @@ struct SlotMapScriptItem
 
     Command cmd{COMMAND_UNKNOWN};
 
-    using Sut = dagbase::SlotMap<int>;
+    using Sut = dagbase::SlotMap<SlotMapElement>;
     Sut::Ident id;
     bool exists{false};
-    using Assertions = std::vector<Assertion<dagbase::SlotMap<int>>>;
+    std::int32_t element{0};
+    using Assertions = std::vector<Assertion<Sut>>;
     Assertions assertions;
 
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfig<Command>(config, "cmd", &parseCommand, &cmd);
         dagbase::ConfigurationElement::readConfig(config, "id", &id);
+        dagbase::ConfigurationElement::readConfig(config, "element", &element);
         dagbase::ConfigurationElement::readConfig(config, "exists", &exists);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
     }
@@ -43,7 +62,7 @@ struct SlotMapScriptItem
         {
             case COMMAND_ALLOC:
             {
-                auto& item = sut.alloc();
+                auto& item = sut.alloc(element);
                 auto actual = sut.id(item);
                 ASSERT_EQ(id, actual);
 
@@ -60,7 +79,10 @@ struct SlotMapScriptItem
             {
                 auto actual = sut.tryGet(id);
                 ASSERT_EQ(exists, actual!=nullptr);
-
+                if (exists)
+                {
+                    ASSERT_EQ(element, actual->i);
+                }
                 break;
             }
             case COMMAND_IS_VALID:

@@ -9,6 +9,7 @@ root=
 				index=0,
 				gen=1,
 			},
+			element=1,
 			assertions =
 			{
 				{
@@ -35,6 +36,7 @@ root=
 				index=0,
 				gen=1,
 			},
+			element=1,
 			exists=true,
 		},
 		{
@@ -211,6 +213,15 @@ root=
 				gen=2,
 			},
 			exists=false,
+		},
+		{
+			cmd="COMMAND_IS_VALID",
+			id=
+			{
+				index=1,
+				gen=2,
+			},
+			exists=true,
 		},
 		{
 			cmd="COMMAND_FREE",
