@@ -329,6 +329,29 @@ namespace dagbase
         // Do nothing.
     }
 
+    bool Variant::operator==(const Variant &other) const
+    {
+        if (has_value() && other.has_value() && _value->index() == other._value->index())
+            return _value == other._value;
+
+        if (has_value() && other.has_value())
+        {
+            if (_value->index() == TYPE_INTEGER && other._value->index() == TYPE_UINT)
+            {
+                return std::get<TYPE_INTEGER>(_value.value()) == static_cast<std::int64_t>(std::get<TYPE_UINT>(other._value.value()));
+            }
+            else if (_value->index() == TYPE_UINT && other._value->index() == TYPE_INTEGER)
+            {
+                return static_cast<std::int64_t>(std::get<TYPE_UINT>(_value.value())) == std::get<TYPE_INTEGER>(other._value.value());
+            }
+        }
+
+        if (!has_value() && !other.has_value())
+            return true;
+
+        return false;
+    }
+
     std::ostream &operator<<(std::ostream &str, const dagbase::Variant& value)
     {
         if (value.has_value())

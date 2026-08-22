@@ -23,7 +23,7 @@ namespace dagbase
     //! handles are stable and validated when used to access an element.
     //! \note T must be default-constructible
     //! \note references are invalidated when the underlying array grows
-    template<typename T>
+    template<typename ID, typename T>
     class SlotMap
     {
     public:
@@ -50,7 +50,7 @@ namespace dagbase
 
             //! Output operator, useful for pretty-printing in tests.
             friend
-            std::ostream& operator<<(std::ostream& str, const typename SlotMap<T>::Ident& value)
+            std::ostream& operator<<(std::ostream& str, const Ident& value)
             {
                 str << "SlotMap.Ident { index: " << value.index << ", gen: " << value.gen << " }";
 
@@ -58,7 +58,7 @@ namespace dagbase
             }
 
             //! The index into the slot map backing array.
-            std::uint32_t index{INVALID_INDEX};
+            ID index{ID::INVALID_ID};
             //! The generation, used to determine the validity of an identifer against a slot.
             //! \note Zero means a slot is free and the index points to the next free slot.
             std::uint32_t gen{0};

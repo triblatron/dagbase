@@ -14,7 +14,7 @@ namespace dagbase
         if (op1->from() < op2->from())
             return true;
 
-        if (op1->from() == op2->from() && op1->to() < op2->to())
+        if (op1->from() == op2->from() && op2->to() != PortID::INVALID_ID && op1->to() < op2->to())
             return true;
 
         return false;
@@ -25,7 +25,7 @@ namespace dagbase
         if (op1->to() < op2->to())
             return true;
 
-        if (op1->to() == op2->to() && op1->from() < op2->from())
+        if (op1->to() == op2->to() && op2->from() != PortID::INVALID_ID && op1->from() < op2->from())
             return true;
 
         return false;
@@ -71,7 +71,7 @@ namespace dagbase
     {
         if (result)
         {
-            SignalPath temp(sourceID, PortID::INVALID_ID);
+            SignalPath temp(sourceID, PortID());
 
             result->p.first = _signalPathsFrom.findPartial(&temp);
 
@@ -83,7 +83,7 @@ namespace dagbase
     {
         if (result)
         {
-            SignalPath temp( PortID::INVALID_ID, destID);
+            SignalPath temp( PortID(), destID);
 
             result->p.first = _signalPathsTo.findPartial(&temp);
 

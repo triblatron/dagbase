@@ -70,14 +70,17 @@ root=
 				{
 					path="result[0].id",
 					value=0,
+					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[1].id",
 					value=1,
+					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[2].id",
 					value=2,
+					typeIndex="TYPE_UINT",
 				},
 			},
 		},

@@ -69,10 +69,12 @@ root=
 				{
 					path="result[0].from",
 					value=0,
+					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[1].from",
 					value=0,
+					typeIndex="TYPE_UINT",
 				},
 			},
 		},
@@ -89,16 +91,18 @@ root=
 				{
 					path="result[0].to",
 					value=2,
+					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[1].to",
 					value=2,
+					typeIndex="TYPE_UINT",
 				},
 			},
 		},
 		{
 			command="COMMAND_FIND_TO",
-			to=-1,
+			to=~0,
 			assertions=
 			{
 				{
@@ -159,10 +163,12 @@ root=
 				{
 					path="result[0].from",
 					value=0,
+					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[0].to",
 					value=1,
+					typeIndex="TYPE_UINT",
 				},
 			},
 		},

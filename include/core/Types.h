@@ -20,6 +20,8 @@ namespace dagbase
     class Graph;
     class Node;
     class Port;
+    class SignalPath;
+    class Template;
 
     //! The direction of a port.
     class DAGBASE_API PortDirection
@@ -86,100 +88,100 @@ namespace dagbase
         static const char* className(Type type);
     };
 
+    template<typename Tag>
+    class Name
+    {                        
+    public:                  
+        enum                 
+        {                    
+            INVALID_ID = ~0U
+        };                   
+    public:
+        Name() = default;
+
+        explicit Name(std::uint32_t id)
+        :                    
+        id(id)               
+        {                    
+        }                    
+                             
+        Name(const Name& other) = default;
+
+        Name& operator=(const Name& other) 
+        {                    
+            if (this != &other) 
+            {                
+                id = other.id;  
+            }               
+            return *this;
+        }                    
+                             
+        Name& operator=(std::int64_t id_)   
+        {                    
+            this->id = id_;   
+                             
+            return *this;    
+        }                    
+                             
+        Name operator++(int)
+        {                    
+            Name old = *this;
+            id++;            
+                             
+            return old;      
+        }
+
+        Name operator+(const Name& op2) const
+        {                    
+            auto result = Name(id + op2.id);
+            
+            return result;
+        }
+        
+        bool operator<(const Name& op2) const
+        {
+            return id<op2.id;
+        }
+        
+        operator std::uint32_t() const       
+        {                    
+            return id;
+        }                    
+                             
+        void configure(dagbase::ConfigurationElement& config)                     
+        {
+            id = config.asInteger(INVALID_ID);
+        }
+        
+        bool valid() const   
+        {                    
+            return id!=INVALID_ID;
+        }
+        
+        Variant find(std::string_view path) const
+        {
+            Variant retval;
+            
+            retval = findEndpoint(path, "id", id);
+            if (retval.has_value())
+                return retval;
+            
+            return {};
+        }
+    private:             
+        std::uint32_t id{INVALID_ID};
+    };
+
 //! Macro to declare a ID type
 //! This ensures type safety because IDs will have different types.
 //! They therefore cannot be mixed.
-#define INF_ID_DECLARE(Name) \
-    class Name               \
-    {                        \
-    public:                  \
-        enum                 \
-        {                    \
-            INVALID_ID = -1  \
-        };                   \
-    public:                  \
-        Name()               \
-        :                    \
-        id(INVALID_ID)       \
-        {                    \
-        }                    \
-        \
-        Name(std::int64_t id)\
-        :                    \
-        id(id)               \
-        {                    \
-        }                    \
-                             \
-        Name(const Name& other) = default; \
-        Name& operator=(const Name& other) \
-        {                    \
-            if (this != &other) \
-            {                \
-                id = other.id;  \
-            }               \
-            return *this;\
-        }                    \
-                             \
-        Name& operator=(std::int64_t id_)   \
-        {                    \
-            this->id = id_;   \
-                             \
-            return *this;    \
-        }                    \
-                             \
-        const Name operator++(int) \
-        {                    \
-            Name old = *this;\
-            id++;            \
-                             \
-            return old;      \
-        }                    \
-                             \
-        Name operator+(const Name& op2)\
-        {                    \
-            std::int64_t result = id + op2.id;\
-            \
-            return result;\
-        }\
-        \
-        bool operator<(const Name& op2) const\
-        {\
-            return id<op2.id;\
-        }\
-        \
-        operator std::int64_t() const       \
-        {                    \
-            return id;\
-        }                    \
-                             \
-        void configure(dagbase::ConfigurationElement& config)                     \
-        {\
-            id = config.asInteger();\
-        }\
-        \
-        bool valid() const   \
-        {                    \
-            return id!=-1;   \
-        }\
-        \
-        Variant find(std::string_view path) const\
-        {\
-            Variant retval;\
-            \
-            retval = findEndpoint(path, "id", id);\
-            if (retval.has_value())\
-                return retval;\
-            \
-            return {};\
-        }\
-    private:             \
-        std::int64_t id{INVALID_ID};     \
-                             \
-    }
-    INF_ID_DECLARE(NodeID);
-    INF_ID_DECLARE(PortID);
-    INF_ID_DECLARE(TemplateID);
-    INF_ID_DECLARE(SignalPathID);
+#define INF_ID_DECLARE(Ident, Tag) \
+    using Ident = Name<Tag>
+
+    INF_ID_DECLARE(NodeID, Node);
+    INF_ID_DECLARE(PortID, Port);
+    INF_ID_DECLARE(TemplateID, Template);
+    INF_ID_DECLARE(SignalPathID, SignalPath);
 
     //! A return value from an RPC.
     struct DAGBASE_API Status

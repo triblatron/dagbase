@@ -32,6 +32,7 @@ root=
 				},
 				{
 					path="result[0].from",
+					typeIndex="TYPE_UINT",
 					value=0,
 				},
 			},
@@ -49,6 +50,7 @@ root=
 				{
 					path="result[0].to",
 					value=1,
+					typeIndex="TYPE_UINT",
 				},
 			},
 		},

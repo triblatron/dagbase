@@ -133,6 +133,11 @@ namespace dagbase
 //            }
         }
 
+        std::uint32_t asUint32(std::uint32_t defaultValue=0) const
+		{
+		    return _value.asUint32(defaultValue);
+		}
+
         double asDouble(double defaultValue=0.0) const
         {
             return _value.asDouble(defaultValue);

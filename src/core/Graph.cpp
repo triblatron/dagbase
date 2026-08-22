@@ -864,7 +864,7 @@ namespace dagbase
             {
                 dagbase::Table nodeTable = nodesTable.tableForIndex(i);
 
-                NodeID id = nodeTable.integerForNameOrDefault("id", -1);
+                auto id = NodeID(nodeTable.integerForNameOrDefault("id", NodeID::INVALID_ID));
                 // if (id>rootGraph.currentNodeID())
                 // {
                 rootGraph.setNextNodeID(id);
@@ -899,7 +899,7 @@ namespace dagbase
                             for (int portIndex = 1; portIndex <= portsTable.length(); ++portIndex)
                             {
                                 dagbase::Table portTable = portsTable.tableForIndex(portIndex);
-                                PortID portId = portTable.integerForNameOrDefault("id", -1);
+                                auto portId = PortID(portTable.integerForNameOrDefault("id", PortID::INVALID_ID));
                                 rootGraph.setNextPortID(portId);
                                 output->readPort(portTable, node, node->dynamicPort(portIndex - 1), rootGraph);
                                 // If we didn't allocate an ID, force it.
@@ -974,12 +974,12 @@ namespace dagbase
                 dagbase::Table signalPathTable = signalPathsTable.tableForIndex(i);
                 dagbase::Port* sourcePort = nullptr;
                 dagbase::Port* destPort = nullptr;
-                SignalPathID id = signalPathTable.integerForNameOrDefault("id", -1);
+                auto id = SignalPathID(signalPathTable.integerForNameOrDefault("id", SignalPathID::INVALID_ID));
                 rootGraph.setNextSignalPathID(std::max(id+SignalPathID(1), rootGraph.currentSignalPathID()));
-                NodeID sourceNodeID = signalPathTable.integerForNameOrDefault("sourceNode", -1);
-                PortID sourcePortID = signalPathTable.integerForNameOrDefault("sourcePort", -1);
-                NodeID destNodeID = signalPathTable.integerForNameOrDefault("destNode", -1);
-                PortID destPortID = signalPathTable.integerForNameOrDefault("destPort", 0);
+                auto sourceNodeID = NodeID(signalPathTable.integerForNameOrDefault("sourceNode", NodeID::INVALID_ID));
+                auto sourcePortID = PortID(signalPathTable.integerForNameOrDefault("sourcePort", PortID::INVALID_ID));
+                auto destNodeID = NodeID(signalPathTable.integerForNameOrDefault("destNode", NodeID::INVALID_ID));
+                auto destPortID = PortID(signalPathTable.integerForNameOrDefault("destPort", PortID::INVALID_ID));
                 // Look up sourceNode and destNode
                 auto sourceNode = rootGraph.node(sourceNodeID);
                 if (sourceNode != nullptr)

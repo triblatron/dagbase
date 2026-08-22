@@ -4,8 +4,8 @@ root=
 	{
 		{
 			command="COMMAND_ADD",
-			from=-1,
-			to=-1,
+			from=~0,
+			to=~0,
 			status=
 			{
 				statusCode="STATUS_SYNTAX_ERROR",
@@ -23,7 +23,7 @@ root=
 		{
 			command="COMMAND_ADD",
 			from=0,
-			to=-1,
+			to=~0,
 			status=
 			{
 				statusCode="STATUS_SYNTAX_ERROR",
@@ -40,7 +40,7 @@ root=
 		},
 		{
 			command="COMMAND_ADD",
-			from=-1,
+			from=~0,
 			to=0,
 			status=
 			{

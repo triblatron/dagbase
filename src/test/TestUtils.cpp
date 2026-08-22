@@ -22,7 +22,7 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
         }
         else if (expected.has_value() && actual.has_value())
         {
-            EXPECT_EQ(expected.value(), actual.value()) << path;
+            EXPECT_EQ(expected, actual) << path;
         }
         else if ((!expected.has_value() && actual.has_value()) || (expected.has_value() && !actual.has_value()))
         {

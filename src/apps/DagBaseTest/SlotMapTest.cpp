@@ -9,6 +9,7 @@
 #include "core/LuaInterface.h"
 #include "test/TestUtils.h"
 #include "util/enums.h"
+#include "core/Types.h"
 
 struct SlotMapElement
 {
@@ -50,7 +51,7 @@ struct SlotMapScriptItem
 
     Command cmd{COMMAND_UNKNOWN};
 
-    using Sut = dagbase::SlotMap<SlotMapElement>;
+    using Sut = dagbase::SlotMap<dagbase::NodeID, SlotMapElement>;
     Sut::Ident id;
     bool exists{false};
     std::int32_t element{0};
