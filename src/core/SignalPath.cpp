@@ -45,6 +45,10 @@ namespace dagbase
     {
         Variant retval;
 
+        retval = findEndpoint(path, "id", _id);
+        if (retval.has_value())
+            return retval;
+
         if (_source)
         {
             retval = findEndpoint(path, "fromPort", _source->id());
