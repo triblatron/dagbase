@@ -91,11 +91,8 @@ namespace dagbase
     template<typename Tag>
     class Name
     {                        
-    public:                  
-        enum                 
-        {                    
-            INVALID_ID = ~0U
-        };                   
+    public:                                                                   
+        static constexpr std::uint32_t INVALID_ID = ~0U;
     public:
         Name() = default;
 
