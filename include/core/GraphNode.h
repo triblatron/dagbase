@@ -47,63 +47,18 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]bool equals(const Node& other, ComparisonFlags flags) const override;
 
-        [[nodiscard]]dagbase::MetaPort const* dynamicMetaPort(size_t index) const override
-        {
-            if (index<_dynamicMetaPorts.size())
-            {
-                return &_dynamicMetaPorts[index];
-            }
-
-            return nullptr;
-        }
-
-        [[nodiscard]]dagbase::MetaPort * dynamicMetaPort(size_t index) override
-        {
-            if (index<_dynamicMetaPorts.size())
-            {
-                return &_dynamicMetaPorts[index];
-            }
-
-            return nullptr;
-        }
-
-        void addDynamicPort(dagbase::Port* port, MetaPort::Flags flags) override
-        {
-            if (port != nullptr)
-            {
-                // We do not own the Port, so we are not its parent.
-                port->setSharedParent(this);
-                _dynamicPorts.a.emplace_back(port);
-                MetaPort desc;
-                desc.flags = flags;
-                _dynamicMetaPorts.emplace_back(desc);
-            }
-        }
-
-        dagbase::Port* dynamicPort(size_t index) override
-        {
-            if (index<_dynamicPorts.size())
-            {
-                return _dynamicPorts.a[index];
-            }
-
-            return nullptr;
-        }
-
-        const dagbase::Port* dynamicPort(size_t index) const override
-        {
-            if (index<_dynamicPorts.size())
-            {
-                return _dynamicPorts.a[index];
-            }
-
-            return nullptr;
-        }
-
-        std::size_t totalPorts() const override
-        {
-            return _dynamicPorts.size();
-        }
+        // void addDynamicPort(dagbase::Port* port, MetaPort::Flags flags) override
+        // {
+        //     if (port != nullptr)
+        //     {
+        //         // We do not own the Port, so we are not its parent.
+        //         port->setSharedParent(this);
+        //         _dynamicPorts.a.emplace_back(port);
+        //         MetaPort desc;
+        //         desc.flags = flags;
+        //         _dynamicMetaPorts.emplace_back(desc);
+        //     }
+        // }
 
         //! Create a Node of the same type as this from a stream.
         //! \param[in] str The stream from which to read the data required to create the Node.
@@ -129,8 +84,6 @@ namespace dagbase
 
         void debug(dagbase::DebugPrinter& printer) const override;
     private:
-        MetaPortArray _dynamicMetaPorts;
-        PortArray _dynamicPorts;
         Graph* _graph{nullptr};
     };
 }

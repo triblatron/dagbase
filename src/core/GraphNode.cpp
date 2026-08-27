@@ -34,23 +34,7 @@ namespace dagbase
         {
             _graph = static_cast<Graph*>(facility.getClone(graphId));
         }
-        for (std::size_t i=0; i<other.totalPorts(); ++i)
-        {
-            auto* p = other._dynamicPorts.a[i];
-            std::uint64_t portId{0};
-            auto shouldClone = facility.putOrig(p, &portId);
-            Port* portClone = nullptr;
-            if (shouldClone)
-            {
-                portClone = p->clone(facility, copyOp, keyGen);
-            }
-            else
-            {
-                portClone = static_cast<Port*>(facility.getClone(portId));
-            }
-
-            GraphNode::addDynamicPort(portClone, other._dynamicMetaPorts[i].flags);
-        }
+        clonePorts(other, facility, copyOp, keyGen);
         // The other will not have a Graph if we are cloning from a NodeLibrary.
         // if ((copyOp & ADD_CHILD_GRAPHS_BIT)!=0 && other._graph && other._graph->parent())
         //     other._graph->parent()->addChild(_graph);
@@ -64,7 +48,6 @@ namespace dagbase
         std::string fieldName;
         str.readHeader(&className);
         Node::readFromStream(str, nodeLib, lua);
-        readDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.readField(&fieldName);
         dagbase::Stream::ObjId id = 0;
         Graph* child = nullptr;
@@ -86,17 +69,7 @@ namespace dagbase
     GraphNode::~GraphNode()
     {
         // Do not delete our shared Ports.
-        for (std::size_t i=0; i<_dynamicPorts.size(); ++i)
-        {
-            if (_dynamicPorts.a[i]->sharedParent() == this)
-            {
-                _dynamicPorts.a[i]->setSharedParent(nullptr);
-            }
-            if (_dynamicMetaPorts[i].isOwned())
-            {
-                delete _dynamicPorts.a[i];
-            }
-        }
+        deleteDynamicPorts();
         if (_graph && _graph->parent())
         {
             _graph->parent()->removeChild(_graph);
@@ -110,12 +83,6 @@ namespace dagbase
         {
             dagbase::CloningFacility facility;
             Node::operator=(other);
-
-            for (std::size_t i=0; i<other.totalPorts(); ++i)
-            {
-                auto* p = other._dynamicPorts.a[i];
-                addDynamicPort(p->clone(facility, dagbase::CopyOp{0}, nullptr), other._dynamicMetaPorts[i].flags);
-            }
         }
 
         return *this;
@@ -146,7 +113,6 @@ namespace dagbase
     {
         str.writeHeader("GraphNode");
         Node::writeToStream(str, nodeLib, lua);
-        writeDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.writeField("graph");
         if (str.writeRef(_graph))
         {
@@ -163,9 +129,6 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        retval = findInternal(path, "dynamicPort", _dynamicPorts);
-        if (retval.has_value())
-            return retval;
 
         if (_graph)
         {
@@ -194,18 +157,6 @@ namespace dagbase
     void GraphNode::debug(dagbase::DebugPrinter &printer) const
     {
         Node::debug(printer);
-        printer.indent();
-        for (const auto port : _dynamicPorts)
-        {
-            port->debug(printer);
-        }
-        printer.outdent();
-        printer.indent();
-        for (const auto& metaPort : _dynamicMetaPorts)
-        {
-            metaPort.debug(printer);
-        }
-        printer.outdent();
         if (_graph)
         {
             printer.indent();

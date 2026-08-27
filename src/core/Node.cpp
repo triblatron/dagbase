@@ -44,6 +44,25 @@ namespace dagbase
         _pos[1] = other._pos[1];
     }
 
+    Node::~Node()
+    {
+    }
+
+    Node & Node::operator=(const Node & other)
+    {
+        if (this!=&other)
+        {
+            for (std::size_t i=0; i<other.totalPorts(); ++i)
+            {
+                CloningFacility facility;
+                auto* p = other._dynamicPorts.a[i];
+                addDynamicPort(p->clone(facility, dagbase::CopyOp{0}, nullptr), other._dynamicMetaPorts[i].flags);
+            }
+        }
+
+        return *this;
+    }
+
     void Node::edit(ImGuiContext* context)
     {
         ImGui::SetCurrentContext(context);
@@ -103,6 +122,7 @@ namespace dagbase
         str.writeFloat(_pos[0]);
         str.writeField("y");
         str.writeFloat(_pos[1]);
+        writeDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.writeFooter();
 
         return str;
@@ -138,6 +158,7 @@ namespace dagbase
         str.readFloat(&_pos[0]);
         str.readField(&fieldName);
         str.readFloat(&_pos[1]);
+        readDynamicPorts(str, nodeLib, lua, _dynamicPorts, _dynamicMetaPorts);
         str.readFooter();
         return str;
     }
@@ -202,6 +223,18 @@ namespace dagbase
         printer.println("name: " + _name);
         printer.println("category: " + std::string(NodeCategory::toString(_category)));
         printer.println("flags: " + std::string(Node::flagsToString(_flags)));
+        printer.indent();
+        for (const auto port : _dynamicPorts)
+        {
+            port->debug(printer);
+        }
+        printer.outdent();
+        printer.indent();
+        for (const auto& metaPort : _dynamicMetaPorts)
+        {
+            metaPort.debug(printer);
+        }
+        printer.outdent();
     }
 
     Variant Node::find(std::string_view path) const
@@ -217,6 +250,10 @@ namespace dagbase
             return retval;
 
         retval = findEndpoint(path, "totalPorts", static_cast<std::uint32_t>(totalPorts()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findInternal(path, "dynamicPort", _dynamicPorts);
         if (retval.has_value())
             return retval;
 
@@ -349,6 +386,42 @@ namespace dagbase
                 {
                     _dynamicPorts.a[i] = nodeLib.instantiatePort(str, lua);
                 }
+            }
+        }
+    }
+
+    void Node::clonePorts(const Node &other, CloningFacility &facility, CopyOp copyOp, KeyGenerator *keyGen)
+    {
+        for (std::size_t i=0; i<other.totalPorts(); ++i)
+        {
+            auto* p = other._dynamicPorts.a[i];
+            std::uint64_t portId{0};
+            auto shouldClone = facility.putOrig(p, &portId);
+            Port* portClone = nullptr;
+            if (shouldClone)
+            {
+                portClone = p->clone(facility, copyOp, keyGen);
+            }
+            else
+            {
+                portClone = static_cast<Port*>(facility.getClone(portId));
+            }
+
+            addDynamicPort(portClone, other._dynamicMetaPorts[i].flags);
+        }
+    }
+
+    void Node::deleteDynamicPorts()
+    {
+        for (std::size_t i=0; i<_dynamicPorts.size(); ++i)
+        {
+            if (_dynamicPorts.a[i]->sharedParent() == this)
+            {
+                _dynamicPorts.a[i]->setSharedParent(nullptr);
+            }
+            if (_dynamicMetaPorts[i].isOwned())
+            {
+                delete _dynamicPorts.a[i];
             }
         }
     }

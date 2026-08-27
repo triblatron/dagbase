@@ -45,9 +45,9 @@ namespace dagbase
 
 		Node(Node&&) = default;
 
-        ~Node() override = default;
+        ~Node() override;
 
-		Node& operator=(const Node&) = default;
+		Node& operator=(const Node&);
 
 		Node& operator=(Node&&) = default;
 
@@ -59,18 +59,60 @@ namespace dagbase
         //! \note Typically downcasts to a concrete type to determine a result.
         [[nodiscard]]virtual bool equals(const Node& other, ComparisonFlags flags) const;
 
-	    virtual MetaPort* dynamicMetaPort(std::size_t index) = 0;
+	    [[nodiscard]]const dagbase::MetaPort * dynamicMetaPort(size_t index) const
+	    {
+	        return &_dynamicMetaPorts[index];
+	    }
 
-        //! \return A MetaPort corresponding to a given index.
-        //! \param[in] index The index of the port, zero-based.
-        [[nodiscard]]virtual const MetaPort * dynamicMetaPort(size_t index) const = 0;
+	    [[nodiscard]]dagbase::MetaPort * dynamicMetaPort(size_t index)
+	    {
+	        return &_dynamicMetaPorts[index];
+	    }
 
-        //! \return A Port corresponding to a given index
-        //! \note The index includes both built-in and dynamically added Ports.
-        //! \param[in] index The index of the Port, zero-based.
-        virtual Port* dynamicPort(size_t index) = 0;
+	    //! Add a non-null dynamic port
+	    //! This is in addition to the intrinsic ports described by MetaPorts.
+	    //! \note The default implementation throws an exception
+	    void addDynamicPort(dagbase::Port* port, dagbase::MetaPort::Flags flags)
+	    {
+	        if (port != nullptr)
+	        {
+	            _dynamicPorts.a.emplace_back(port);
+	            if ((flags & MetaPort::FLAGS_OWN_BIT)==MetaPort::FLAGS_OWN_BIT)
+	            {
+	                port->setParent(this);
+	            }
+	            else
+	            {
+	                port->setSharedParent(this);
+	            }
+	            MetaPort desc;
+	            desc.flags = flags;
+	            _dynamicMetaPorts.emplace_back(desc);
+	        }
+	    }
 
-	    virtual const Port* dynamicPort(size_t index) const = 0;
+	    //! \return A Port corresponding to a given index
+	    //! \note The index includes both built-in and dynamically added Ports.
+	    //! \param[in] index The index of the Port, zero-based.
+	    [[nodiscard]]dagbase::Port* dynamicPort(size_t index)
+	    {
+	        if (index < _dynamicPorts.size())
+	        {
+	            return _dynamicPorts.a[index];
+	        }
+
+	        return nullptr;
+	    }
+
+	    const dagbase::Port* dynamicPort(size_t index) const
+	    {
+	        if (index<_dynamicPorts.size())
+	        {
+	            return _dynamicPorts.a[index];
+	        }
+
+	        return nullptr;
+	    }
 
         //! Create a Node of the same type as this from a stream.
         //! \param[in] str The stream from which to read the data required to create the Node.
@@ -93,10 +135,10 @@ namespace dagbase
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;
 
         //! \return The total number of Ports in this Node, including intrinsic/static and dynamic/extrinsic Ports.
-        [[nodiscard]]virtual size_t totalPorts() const
-        {
-            return size_t{ 0 };
-        }
+	    [[nodiscard]]size_t totalPorts() const
+	    {
+	        return _dynamicMetaPorts.size();
+	    }
 
         //! Perform our computation based on inputs and settings.
         //! \note This has an empty default implementation.
@@ -159,14 +201,6 @@ namespace dagbase
         {
             return _pos;
         }
-
-        //! Add a non-null dynamic port
-        //! This is in addition to the intrinsic ports described by MetaPorts.
-        //! \note The default implementation throws an exception
-		virtual void addDynamicPort(Port* port, MetaPort::Flags flags)
-		{
-			throw std::runtime_error("addDynamicPort():Not implemented for " + std::string(className()));
-		}
 
         //! Find the index of a given Port.
         //! \retval ~0ULL if the Port cannot be found.
@@ -256,6 +290,8 @@ namespace dagbase
 		typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;
 		static void writeDynamicPorts(OutputStream& str, NodeLibrary& nodeLib, Lua& lua, const PortArray& ports, const MetaPortArray& metaPorts);
 	    static void readDynamicPorts(InputStream& str, NodeLibrary& nodeLib, Lua& lua, PortArray& ports, MetaPortArray& metaPorts);
+	    void clonePorts(const Node& other, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
+	    void deleteDynamicPorts();
 	private:
         NodeID _id{NodeID::INVALID_ID};
         std::string _name;
@@ -263,6 +299,8 @@ namespace dagbase
         float _pos[2]{0,0};
 		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
         NodeFlags _flags{ NODE_NONE };
+	    MetaPortArray _dynamicMetaPorts;
+	    PortArray _dynamicPorts;
 	};
 
     struct CompareNodesById
