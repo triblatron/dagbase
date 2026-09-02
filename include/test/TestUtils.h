@@ -49,7 +49,7 @@ struct Assertion : AssertionBase
     void makeItSo(Sut& sut, Result& result, const std::string& cmd) const
     {
         auto actual = dagbase::findInternal(path, "result", result);
-        if (actual.has_value())
+        if (actual.has_value() == value.has_value())
             assertComparison(value, actual, tolerance, op, (path + " " + cmd).c_str());
         else
         {

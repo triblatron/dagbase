@@ -49,6 +49,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "removed", isRemoved());
+        if (retval.has_value())
+            return retval;
+
         if (_source)
         {
             retval = findEndpoint(path, "fromPort", _source->id());

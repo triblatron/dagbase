@@ -36,6 +36,7 @@ struct SignalPathScriptItem
         dagbase::ConfigurationElement::readConfig(config, "to", &to);
         dagbase::ConfigurationElement::readConfig(config, "id", &id);
         dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "op", &dagbase::ConfigurationElement::parseRelOp, &op);
+        dagbase::ConfigurationElement::readConfig(config, "removed", &removed);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
     }
 
@@ -49,7 +50,10 @@ struct SignalPathScriptItem
             case COMMAND_ADD:
             {
                 auto* signalPath = new dagbase::SignalPath(keyGen, from, to);
-
+                if (removed)
+                {
+                    signalPath->markRemoved();
+                }
                 actualStatus = sut.add(signalPath);
 
                 break;
@@ -143,6 +147,7 @@ struct SignalPathScriptItem
     dagbase::PortID to{dagbase::SignalPathID::INVALID_ID};
     dagbase::Status status{dagbase::Status::STATUS_UNKNOWN};
     dagbase::ConfigurationElement::RelOp op{dagbase::ConfigurationElement::RELOP_UNKNOWN};
+    bool removed{false};
     using AssertionArray = std::vector<SignalPathAssertion>;
     AssertionArray assertions;
 };
@@ -204,7 +209,8 @@ TEST_P(SignalPathTable_testScripted, testExpectedValue)
 INSTANTIATE_TEST_SUITE_P(SignalPathTable, SignalPathTable_testScripted, ::testing::Values(
     std::make_tuple("data/tests/SignalPathTable/InsertInvalid.lua"),
     std::make_tuple("data/tests/SignalPathTable/InsertValid.lua"),
-    std::make_tuple("data/tests/SignalPathTable/Query.lua")
+    std::make_tuple("data/tests/SignalPathTable/Query.lua"),
+    std::make_tuple("data/tests/SignalPathTable/QueryRemoved.lua")
     ));
 
 using NodesPortsAssertion = Assertion<dagbase::NodesPortsTable, dagbase::NodesPortsTable::FindResult>;

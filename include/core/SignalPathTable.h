@@ -13,6 +13,8 @@
 
 #include <string_view>
 
+#include "SignalPath.h"
+
 
 namespace dagbase
 {
@@ -45,10 +47,23 @@ namespace dagbase
                 return static_cast<std::size_t>(std::distance(p.first, p.second));
             }
 
+            LookupTableFrom::const_iterator begin() const
+            {
+                return p.first;
+            }
+
+            LookupTableFrom::const_iterator end() const
+            {
+                return p.second;
+            }
+
             const SignalPath* operator[](std::size_t index) const
             {
                 if (index<static_cast<std::size_t>(std::distance(p.first,p.second)))
-                    return *(p.first+static_cast<LookupTableFrom::difference_type>(index));
+                {
+                    if (const auto result = *(p.first+static_cast<LookupTableFrom::difference_type>(index)); !result->isRemoved())
+                        return result;
+                }
 
                 return nullptr;
             }
@@ -65,12 +80,21 @@ namespace dagbase
             return _signalPathsFrom.size();
         }
 
+        //! Find a SignalPath by ID.
+        //! \retval A valid pointer if there exists a SignalPath not marked as removed with the specified ID.
+        //! \retval nullptr otherwise
         SignalPath* findByID(SignalPathID id) const;
 
+        //! Find the set of SignalPaths that have the specified source ID.
+        //! \note The result may contain SignalPaths that have been marked removed.
         void findBySource(PortID sourceID, FindResultFrom* result) const;
 
+        //! Find the set of SignalPaths that have the specified destination ID.
+        //! \note The result may contain SignalPaths that have been marked removed.
         void findByDest(PortID destID, FindResultFrom* result) const;
 
+        //! Find the SignalPath with the specified source and destination ID.
+        //! \note The result may contain a SignalPath that have been marked removed.
         void findFull(PortID sourceID, PortID destID, FindResultFrom* result) const;
 
         Variant find(std::string_view path) const;

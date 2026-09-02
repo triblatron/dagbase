@@ -85,7 +85,7 @@ namespace dagbase
 
     SignalPath * SignalPathTable::findByID(SignalPathID id) const
     {
-        if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end())
+        if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end() && !it->second->isRemoved())
         {
             return it->second;
         }
