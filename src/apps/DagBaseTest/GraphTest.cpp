@@ -13,7 +13,7 @@
 #include "core/NodesPortsTable.h"
 #include "test/TestUtils.h"
 
-using SignalPathAssertion = Assertion<dagbase::SignalPathTable, dagbase::SignalPathTable::FindResult>;
+using SignalPathAssertion = Assertion<dagbase::SignalPathTable, dagbase::SignalPathTable::FindResultFrom>;
 
 struct SignalPathScriptItem
 {
@@ -23,7 +23,9 @@ struct SignalPathScriptItem
         COMMAND_ADD,
         COMMAND_FIND_FROM,
         COMMAND_FIND_TO,
-        COMMAND_FIND
+        COMMAND_FIND_FULL,
+        COMMAND_FIND_ID,
+        COMMAND_REMOVE
     };
 
     void configure(dagbase::ConfigurationElement& config)
@@ -32,13 +34,15 @@ struct SignalPathScriptItem
         dagbase::ConfigurationElement::readConfig<Command>(config, "command", &parseCommand, &cmd);
         dagbase::ConfigurationElement::readConfig(config, "from", &from);
         dagbase::ConfigurationElement::readConfig(config, "to", &to);
+        dagbase::ConfigurationElement::readConfig(config, "id", &id);
+        dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "op", &dagbase::ConfigurationElement::parseRelOp, &op);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
     }
 
     void makeItSo(dagbase::SignalPathTable& sut, dagbase::KeyGenerator& keyGen, const std::string& caseName)
     {
         dagbase::Status actualStatus;
-        dagbase::SignalPathTable::FindResult result;
+        dagbase::SignalPathTable::FindResultFrom result;
 
         switch (cmd)
         {
@@ -62,10 +66,32 @@ struct SignalPathScriptItem
 
                 break;
             }
-            case COMMAND_FIND:
+            case COMMAND_FIND_FULL:
             {
                 sut.findFull(from, to, &result);
 
+                break;
+            }
+            case COMMAND_FIND_ID:
+            {
+                dagbase::SignalPath* retval = sut.findByID(id);
+                switch (op)
+                {
+                    case dagbase::ConfigurationElement::RELOP_NOT_NULL:
+                        ASSERT_NE(nullptr, retval);
+                        break;
+                    case dagbase::ConfigurationElement::RELOP_NULL:
+                        ASSERT_EQ(nullptr, retval);
+                        break;
+                    default:
+                        FAIL() << "Unexpected op " << dagbase::ConfigurationElement::relOpToString(op);
+                        break;
+                }
+                break;
+            }
+            case COMMAND_REMOVE:
+            {
+                actualStatus = sut.remove(id);
                 break;
             }
             default:
@@ -91,7 +117,9 @@ struct SignalPathScriptItem
             ENUM_NAME(COMMAND_ADD)
             ENUM_NAME(COMMAND_FIND_FROM)
             ENUM_NAME(COMMAND_FIND_TO)
-            ENUM_NAME(COMMAND_FIND)
+            ENUM_NAME(COMMAND_FIND_FULL)
+            ENUM_NAME(COMMAND_FIND_ID)
+            ENUM_NAME(COMMAND_REMOVE)
         }
 
         return "<error>";
@@ -102,15 +130,19 @@ struct SignalPathScriptItem
         TEST_ENUM(COMMAND_ADD, str);
         TEST_ENUM(COMMAND_FIND_FROM, str);
         TEST_ENUM(COMMAND_FIND_TO, str);
-        TEST_ENUM(COMMAND_FIND, str);
+        TEST_ENUM(COMMAND_FIND_FULL, str);
+        TEST_ENUM(COMMAND_FIND_ID, str);
+        TEST_ENUM(COMMAND_REMOVE, str);
 
         return COMMAND_UNKNOWN;
     }
 
     Command cmd{COMMAND_UNKNOWN};
+    dagbase::SignalPathID id{dagbase::SignalPathID::INVALID_ID};
     dagbase::PortID from{dagbase::SignalPathID::INVALID_ID};
     dagbase::PortID to{dagbase::SignalPathID::INVALID_ID};
     dagbase::Status status{dagbase::Status::STATUS_UNKNOWN};
+    dagbase::ConfigurationElement::RelOp op{dagbase::ConfigurationElement::RELOP_UNKNOWN};
     using AssertionArray = std::vector<SignalPathAssertion>;
     AssertionArray assertions;
 };

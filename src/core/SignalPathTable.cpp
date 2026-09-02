@@ -31,7 +31,7 @@ namespace dagbase
         return false;
     }
 
-    Variant SignalPathTable::FindResult::find(std::string_view path) const
+    Variant SignalPathTable::FindResultFrom::find(std::string_view path) const
     {
         Variant retval;
 
@@ -50,10 +50,13 @@ namespace dagbase
     {
         Status status{dagbase::Status::STATUS_UNKNOWN};
 
-        if (signalPath->from().valid() && signalPath->to().valid())
+        if (signalPath && signalPath->from().valid() && signalPath->to().valid())
         {
+            _signalPathsByID.emplace(signalPath->id(), signalPath);
             _signalPathsFrom.emplace(signalPath);
             _signalPathsTo.emplace(signalPath);
+            status.resultType = Status::RESULT_SIGNAL_PATH_ID;
+            status.result.emplace(signalPath->id());
             status.status = dagbase::Status::STATUS_OK;
         }
         else
@@ -63,11 +66,34 @@ namespace dagbase
         return status;
     }
 
-    void SignalPathTable::remove(SignalPath *signalPath)
+    Status SignalPathTable::remove(SignalPathID id)
     {
+        Status status{Status::STATUS_UNKNOWN};
+
+        if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end())
+        {
+            if (auto itFrom = _signalPathsFrom.find(it->second); itFrom != _signalPathsFrom.end())
+                _signalPathsFrom.erase(itFrom);
+            if (auto itTo = _signalPathsTo.find(it->second); itTo != _signalPathsTo.end())
+                _signalPathsTo.erase(itTo);
+            _signalPathsByID.erase(it);
+            status.status = Status::STATUS_OK;
+        }
+
+        return status;
     }
 
-    void SignalPathTable::findBySource(PortID sourceID, FindResult *result) const
+    SignalPath * SignalPathTable::findByID(SignalPathID id) const
+    {
+        if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end())
+        {
+            return it->second;
+        }
+
+        return nullptr;
+    }
+
+    void SignalPathTable::findBySource(PortID sourceID, FindResultFrom *result) const
     {
         if (result)
         {
@@ -79,7 +105,7 @@ namespace dagbase
         }
     }
 
-    void SignalPathTable::findByDest(PortID destID, FindResult *result) const
+    void SignalPathTable::findByDest(PortID destID, FindResultFrom *result) const
     {
         if (result)
         {
@@ -91,7 +117,7 @@ namespace dagbase
         }
     }
 
-    void SignalPathTable::findFull(PortID sourceID, PortID destID, FindResult *result) const
+    void SignalPathTable::findFull(PortID sourceID, PortID destID, FindResultFrom *result) const
     {
         if (result)
         {

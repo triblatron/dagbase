@@ -48,7 +48,9 @@ namespace dagbase
             RELOP_LT,
             RELOP_LE,
             RELOP_GT,
-            RELOP_GE
+            RELOP_GE,
+            RELOP_NOT_NULL,
+            RELOP_NULL
         };
     public:
         explicit ConfigurationElement(std::string name);

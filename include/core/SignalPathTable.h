@@ -8,6 +8,7 @@
 
 #include "core/Types.h"
 #include "util/VectorSet.h"
+#include "util/VectorMap.h"
 #include "util/SearchableArray.h"
 
 #include <string_view>
@@ -30,23 +31,24 @@ namespace dagbase
     class DAGBASE_API SignalPathTable
     {
     public:
+        using LookupTableId = VectorMap<SignalPathID, SignalPath*>;
         using LookupTableFrom = VectorSet<SignalPath*, CompareSignalPathsByFrom>;
         using LookupTableTo = VectorSet<SignalPath*, CompareSignalPathsByTo>;
 
-        struct DAGBASE_API FindResult
+        struct DAGBASE_API FindResultFrom
         {
             using value_type = SignalPath *;
             Variant find(std::string_view path) const;
 
             std::size_t size() const
             {
-                return std::size_t(std::distance(p.first,p.second));
+                return static_cast<std::size_t>(std::distance(p.first, p.second));
             }
 
             const SignalPath* operator[](std::size_t index) const
             {
-                if (index<std::size_t(std::distance(p.first,p.second)))
-                    return *(p.first+LookupTableFrom::difference_type(index));
+                if (index<static_cast<std::size_t>(std::distance(p.first,p.second)))
+                    return *(p.first+static_cast<LookupTableFrom::difference_type>(index));
 
                 return nullptr;
             }
@@ -56,21 +58,24 @@ namespace dagbase
     public:
         Status add(SignalPath* signalPath);
 
-        void remove(SignalPath* signalPath);
+        Status remove(SignalPathID id);
 
         std::size_t size() const
         {
             return _signalPathsFrom.size();
         }
 
-        void findBySource(PortID sourceID, FindResult* result) const;
+        SignalPath* findByID(SignalPathID id) const;
 
-        void findByDest(PortID destID, FindResult* result) const;
+        void findBySource(PortID sourceID, FindResultFrom* result) const;
 
-        void findFull(PortID sourceID, PortID destID, FindResult* result) const;
+        void findByDest(PortID destID, FindResultFrom* result) const;
+
+        void findFull(PortID sourceID, PortID destID, FindResultFrom* result) const;
 
         Variant find(std::string_view path) const;
     private:
+        LookupTableId _signalPathsByID;
         LookupTableFrom _signalPathsFrom;
         LookupTableTo _signalPathsTo;
     };

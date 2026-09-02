@@ -63,7 +63,8 @@ INSTANTIATE_TEST_SUITE_P(ConfigurationElement, ConfigurationElementRelOp_testRou
         std::make_tuple("RELOP_LT", dagbase::ConfigurationElement::RELOP_LT),
         std::make_tuple("RELOP_LE", dagbase::ConfigurationElement::RELOP_LE),
         std::make_tuple("RELOP_GT", dagbase::ConfigurationElement::RELOP_GT),
-        std::make_tuple("RELOP_GE", dagbase::ConfigurationElement::RELOP_GE)
+        std::make_tuple("RELOP_GE", dagbase::ConfigurationElement::RELOP_GE),
+        std::make_tuple("RELOP_NOT_NULL", dagbase::ConfigurationElement::RELOP_NOT_NULL)
         ));
 
 class MetaPropertyFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::string, dagbase::MetaProperty::Flags>>

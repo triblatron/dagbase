@@ -9,6 +9,8 @@ root=
 			status=
 			{
 				statusCode="STATUS_OK",
+				resultType="RESULT_SIGNAL_PATH_ID",
+				signalPathID=0,
 			},
 			assertions=
 			{
@@ -27,6 +29,8 @@ root=
 			status=
 			{
 				statusCode="STATUS_OK",
+				resultType="RESULT_SIGNAL_PATH_ID",
+				signalPathID=1,
 			},
 			assertions=
 			{
@@ -45,6 +49,8 @@ root=
 			status=
 			{
 				statusCode="STATUS_OK",
+				resultType="RESULT_SIGNAL_PATH_ID",
+				signalPathID=2,
 			},
 			assertions=
 			{
@@ -54,6 +60,30 @@ root=
 					typeIndex="TYPE_UINT",
 					op="RELOP_EQ",
 				},
+			},
+		},
+		{
+			command="COMMAND_FIND_ID",
+			id=0,
+			op="RELOP_NOT_NULL",
+			assertions=
+			{
+			},
+		},
+		{
+			command="COMMAND_FIND_ID",
+			id=1,
+			op="RELOP_NOT_NULL",
+			assertions=
+			{
+			},
+		},
+		{
+			command="COMMAND_FIND_ID",
+			id=2,
+			op="RELOP_NOT_NULL",
+			assertions=
+			{
 			},
 		},
 		{
@@ -137,7 +167,7 @@ root=
 			},
 		},
 		{
-			command="COMMAND_FIND",
+			command="COMMAND_FIND_FULL",
 			from=0,
 			to=3,
 			assertions=
@@ -150,7 +180,7 @@ root=
 			},
 		},
 		{
-			command="COMMAND_FIND",
+			command="COMMAND_FIND_FULL",
 			from=0,
 			to=1,
 			assertions=
@@ -169,6 +199,60 @@ root=
 					path="result[0].to",
 					value=1,
 					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+		{
+			command="COMMAND_REMOVE",
+			id=0,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="numSignalPaths",
+					value=2,
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND_FROM",
+			from=0,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=1,
+				},
+				{
+					path="result[0].id",
+					value=1,
+				},
+			},
+		},
+		{
+			command="COMMAND_FIND_ID",
+			id=0,
+			op="RELOP_NULL",
+		},
+		{
+			command="COMMAND_FIND_TO",
+			to=2,
+			assertions=
+			{
+				{
+					path="result.size",
+					value=2,
+				},
+				{
+					path="result[0].id",
+					value=1,
+				},
+				{
+					path="result[1].id",
+					value=2,
 				},
 			},
 		},

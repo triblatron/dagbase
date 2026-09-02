@@ -400,6 +400,8 @@ namespace dagbase
             ENUM_NAME(RELOP_LE)
             ENUM_NAME(RELOP_GT)
             ENUM_NAME(RELOP_GE)
+            ENUM_NAME(RELOP_NOT_NULL)
+            ENUM_NAME(RELOP_NULL)
         }
         return "<error>";
     }
@@ -413,6 +415,8 @@ namespace dagbase
         TEST_ENUM(RELOP_LE, str)
         TEST_ENUM(RELOP_GT, str)
         TEST_ENUM(RELOP_GE, str)
+        TEST_ENUM(RELOP_NOT_NULL, str)
+        TEST_ENUM(RELOP_NULL, str)
 
         return RELOP_UNKNOWN;
     }
