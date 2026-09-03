@@ -39,7 +39,7 @@ struct SignalPathScriptItem
         dagbase::ConfigurationElement::readConfig(config, "to", &to);
         if (auto element = config.findElement("id"); element)
         {
-            if (element->value().index() == dagbase::Variant::TYPE_INTEGER)
+            if (element->value().has_value() && element->value().index() == dagbase::Variant::TYPE_INTEGER)
             {
                 id.configure(*element);
             }
