@@ -313,10 +313,24 @@ namespace dagbase
             findAllNodes(&allNodesIncludingChildren);
             for (auto n : allNodesIncludingChildren)
             {
-                if (n->hasNoDependencies())
+                bool noDeps = true;
+                for (std::size_t i=0; i<n->totalPorts(); ++i)
+                {
+                    SignalPathTable::FindResultFrom result;
+                    n->parent()->_signalPaths.findByDest(n->dynamicPort(i)->id(), &result);
+                    if (!result.empty())
+                    {
+                        noDeps = false;
+                    }
+                }
+                if (noDeps)
                 {
                     nodesWithNoDependencies.push(n);
                 }
+                // if (n->hasNoDependencies())
+                // {
+                //     nodesWithNoDependencies.push(n);
+                // }
             }
             while (!nodesWithNoDependencies.empty())
             {
@@ -470,7 +484,9 @@ namespace dagbase
     {
         if (_nodeLib!=nullptr)
         {
-            return _nodeLib->instantiateNode(*this, className, name);
+            auto node = _nodeLib->instantiateNode(*this, className, name);
+            node->setParent(this);
+            return node;
         }
         return nullptr;
     }
@@ -884,6 +900,7 @@ namespace dagbase
 
                     if (node != nullptr && id.valid())
                     {
+                        node->setParent(output);
                         node->setId(id);
                         node->setCategory(NodeCategory::parse(category.c_str()));
                         node->setPosition(x, y);

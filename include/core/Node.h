@@ -151,6 +151,21 @@ namespace dagbase
         //! \note Typically called by a concrete implementation of equals().
         bool operator==(const Node& other) const;
 
+	    void setParent(Graph* graph)
+	    {
+	        _parent = graph;
+	    }
+
+	    Graph* parent()
+	    {
+	        return _parent;
+	    }
+
+	    const Graph* parent() const
+	    {
+	        return _parent;
+	    }
+
         void setId(NodeID id)
         {
             _id = id;
@@ -301,6 +316,7 @@ namespace dagbase
         NodeFlags _flags{ NODE_NONE };
 	    MetaPortArray _dynamicMetaPorts;
 	    PortArray _dynamicPorts;
+	    Graph* _parent{nullptr};
 	};
 
     struct CompareNodesById

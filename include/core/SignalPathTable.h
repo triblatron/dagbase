@@ -42,6 +42,11 @@ namespace dagbase
             using value_type = SignalPath *;
             Variant find(std::string_view path) const;
 
+            bool empty() const
+            {
+                return p.first == p.second;
+            }
+
             std::size_t size() const
             {
                 return static_cast<std::size_t>(std::distance(p.first, p.second));
