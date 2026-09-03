@@ -34,7 +34,10 @@ namespace dagbase
         _source(source),
         _dest(dest)
         {
-            // Do nothing.
+            if (_source)
+                _sourceId = _source->id();
+            if (_dest)
+                _destId = _dest->id();
         }
 
         SignalPath(KeyGenerator& keyGen, PortID source, PortID dest)

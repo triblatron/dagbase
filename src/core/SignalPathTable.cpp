@@ -83,6 +83,30 @@ namespace dagbase
         return status;
     }
 
+    void SignalPathTable::erase(LookupTableId::iterator it)
+    {
+        if (it!=_signalPathsByID.end())
+        {
+            if (auto itFrom = _signalPathsFrom.find(it->second); itFrom != _signalPathsFrom.end())
+                _signalPathsFrom.erase(itFrom);
+            if (auto itTo = _signalPathsTo.find(it->second); itTo != _signalPathsTo.end())
+                _signalPathsTo.erase(itTo);
+            _signalPathsByID.erase(it);
+        }
+    }
+
+    void SignalPathTable::erase(LookupTableId::iterator first, LookupTableId::iterator last)
+    {
+        for (auto it=first; it!=last; ++it)
+        {
+            if (auto itFrom = _signalPathsFrom.find(it->second); itFrom != _signalPathsFrom.end())
+                _signalPathsFrom.erase(itFrom);
+            if (auto itTo = _signalPathsTo.find(it->second); itTo != _signalPathsTo.end())
+                _signalPathsTo.erase(itTo);
+        }
+        _signalPathsByID.erase(first,last);
+    }
+
     SignalPath * SignalPathTable::findByID(SignalPathID id) const
     {
         if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end() && !it->second->isRemoved())
@@ -134,6 +158,10 @@ namespace dagbase
         Variant retval;
 
         retval = findEndpoint(path, "numSignalPaths", std::uint32_t(size()));
+        if (retval.has_value())
+            return retval;
+
+        retval = findMapForward(path, _signalPathsByID);
         if (retval.has_value())
             return retval;
 

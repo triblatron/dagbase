@@ -171,17 +171,14 @@ namespace dagbase
 	{
 		if (signalPath != nullptr)
 		{
-			_signalPaths.insert(SignalPathMap::value_type(signalPath->id(), signalPath));
+			_signalPaths.add(signalPath);
 		}
 	}
 
     void Graph::removeSignalPath(dagbase::SignalPath *signalPath)
     {
 	    if (signalPath)
-	        if (auto it=_signalPaths.find(signalPath->id()); it!=_signalPaths.end())
-	        {
-	            _signalPaths.erase(it);
-	        }
+	        _signalPaths.remove(signalPath->id());
     }
 
     void Graph::eachSignalPath(std::function<bool(SignalPath*)> f)
@@ -418,10 +415,10 @@ namespace dagbase
 	        }
 	        for (auto signalPath : toMove)
 	        {
-	            if (auto it=_signalPaths.find(signalPath->id()); it!=_signalPaths.end())
+	            auto status = _signalPaths.remove(signalPath->id());
+	            if (status.status == Status::STATUS_OK)
 	            {
 	                // std::cerr << "moveNode():Moving " << *it->second << '\n';
-	                _signalPaths.erase(it);
 	                dest->addSignalPath(signalPath);
 	            }
 	        }
@@ -1005,7 +1002,7 @@ namespace dagbase
 
     void dagbase::Graph::removeMarkedSignalPaths()
     {
-        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathMap::value_type& value) {
+        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathTable::LookupTableId::value_type& value) {
             return value.second->isRemoved();
             });
         _signalPaths.erase(toKeep, _signalPaths.end());

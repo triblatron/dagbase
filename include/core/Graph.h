@@ -5,6 +5,7 @@
 #include "core/Types.h"
 #include "core/KeyGenerator.h"
 #include "core/Variant.h"
+#include "core/SignalPathTable.h"
 #include "util/VectorMap.h"
 #include "util/SearchableArray.h"
 
@@ -151,12 +152,7 @@ namespace dagbase
 
 		[[nodiscard]] dagbase::SignalPath* signalPath(dagbase::SignalPathID id)
 		{
-			if (auto const it=_signalPaths.find(id); it!=_signalPaths.end())
-			{
-				return it->second;
-			}
-
-			return nullptr;
+			return _signalPaths.findByID(id);
 		}
 
         void eachSignalPath(std::function<bool(SignalPath*)> f);
@@ -296,7 +292,7 @@ namespace dagbase
         typedef std::unordered_map<std::string, dagbase::Node*> NameToNodeMap;
         NameToNodeMap _nodeLookupByName;
 		typedef dagbase::VectorMapFromId<std::int64_t, dagbase::SignalPath*> SignalPathMap;
-		SignalPathMap _signalPaths;
+		SignalPathTable _signalPaths;
         typedef dagbase::VectorMapFromId<std::int64_t, dagbase::Port*> PortMap;
         PortMap _ports;
 		typedef dagbase::SearchableArray<std::vector<Graph*>> GraphArray;

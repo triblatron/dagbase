@@ -5,7 +5,7 @@
 
 #include "core/SignalPath.h"
 #include "io/InputStream.h"
-#include "../../include/core/TypedPort.h"
+#include "core/TypedPort.h"
 #include "core/NodeLibrary.h"
 #include "io/OutputStream.h"
 #include "core/Node.h"
@@ -85,7 +85,11 @@ namespace dagbase
     _source(source),
     _dest(dest)
     {
-        // Do nothing.§
+        if (_source)
+            _sourceId = _source->id();
+
+        if (_dest)
+            _destId = _dest->id();
     }
 
     SignalPath::SignalPath(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
@@ -103,8 +107,12 @@ namespace dagbase
         _id = id;
         str.readField(&fieldName);
         _source = str.readRef<Port>("Port", nodeLib, lua);
+        if (_source)
+            _sourceId = _source->id();
         str.readField(&fieldName);
         _dest = str.readRef<Port>("Port", nodeLib, lua);
+        if (_dest)
+            _destId = _dest->id();
         str.readField(&fieldName);
         std::uint32_t flags{0};
         str.readUInt32(&flags);

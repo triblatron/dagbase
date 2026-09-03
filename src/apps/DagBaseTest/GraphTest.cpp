@@ -13,6 +13,8 @@
 #include "core/NodesPortsTable.h"
 #include "test/TestUtils.h"
 
+#include <algorithm>
+
 using SignalPathAssertion = Assertion<dagbase::SignalPathTable, dagbase::SignalPathTable::FindResultFrom>;
 
 struct SignalPathScriptItem
@@ -25,7 +27,8 @@ struct SignalPathScriptItem
         COMMAND_FIND_TO,
         COMMAND_FIND_FULL,
         COMMAND_FIND_ID,
-        COMMAND_REMOVE
+        COMMAND_REMOVE,
+        COMMAND_ERASE_IF
     };
 
     void configure(dagbase::ConfigurationElement& config)
@@ -34,7 +37,22 @@ struct SignalPathScriptItem
         dagbase::ConfigurationElement::readConfig<Command>(config, "command", &parseCommand, &cmd);
         dagbase::ConfigurationElement::readConfig(config, "from", &from);
         dagbase::ConfigurationElement::readConfig(config, "to", &to);
-        dagbase::ConfigurationElement::readConfig(config, "id", &id);
+        if (auto element = config.findElement("id"); element)
+        {
+            if (element->value().index() == dagbase::Variant::TYPE_INTEGER)
+            {
+                id.configure(*element);
+            }
+            else if (element->numChildren()>0)
+            {
+                element->eachChild([this](dagbase::ConfigurationElement& child) {
+                    dagbase::SignalPathID entry;
+                    entry.configure(child);
+                    idRange.emplace_back(entry);
+                    return true;
+                });
+            }
+        }
         dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "op", &dagbase::ConfigurationElement::parseRelOp, &op);
         dagbase::ConfigurationElement::readConfig(config, "removed", &removed);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
@@ -98,6 +116,14 @@ struct SignalPathScriptItem
                 actualStatus = sut.remove(id);
                 break;
             }
+            case COMMAND_ERASE_IF:
+            {
+                auto r = std::remove_if(sut.begin(), sut.end(), [this](const dagbase::SignalPathTable::LookupTableId::value_type& p) {
+                    return std::find(idRange.begin(), idRange.end(), p.first) != idRange.end();
+                });
+                sut.erase(r, sut.end());
+                break;
+            }
             default:
                 FAIL() << "Handling unknown command";
                 break;
@@ -124,6 +150,7 @@ struct SignalPathScriptItem
             ENUM_NAME(COMMAND_FIND_FULL)
             ENUM_NAME(COMMAND_FIND_ID)
             ENUM_NAME(COMMAND_REMOVE)
+            ENUM_NAME(COMMAND_ERASE_IF)
         }
 
         return "<error>";
@@ -137,12 +164,14 @@ struct SignalPathScriptItem
         TEST_ENUM(COMMAND_FIND_FULL, str);
         TEST_ENUM(COMMAND_FIND_ID, str);
         TEST_ENUM(COMMAND_REMOVE, str);
+        TEST_ENUM(COMMAND_ERASE_IF, str);
 
         return COMMAND_UNKNOWN;
     }
 
     Command cmd{COMMAND_UNKNOWN};
     dagbase::SignalPathID id{dagbase::SignalPathID::INVALID_ID};
+    std::vector<dagbase::SignalPathID> idRange;
     dagbase::PortID from{dagbase::SignalPathID::INVALID_ID};
     dagbase::PortID to{dagbase::SignalPathID::INVALID_ID};
     dagbase::Status status{dagbase::Status::STATUS_UNKNOWN};
@@ -210,7 +239,8 @@ INSTANTIATE_TEST_SUITE_P(SignalPathTable, SignalPathTable_testScripted, ::testin
     std::make_tuple("data/tests/SignalPathTable/InsertInvalid.lua"),
     std::make_tuple("data/tests/SignalPathTable/InsertValid.lua"),
     std::make_tuple("data/tests/SignalPathTable/Query.lua"),
-    std::make_tuple("data/tests/SignalPathTable/QueryRemoved.lua")
+    std::make_tuple("data/tests/SignalPathTable/QueryRemoved.lua"),
+    std::make_tuple("data/tests/SignalPathTable/Erase.lua")
     ));
 
 using NodesPortsAssertion = Assertion<dagbase::NodesPortsTable, dagbase::NodesPortsTable::FindResult>;

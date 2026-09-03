@@ -33,7 +33,7 @@ namespace dagbase
     class DAGBASE_API SignalPathTable
     {
     public:
-        using LookupTableId = VectorMap<SignalPathID, SignalPath*>;
+        using LookupTableId = VectorMapFromId<SignalPathID, SignalPath*>;
         using LookupTableFrom = VectorSet<SignalPath*, CompareSignalPathsByFrom>;
         using LookupTableTo = VectorSet<SignalPath*, CompareSignalPathsByTo>;
 
@@ -75,9 +75,33 @@ namespace dagbase
 
         Status remove(SignalPathID id);
 
+        void erase(LookupTableId::iterator it);
+
+        void erase(LookupTableId::iterator first, LookupTableId::iterator last);
+
         std::size_t size() const
         {
             return _signalPathsFrom.size();
+        }
+
+        LookupTableId::const_iterator begin() const
+        {
+            return _signalPathsByID.begin();
+        }
+
+        LookupTableId::iterator begin()
+        {
+            return _signalPathsByID.begin();
+        }
+
+        LookupTableId::const_iterator end() const
+        {
+            return _signalPathsByID.end();
+        }
+
+        LookupTableId::iterator end()
+        {
+            return _signalPathsByID.end();
         }
 
         //! Find a SignalPath by ID.

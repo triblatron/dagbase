@@ -160,13 +160,29 @@ namespace dagbase
     	return {};
     }
 
+    //! Forward a find() call to a map-like object obj.
+    //! \param[in] path The path to the attribute being queried, must start with a '['.
+    //! \param[in] obj The object to receive the call to find().
+    //! \note Pointers are removed from type Map in the call to std::invoke().
+    template<typename Map>
+    Variant findMapForward(std::string_view path, const Map& obj)
+    {
+        auto subPos = path.find('[');
+        if (subPos != std::string_view::npos)
+        {
+            return std::invoke(static_cast<dagbase::Variant(std::remove_pointer_t<Map>::*)(std::string_view)const>(&std::remove_pointer_t<Map>::find), obj, path.substr(subPos));
+        }
+
+        return {};
+    }
+
 	template<typename Map>
 	dagbase::Variant findMapFromInteger(std::string_view path, const Map& obj)
 	{
 		if (path.length() > 1 && path[0] == '[')
 		{
 			std::size_t firstIndex = 1;
-			typename Map::key_type index = 0;
+			typename Map::key_type index = static_cast<typename Map::key_type>(0);
 			char* endPtr = nullptr;
 			if (firstIndex < path.length())
 			{
