@@ -235,18 +235,7 @@ namespace dagbase
 
         void reconnectOutputs(NodeSet const& NodeSet, Node* newDest, KeyGenerator& keyGen);
         
-        [[nodiscard]]bool hasNoDependencies()
-        {
-            for (size_t index=0; index<totalPorts(); ++index)
-            {
-                if (!dynamicPort(index)->hasNoDependencies())
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        [[nodiscard]]bool hasNoDependencies();
 
         [[nodiscard]]size_t numIncomingConnections()
         {

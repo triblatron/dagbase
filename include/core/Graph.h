@@ -161,6 +161,16 @@ namespace dagbase
 
         void adjustNextID();
 
+	    void findBySource(const PortID& id, SignalPathTable::FindResultFrom * result)
+	    {
+	        _signalPaths.findBySource(id, result);
+	    }
+
+        void findByDest(const PortID & id, SignalPathTable::FindResultFrom * result)
+        {
+            _signalPaths.findByDest(id, result);
+        }
+
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
 		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str, Status* status = nullptr);

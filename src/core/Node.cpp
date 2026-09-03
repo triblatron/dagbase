@@ -7,6 +7,7 @@
 #include "core/NodeLibrary.h"
 #include "core/KeyGenerator.h"
 #include "core/CloningFacility.h"
+#include "core/Graph.h"
 #include "util/enums.h"
 
 #include "imgui.h"
@@ -104,6 +105,22 @@ namespace dagbase
 
         }
 
+    }
+
+    bool Node::hasNoDependencies()
+    {
+        bool noDeps = true;
+        for (std::size_t i=0; i<totalPorts(); ++i)
+        {
+            SignalPathTable::FindResultFrom result;
+            parent()->findByDest(dynamicPort(i)->id(), &result);
+            if (!result.empty())
+            {
+                noDeps = false;
+            }
+        }
+
+        return noDeps;
     }
 
     dagbase::OutputStream &Node::writeToStream(dagbase::OutputStream &str, NodeLibrary& nodeLib, Lua &lua) const

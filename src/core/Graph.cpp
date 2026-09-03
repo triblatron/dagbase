@@ -313,24 +313,10 @@ namespace dagbase
             findAllNodes(&allNodesIncludingChildren);
             for (auto n : allNodesIncludingChildren)
             {
-                bool noDeps = true;
-                for (std::size_t i=0; i<n->totalPorts(); ++i)
-                {
-                    SignalPathTable::FindResultFrom result;
-                    n->parent()->_signalPaths.findByDest(n->dynamicPort(i)->id(), &result);
-                    if (!result.empty())
-                    {
-                        noDeps = false;
-                    }
-                }
-                if (noDeps)
+                if (n->hasNoDependencies())
                 {
                     nodesWithNoDependencies.push(n);
                 }
-                // if (n->hasNoDependencies())
-                // {
-                //     nodesWithNoDependencies.push(n);
-                // }
             }
             while (!nodesWithNoDependencies.empty())
             {
