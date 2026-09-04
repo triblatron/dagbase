@@ -98,7 +98,7 @@ namespace dagbase
         }
     }
 
-    inline SignalPath::SignalPath(Graph* parent, PortID from, PortID to)
+    SignalPath::SignalPath(Graph* parent, PortID from, PortID to)
     {
         _source = parent->port(from);
         _dest = parent->port(to);

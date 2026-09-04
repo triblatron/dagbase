@@ -46,6 +46,7 @@ namespace dagbase
 	{
 		if (node != nullptr && _nodeLib!=nullptr)
         {
+		    node->setParent(this);
 			auto result = _nodes.emplace(node->id(), node);
             auto it = _nodeLookupByName.find(node->name());
             if (result.second && it==_nodeLookupByName.end())
