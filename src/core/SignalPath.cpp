@@ -9,6 +9,7 @@
 #include "core/NodeLibrary.h"
 #include "io/OutputStream.h"
 #include "core/Node.h"
+#include "core/Graph.h"
 
 namespace dagbase
 {
@@ -67,33 +68,55 @@ namespace dagbase
                 return retval;
         }
 
-        retval = findEndpoint(path, "from", _sourceId);
-        if (retval.has_value())
-            return retval;
+        if (_source)
+        {
+            retval = findEndpoint(path, "from", _source->id());
+            if (retval.has_value())
+                return retval;
+        }
 
-        retval = findEndpoint(path, "to", _destId);
-        if (retval.has_value())
-            return retval;
+        if (_dest)
+        {
+            retval = findEndpoint(path, "to", _dest->id());
+            if (retval.has_value())
+                return retval;
+        }
 
         return {};
     }
 
 
-    SignalPath::SignalPath(SignalPathID id, Port *source, Port *dest)
+    SignalPath::SignalPath(Graph* parent, KeyGenerator& keyGen, PortID source, PortID dest)
+        :
+        _parent(parent),
+        _id(keyGen.nextSignalPathID())
+    {
+        if (_parent)
+        {
+            _source = _parent->port(source);
+            _dest = _parent->port(dest);
+        }
+    }
+
+    inline SignalPath::SignalPath(Graph* parent, PortID from, PortID to)
+    {
+        _source = parent->port(from);
+        _dest = parent->port(to);
+    }
+
+    SignalPath::SignalPath(Graph* parent, SignalPathID id, Port *source, Port *dest)
     :
+    _parent(parent),
     _id(id),
     _source(source),
     _dest(dest)
     {
-        if (_source)
-            _sourceId = _source->id();
-
-        if (_dest)
-            _destId = _dest->id();
+        // Do nothing.
     }
 
-    SignalPath::SignalPath(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
+    SignalPath::SignalPath(Graph* parent, dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
     :
+    _parent(parent),
     _source(nullptr),
     _dest(nullptr),
     _flags(FLAGS_NONE)
@@ -107,12 +130,8 @@ namespace dagbase
         _id = id;
         str.readField(&fieldName);
         _source = str.readRef<Port>("Port", nodeLib, lua);
-        if (_source)
-            _sourceId = _source->id();
         str.readField(&fieldName);
         _dest = str.readRef<Port>("Port", nodeLib, lua);
-        if (_dest)
-            _destId = _dest->id();
         str.readField(&fieldName);
         std::uint32_t flags{0};
         str.readUInt32(&flags);

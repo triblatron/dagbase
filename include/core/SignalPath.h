@@ -15,6 +15,7 @@
 
 namespace dagbase
 {
+    class Graph;
     class InputStream;
     class NodeLibrary;
     class OutputStream;
@@ -28,40 +29,40 @@ namespace dagbase
             REMOVED_BIT = 1<<0
         };
     public:
-        SignalPath(KeyGenerator& keyGen, Port* source, Port* dest)
+        SignalPath(Graph* parent, KeyGenerator& keyGen, Port* source, Port* dest)
         :
+        _parent(parent),
         _id(keyGen.nextSignalPathID()),
         _source(source),
         _dest(dest)
         {
-            if (_source)
-                _sourceId = _source->id();
-            if (_dest)
-                _destId = _dest->id();
-        }
-
-        SignalPath(KeyGenerator& keyGen, PortID source, PortID dest)
-            :
-        _id(keyGen.nextSignalPathID()),
-        _sourceId(source),
-        _destId(dest)
-        {
             // Do nothing.
         }
 
-        SignalPath(PortID from, PortID to)
-            :
-        _sourceId(from),
-        _destId(to)
-        {
-            // Do noting.
-        }
+        SignalPath(Graph* parent, KeyGenerator& keyGen, PortID source, PortID dest);
 
-        SignalPath(SignalPathID id, Port* source, Port* dest);
+        SignalPath(Graph* parent, PortID from, PortID to);
 
-        SignalPath(dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
+        SignalPath(Graph* parent, SignalPathID id, Port* source, Port* dest);
+
+        SignalPath(Graph* parent, dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
 
         bool equals(const SignalPath& other, ComparisonFlags flags) const;
+
+        void setParent(Graph* parent)
+        {
+            _parent = parent;
+        }
+
+        const Graph* parent() const
+        {
+            return _parent;
+        }
+
+        Graph* parent()
+        {
+            return _parent;
+        }
 
         [[nodiscard]]SignalPathID id() const
         {
@@ -144,12 +145,18 @@ namespace dagbase
 
         PortID from() const
         {
-            return _sourceId;
+            if (_source)
+                return _source->id();
+
+            return PortID{ PortID::INVALID_ID };
         }
 
         PortID to() const
         {
-            return _destId;
+            if (_dest)
+                return _dest->id();
+
+            return PortID{ PortID::INVALID_ID };
         }
 
         void markRemoved()
@@ -173,11 +180,10 @@ namespace dagbase
 
         dagbase::Variant find(std::string_view path) const;
     private:
+        Graph* _parent{ nullptr };
         SignalPathID _id;
         Port* _source{nullptr};
         Port* _dest{nullptr};
-        PortID _sourceId{PortID::INVALID_ID};
-        PortID _destId{PortID::INVALID_ID};
         Flags _flags{FLAGS_NONE};
     };
 

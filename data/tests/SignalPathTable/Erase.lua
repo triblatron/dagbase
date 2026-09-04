@@ -3,6 +3,14 @@ root=
 	items=
 	{
 		{
+			command="COMMAND_DESERIALISE",
+			filename="data/tests/SignalPathTable/Query.txt",
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+		},
+		{
 			command="COMMAND_ADD",
 			from=0,
 			to=1,
@@ -44,8 +52,8 @@ root=
 		},
 		{
 			command="COMMAND_ADD",
-			from=3,
-			to=2,
+			from=0,
+			to=3,
 			status=
 			{
 				statusCode="STATUS_OK",

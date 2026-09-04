@@ -636,6 +636,7 @@ namespace dagbase
 
     Graph::Graph(dagbase::InputStream &str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua)
     :
+    _signalPaths(this),
     _nodeLib(&nodeLib)
     {
         str.addObj(this);
@@ -690,7 +691,7 @@ namespace dagbase
                 }
                 else
                 {
-                    p = new dagbase::SignalPath(str, nodeLib, lua);
+                    p = new dagbase::SignalPath(this, str, nodeLib, lua);
                 }
             }
             if (p != nullptr)
@@ -993,7 +994,7 @@ namespace dagbase
                 }
                 if (id >=0 && sourcePort != nullptr && sourceNode==sourcePort->parent() && destPort != nullptr && destNode==destPort->parent())
                 {
-                    auto* signalPath = new dagbase::SignalPath(id, sourcePort, destPort);
+                    auto* signalPath = new dagbase::SignalPath(output, id, sourcePort, destPort);
                     sourcePort->connectTo(*destPort);
                     output->addSignalPath(signalPath);
                 }
@@ -1130,7 +1131,7 @@ namespace dagbase
             }
 
             // Clone SignalPath we have not seen yet.
-            sourceGraph.eachSignalPath([&clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](const dagbase::SignalPath* signalPath) {
+            sourceGraph.eachSignalPath([this, &clonedNodes, &originalSignalPaths, &clonedSignalPaths, &node, &facility, copyOp, &status, &keyGen](const dagbase::SignalPath* signalPath) {
                 if (signalPath->sourceNode() == node || signalPath->destNode() == node || signalPath->source()->sharedParent() == node || signalPath->dest()->sharedParent() == node)
                 {
                     // Get the cloned nodes corresponding to source and destination
@@ -1172,7 +1173,7 @@ namespace dagbase
                     if (originalSignalPaths.find(signalPath) == originalSignalPaths.end())
                     {
                         originalSignalPaths.emplace(signalPath);
-                        auto clonedSignalPath = new SignalPath(keyGen, fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
+                        auto clonedSignalPath = new SignalPath(this, keyGen, fromClone->dynamicPort(fromIndex), toClone->dynamicPort(toIndex));
                         clonedSignalPaths.emplace(clonedSignalPath);
                     }
                 }
@@ -1204,6 +1205,8 @@ namespace dagbase
     }
 
     Graph::Graph(const Graph & other, dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen)
+        :
+        _signalPaths(this)
     {
 	    _nodeLib = other._nodeLib;
 	    NodeArray origNodes;

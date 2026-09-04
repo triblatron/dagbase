@@ -18,6 +18,7 @@
 
 namespace dagbase
 {
+    class Graph;
     class SignalPath;
 
     struct CompareSignalPathsByFrom
@@ -76,6 +77,28 @@ namespace dagbase
             std::pair<LookupTableFrom::const_iterator, LookupTableFrom::const_iterator> p;
         };
     public:
+        explicit SignalPathTable(Graph* parent)
+            :
+            _parent(parent)
+        {
+            // Do nothing.
+        }
+
+        void setParent(Graph* parent)
+        {
+            _parent = parent;
+        }
+
+        const Graph* parent() const
+        {
+            return _parent;
+        }
+
+        Graph* parent()
+        {
+            return _parent;
+        }
+
         Status add(SignalPath* signalPath);
 
         Status remove(SignalPathID id);
@@ -131,5 +154,6 @@ namespace dagbase
         LookupTableId _signalPathsByID;
         LookupTableFrom _signalPathsFrom;
         LookupTableTo _signalPathsTo;
+        Graph* _parent{ nullptr };
     };
 }

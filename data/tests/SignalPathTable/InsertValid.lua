@@ -3,6 +3,14 @@ root=
 	items=
 	{
 		{
+			command="COMMAND_DESERIALISE",
+			filename="data/tests/SignalPathTable/InsertValid.txt",
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+		},
+		{
 			command="COMMAND_ADD",
 			from=0,
 			to=1,

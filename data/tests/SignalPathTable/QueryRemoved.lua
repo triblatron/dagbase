@@ -3,6 +3,14 @@ root=
 	items=
 	{
 		{
+			command="COMMAND_DESERIALISE",
+			filename="data/tests/SignalPathTable/Query.txt",
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+		},
+		{
 			command="COMMAND_ADD",
 			from=0,
 			to=1,
@@ -45,8 +53,8 @@ root=
 		},
 		{
 			command="COMMAND_ADD",
-			from=3,
-			to=2,
+			from=0,
+			to=3,
 			status=
 			{
 				statusCode="STATUS_OK",
@@ -94,7 +102,7 @@ root=
 			{
 				{
 					path="result.size",
-					value=2,
+					value=3,
 					typeIndex="TYPE_UINT",
 				},
 				{
@@ -105,6 +113,10 @@ root=
 					path="result[1].id",
 					value=1,
 				},
+				{
+					path="result[2].id",
+					value=2,
+				},
 			},
 		},
 		{
@@ -114,16 +126,11 @@ root=
 			{
 				{
 					path="result.size",
-					value=2,
+					value=1,
 					typeIndex="TYPE_UINT",
 				},
 				{
 					path="result[0].to",
-					value=2,
-					typeIndex="TYPE_UINT",
-				},
-				{
-					path="result[1].to",
 					value=2,
 					typeIndex="TYPE_UINT",
 				},

@@ -38,7 +38,12 @@ namespace dagbase
 	class DAGBASE_API Graph : public KeyGenerator
 	{
 	public:
-		Graph() = default;
+        Graph()
+            :
+            _signalPaths(this)
+        {
+            // Do nothing.
+        }
 
         Graph(dagbase::InputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua);
 

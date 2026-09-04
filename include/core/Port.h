@@ -313,6 +313,11 @@ namespace dagbase
             return _parent;
         }
 
+        const Node* parent() const
+        {
+            return _parent;
+        }
+
 	    void setSharedParent(Node* parent)
         {
             _sharedParent = parent;

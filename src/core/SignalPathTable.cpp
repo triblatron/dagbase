@@ -121,7 +121,7 @@ namespace dagbase
     {
         if (result)
         {
-            SignalPath temp(sourceID, PortID());
+            SignalPath temp(_parent, sourceID, PortID());
 
             result->p.first = _signalPathsFrom.findPartial(&temp);
 
@@ -133,7 +133,7 @@ namespace dagbase
     {
         if (result)
         {
-            SignalPath temp( PortID(), destID);
+            SignalPath temp( _parent, PortID(), destID);
 
             result->p.first = _signalPathsTo.findPartial(&temp);
 
@@ -145,7 +145,7 @@ namespace dagbase
     {
         if (result)
         {
-            SignalPath temp(sourceID, destID);
+            SignalPath temp(_parent, sourceID, destID);
 
             result->p.first = _signalPathsFrom.findPartial(&temp);
 
