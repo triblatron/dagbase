@@ -237,16 +237,7 @@ namespace dagbase
         
         [[nodiscard]]bool hasNoDependencies();
 
-        [[nodiscard]]size_t numIncomingConnections()
-        {
-            size_t total = 0;
-            for (size_t portIndex=0; portIndex<totalPorts(); ++portIndex)
-            {
-                total += dynamicPort(portIndex)->numIncomingConnections();
-            }
-
-            return total;
-        }
+        [[nodiscard]]size_t numIncomingConnections() const;
 
         [[nodiscard]]bool hasInputs()
         {

@@ -151,6 +151,8 @@ namespace dagbase
         //! Add a non-null SignalPath
 		void addSignalPath(dagbase::SignalPath* signalPath);
 
+	    void reinsertSignalPath(SignalPath* signalPath, Port* source, Port* dest);
+
 	    void removeSignalPath(dagbase::SignalPath* signalPath);
 
         void deleteSignalPath(dagbase::SignalPath* signalPath);
@@ -166,12 +168,12 @@ namespace dagbase
 
         void adjustNextID();
 
-	    void findBySource(const PortID& id, SignalPathTable::FindResultFrom * result)
+	    void findBySource(const PortID& id, SignalPathTable::FindResultFrom * result) const
 	    {
 	        _signalPaths.findBySource(id, result);
 	    }
 
-        void findByDest(const PortID & id, SignalPathTable::FindResultFrom * result)
+        void findByDest(const PortID & id, SignalPathTable::FindResultFrom * result) const
         {
             _signalPaths.findByDest(id, result);
         }

@@ -123,6 +123,22 @@ namespace dagbase
         return noDeps;
     }
 
+    size_t Node::numIncomingConnections() const
+    {
+        std::size_t total = 0;
+
+        if (_parent)
+        {
+            for (std::size_t i=0; i<totalPorts(); ++i)
+            {
+                SignalPathTable::FindResultFrom result;
+                _parent->findByDest(dynamicPort(i)->id(), &result);
+                total += result.size();
+            }
+        }
+        return total;
+    }
+
     dagbase::OutputStream &Node::writeToStream(dagbase::OutputStream &str, NodeLibrary& nodeLib, Lua &lua) const
     {
         str.writeHeader("Node");

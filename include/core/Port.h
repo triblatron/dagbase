@@ -11,7 +11,6 @@
 #include "core/Editable.h"
 
 #include <string>
-#include <type_traits>
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -96,10 +95,10 @@ namespace dagbase
         enum PortFlags : std::uint32_t
         {
             FLAGS_NONE          = 0,
-            OWN_META_PORT_BIT   = (1<<0),
-            OWN_INPUTS_BIT      = (1<<1),
-            OWN_OUTPUTS_BIT     = (1<<2),
-            REMOVED_BIT         = (1<<3)
+            OWN_META_PORT_BIT   = (1U<<0U),
+            OWN_INPUTS_BIT      = (1U<<1U),
+            OWN_OUTPUTS_BIT     = (1U<<2U),
+            REMOVED_BIT         = (1U<<3U)
         };
     public:
 	    Port() = default;
@@ -160,41 +159,17 @@ namespace dagbase
             return _flags;
         }
 
-        [[nodiscard]] const PortArray& outgoingConnections() const
-        {
-            return _outgoingConnections;
-        }
+	    [[nodiscard]] size_t numOutgoingConnections() const;
 
-        [[nodiscard]] size_t numOutgoingConnections() const
-        {
-            return _outgoingConnections.size();
-        }
+	    void addOutgoingConnection(Port* input, Graph* parent, KeyGenerator& keyGen);
 
-        [[nodiscard]] const PortArray& incomingConnections() const
-        {
-            return _incomingConnections;
-        }
+	    void replaceOutgoingConnection(Port* needle, Port* replacement);
 
-        [[nodiscard]] size_t numIncomingConnections() const
-        {
-            return _incomingConnections.size() -
-                   std::count_if(_incomingConnections.begin(), _incomingConnections.end(), [](Port *p) {
-                       return p->isMarkedRemoved();
-                   });
-        }
+	    [[nodiscard]] size_t numIncomingConnections() const;
 
-        void unmarkAllConnections()
-        {
-            for (auto p : _incomingConnections)
-            {
-                p->unmarkRemoved();
-            }
+	    void addIncomingConnection(Port* output, Graph* parent, KeyGenerator& keyGen);
 
-            for (auto p : _outgoingConnections)
-            {
-                p->unmarkRemoved();
-            }
-        }
+	    void replaceIncomingConnection(Port* needle, Port* replacement);
 
 	    void markRemoved()
         {
@@ -211,96 +186,9 @@ namespace dagbase
             return (_flags & REMOVED_BIT) != 0;
         }
 
-        void markIncomingRemoved(Port *n)
-        {
-            for (auto p : _incomingConnections)
-            {
-                if (n==p)
-                {
-                    n->markRemoved();
-                }
-            }
-        }
-
-        void markOutgoingRemoved(Port* n)
-        {
-            for (auto p : _outgoingConnections)
-            {
-                if (n==p)
-                {
-                    n->markRemoved();
-                }
-            }
-        }
-
-        [[nodiscard]] bool hasNoDependencies() const
-        {
-            return  _incomingConnections.empty();
-        }
-
-		void addOutgoingConnection(Port* port)
-		{
-			if (port != nullptr)
-			{
-				_outgoingConnections.emplace_back(port);
-			}
-		}
-
-		void removeOutgoingConnection(Port const * port)
-		{
-			if (auto const it=std::find(_outgoingConnections.begin(), _outgoingConnections.end(),port); it!=_outgoingConnections.end())
-			{
-				_outgoingConnections.erase(it);
-			}
-		}
-
-		void addIncomingConnection(Port* port)
-		{
-			if (port!=nullptr)
-			{
-				_incomingConnections.emplace_back(port);
-			}
-		}
-
-		void removeIncomingConnection(Port const* port)
-		{
-			if (auto const it = std::find(_incomingConnections.begin(), _incomingConnections.end(), port); it != _incomingConnections.end())
-			{
-				_incomingConnections.erase(it);
-			}
-		}
-
-		[[nodiscard]]auto findOutgoingConnection(const Port& port)
-		{
-			return std::find(_outgoingConnections.begin(), _outgoingConnections.end(), &port);
-		}
-
-		auto findIncomingConnection(const Port& port)
-		{
-			return std::find(_incomingConnections.begin(), _incomingConnections.end(), &port);
-		}
-
 		[[nodiscard]]bool isCompatibleWith(const Port& other) const
 		{
 			return ((type() == other.type()));// || (type() == TYPE_INTEGER && other.type() == TYPE_DOUBLE) || (type() == TYPE_BOOL && other.type() == TYPE_INTEGER) || (type() == TYPE_BOOL && other.type() == TYPE_DOUBLE));
-		}
-
-		template<typename F>
-		void eachOutgoingConnection(F f)
-		{
-			for (auto & _outgoingConnection : _outgoingConnections)
-			{
-				std::invoke(f, _outgoingConnection);
-			}
-		}
-
-		template<typename F>
-		void eachIncomingConnection(F f)
-		{
-			for (auto & _incomingConnection : _incomingConnections)
-			{
-				std::invoke(f, _incomingConnection);
-			}
 		}
 
         void setParent(Node* parent)
@@ -333,29 +221,13 @@ namespace dagbase
             return _sharedParent;
         }
 
-        virtual Transfer* connectTo(Port& dest) = 0;
+	    void reconnectTo(NodeSet const& selection, Node* newDest, KeyGenerator& keyGen);
 
-        void reconnectTo(NodeSet const& selection, Node* newDest, KeyGenerator& keyGen);
-
-        void reconnectFrom(NodeSet const& selection, Node* newSource, KeyGenerator& keyGen);
-
-        void disconnect(Port& dest)
-        {
-            removeOutgoingConnection(&dest);
-            dest.removeIncomingConnection(this);
-        }
-
-        virtual Transfer* setDestination(Transfer* transfer) = 0;
+	    void reconnectFrom(NodeSet const& selection, Node* newSource, KeyGenerator& keyGen);
 
         virtual void accept(ValueVisitor& visitor) const = 0;
 
         virtual void accept(SetValueVisitor& visitor) = 0;
-
-        bool isConnectedTo(Port* other) const
-        {
-            return (std::find(_incomingConnections.begin(), _incomingConnections.end(), other) != _incomingConnections.end() ||
-                   std::find(_outgoingConnections.begin(), _outgoingConnections.end(), other) != _outgoingConnections.end());
-        }
 
         virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) const = 0;
 
@@ -377,34 +249,10 @@ namespace dagbase
 
             if ((flags & CMP_CONNECTIONS_COUNT_BIT) != 0)
             {
-                if (_outgoingConnections.size() != other._outgoingConnections.size())
-                    return false;
-
-                if (_incomingConnections.size() != other._incomingConnections.size())
-                    return false;
             }
 
             if ((flags & CMP_CONNECTIONS_IDENT_BIT)!=0)
             {
-                for (auto it = _outgoingConnections.begin(); it != _outgoingConnections.end(); ++it)
-                {
-                    auto it2 = other._outgoingConnections.begin() + std::distance(_outgoingConnections.begin(), it);
-
-                    if ((*it)->id() != (*it2)->id())
-                    {
-                        return false;
-                    }
-                }
-
-                for (auto it = _incomingConnections.begin(); it != _incomingConnections.end(); ++it)
-                {
-                    auto it2 = other._incomingConnections.begin() + std::distance(_incomingConnections.begin(), it);
-
-                    if ((*it)->id() != (*it2)->id())
-                    {
-                        return false;
-                    }
-                }
 
             }
             return *this == other;
@@ -425,9 +273,6 @@ namespace dagbase
 
 	    static PortFlags parsePortFlags(const std::string& str);
     protected:
-		PortArray _outgoingConnections;
-		PortArray _incomingConnections;
-
         void setFlag(PortFlags mask)
         {
             _flags = static_cast<PortFlags>(_flags | mask);

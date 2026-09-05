@@ -4,7 +4,7 @@ root=
 	{
 		{
 			command="COMMAND_DESERIALISE",
-			filename="data/tests/SignalPathTable/Query.txt",
+			filename="data/tests/SignalPathTable/Remove.txt",
 			status=
 			{
 				statusCode="STATUS_OK",
@@ -13,7 +13,7 @@ root=
 		{
 			command="COMMAND_ADD",
 			from=0,
-			to=1,
+			to=2,
 			status=
 			{
 				statusCode="STATUS_OK",
@@ -32,8 +32,8 @@ root=
 		},
 		{
 			command="COMMAND_ADD",
-			from=0,
-			to=2,
+			from=1,
+			to=3,
 			status=
 			{
 				statusCode="STATUS_OK",
@@ -53,7 +53,7 @@ root=
 		{
 			command="COMMAND_ADD",
 			from=0,
-			to=3,
+			to=4,
 			status=
 			{
 				statusCode="STATUS_OK",
@@ -71,16 +71,47 @@ root=
 			},
 		},
 		{
-			command="COMMAND_ERASE_IF",
-			id=
+			command="COMMAND_REMOVE",
+			id=2,
+			status=
 			{
-				1
+				statusCode="STATUS_OK",
 			},
 			assertions=
 			{
 				{
 					path="numSignalPaths",
 					value=2,
+				},
+			},
+		},
+		{
+			command="COMMAND_REMOVE",
+			id=1,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="numSignalPaths",
+					value=1,
+				},
+			},
+		},
+		{
+			command="COMMAND_REMOVE",
+			id=0,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="numSignalPaths",
+					value=0,
 				},
 			},
 		},

@@ -176,6 +176,17 @@ namespace dagbase
 		}
 	}
 
+    void Graph::reinsertSignalPath(SignalPath *signalPath, Port *source, Port *dest)
+    {
+	    if (signalPath)
+	    {
+	        _signalPaths.remove(signalPath->id());
+	        signalPath->setSource(source);
+	        signalPath->setDest(dest);
+	        _signalPaths.add(signalPath);
+	    }
+    }
+
     void Graph::removeSignalPath(dagbase::SignalPath *signalPath)
     {
 	    if (signalPath)
@@ -456,8 +467,6 @@ namespace dagbase
                     if (signalPath->sourceNode() == node || signalPath->destNode() == node || signalPath->source()->sharedParent() == node || signalPath->dest()->sharedParent() == node)
                     {
                         signalPath->markRemoved();
-                        signalPath->dest()->removeIncomingConnection(signalPath->source());
-                        signalPath->source()->removeOutgoingConnection(signalPath->dest());
                     }
                     return true;
                     });
@@ -996,7 +1005,6 @@ namespace dagbase
                 if (id >=0 && sourcePort != nullptr && sourceNode==sourcePort->parent() && destPort != nullptr && destNode==destPort->parent())
                 {
                     auto* signalPath = new dagbase::SignalPath(output, id, sourcePort, destPort);
-                    sourcePort->connectTo(*destPort);
                     output->addSignalPath(signalPath);
                 }
             }
@@ -1090,9 +1098,14 @@ namespace dagbase
                 dagbase::ValueVisitor visitor;
                 n->dynamicPort(i)->accept(visitor);
                 dagbase::SetValueVisitor setVisitor(visitor.value());
-                for (auto o : n->dynamicPort(i)->outgoingConnections())
+                SignalPathTable::FindResultFrom result;
+                _signalPaths.findBySource(n->dynamicPort(i)->id(), &result);
+                for (auto it=result.p.first; it!=result.p.second; ++it)
                 {
-                    o->accept(setVisitor);
+                    if ((*it))
+                    {
+                        (*it)->dest()->accept(setVisitor);
+                    }
                 }
             }
         }
@@ -1197,7 +1210,6 @@ namespace dagbase
         // since it based on a std::vector.
         for (auto clonedSignalPath : clonedSignalPaths)
         {
-            clonedSignalPath->source()->connectTo(*clonedSignalPath->dest());
             addSignalPath(clonedSignalPath);
         }
         status.status = dagbase::Status::STATUS_OK;

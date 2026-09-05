@@ -22,8 +22,8 @@ Graph
       name : "bartyped1"
       category : 1
       flags : 0
-      x : 685
-      y : 428
+      x : 678
+      y : 434
       numDynamicMetaPorts : 1
       dynamicMetaPorts :       MetaPort
       {
@@ -65,8 +65,8 @@ Graph
   {
     id : 4
   }
-  className : "FooTyped"
-  FooTyped
+  className : "GroupTyped"
+  GroupTyped
   {
     Node
     {
@@ -75,17 +75,21 @@ Graph
         errod : 0
       }
       id : 1
-      name : "footyped1"
-      category : 2
+      name : "grouptyped1"
+      category : 5
       flags : 0
-      x : 990
-      y : 312
-      numDynamicMetaPorts : 1
+      x : 876
+      y : 352
+      numDynamicMetaPorts : 2
       dynamicMetaPorts :       MetaPort
       {
         flags : 1
       }
-      numDynamicPorts : 1
+      MetaPort
+      {
+        flags : 1
+      }
+      numDynamicPorts : 2
       dynamicPorts :       SerialId
       {
         id : 5
@@ -96,9 +100,9 @@ Graph
         Port
         {
           id : 1
-          name : "in1"
+          name : "out1"
           type : 9
-          direction : 1
+          direction : 2
           parent :           SerialId
           {
             id : 4
@@ -115,11 +119,40 @@ Graph
           value : 1
         }
       }
+      SerialId
+      {
+        id : 6
+      }
+      className : "TypedPort<double>"
+      TypedPort<double>
+      {
+        Port
+        {
+          id : 2
+          name : "in1"
+          type : 9
+          direction : 1
+          parent :           SerialId
+          {
+            id : 4
+          }
+          sharedParent :           SerialId
+          {
+            id : 0
+          }
+        }
+        value :         Variant
+        {
+          hasValue : true
+          type : 1
+          value : 2
+        }
+      }
     }
   }
   SerialId
   {
-    id : 6
+    id : 7
   }
   className : "FooTyped"
   FooTyped
@@ -134,8 +167,8 @@ Graph
       name : "footyped1"
       category : 2
       flags : 0
-      x : 1000
-      y : 529
+      x : 1049
+      y : 430
       numDynamicMetaPorts : 1
       dynamicMetaPorts :       MetaPort
       {
@@ -144,20 +177,20 @@ Graph
       numDynamicPorts : 1
       dynamicPorts :       SerialId
       {
-        id : 7
+        id : 8
       }
       className : "TypedPort<double>"
       TypedPort<double>
       {
         Port
         {
-          id : 2
+          id : 3
           name : "in1"
           type : 9
           direction : 1
           parent :           SerialId
           {
-            id : 6
+            id : 7
           }
           sharedParent :           SerialId
           {
@@ -175,7 +208,7 @@ Graph
   }
   SerialId
   {
-    id : 8
+    id : 9
   }
   className : "FooTyped"
   FooTyped
@@ -190,8 +223,8 @@ Graph
       name : "footyped1"
       category : 2
       flags : 0
-      x : 1012
-      y : 740
+      x : 1044
+      y : 655
       numDynamicMetaPorts : 1
       dynamicMetaPorts :       MetaPort
       {
@@ -200,20 +233,20 @@ Graph
       numDynamicPorts : 1
       dynamicPorts :       SerialId
       {
-        id : 9
+        id : 10
       }
       className : "TypedPort<double>"
       TypedPort<double>
       {
         Port
         {
-          id : 3
+          id : 4
           name : "in1"
           type : 9
           direction : 1
           parent :           SerialId
           {
-            id : 8
+            id : 9
           }
           sharedParent :           SerialId
           {
@@ -229,7 +262,7 @@ Graph
       }
     }
   }
-  numPorts : 4
+  numPorts : 5
   SerialId
   {
     id : 3
@@ -240,11 +273,15 @@ Graph
   }
   SerialId
   {
-    id : 7
+    id : 6
   }
   SerialId
   {
-    id : 9
+    id : 8
+  }
+  SerialId
+  {
+    id : 10
   }
   numSignalPaths : 0
   numChildren : 0

@@ -110,34 +110,6 @@ namespace dagbase
 			return _value;
 		}
 
-        dagbase::Transfer* connectTo(dagbase::Port& dest) override
-        {
-			if (dir() == dagbase::PortDirection::DIR_OUT && dest.dir() == dagbase::PortDirection::DIR_IN && isCompatibleWith(dest))
-			{
-				auto transfer = new dagbase::TypedTransfer(&_value);
-				dest.setDestination(transfer);
-
-				addOutgoingConnection(&dest);
-				dest.addIncomingConnection(this);
-
-				return transfer;
-			}
-
-			return nullptr;
-        }
-
-		dagbase::Transfer* setDestination(dagbase::Transfer* transfer) override
-		{
-			auto typedTransfer = dynamic_cast<dagbase::TypedTransfer<T>*>(transfer);
-
-			if (typedTransfer != nullptr)
-			{
-				typedTransfer->setDest(&_value);
-			}
-
-			return transfer;
-		}
-
         void accept(dagbase::ValueVisitor& visitor) const override
         {
             visitor.setValue(_value);

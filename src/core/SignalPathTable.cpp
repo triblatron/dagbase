@@ -7,6 +7,8 @@
 #include "core/SignalPathTable.h"
 #include "core/SignalPath.h"
 
+#include <iostream>
+
 namespace dagbase
 {
     bool CompareSignalPathsByFrom::operator()(const SignalPath *op1, const SignalPath * op2) const
@@ -14,8 +16,17 @@ namespace dagbase
         if (op1->from() < op2->from())
             return true;
 
-        if (op1->from() == op2->from() && op2->to() != PortID::INVALID_ID && op1->to() < op2->to())
-            return true;
+        if (op1->from() == op2->from())
+        {
+            if (op2->to() != PortID::INVALID_ID && op1->to() < op2->to())
+                return true;
+
+            if (op2->to() != PortID::INVALID_ID && op1->to() == op2->to())
+            {
+                if (op2->id() != SignalPathID::INVALID_ID && op1->id() < op2->id())
+                    return true;
+            }
+        }
 
         return false;
     }
@@ -25,8 +36,17 @@ namespace dagbase
         if (op1->to() < op2->to())
             return true;
 
-        if (op1->to() == op2->to() && op2->from() != PortID::INVALID_ID && op1->from() < op2->from())
-            return true;
+        if (op1->to() == op2->to())
+        {
+            if (op2->from() != PortID::INVALID_ID && op1->from() < op2->from())
+                return true;
+
+            if (op2->from() != PortID::INVALID_ID && op1->from() == op2->from())
+            {
+                if (op2->id() != SignalPathID::INVALID_ID && op1->id() < op2->id())
+                    return true;
+            }
+        }
 
         return false;
     }
@@ -72,11 +92,14 @@ namespace dagbase
 
         if (auto it=_signalPathsByID.find(id); it!=_signalPathsByID.end())
         {
+            // debug(std::cerr);
             if (auto itFrom = _signalPathsFrom.find(it->second); itFrom != _signalPathsFrom.end())
                 _signalPathsFrom.erase(itFrom);
             if (auto itTo = _signalPathsTo.find(it->second); itTo != _signalPathsTo.end())
                 _signalPathsTo.erase(itTo);
             _signalPathsByID.erase(it);
+            assert(_signalPathsByID.size() == _signalPathsFrom.size());
+            assert(_signalPathsTo.size() == _signalPathsFrom.size());
             status.status = Status::STATUS_OK;
         }
 
@@ -166,5 +189,24 @@ namespace dagbase
             return retval;
 
         return {};
+    }
+
+    void SignalPathTable::debug(std::ostream &str) const
+    {
+        str << "SignalPathTable:byID:\n";
+        for (auto p : _signalPathsByID)
+        {
+            str << *p.second << '\n';
+        }
+        str << "SignalPathTable::byFrom:\n";
+        for (auto p : _signalPathsFrom)
+        {
+            str << *p << '\n';
+        }
+        str << "SignalPathTable::byTo:\n";
+        for (auto p : _signalPathsTo)
+        {
+            str << *p << '\n';
+        }
     }
 }

@@ -9,12 +9,11 @@
 #include "core/Types.h"
 #include "util/VectorSet.h"
 #include "util/VectorMap.h"
-#include "util/SearchableArray.h"
-
-#include <string_view>
-
 #include "SignalPath.h"
 
+#include <string_view>
+#include <cassert>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -74,6 +73,17 @@ namespace dagbase
                 return nullptr;
             }
 
+            SignalPath* operator[](std::size_t index)
+            {
+                if (index<static_cast<std::size_t>(std::distance(p.first,p.second)))
+                {
+                    if (const auto result = *(p.first+static_cast<LookupTableFrom::difference_type>(index)); !result->isRemoved())
+                        return result;
+                }
+
+                return nullptr;
+            }
+
             std::pair<LookupTableFrom::const_iterator, LookupTableFrom::const_iterator> p;
         };
     public:
@@ -109,6 +119,7 @@ namespace dagbase
 
         std::size_t size() const
         {
+            assert(_signalPathsByID.size() == _signalPathsFrom.size() && _signalPathsFrom.size() == _signalPathsTo.size());
             return _signalPathsFrom.size();
         }
 
@@ -150,6 +161,8 @@ namespace dagbase
         void findFull(PortID sourceID, PortID destID, FindResultFrom* result) const;
 
         Variant find(std::string_view path) const;
+
+        void debug(std::ostream& str) const;
     private:
         LookupTableId _signalPathsByID;
         LookupTableFrom _signalPathsFrom;

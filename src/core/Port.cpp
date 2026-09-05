@@ -8,7 +8,9 @@
 #include "core/NodeLibrary.h"
 #include "util/DebugPrinter.h"
 #include "core/CloningFacility.h"
+#include "core/Graph.h"
 #include "core/KeyGenerator.h"
+#include "core/SignalPathTable.h"
 #include "util/Searchable.h"
 #include "util/enums.h"
 
@@ -28,14 +30,6 @@ namespace dagbase
 
     Port::~Port()
     {
-        eachOutgoingConnection([this](Port *port)
-                               {
-                                   port->removeIncomingConnection(this);
-                               });
-        eachIncomingConnection([this](Port *port)
-                               {
-                                   port->removeOutgoingConnection(this);
-                               });
 
 //        if (_flags & OWN_INPUTS_BIT)
 //        {
@@ -74,41 +68,11 @@ namespace dagbase
         if (copyOp & CopyOp::DEEP_COPY_INPUTS_BIT)
         {
             setFlag(OWN_INPUTS_BIT);
-            for (auto it=other._incomingConnections.begin(); it!=other._incomingConnections.end(); ++it)
-            {
-                std::uint64_t connectionId = 0;
-                Port* connection = nullptr;
-
-                if (facility.putOrig(*it, &connectionId))
-                {
-                    connection = (*it)->clone(facility, copyOp, keyGen);
-                }
-                else
-                {
-                    connection = static_cast<Port*>(facility.getClone(connectionId));
-                }
-                _incomingConnections.emplace_back(connection);
-            }
         }
 
         if (copyOp & CopyOp::DEEP_COPY_OUTPUTS_BIT)
         {
             setFlag(OWN_OUTPUTS_BIT);
-            for (auto it=other._outgoingConnections.begin(); it!=other._outgoingConnections.end(); ++it)
-            {
-                std::uint64_t connectionId = 0;
-                Port* connection = nullptr;
-
-                if (facility.putOrig(*it, &connectionId))
-                {
-                    connection = (*it)->clone(facility, copyOp, keyGen);
-                }
-                else
-                {
-                    connection = static_cast<Port*>(facility.getClone(connectionId));
-                }
-                _outgoingConnections.emplace_back(connection);
-            }
         }
 
         if (copyOp & CopyOp::DEEP_COPY_PARENT_BIT)
@@ -130,28 +94,54 @@ namespace dagbase
     void dagbase::Port::reconnectTo(NodeSet const &selection, Node *newDest, KeyGenerator& keyGen)
     {
         //   if the destination input port has a parent of oldDest then
+
         CloningFacility facility;
 
-        for (auto &oldInput: _outgoingConnections)
+
+        SignalPathTable::FindResultFrom result;
+        if (parent() && parent()->parent())
         {
-            if (auto it = selection.m.find(oldInput->parent()); it == selection.end())
+            parent()->parent()->findBySource(id(), &result);
+        }
+        std::vector<SignalPath*> outgoingConnections(result.begin(), result.end());
+        for (auto signalPath: outgoingConnections)
+        {
+            auto oldInput = signalPath->dest();
+            if (auto it = selection.m.find(oldInput->parent()); !oldInput->isMarkedRemoved() && it == selection.end())
             {
                 // Create a new input port in newDest, without deep copying inputs and outputs.
                 Port *newInput = oldInput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 // Connect the output port to the new input port
                 // Disconnect the old input port
                 newDest->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
-                newInput->_incomingConnections.emplace_back(this);
+                // newInput->_incomingConnections.emplace_back(this);
+
+                newInput->addIncomingConnection(this, newDest->parent(), keyGen);
+                //newInput->parent()->parent()->addSignalPath(new SignalPath(newInput->parent()->parent(), keyGen, this, newInput));//_incomingConnections.emplace_back(this);
                 // Create a new output from this, without deep copying inputs and outputs.
                 Port *newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newDest->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
-                newOutput->_outgoingConnections.emplace_back(oldInput);
-                auto itOld = oldInput->findIncomingConnection(*this);
-                if (itOld != oldInput->_incomingConnections.end())
-                {
-                    (*itOld) = newOutput;
-                }
-                oldInput = newInput;
+                // newOutput->_outgoingConnections.emplace_back(oldInput);
+                newOutput->addOutgoingConnection(oldInput, signalPath->parent(), keyGen);
+                //newOutput->parent()->parent()->addSignalPath(new SignalPath(newOutput->parent()->parent(), keyGen, newOutput, oldInput));
+                //newOutput->_outgoingConnections.emplace_back(oldInput);
+
+                oldInput->replaceIncomingConnection(this, newOutput);
+                // SignalPathTable::FindResultFrom oldInputIncomingConnections;
+                // oldInput->parent()->parent()->findByDest(oldInput->id(), &oldInputIncomingConnections);
+                // for (auto itConn=oldInputIncomingConnections.p.first; itConn!=oldInputIncomingConnections.p.second; ++itConn)
+                // {
+                //     if ((*itConn) && (*itConn)->source() == this)
+                //     {
+                //         (*itConn)->setSource(newOutput);
+                //     }
+                // }
+                // auto itOld = oldInput->findIncomingConnection(*this);
+                // if (itOld != oldInput->_incomingConnections.end())
+                // {
+                //     (*itOld) = newOutput;
+                // }
+                signalPath->parent()->reinsertSignalPath(signalPath, signalPath->source(), newInput);
 
             }
         }
@@ -163,22 +153,32 @@ namespace dagbase
     void dagbase::Port::reconnectFrom(NodeSet const &selection, Node *newSource, KeyGenerator& keyGen)
     {
         CloningFacility facility;
-        for (auto &oldOutput: _incomingConnections)
+        SignalPathTable::FindResultFrom result;
+        if (parent() && parent()->parent())
         {
-            if (auto it = selection.m.find(oldOutput->parent()); it == selection.end())
+            parent()->parent()->findByDest(id(), &result);
+        }
+        std::vector<SignalPath*> oldIncomingSignalPaths(result.begin(), result.end());
+        for (auto signalPath: oldIncomingSignalPaths)
+        {
+            auto oldOutput = signalPath->source();
+            if (auto it = selection.m.find(oldOutput->parent()); !oldOutput->isMarkedRemoved() && it == selection.end())
             {
                 Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newSource->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
-                newOutput->_outgoingConnections.emplace_back(this);
-
+                // newOutput->_outgoingConnections.emplace_back(this);
+                newOutput->addOutgoingConnection(this, newSource->parent(), keyGen);
                 Port *newInput = this->clone(facility, CopyOp{ dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT }, &keyGen);
                 newSource->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
-                newInput->_incomingConnections.emplace_back(oldOutput);
-                if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())
-                {
-                    (*itOld) = newInput;
-                }
-                oldOutput = newOutput;
+                newInput->addIncomingConnection(oldOutput, signalPath->parent(), keyGen);
+                //_incomingConnections.emplace_back(oldOutput);
+                oldOutput->replaceOutgoingConnection(this, newInput);
+                // if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())
+                // {
+                //     (*itOld) = newInput;
+                // }
+                // oldOutput = newOutput;
+                signalPath->parent()->reinsertSignalPath(signalPath, newOutput, signalPath->dest());
             }
         }
     }
@@ -209,33 +209,6 @@ namespace dagbase
             str.writeField("className");
             str.writeString(className, true);
             _sharedParent->writeToStream(str, nodeLib, lua);
-        }
-        str.writeField("numOutgoingConnections");
-        str.writeUInt32(_outgoingConnections.size());
-         if (!_outgoingConnections.empty())
-        {
-            str.writeField("outgoingConnections");
-            for (auto c: _outgoingConnections)
-            {
-                if (str.writeRef(c))
-                {
-                    c->writeToStream(str, nodeLib, lua);
-                }
-            }
-        }
-
-        str.writeField("numIncomingConnections");
-        str.writeUInt32(_incomingConnections.size());
-        if (!_incomingConnections.empty())
-        {
-            str.writeField("incomingConnections");
-            for (auto c : _incomingConnections)
-            {
-                if (str.writeRef(c))
-                {
-                    c->writeToStream(str, nodeLib, lua);
-                }
-            }
         }
         str.writeFooter();
         return str;
@@ -296,38 +269,6 @@ namespace dagbase
         }
         printer.println("remove: " + std::to_string(isMarkedRemoved()));
         printer.println("value:");
-        printer.println("outgoingConnections:");
-        printer.println("{");
-        printer.indent();
-        for (auto connection : _outgoingConnections)
-        {
-            if (auto it = connection->findIncomingConnection(*this); it != connection->_incomingConnections.end())
-            {
-                printer.println(std::to_string(connection->id()));
-            }
-            else
-            {
-                printer.println(std::to_string(connection->id()) + " X");
-            }
-        }
-        printer.outdent();
-        printer.println("}");
-        printer.println("incomingConnections");
-        printer.println("{");
-        printer.indent();
-        for (auto connection : _incomingConnections)
-        {
-            if (auto it = connection->findOutgoingConnection(*this); it != connection->_outgoingConnections.end())
-            {
-                printer.println(std::to_string(connection->id()));
-            }
-            else
-            {
-                printer.println(std::to_string(connection->id()) + " X");
-            }
-        }
-        printer.outdent();
-        printer.println("}");
         //printer.print(_value);
     }
 
@@ -360,37 +301,6 @@ namespace dagbase
         _parent = str.readRef<Node>("Node", nodeLib, lua);
         str.readField(&fieldName);
         _sharedParent = str.readRef<Node>("Node", nodeLib, lua);
-        std::uint32_t numOutgoingConnections = 0;
-        str.readField(&fieldName);
-        str.readUInt32(&numOutgoingConnections);
-        if (numOutgoingConnections > 0)
-        {
-            str.readField(&fieldName);
-            for (std::uint32_t i=0; i<numOutgoingConnections; ++i)
-            {
-                Port* port = str.readRef<Port>("Port",nodeLib, lua);
-                if (port!=nullptr)
-                {
-                    addOutgoingConnection(port);
-                }
-            }
-        }
-        std::uint32_t numIncomingConnections = 0;
-        str.readField(&fieldName);
-        str.readUInt32(&numIncomingConnections);
-        if (numIncomingConnections > 0)
-        {
-            str.readField(&fieldName);
-            for (std::uint32_t i=0; i<numIncomingConnections; ++i)
-            {
-                Port* port = str.readRef<Port>("Port", nodeLib, lua);
-                if (port != nullptr)
-                {
-                    addIncomingConnection(port);
-                }
-
-            }
-        }
         str.readFooter();
         return str;
     }
@@ -417,17 +327,104 @@ namespace dagbase
         //     return false;
         // }
 
-        if (_outgoingConnections.size() != other._outgoingConnections.size())
+        return true;
+    }
+
+    size_t Port::numOutgoingConnections() const
+    {
+        std::size_t total = 0;
+
+        if (parent() && parent()->parent())
         {
-            return false;
+            SignalPathTable::FindResultFrom result;
+
+            parent()->parent()->findBySource(id(), &result);
+
+            total = result.size();
         }
 
-        if (_incomingConnections.size() != other._incomingConnections.size())
+        if (sharedParent() && sharedParent()->parent())
         {
-            return false;
+            SignalPathTable::FindResultFrom result;
+
+            sharedParent()->parent()->findBySource(id(), &result);
+
+            total += result.size();
         }
-        
-        return true;
+
+        return total;
+    }
+
+    void Port::addOutgoingConnection(Port *input, Graph* parent, KeyGenerator& keyGen)
+    {
+        if (parent)
+        {
+            parent->addSignalPath(new SignalPath(parent, keyGen, this, input));
+        }
+    }
+
+    void Port::replaceOutgoingConnection(Port *needle, Port *replacement)
+    {
+        if (parent() && parent()->parent())
+        {
+            SignalPathTable::FindResultFrom outgoingConnections;
+            parent()->parent()->findBySource(this->id(), &outgoingConnections);
+            for (auto it=outgoingConnections.p.first; it!=outgoingConnections.p.second; ++it)
+            {
+                if ((*it) && !(*it)->isRemoved() && (*it)->dest() == needle)
+                {
+                    (*it)->parent()->parent()->reinsertSignalPath((*it), (*it)->source(),replacement);
+                }
+            }
+        }
+    }
+
+    size_t Port::numIncomingConnections() const
+    {
+        std::size_t total = 0;
+
+        if (parent() && parent()->parent())
+        {
+            SignalPathTable::FindResultFrom result;
+
+            parent()->parent()->findByDest(id(), &result);
+
+            total = result.size();
+        }
+
+        if (sharedParent() && sharedParent()->parent())
+        {
+            SignalPathTable::FindResultFrom result;
+
+            sharedParent()->parent()->findByDest(id(), &result);
+
+            total += result.size();
+        }
+        return total;
+    }
+
+    void Port::addIncomingConnection(Port *output, Graph* parent, KeyGenerator &keyGen)
+    {
+        if (parent)
+        {
+            parent->addSignalPath(new SignalPath(parent, keyGen, output, this));
+        }
+    }
+
+    void Port::replaceIncomingConnection(Port *needle, Port *replacement)
+    {
+        if (parent() && parent()->parent())
+        {
+            SignalPathTable::FindResultFrom incomingConnections;
+            parent()->parent()->findByDest(id(), &incomingConnections);
+            for (auto it=incomingConnections.p.first; it!=incomingConnections.p.second; ++it)
+            {
+                if ((*it) && !(*it)->isRemoved() && (*it)->source() == needle)
+                {
+                    (*it)->parent()->reinsertSignalPath(*it, replacement, (*it)->dest());// setSource(replacement);
+                }
+            }
+        }
     }
 
     Variant Port::find(std::string_view path) const
