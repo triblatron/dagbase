@@ -124,11 +124,15 @@ namespace dagbase
             }
         }
 
+		void eachNode(std::function<bool(const dagbase::Node*)> f) const;
+
         //! Add a non-null port.
         void addPort(dagbase::Port* port);
 
         //! \retval nullptr If a Port with the specified ID does not exist.
         dagbase::Port* port(dagbase::PortID id);
+
+		void eachPort(std::function<bool(const Port*)> f) const;
 
 		[[nodiscard]] size_t numSignalPaths() const
 		{

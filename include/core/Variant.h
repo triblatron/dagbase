@@ -160,7 +160,12 @@ namespace dagbase
 
         Index index() const
         {
-            return Index(_value->index());
+            if (has_value())
+            {
+                return Index(_value->index());
+            }
+
+            return TYPE_UNKNOWN;
         }
 
         ValueType& value()

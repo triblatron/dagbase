@@ -419,6 +419,10 @@ namespace dagbase
 
         if (_parent)
         {
+            retval = findEndpoint(path, "parentName", _parent->name());
+            if (retval.has_value())
+                return retval;
+
             retval = findEndpoint(path, "parentClass", _parent->className());
             if (retval.has_value())
                 return retval;

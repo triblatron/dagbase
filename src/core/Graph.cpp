@@ -376,6 +376,16 @@ namespace dagbase
         return false;
     }
 
+    void Graph::eachNode(std::function<bool(const dagbase::Node *)> f) const
+    {
+	    if (f)
+	        for (auto p : _nodes)
+	        {
+	            if (!f(p.second))
+	                return;
+	        }
+    }
+
     void Graph::addPort(dagbase::Port *port)
     {
         if (port != nullptr)
@@ -519,6 +529,16 @@ namespace dagbase
         }
 
         return nullptr;
+    }
+
+    void Graph::eachPort(std::function<bool(const Port *)> f) const
+    {
+	    if (f)
+	        for (const auto &p : _ports)
+	        {
+	            if (!f(p.second))
+	                return;
+	        }
     }
 
     std::size_t Graph::numChildrenRecursive() const

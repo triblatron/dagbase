@@ -164,8 +164,12 @@ namespace dagbase
                     {
                         case TYPE_INTEGER:
                             return Variant(std::uint32_t(as<std::int64_t>()));
+                        default:
+                            return *this;
                     }
                     break;
+                default:
+                    return *this;
             }
         }
         return {};
