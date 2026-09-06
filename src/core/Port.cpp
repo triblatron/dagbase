@@ -106,6 +106,7 @@ namespace dagbase
         std::vector<SignalPath*> outgoingConnections(result.begin(), result.end());
         for (auto signalPath: outgoingConnections)
         {
+            assert(signalPath->isRemoved());
             auto oldInput = signalPath->dest();
             if (auto it = selection.m.find(oldInput->parent()); !oldInput->isMarkedRemoved() && it == selection.end())
             {
@@ -114,38 +115,17 @@ namespace dagbase
                 // Connect the output port to the new input port
                 // Disconnect the old input port
                 newDest->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
-                // newInput->_incomingConnections.emplace_back(this);
 
                 newInput->addIncomingConnection(this, newDest->parent(), keyGen);
-                //newInput->parent()->parent()->addSignalPath(new SignalPath(newInput->parent()->parent(), keyGen, this, newInput));//_incomingConnections.emplace_back(this);
                 // Create a new output from this, without deep copying inputs and outputs.
                 Port *newOutput = this->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newDest->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
-                // newOutput->_outgoingConnections.emplace_back(oldInput);
                 newOutput->addOutgoingConnection(oldInput, signalPath->parent(), keyGen);
-                //newOutput->parent()->parent()->addSignalPath(new SignalPath(newOutput->parent()->parent(), keyGen, newOutput, oldInput));
-                //newOutput->_outgoingConnections.emplace_back(oldInput);
 
                 oldInput->replaceIncomingConnection(this, newOutput);
-                // SignalPathTable::FindResultFrom oldInputIncomingConnections;
-                // oldInput->parent()->parent()->findByDest(oldInput->id(), &oldInputIncomingConnections);
-                // for (auto itConn=oldInputIncomingConnections.p.first; itConn!=oldInputIncomingConnections.p.second; ++itConn)
-                // {
-                //     if ((*itConn) && (*itConn)->source() == this)
-                //     {
-                //         (*itConn)->setSource(newOutput);
-                //     }
-                // }
-                // auto itOld = oldInput->findIncomingConnection(*this);
-                // if (itOld != oldInput->_incomingConnections.end())
-                // {
-                //     (*itOld) = newOutput;
-                // }
-                signalPath->parent()->reinsertSignalPath(signalPath, signalPath->source(), newInput);
-
+                // signalPath->parent()->reinsertSignalPath(signalPath, signalPath->source(), newInput);
             }
         }
-
     }
 
     //! Reconnect from nodes of our incoming connections that are in the selection by  adding Ports on the new source
@@ -161,24 +141,18 @@ namespace dagbase
         std::vector<SignalPath*> oldIncomingSignalPaths(result.begin(), result.end());
         for (auto signalPath: oldIncomingSignalPaths)
         {
+            assert(signalPath->isRemoved());
             auto oldOutput = signalPath->source();
             if (auto it = selection.m.find(oldOutput->parent()); !oldOutput->isMarkedRemoved() && it == selection.end())
             {
                 Port *newOutput = oldOutput->clone(facility, CopyOp{dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT}, &keyGen);
                 newSource->addDynamicPort(newOutput, MetaPort::FLAGS_OWN_BIT);
-                // newOutput->_outgoingConnections.emplace_back(this);
                 newOutput->addOutgoingConnection(this, newSource->parent(), keyGen);
                 Port *newInput = this->clone(facility, CopyOp{ dagbase::CopyOp::GENERATE_UNIQUE_ID_BIT }, &keyGen);
                 newSource->addDynamicPort(newInput, MetaPort::FLAGS_OWN_BIT);
                 newInput->addIncomingConnection(oldOutput, signalPath->parent(), keyGen);
-                //_incomingConnections.emplace_back(oldOutput);
                 oldOutput->replaceOutgoingConnection(this, newInput);
-                // if (auto itOld = oldOutput->findOutgoingConnection(*this); itOld != oldOutput->_outgoingConnections.end())
-                // {
-                //     (*itOld) = newInput;
-                // }
-                // oldOutput = newOutput;
-                signalPath->parent()->reinsertSignalPath(signalPath, newOutput, signalPath->dest());
+                // signalPath->parent()->reinsertSignalPath(signalPath, newOutput, signalPath->dest());
             }
         }
     }
