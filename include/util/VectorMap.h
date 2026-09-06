@@ -152,6 +152,11 @@ namespace dagbase
 			return _map.end();
 		}
 
+		bool empty() const
+		{
+			return _map.empty();
+		}
+
         size_type size() const
         {
             return _map.size();

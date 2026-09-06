@@ -244,6 +244,17 @@ namespace dagbase
 			return nullptr;
 		}
 
+        //! \retval nullptr if index >= numChildren()
+		const Graph* child(std::size_t index) const
+		{
+			if (index < _children.size())
+			{
+				return _children.a[index];
+			}
+
+			return nullptr;
+		}
+
         std::size_t numChildren() const
         {
             return _children.size();
