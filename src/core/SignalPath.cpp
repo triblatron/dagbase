@@ -104,12 +104,11 @@ namespace dagbase
         _dest = parent->port(to);
     }
 
-    SignalPath::SignalPath(Graph* parent, SignalPathID id, Port *source, Port *dest)
+    dagbase::SignalPath::SignalPath(SignalPathID id, Port* source, Port* dest)
     :
-    _parent(parent),
-    _id(id),
-    _source(source),
-    _dest(dest)
+        _id(id),
+        _source(source),
+        _dest(dest)
     {
         // Do nothing.
     }

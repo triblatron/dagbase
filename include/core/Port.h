@@ -249,6 +249,13 @@ namespace dagbase
 
             if ((flags & CMP_CONNECTIONS_COUNT_BIT) != 0)
             {
+                auto numIncomingThis = numIncomingConnections();
+                auto numIncomingOther = other.numIncomingConnections();
+                if (numIncomingThis != numIncomingOther)
+                    return false;
+
+                if (numOutgoingConnections() != other.numOutgoingConnections())
+                    return false;
             }
 
             if ((flags & CMP_CONNECTIONS_IDENT_BIT)!=0)

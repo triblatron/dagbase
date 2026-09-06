@@ -43,7 +43,7 @@ namespace dagbase
 
         SignalPath(Graph* parent, PortID from, PortID to);
 
-        SignalPath(Graph* parent, SignalPathID id, Port* source, Port* dest);
+        SignalPath(SignalPathID id, Port* source, Port* dest);
 
         SignalPath(Graph* parent, dagbase::InputStream& str, NodeLibrary& nodeLib, dagbase::Lua& lua);
 

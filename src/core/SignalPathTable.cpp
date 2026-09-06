@@ -118,13 +118,13 @@ namespace dagbase
         }
     }
 
-    void SignalPathTable::erase(LookupTableId::iterator first, LookupTableId::iterator last)
+    void SignalPathTable::erase(const std::vector<SignalPath*>& toRemove, LookupTableId::iterator first, LookupTableId::iterator last)
     {
-        for (auto it=first; it!=last; ++it)
+        for (auto it=toRemove.begin(); it!=toRemove.end(); ++it)
         {
-            if (auto itFrom = _signalPathsFrom.find(it->second); itFrom != _signalPathsFrom.end())
+            if (auto itFrom = _signalPathsFrom.find(*it); itFrom != _signalPathsFrom.end())
                 _signalPathsFrom.erase(itFrom);
-            if (auto itTo = _signalPathsTo.find(it->second); itTo != _signalPathsTo.end())
+            if (auto itTo = _signalPathsTo.find(*it); itTo != _signalPathsTo.end())
                 _signalPathsTo.erase(itTo);
         }
         _signalPathsByID.erase(first,last);

@@ -1024,7 +1024,7 @@ namespace dagbase
                 }
                 if (id >=0 && sourcePort != nullptr && sourceNode==sourcePort->parent() && destPort != nullptr && destNode==destPort->parent())
                 {
-                    auto* signalPath = new dagbase::SignalPath(output, id, sourcePort, destPort);
+                    auto* signalPath = new dagbase::SignalPath(id, sourcePort, destPort);
                     output->addSignalPath(signalPath);
                 }
             }
@@ -1035,10 +1035,13 @@ namespace dagbase
 
     void dagbase::Graph::removeMarkedSignalPaths()
     {
-        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [](SignalPathTable::LookupTableId::value_type& value) {
+        std::vector<SignalPath*> toRemove;
+        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [&toRemove](SignalPathTable::LookupTableId::value_type& value) {
+            if (value.second->isRemoved())
+                toRemove.emplace_back(value.second);
             return value.second->isRemoved();
             });
-        _signalPaths.erase(toKeep, _signalPaths.end());
+        _signalPaths.erase(toRemove, toKeep, _signalPaths.end());
     }
 
     void Graph::findAllNodes(NodeArray *nodes)
