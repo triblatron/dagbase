@@ -39,6 +39,11 @@ namespace dagbase
             return _graph;
         }
 
+        const Graph* graph() const
+        {
+            return _graph;
+        }
+
         [[nodiscard]]const char* className() const override
         {
             return "GraphNode";
