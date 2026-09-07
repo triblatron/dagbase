@@ -115,7 +115,7 @@ namespace dagbase
 
         void erase(LookupTableId::iterator it);
 
-        void erase(const std::vector<SignalPath*>& toRemove, LookupTableId::iterator first, LookupTableId::iterator last);
+        void eraseRemoved();
 
         std::size_t size() const
         {
