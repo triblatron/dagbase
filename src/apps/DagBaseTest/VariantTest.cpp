@@ -6,6 +6,7 @@
 #include "core/ConfigurationElement.h"
 #include "core/LuaInterface.h"
 #include "core/VariantArray.h"
+#include "core/Value.h"
 
 #include "test/TestUtils.h"
 
@@ -211,3 +212,36 @@ INSTANTIATE_TEST_SUITE_P(VariantArray, VariantArray_testEmplaceBack, ::testing::
         std::make_tuple(true),
         std::make_tuple(std::uint32_t{2})
         ));
+
+class Value_testPushBack : public ::testing::TestWithParam<std::tuple<dagbase::Value>>
+{
+
+};
+
+TEST_P(Value_testPushBack, testExpectedValue)
+{
+    dagbase::Value sut;
+    auto value = std::get<0>(GetParam());
+
+    sut.push_back(value);
+    ASSERT_FALSE(sut.empty());
+    ASSERT_EQ(value, sut[1]);
+}
+
+INSTANTIATE_TEST_SUITE_P(Value, Value_testPushBack, ::testing::Values(
+    std::make_tuple(dagbase::Value(std::uint8_t{1})),
+    std::make_tuple(dagbase::Value(std::int8_t{1})),
+    std::make_tuple(dagbase::Value(std::uint16_t{1})),
+    std::make_tuple(dagbase::Value(std::int16_t{1})),
+    std::make_tuple(dagbase::Value(std::uint32_t{1})),
+    std::make_tuple(dagbase::Value(std::int32_t{1})),
+    std::make_tuple(dagbase::Value(std::uint64_t{1})),
+    std::make_tuple(dagbase::Value(std::int64_t{1})),
+    std::make_tuple(dagbase::Value(float(1.5f))),
+    std::make_tuple(dagbase::Value(double(1.5))),
+    std::make_tuple(dagbase::Value("test")),
+    std::make_tuple(dagbase::Value(true)),
+    std::make_tuple(dagbase::Value(dagbase::Vec2{1.0f,2.0f})),
+    std::make_tuple(dagbase::Value(nullptr)),
+    std::make_tuple(dagbase::Value(std::vector<dagbase::Value>{dagbase::Value{1},dagbase::Value{2},dagbase::Value{3}}))
+    ));

@@ -67,8 +67,8 @@ namespace dagbase
             TYPE_STRING,
             //! A bool
             TYPE_BOOL,
-            //! An osg::Vec3d
-            TYPE_VEC3D,
+            //! An Vec2
+            TYPE_VEC2,
             //! An opaque pointer (void*).
             TYPE_OPAQUE,
             //! A std::vector of values.

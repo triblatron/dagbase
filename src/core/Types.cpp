@@ -159,7 +159,7 @@ namespace dagbase
 	    TEST_ENUM(TYPE_DOUBLE, str);
 	    TEST_ENUM(TYPE_STRING, str);
 	    TEST_ENUM(TYPE_BOOL, str);
-	    TEST_ENUM(TYPE_VEC3D, str);
+	    TEST_ENUM(TYPE_VEC2, str);
 	    TEST_ENUM(TYPE_OPAQUE, str);
 	    TEST_ENUM(TYPE_VECTOR, str);
 	    TEST_ENUM(TYPE_UNKNOWN, str);
@@ -181,7 +181,7 @@ namespace dagbase
 	    TEST_ALT_ENUM("TypedPort<double>", TYPE_DOUBLE, str);
 	    TEST_ALT_ENUM("TypedPort<string>", TYPE_STRING, str);
 	    TEST_ALT_ENUM("TypedPort<bool>", TYPE_BOOL, str);
-	    TEST_ALT_ENUM("TypedPort<Vec3d>", TYPE_VEC3D, str);
+	    TEST_ALT_ENUM("TypedPort<Vec2>", TYPE_VEC2, str);
 	    TEST_ALT_ENUM("TypedPort<void*>", TYPE_OPAQUE, str);
 	    TEST_ALT_ENUM("TypedPort<vector>", TYPE_VECTOR, str);
 
@@ -204,7 +204,7 @@ namespace dagbase
             ENUM_NAME(TYPE_DOUBLE)
             ENUM_NAME(TYPE_STRING)
             ENUM_NAME(TYPE_BOOL)
-            ENUM_NAME(TYPE_VEC3D)
+            ENUM_NAME(TYPE_VEC2)
             ENUM_NAME(TYPE_OPAQUE)
             ENUM_NAME(TYPE_VECTOR)
             ENUM_NAME(TYPE_UNKNOWN)
@@ -230,7 +230,7 @@ namespace dagbase
             ENUM_ALT_NAME(PortType::TYPE_STRING, "TypedPort<string>")
             ENUM_ALT_NAME(PortType::TYPE_BOOL, "TypedPort<bool>")
             ENUM_ALT_NAME(PortType::TYPE_OPAQUE, "TypedPort<void*>")
-            ENUM_ALT_NAME(PortType::TYPE_VEC3D, "TypedPort<Vec3d>")
+            ENUM_ALT_NAME(PortType::TYPE_VEC2, "TypedPort<Vec2>")
             ENUM_ALT_NAME(PortType::TYPE_VECTOR, "TypedPort<vector>")
         }
 

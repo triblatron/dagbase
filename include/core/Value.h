@@ -2,6 +2,8 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Types.h"
+
 #include <cstdint>
 #include <variant>
 #include <string>
@@ -16,7 +18,7 @@ namespace dagbase
     {
     public:
         //! Typedef to improve readability when referencing the type of the variant.
-        typedef std::variant<std::int64_t, double, std::string, bool, void*, std::vector<Value >> ValueType;
+        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string, bool, Vec2, void*, std::vector<Value >> ValueType;
         
     public:
         //! Default ctor, initialises variant member to its first choice, an int64_t.
@@ -41,7 +43,7 @@ namespace dagbase
         //! Certain template methods and operators can only be instantiated for types that satisfy it.
         template<typename T>
         using EnableIfSupported = std::enable_if_t<
-            std::is_convertible_v<T, std::string> || std::is_convertible_v<T, std::int64_t> || std::is_convertible_v<T, bool> || std::is_convertible_v<T, double> || std::is_convertible_v<T, void*> || std::is_convertible_v<T, std::vector<Value>>>;
+            std::is_convertible_v<T, std::string> || std::is_convertible_v<T, std::int64_t> || std::is_convertible_v<T, bool> || std::is_convertible_v<T, double> || std::is_convertible_v<T, void*> || std::is_convertible_v<T, Vec2> || std::is_convertible_v<T, std::vector<Value>>>;
 
         //! Perfect forwarding ctor for supported types.
         template<typename T,typename = EnableIfSupported<T>>
@@ -98,61 +100,45 @@ namespace dagbase
             return _value;
         }
 
+        PortType::Type type() const
+        {
+            return static_cast<PortType::Type>(_value.index());
+        }
+
+        bool empty() const
+        {
+            return type() == PortType::TYPE_VECTOR?std::get<PortType::TYPE_VECTOR>(_value).empty():true;
+        }
+
+        Value operator[](std::size_t index)
+        {
+            if (type() == PortType::TYPE_VECTOR)
+            {
+                auto vec = std::get<PortType::TYPE_VECTOR>(_value);
+
+                if (index < vec.size())
+                {
+                    return vec[index];
+                }
+            }
+
+            return {};
+        }
+
         //! Add a value, converting to an array type if necessary.
+        //! \note The original value is put into the first element of the array.
         template<typename T>
         void push_back(T v)
         {
             // If we are currently a vector, append the value.
-            if (_value.index()==6)
+            if (_value.index()==PortType::TYPE_VECTOR)
             {
                 std::get<std::vector<Value>>(_value).push_back(Value(v));
             }
             else
             // If we are currently a scalar, convert to a vector with the original scalar and the new value.
             {
-                Value original;
-                
-                switch (_value.index())
-                {
-                    case 0:
-                    {
-                        original = std::get<0>(_value);
-                        
-                        break;
-                    }
-                    case 1:
-                    {
-                        original = std::get<1>(_value);
-                        
-                        break;
-                    }
-                    case 2:
-                    {
-                        original = std::get<2>(_value);
-                        
-                        break;
-                    }
-                    case 3:
-                    {
-                        original = std::get<3>(_value);
-                        
-                        break;
-                    }
-                    case 4:
-                    {
-                        original = std::get<4>(_value);
-                        
-                        break;
-                    }
-                    case 5:
-                    {
-                        original = std::get<5>(_value);
-                        
-                        break;
-                    }
-                }
-                _value = std::vector<Value> {original,Value(v)};
-                
+                _value = std::vector<Value> {*this,Value(v)};
             }
         }
     private:
