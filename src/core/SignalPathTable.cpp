@@ -118,19 +118,22 @@ namespace dagbase
         }
     }
 
-    void SignalPathTable::erase(const std::vector<SignalPath*>& toRemove, LookupTableId::iterator first, LookupTableId::iterator last)
+    void dagbase::SignalPathTable::eraseRemoved()
     {
-        auto keepFrom = std::remove_if(_signalPathsFrom.begin(), _signalPathsFrom.end(), [this, first](const SignalPath* signalPath) {
-            return _signalPathsByID.find(signalPath->id()) == _signalPathsByID.end();
+        auto keepFrom = std::remove_if(_signalPathsFrom.begin(), _signalPathsFrom.end(), [](const SignalPath* signalPath) {
+            return signalPath->isRemoved();
             }
         );
         _signalPathsFrom.erase(keepFrom, _signalPathsFrom.end());
-        auto keepTo = std::remove_if(_signalPathsTo.begin(), _signalPathsTo.end(), [this, first](const SignalPath* signalPath) {
-            return _signalPathsByID.find(signalPath->id()) == _signalPathsByID.end();
+        auto keepTo = std::remove_if(_signalPathsTo.begin(), _signalPathsTo.end(), [](const SignalPath* signalPath) {
+            return signalPath->isRemoved();
             }
         );
         _signalPathsTo.erase(keepTo, _signalPathsTo.end());
-        _signalPathsByID.erase(first,last);
+        auto keepByID = std::remove_if(_signalPathsByID.begin(), _signalPathsByID.end(), [](const auto& p) {
+            return p.second->isRemoved();
+            });
+        _signalPathsByID.erase(keepByID, _signalPathsByID.end());
         assert(_signalPathsByID.size() == _signalPathsFrom.size());
         assert(_signalPathsFrom.size() == _signalPathsTo.size());
     }

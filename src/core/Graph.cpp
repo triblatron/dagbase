@@ -1036,12 +1036,13 @@ namespace dagbase
     void dagbase::Graph::removeMarkedSignalPaths()
     {
         std::vector<SignalPath*> toRemove;
-        auto toKeep = std::remove_if(_signalPaths.begin(), _signalPaths.end(), [&toRemove](SignalPathTable::LookupTableId::value_type& value) {
-            if (value.second->isRemoved())
-                toRemove.emplace_back(value.second);
-            return value.second->isRemoved();
-            });
-        _signalPaths.erase(toRemove, toKeep, _signalPaths.end());
+        auto toKeep = _signalPaths.begin();
+        //std::remove_if(_signalPaths.begin(), _signalPaths.end(), [&toRemove](SignalPathTable::LookupTableId::value_type& value) {
+        //    if (value.second->isRemoved())
+        //        toRemove.emplace_back(value.second);
+        //    return value.second->isRemoved();
+        //    });
+        _signalPaths.eraseRemoved();
     }
 
     void Graph::findAllNodes(NodeArray *nodes)
