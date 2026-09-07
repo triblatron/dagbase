@@ -157,6 +157,11 @@ namespace dagbase
             _set.erase(it);
         }
 
+        void erase(const_iterator first, const_iterator last)
+        {
+            _set.erase(first, last);
+        }
+
         const value_type& operator[](std::size_t index) const
         {
             return _set[index];

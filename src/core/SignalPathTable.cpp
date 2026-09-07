@@ -120,14 +120,19 @@ namespace dagbase
 
     void SignalPathTable::erase(const std::vector<SignalPath*>& toRemove, LookupTableId::iterator first, LookupTableId::iterator last)
     {
-        for (auto it=toRemove.begin(); it!=toRemove.end(); ++it)
-        {
-            if (auto itFrom = _signalPathsFrom.find(*it); itFrom != _signalPathsFrom.end())
-                _signalPathsFrom.erase(itFrom);
-            if (auto itTo = _signalPathsTo.find(*it); itTo != _signalPathsTo.end())
-                _signalPathsTo.erase(itTo);
-        }
+        auto keepFrom = std::remove_if(_signalPathsFrom.begin(), _signalPathsFrom.end(), [this, first](const SignalPath* signalPath) {
+            return _signalPathsByID.find(signalPath->id()) == _signalPathsByID.end();
+            }
+        );
+        _signalPathsFrom.erase(keepFrom, _signalPathsFrom.end());
+        auto keepTo = std::remove_if(_signalPathsTo.begin(), _signalPathsTo.end(), [this, first](const SignalPath* signalPath) {
+            return _signalPathsByID.find(signalPath->id()) == _signalPathsByID.end();
+            }
+        );
+        _signalPathsTo.erase(keepTo, _signalPathsTo.end());
         _signalPathsByID.erase(first,last);
+        assert(_signalPathsByID.size() == _signalPathsFrom.size());
+        assert(_signalPathsFrom.size() == _signalPathsTo.size());
     }
 
     SignalPath * SignalPathTable::findByID(SignalPathID id) const
