@@ -357,14 +357,15 @@ namespace dagbase
             if (hasEdges())
             {
                 order->clear();
+                VectorSet<Node*> remainingNodes;
                 for (auto n : allNodesIncludingChildren)
                 {
                     if (!n->isProcessed())
                     {
-                        order->a.emplace_back(n);
+                        remainingNodes.emplace(n);
                     }
                 }
-                findCyclePath(order, cycle);
+                findCyclePath(&remainingNodes, cycle);
 
                 return Graph::CYCLES_DETECTED;
             }
@@ -848,11 +849,11 @@ namespace dagbase
         return printer;
     }
 
-    void Graph::dfs(Node* node, const NodeArray* remainingNodes, std::set<Node*>* visited, std::vector<Node*>* nodeStack, std::set<Node*>* onStack, NodeArray* output)
+    void Graph::dfs(Node* node, const VectorSet<Node*>& remainingNodes, std::vector<Node*>* nodeStack, VectorSet<Node*>* onStack, NodeArray* output)
 	{
-	    if (visited && nodeStack && onStack && output)
+	    if (nodeStack && onStack && output)
 	    {
-	        visited->emplace(node);
+	        node->markVisited();
 	        nodeStack->emplace_back(node);
 	        onStack->emplace(node);
 
@@ -868,7 +869,7 @@ namespace dagbase
 	                {
 	                    auto neighbour = (*it)->dest()->parent();
 
-	                    if (std::find(remainingNodes->begin(), remainingNodes->end(), neighbour) == remainingNodes->end())
+	                    if (remainingNodes.find(neighbour) == remainingNodes.end())
 	                    {
 	                        continue;
 	                    }
@@ -885,33 +886,36 @@ namespace dagbase
 	                        }
 	                    }
 
-	                    if (visited->find(neighbour) == visited->end())
+	                    if (!neighbour->isVisited())
 	                    {
-	                        dfs(neighbour, remainingNodes, visited, nodeStack, onStack, output);
+	                        dfs(neighbour, remainingNodes, nodeStack, onStack, output);
 	                    }
 	                }
 	            }
-
 	        }
 	        nodeStack->pop_back();
 	        onStack->erase(onStack->find(node));
 	    }
 	}
 
-    void Graph::findCyclePath(const NodeArray* remainingNodes, NodeArray *path)
+    void Graph::findCyclePath(const VectorSet<Node*>* remainingNodes, NodeArray *path)
     {
 	    if (path)
 	    {
-	        std::set<Node*> visited;
+	        VectorSet<Node*> visited;
 	        std::vector<Node*> stack;
-	        std::set<Node*> onStack;
+	        VectorSet<Node*> onStack;
 
-
-	        for (auto node : remainingNodes->a)
+	        for (auto node : *remainingNodes)
 	        {
-	            if (visited.find(node) == visited.end())
+	            node->markNotVisited();
+	        }
+
+	        for (auto node : *remainingNodes)
+	        {
+	            if (!node->isVisited())
 	            {
-	                dfs(node, remainingNodes, &visited, &stack, &onStack, path);
+	                dfs(node, *remainingNodes, &stack, &onStack, path);
 	            }
 	        }
 	    }

@@ -105,7 +105,9 @@ INSTANTIATE_TEST_SUITE_P(Node, NodeFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("NODE_NONE", dagbase::Node::NODE_NONE),
     std::make_tuple("NODE_INPUT_BIT", dagbase::Node::NODE_INPUT_BIT),
     std::make_tuple("NODE_OUTPUT_BIT", dagbase::Node::NODE_OUTPUT_BIT),
-    std::make_tuple("NODE_INTERNAL_BIT", dagbase::Node::NODE_INTERNAL_BIT)
+    std::make_tuple("NODE_INTERNAL_BIT", dagbase::Node::NODE_INTERNAL_BIT),
+    std::make_tuple("NODE_PROCESSED_BIT", dagbase::Node::NODE_PROCESSED_BIT),
+    std::make_tuple("NODE_VISITED_BIT", dagbase::Node::NODE_VISITED_BIT)
 ));
 
 class ValueType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Value::Type, const char*>>

@@ -35,7 +35,8 @@ namespace dagbase
 			NODE_INPUT_BIT		= 1U<<0U,
 			NODE_OUTPUT_BIT		= 1U<<1U,
 			NODE_INTERNAL_BIT	= 1U<<2U,
-	        NODE_PROCESSED_BIT  = 1U<<3U
+	        NODE_PROCESSED_BIT  = 1U<<3U,
+	        NODE_VISITED_BIT    = 1U<<4U
 		};
 
 	    using ValueBuffer = std::vector<Value>;
@@ -308,6 +309,21 @@ namespace dagbase
 	    bool isProcessed() const
         {
             return (_flags & NODE_PROCESSED_BIT) != 0;
+        }
+
+	    void markNotVisited()
+        {
+            _flags = static_cast<NodeFlags>(_flags & ~NODE_VISITED_BIT);
+        }
+
+	    void markVisited()
+        {
+            _flags = static_cast<NodeFlags>(_flags | NODE_VISITED_BIT);
+        }
+
+	    bool isVisited() const
+        {
+            return (_flags & NODE_VISITED_BIT) != 0;
         }
 
         static std::string flagsToString(NodeFlags value);

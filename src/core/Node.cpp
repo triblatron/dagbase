@@ -371,6 +371,8 @@ namespace dagbase
         BIT_NAME(value, NODE_INPUT_BIT, retval)
         BIT_NAME(value, NODE_OUTPUT_BIT, retval)
         BIT_NAME(value, NODE_INTERNAL_BIT, retval)
+        BIT_NAME(value, NODE_PROCESSED_BIT, retval)
+        BIT_NAME(value, NODE_VISITED_BIT, retval)
 
         if (!retval.empty() && retval.back() == ' ')
             retval.pop_back();
@@ -385,6 +387,8 @@ namespace dagbase
         TEST_BIT(NODE_INPUT_BIT, str, value)
         TEST_BIT(NODE_OUTPUT_BIT, str, value)
         TEST_BIT(NODE_INTERNAL_BIT, str, value)
+        TEST_BIT(NODE_PROCESSED_BIT, str, value)
+        TEST_BIT(NODE_VISITED_BIT, str, value)
 
         return value;
     }
