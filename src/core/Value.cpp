@@ -50,49 +50,49 @@ namespace dagbase
         switch (type())
         {
             case TYPE_UINT8:
-                str.writeUInt8(operator std::uint8_t());
+                str.writeUInt8(this->operator std::uint8_t());
                 break;
             case TYPE_INT8:
-                str.writeInt8(operator std::int8_t());
+                str.writeInt8(this->operator std::int8_t());
                 break;
             case TYPE_UINT16:
-                str.writeUInt16(operator std::uint16_t());
+                str.writeUInt16(this->operator std::uint16_t());
                 break;
             case TYPE_INT16:
-                str.writeInt16(operator std::int16_t());
+                str.writeInt16(this->operator std::int16_t());
                 break;
             case TYPE_UINT32:
-                str.writeUInt32(operator std::uint32_t());
+                str.writeUInt32(this->operator std::uint32_t());
                 break;
             case TYPE_INT32:
-                str.writeInt32(operator std::int32_t());
+                str.writeInt32(this->operator std::int32_t());
                 break;
             case TYPE_UINT64:
-                str.writeUInt64(operator std::uint64_t());
+                str.writeUInt64(this->operator std::uint64_t());
                 break;
             case TYPE_INT64:
-                str.writeInt64(operator std::int64_t());
+                str.writeInt64(this->operator std::int64_t());
                 break;
             case TYPE_FLOAT:
-                str.writeFloat(operator float());
+                str.writeFloat(this->operator float());
                 break;
             case TYPE_DOUBLE:
-                str.writeDouble(operator double());
+                str.writeDouble(this->operator double());
                 break;
             case TYPE_STRING:
-                str.writeString(operator std::string(), false);
+                str.writeString(this->operator std::string(), false);
                 break;
             case TYPE_BOOL:
-                str.writeBool(operator bool());
+                str.writeBool(this->operator bool());
                 break;
             case TYPE_VEC2:
-                operator Vec2().write(str);
+                this->operator Vec2().write(str);
                 break;
             case TYPE_OPAQUE:
                 assert(false);
             case TYPE_VECTOR:
             {
-                const auto & vec = operator std::vector<Value>();
+                const auto & vec = this->operator std::vector<Value>();
                 str.writeUInt32(vec.size());
                 for (const auto& v : vec)
                 {
