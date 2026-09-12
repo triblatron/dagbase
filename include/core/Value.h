@@ -2,7 +2,7 @@
 
 #include "config/DagBaseExport.h"
 
-#include "core/Types.h"
+#include "core/Vec2.h"
 
 #include <cstdint>
 #include <variant>
@@ -10,8 +10,13 @@
 #include <vector>
 #include <utility>
 
+struct ImGuiContext;
+
 namespace dagbase
 {
+    class InputStream;
+    class OutputStream;
+
     //! A value type to be used throughout the software, uses std::variant.
     //! Provides useful conversions and constructors.
     class DAGBASE_API Value
@@ -19,7 +24,34 @@ namespace dagbase
     public:
         //! Typedef to improve readability when referencing the type of the variant.
         typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string, bool, Vec2, void*, std::vector<Value >> ValueType;
-        
+        enum Type
+        {
+            TYPE_UINT8,
+            TYPE_INT8,
+            TYPE_UINT16,
+            TYPE_INT16,
+            TYPE_UINT32,
+            TYPE_INT32,
+            TYPE_UINT64,
+            //! A std::int64_t
+            TYPE_INT64,
+            TYPE_FLOAT,
+            //! A double-precision floating point number.
+            TYPE_DOUBLE,
+            //! A std::string
+            TYPE_STRING,
+            //! A bool
+            TYPE_BOOL,
+            //! An Vec2
+            TYPE_VEC2,
+            //! An opaque pointer (void*).
+            TYPE_OPAQUE,
+            //! A std::vector of values.
+            TYPE_VECTOR,
+            //! Initial or invalid type.
+            TYPE_UNKNOWN
+        };
+
     public:
         //! Default ctor, initialises variant member to its first choice, an int64_t.
         Value() = default;
@@ -39,11 +71,26 @@ namespace dagbase
         {
 	        // Do nothing.
         }
+
         //! A constraint for the supported types.
         //! Certain template methods and operators can only be instantiated for types that satisfy it.
         template<typename T>
         using EnableIfSupported = std::enable_if_t<
-            std::is_convertible_v<T, std::string> || std::is_convertible_v<T, std::int64_t> || std::is_convertible_v<T, bool> || std::is_convertible_v<T, double> || std::is_convertible_v<T, void*> || std::is_convertible_v<T, Vec2> || std::is_convertible_v<T, std::vector<Value>>>;
+            std::is_convertible_v<T, std::uint8_t> ||
+            std::is_convertible_v<T, std::int8_t> ||
+            std::is_convertible_v<T, std::uint16_t> ||
+            std::is_convertible_v<T, std::int16_t> ||
+            std::is_convertible_v<T, std::uint32_t> ||
+            std::is_convertible_v<T, std::int32_t> ||
+            std::is_convertible_v<T, std::uint64_t> ||
+            std::is_convertible_v<T, std::int64_t> ||
+            std::is_convertible_v<T, std::string> ||
+            std::is_convertible_v<T, bool> ||
+            std::is_convertible_v<T, float> ||
+            std::is_convertible_v<T, double> ||
+            std::is_convertible_v<T, Vec2> ||
+            std::is_convertible_v<T, void*> ||
+            std::is_convertible_v<T, std::vector<Value>>>;
 
         //! Perfect forwarding ctor for supported types.
         template<typename T,typename = EnableIfSupported<T>>
@@ -89,32 +136,27 @@ namespace dagbase
             return std::get<T>(_value);
         }
 
-        bool operator==(const Value& other) const
-        {
-            return _value == other._value;
-        }
-
         //! Convert to our variant, required for template ctor to compile.
         operator ValueType() const
         {
             return _value;
         }
 
-        PortType::Type type() const
+        Type type() const
         {
-            return static_cast<PortType::Type>(_value.index());
+            return static_cast<Type>(_value.index());
         }
 
         bool empty() const
         {
-            return type() == PortType::TYPE_VECTOR?std::get<PortType::TYPE_VECTOR>(_value).empty():true;
+            return type() == TYPE_VECTOR?std::get<TYPE_VECTOR>(_value).empty():true;
         }
 
         Value operator[](std::size_t index)
         {
-            if (type() == PortType::TYPE_VECTOR)
+            if (type() == TYPE_VECTOR)
             {
-                auto vec = std::get<PortType::TYPE_VECTOR>(_value);
+                auto vec = std::get<TYPE_VECTOR>(_value);
 
                 if (index < vec.size())
                 {
@@ -131,7 +173,7 @@ namespace dagbase
         void push_back(T v)
         {
             // If we are currently a vector, append the value.
-            if (_value.index()==PortType::TYPE_VECTOR)
+            if (_value.index()==TYPE_VECTOR)
             {
                 std::get<std::vector<Value>>(_value).push_back(Value(v));
             }
@@ -141,7 +183,41 @@ namespace dagbase
                 _value = std::vector<Value> {*this,Value(v)};
             }
         }
+
+        bool operator<(const Value& other) const;
+
+        bool operator<=(const Value& other) const
+        {
+            return _value <= other._value;
+        }
+
+        bool operator>(const Value& other) const
+        {
+            return _value > other._value;
+        }
+
+        bool operator>=(const Value& other) const
+        {
+            return _value >= other._value;
+        }
+
+        bool operator==(const Value& other) const
+        {
+            return _value == other._value;
+        }
+
+        bool operator!=(const Value& other) const
+        {
+            return _value != other._value;
+        }
+
+        void edit(const char* label, ImGuiContext *context);
+
+        OutputStream& writeToStream(OutputStream& str) const;
+
+        InputStream& readFromStream(InputStream& str);
     private:
         ValueType _value;
     };
+
 }

@@ -89,7 +89,6 @@ SET( ALL_PUBLIC_HEADERS
         include/core/SignalPath.h
         include/core/SignalPathDef.h
         include/core/Transfer.h
-        include/core/TypedPort.h
         include/core/Types.h
         include/core/Value.h
         include/core/TypeRegistry.h
@@ -174,6 +173,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
 		src/io/StreamFactory.cpp
         src/core/SignalPathTable.cpp
         src/core/NodesPortsTable.cpp
+        src/core/Value.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

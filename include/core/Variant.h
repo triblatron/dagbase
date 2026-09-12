@@ -8,6 +8,7 @@
 
 #include "core/Colour.h"
 #include "core/Vec2.h"
+#include "core/Value.h"
 
 #include <optional>
 #include <variant>
@@ -25,7 +26,7 @@ namespace dagbase
     class DAGBASE_API Variant
     {
     public:
-        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t, Function*>>;
+        using ValueType = std::optional<std::variant<std::int64_t, double, bool, std::string, Colour, Vec2, std::uint32_t, Function*, Value>>;
         using InnerType = ValueType::value_type;
 
         enum Index : std::uint32_t
@@ -38,6 +39,7 @@ namespace dagbase
             TYPE_VEC2,
             TYPE_UINT,
             TYPE_FUNCTION,
+            TYPE_VALUE,
             TYPE_UNKNOWN
         };
     public:
@@ -60,6 +62,8 @@ namespace dagbase
         explicit Variant(std::uint32_t value);
 
         explicit Variant(Function* value, bool own=false);
+
+        explicit Variant(const Value& value);
 
         //! Reject conversion from const char* to bool using SFINAE
         template <typename T,

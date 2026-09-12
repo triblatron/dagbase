@@ -8,7 +8,6 @@
 #include "io/OutputStream.h"
 #include "util/DebugPrinter.h"
 #include "core/LuaInterface.h"
-#include "core/TypedPort.h"
 #include "core/Types.h"
 #include "core/CloningFacility.h"
 #include "util/Searchable.h"
@@ -239,11 +238,11 @@ namespace dagbase
     template<typename PortClass>
     void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
     {
-        auto* port = dynamic_cast<TypedPort<PortClass>*>(existingPort);
+        auto* port = existingPort;
 
         if (port != nullptr)
         {
-            port->setValue(value);
+            port->setValue(Value(value));
         }
         else if (existingPort == nullptr)
         {
@@ -254,7 +253,7 @@ namespace dagbase
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
             std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
 
-            port = new TypedPort<PortClass>(rootKeyGen.nextPortID(), node, portName, portType, portDir,value, Port::parsePortFlags(portFlags));
+            port = new Port(rootKeyGen.nextPortID(), node, portName, portType, portDir, Port::parsePortFlags(portFlags), Value(value));
             // The metaPort flags are to be set later when we separately read the MetaPorts.
             node->addDynamicPort(port, dagbase::MetaPort::FLAGS_OWN_BIT);
         }
@@ -1119,16 +1118,14 @@ namespace dagbase
             for (size_t i=0; i<n->totalPorts(); ++i)
             {
                 n->update();
-                dagbase::ValueVisitor visitor;
-                n->dynamicPort(i)->accept(visitor);
-                dagbase::SetValueVisitor setVisitor(visitor.value());
+                auto value = n->dynamicPort(i)->value();
                 SignalPathTable::FindResultFrom result;
                 _signalPaths.findBySource(n->dynamicPort(i)->id(), &result);
                 for (auto it=result.p.first; it!=result.p.second; ++it)
                 {
                     if ((*it))
                     {
-                        (*it)->dest()->accept(setVisitor);
+                        (*it)->dest()->setValue(value);
                     }
                 }
             }

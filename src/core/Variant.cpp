@@ -168,6 +168,23 @@ namespace dagbase
                             return *this;
                     }
                     break;
+                case TYPE_VALUE:
+                {
+                    switch (index())
+                    {
+                        case TYPE_DOUBLE:
+                            return Variant(Value(asDouble()));
+                        case TYPE_BOOL:
+                            return Variant(Value(asBool()));
+                        case TYPE_INTEGER:
+                            return Variant(Value(asInteger()));
+                        case TYPE_UINT:
+                            return Variant(Value(asUint32()));
+                        default:
+                            return *this;
+                    }
+                    break;
+                }
                 default:
                     return *this;
             }
@@ -185,18 +202,22 @@ namespace dagbase
                 {
                     return _value != other._value;
                 }
-                else
+                return !std::get<TYPE_FUNCTION>(_value.value())->equals(*std::get<TYPE_FUNCTION>(other._value.value()));
+            }
+
+            if (index() == TYPE_VALUE && other.has_value())
+            {
+                auto value = as<Value>();
+
+                switch (value.type())
                 {
-                    return !std::get<TYPE_FUNCTION>(_value.value())->equals(*std::get<TYPE_FUNCTION>(other._value.value()));
+                    case Value::TYPE_DOUBLE:
+                        return double(value) != other.as<double>();
                 }
             }
-            else
-                return true;
+            return true;
         }
-        else
-        {
-            return other.has_value();
-        }
+        return other.has_value();
     }
 
     InputStream &Variant::read(InputStream &str, Lua &lua)
@@ -329,6 +350,14 @@ namespace dagbase
     :
     _value(value),
     _own(own)
+    {
+        // Do nothing.
+    }
+
+    Variant::Variant(const Value &value)
+        :
+    _value(value),
+    _own(true)
     {
         // Do nothing.
     }

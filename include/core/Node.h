@@ -7,6 +7,8 @@
 #include "MetaPort.h"
 #include "Variant.h"
 #include "util/SearchableArray.h"
+#include "core/Editable.h"
+
 #include <string>
 #include <stdexcept>
 
@@ -61,12 +63,18 @@ namespace dagbase
 
 	    [[nodiscard]]const dagbase::MetaPort * dynamicMetaPort(size_t index) const
 	    {
-	        return &_dynamicMetaPorts[index];
+	        if (index<_dynamicMetaPorts.size())
+	            return &_dynamicMetaPorts[index];
+
+	        return nullptr;
 	    }
 
 	    [[nodiscard]]dagbase::MetaPort * dynamicMetaPort(size_t index)
 	    {
-	        return &_dynamicMetaPorts[index];
+	        if (index<_dynamicMetaPorts.size())
+	            return &_dynamicMetaPorts[index];
+
+	        return nullptr;
 	    }
 
 	    //! Add a non-null dynamic port

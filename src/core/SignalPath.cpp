@@ -5,7 +5,6 @@
 
 #include "core/SignalPath.h"
 #include "io/InputStream.h"
-#include "core/TypedPort.h"
 #include "core/NodeLibrary.h"
 #include "io/OutputStream.h"
 #include "core/Node.h"

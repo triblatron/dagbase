@@ -13,10 +13,11 @@ void assertComparison(dagbase::ConfigurationElement::ValueType expected, dagbase
     {
         return;
     }
+    expected = expected.cast(actual.index());
     switch (op)
     {
     case dagbase::ConfigurationElement::RELOP_EQ:
-        if (expected.value()->index() == dagbase::Variant::TYPE_DOUBLE && actual.value()->index() == dagbase::Variant::TYPE_DOUBLE)
+        if ((expected.value()->index() == dagbase::Variant::TYPE_DOUBLE && actual.value()->index() == dagbase::Variant::TYPE_DOUBLE))
         {
             EXPECT_NEAR(actual.asDouble(), expected.asDouble(), tolerance) << path;
         }

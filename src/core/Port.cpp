@@ -1,7 +1,6 @@
 #include "config/config.h"
 
 #include "core/Port.h"
-#include "core/TypedPort.h"
 #include "core/Node.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
@@ -16,14 +15,15 @@
 
 namespace dagbase
 {
-    Port::Port(PortID id, Node *parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags)
+    Port::Port(PortID id, Node *parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags, Value value)
         :
         _name(std::move(name)),
         _type(type),
         _direction(dir),
         _id(id),
         _parent(parent),
-        _flags(flags)
+        _flags(flags),
+        _value(std::move(value))
     {
         // Do nothing.
     }
@@ -87,6 +87,7 @@ namespace dagbase
                 _parent = static_cast<Node*>(facility.getClone(parentId));
             }
         }
+        _value = other._value;
     }
 
     //! Reconnect to nodes of our output connections that are in the selection by adding new Ports
@@ -184,6 +185,8 @@ namespace dagbase
             str.writeString(className, true);
             _sharedParent->writeToStream(str, nodeLib, lua);
         }
+        str.writeField("value");
+        _value.writeToStream(str);
         str.writeFooter();
         return str;
     }
@@ -194,7 +197,7 @@ namespace dagbase
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
         printer.printIndent().print("type = \"").print(PortType::toString(_type)).print("\",\n");
         printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
-        printer.printIndent().print("class = \"").print(className()).print("\",\n");
+        printer.printIndent().print("class = \"").print(PortType::className(_type)).print("\",\n");
         printer.printIndent().print("flags = \"").print(portFlagsToString(_flags)).print("\",\n");
         if (_parent!=nullptr)
         {
@@ -275,6 +278,8 @@ namespace dagbase
         _parent = str.readRef<Node>("Node", nodeLib, lua);
         str.readField(&fieldName);
         _sharedParent = str.readRef<Node>("Node", nodeLib, lua);
+        str.readField(&fieldName);
+        _value.readFromStream(str);
         str.readFooter();
         return str;
     }
@@ -414,6 +419,10 @@ namespace dagbase
             return retval;
 
         retval = findEndpoint(path, "direction", std::uint32_t(_direction));
+        if (retval.has_value())
+            return retval;
+
+        retval = findEndpoint(path, "value", Variant(_value));
         if (retval.has_value())
             return retval;
 

@@ -72,7 +72,7 @@ namespace dagbase
         {
             auto port = dynamicPort(i);
 
-            port->edit(context);
+            port->value().edit(port->name().c_str(), context);
         }
     }
 

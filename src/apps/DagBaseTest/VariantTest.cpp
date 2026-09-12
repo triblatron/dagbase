@@ -7,6 +7,9 @@
 #include "core/LuaInterface.h"
 #include "core/VariantArray.h"
 #include "core/Value.h"
+#include "io/MemoryBackingStore.h"
+#include "io/TextOutputStream.h"
+#include "io/TextInputStream.h"
 
 #include "test/TestUtils.h"
 
@@ -244,4 +247,42 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testPushBack, ::testing::Values(
     std::make_tuple(dagbase::Value(dagbase::Vec2{1.0f,2.0f})),
     std::make_tuple(dagbase::Value(nullptr)),
     std::make_tuple(dagbase::Value(std::vector<dagbase::Value>{dagbase::Value{1},dagbase::Value{2},dagbase::Value{3}}))
+    ));
+
+class Value_testSerialise : public ::testing::TestWithParam<std::tuple<dagbase::Value>>
+{
+
+};
+
+TEST_P(Value_testSerialise, testExpectedValue)
+{
+    auto value = std::get<0>(GetParam());
+    auto* buf = new dagbase::MemoryBackingStore();
+    buf->open(dagbase::BackingStore::MODE_OUTPUT_BIT, "");
+    dagbase::TextOutputStream ostr(buf);
+    value.writeToStream(ostr);
+    ostr.flush();
+    buf->open(dagbase::BackingStore::MODE_INPUT_BIT, "");
+    dagbase::TextInputStream istr(buf);
+    dagbase::Value actual;
+    actual.readFromStream(istr);
+    EXPECT_EQ(value, actual);
+}
+
+INSTANTIATE_TEST_SUITE_P(Value, Value_testSerialise, ::testing::Values(
+    std::make_tuple(dagbase::Value(std::uint8_t{1})),
+    std::make_tuple(dagbase::Value(std::int8_t{1})),
+    std::make_tuple(dagbase::Value(std::uint16_t{1})),
+    std::make_tuple(dagbase::Value(std::int16_t{1})),
+    std::make_tuple(dagbase::Value(std::uint32_t{1})),
+    std::make_tuple(dagbase::Value(std::int32_t{1})),
+    std::make_tuple(dagbase::Value(std::uint64_t{1})),
+    std::make_tuple(dagbase::Value(std::int64_t{1})),
+    std::make_tuple(dagbase::Value(1.5f)),
+    std::make_tuple(dagbase::Value(1.5)),
+    std::make_tuple(dagbase::Value("test")),
+    std::make_tuple(dagbase::Value(false)),
+    std::make_tuple(dagbase::Value(true)),
+    std::make_tuple(dagbase::Value(dagbase::Vec2())),
+    std::make_tuple(dagbase::Value(std::vector<dagbase::Value>({dagbase::Value(std::uint32_t{100})})))
     ));

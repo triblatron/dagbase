@@ -8,7 +8,6 @@
 #include "Types.h"
 #include "NodeLibrary.h"
 #include "MetaPort.h"
-#include "core/Editable.h"
 
 #include <string>
 #include <vector>
@@ -25,7 +24,6 @@ namespace dagbase
     class KeyGenerator;
     struct MetaPort;
     class Node;
-	class Transfer;
 
     class DAGBASE_API ValueVisitor
     {
@@ -87,7 +85,7 @@ namespace dagbase
         Value _value;
     };
 
-	class DAGBASE_API Port : public dagbase::Class, public dagbase::Editable
+	class DAGBASE_API Port : public dagbase::Class
     {
     public:
         typedef std::vector<Port*> PortArray;
@@ -103,7 +101,7 @@ namespace dagbase
     public:
 	    Port() = default;
 
-        explicit Port(PortID id, Node* parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE);
+        Port(PortID id, Node* parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
 
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -225,11 +223,10 @@ namespace dagbase
 
 	    void reconnectFrom(NodeSet const& selection, Node* newSource, KeyGenerator& keyGen);
 
-        virtual void accept(ValueVisitor& visitor) const = 0;
-
-        virtual void accept(SetValueVisitor& visitor) = 0;
-
-        virtual Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) const = 0;
+        Port* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) const
+        {
+            return new Port(*this, facility, copyOp, keyGen);
+        }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const override;
 
@@ -274,7 +271,22 @@ namespace dagbase
             return "Port";
         }
 
-        virtual Variant find(std::string_view path) const;
+	    const Value& value() const
+        {
+            return _value;
+        }
+
+	    void setValue(const Value& value)
+        {
+            _value = value;
+        }
+
+	    Value& value()
+        {
+            return _value;
+        }
+
+        Variant find(std::string_view path) const;
 
 	    static std::string portFlagsToString(PortFlags flags);
 
@@ -309,5 +321,6 @@ namespace dagbase
         Node* _parent{nullptr};
 	    Node* _sharedParent{nullptr};
         PortFlags _flags{FLAGS_NONE};
+	    Value _value;
 	};
 }
