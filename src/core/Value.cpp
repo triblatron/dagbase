@@ -8,6 +8,7 @@
 #include "core/Editable.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
+#include "util/enums.h"
 
 #include <cassert>
 
@@ -93,12 +94,15 @@ namespace dagbase
             {
                 const auto & vec = operator std::vector<Value>();
                 str.writeUInt32(vec.size());
-                for (auto v : vec)
+                for (const auto& v : vec)
                 {
                     v.writeToStream(str);
                 }
                 break;
             }
+            case TYPE_UNKNOWN:
+                assert(false);
+                break;
         }
         str.writeFooter();
         
@@ -231,4 +235,98 @@ namespace dagbase
         
         return str;
     }
+
+    Value::Type Value::parseType(const char* str)
+	{
+	    TEST_ENUM(TYPE_UINT8, str);
+	    TEST_ENUM(TYPE_INT8, str);
+	    TEST_ENUM(TYPE_UINT16, str);
+	    TEST_ENUM(TYPE_INT16, str);
+	    TEST_ENUM(TYPE_UINT32, str);
+	    TEST_ENUM(TYPE_INT32, str);
+	    TEST_ENUM(TYPE_UINT64, str);
+	    TEST_ENUM(TYPE_INT64, str);
+	    TEST_ENUM(TYPE_FLOAT, str);
+	    TEST_ENUM(TYPE_DOUBLE, str);
+	    TEST_ENUM(TYPE_STRING, str);
+	    TEST_ENUM(TYPE_BOOL, str);
+	    TEST_ENUM(TYPE_VEC2, str);
+	    TEST_ENUM(TYPE_OPAQUE, str);
+	    TEST_ENUM(TYPE_VECTOR, str);
+	    TEST_ENUM(TYPE_UNKNOWN, str);
+
+		return TYPE_UNKNOWN;
+	}
+
+    Value::Type Value::parseClass(const char *str)
+    {
+	    TEST_ALT_ENUM("TypedPort<uint8_t", TYPE_UINT8, str);
+	    TEST_ALT_ENUM("TypedPort<int8_t>", TYPE_INT8, str);
+	    TEST_ALT_ENUM("TypedPort<uint16_t>", TYPE_UINT16, str);
+	    TEST_ALT_ENUM("TypedPort<int16_t>", TYPE_INT16, str);
+	    TEST_ALT_ENUM("TypedPort<uint32_t", TYPE_UINT32, str);
+	    TEST_ALT_ENUM("TypedPort<int32_t>", TYPE_INT32, str);
+	    TEST_ALT_ENUM("TypedPort<uint64_t>", TYPE_UINT64, str);
+	    TEST_ALT_ENUM("TypedPort<int64_t>", TYPE_INT64, str);
+	    TEST_ALT_ENUM("TypedPort<float", TYPE_FLOAT, str);
+	    TEST_ALT_ENUM("TypedPort<double>", TYPE_DOUBLE, str);
+	    TEST_ALT_ENUM("TypedPort<string>", TYPE_STRING, str);
+	    TEST_ALT_ENUM("TypedPort<bool>", TYPE_BOOL, str);
+	    TEST_ALT_ENUM("TypedPort<Vec2>", TYPE_VEC2, str);
+	    TEST_ALT_ENUM("TypedPort<void*>", TYPE_OPAQUE, str);
+	    TEST_ALT_ENUM("TypedPort<vector>", TYPE_VECTOR, str);
+
+        return TYPE_UNKNOWN;
+    }
+
+    const char *Value::typeString(Type type)
+    {
+        switch (type)
+        {
+            ENUM_NAME(TYPE_UINT8)
+            ENUM_NAME(TYPE_INT8)
+            ENUM_NAME(TYPE_UINT16)
+            ENUM_NAME(TYPE_INT16)
+            ENUM_NAME(TYPE_UINT32)
+            ENUM_NAME(TYPE_INT32)
+            ENUM_NAME(TYPE_UINT64)
+            ENUM_NAME(TYPE_INT64)
+            ENUM_NAME(TYPE_FLOAT)
+            ENUM_NAME(TYPE_DOUBLE)
+            ENUM_NAME(TYPE_STRING)
+            ENUM_NAME(TYPE_BOOL)
+            ENUM_NAME(TYPE_VEC2)
+            ENUM_NAME(TYPE_OPAQUE)
+            ENUM_NAME(TYPE_VECTOR)
+            ENUM_NAME(TYPE_UNKNOWN)
+        }
+
+        return "<error>";
+    }
+
+    const char* Value::className(Type type)
+    {
+        switch (type)
+        {
+            ENUM_ALT_NAME(TYPE_UINT8, "TypedPort<uint8_t>")
+            ENUM_ALT_NAME(TYPE_INT8, "TypedPort<int8_t>")
+            ENUM_ALT_NAME(TYPE_UINT16, "TypedPort<uint16_t>")
+            ENUM_ALT_NAME(TYPE_INT16, "TypedPort<int16_t>")
+            ENUM_ALT_NAME(TYPE_UINT32, "TypedPort<uint32_t>")
+            ENUM_ALT_NAME(TYPE_INT32, "TypedPort<int32_t>")
+            ENUM_ALT_NAME(TYPE_UINT64, "TypedPort<uint64_t>")
+            ENUM_ALT_NAME(TYPE_INT64, "TypedPort<int64_t>")
+            ENUM_ALT_NAME(TYPE_FLOAT, "TypedPort<float>")
+            ENUM_ALT_NAME(TYPE_DOUBLE, "TypedPort<double>")
+            ENUM_ALT_NAME(TYPE_STRING, "TypedPort<string>")
+            ENUM_ALT_NAME(TYPE_BOOL, "TypedPort<bool>")
+            ENUM_ALT_NAME(TYPE_OPAQUE, "TypedPort<void*>")
+            ENUM_ALT_NAME(TYPE_VEC2, "TypedPort<Vec2>")
+            ENUM_ALT_NAME(TYPE_VECTOR, "TypedPort<vector>")
+            ENUM_ALT_NAME(TYPE_UNKNOWN, "TypedPort<unknown>")
+        }
+
+        return "<error>";
+    }
+
 }

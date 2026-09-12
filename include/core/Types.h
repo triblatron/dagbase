@@ -46,48 +46,6 @@ namespace dagbase
         static const char* toString(Direction dir);
     };
 
-    class DAGBASE_API PortType
-    {
-    public:
-        enum Type
-        {
-            TYPE_UINT8,
-            TYPE_INT8,
-            TYPE_UINT16,
-            TYPE_INT16,
-            TYPE_UINT32,
-            TYPE_INT32,
-            TYPE_UINT64,
-            //! A std::int64_t
-            TYPE_INT64,
-            TYPE_FLOAT,
-            //! A double-precision floating point number.
-            TYPE_DOUBLE,
-            //! A std::string
-            TYPE_STRING,
-            //! A bool
-            TYPE_BOOL,
-            //! An Vec2
-            TYPE_VEC2,
-            //! An opaque pointer (void*).
-            TYPE_OPAQUE,
-            //! A std::vector of values.
-            TYPE_VECTOR,
-            //! Initial or invalid type.
-            TYPE_UNKNOWN
-        };
-
-        //! Parse a string representation of a port type.
-        static Type parseFromString(const char* str);
-
-        static Type parseClass(const char* str);
-
-        //! Convert a port type to a string.
-        static const char* toString(Type type);
-
-        static const char* className(Type type);
-    };
-
     template<typename Tag>
     class Name
     {                        

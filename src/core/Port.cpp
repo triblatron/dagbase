@@ -15,10 +15,9 @@
 
 namespace dagbase
 {
-    Port::Port(PortID id, Node *parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags, Value value)
+    Port::Port(PortID id, Node *parent, std::string name, PortDirection::Direction dir, PortFlags flags, Value value)
         :
         _name(std::move(name)),
-        _type(type),
         _direction(dir),
         _id(id),
         _parent(parent),
@@ -51,7 +50,6 @@ namespace dagbase
     Port::Port(const Port &other, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen)
         :
         _name(other._name),
-        _type(other._type),
         _direction(other._direction),
         _id(other._id),
         _parent(other._parent),
@@ -166,7 +164,7 @@ namespace dagbase
         str.writeField("name");
         str.writeString(_name, true);
         str.writeField("type");
-        str.writeUInt32(_type);
+        str.writeUInt32(_value.type());
         str.writeField("direction");
         str.writeUInt32(_direction);
         str.writeField("parent");
@@ -195,9 +193,9 @@ namespace dagbase
     {
         printer.printIndent().print("id = ").print(_id).print(",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
-        printer.printIndent().print("type = \"").print(PortType::toString(_type)).print("\",\n");
+        printer.printIndent().print("type = \"").print(Value::typeString(_value.type())).print("\",\n");
         printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
-        printer.printIndent().print("class = \"").print(PortType::className(_type)).print("\",\n");
+        printer.printIndent().print("class = \"").print(Value::className(_value.type())).print("\",\n");
         printer.printIndent().print("flags = \"").print(portFlagsToString(_flags)).print("\",\n");
         if (_parent!=nullptr)
         {
@@ -226,7 +224,7 @@ namespace dagbase
         printer.println("id: " + std::to_string(_id));
         printer.println("class: " + std::string(className()));
         printer.println("name: " + _name);
-        printer.println("type: " + std::string(PortType::toString(_type)));
+        printer.println("type: " + std::string(Value::typeString(_value.type())));
         printer.println("direction: " + std::string(PortDirection::toString(_direction)));
         if (_parent!=nullptr)
         {
@@ -269,7 +267,6 @@ namespace dagbase
         str.readField(&fieldName);
         std::uint32_t rawType{0};
         str.readUInt32(&rawType);
-        _type = static_cast<PortType::Type>(rawType);
         str.readField(&fieldName);
         std::uint32_t rawDirection{0};
         str.readUInt32(&rawDirection);
@@ -290,9 +287,6 @@ namespace dagbase
             return true;
 
         if (_name != other._name)
-            return false;
-
-        if (_type != other._type)
             return false;
 
         if (_direction != other._direction)
@@ -411,10 +405,6 @@ namespace dagbase
         Variant retval;
 
         retval = findEndpoint(path, "name", _name);
-        if (retval.has_value())
-            return retval;
-
-        retval = findEndpoint(path, "type", std::uint32_t(_type));
         if (retval.has_value())
             return retval;
 

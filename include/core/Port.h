@@ -41,7 +41,7 @@ namespace dagbase
     public:
 	    Port() = default;
 
-        Port(PortID id, Node* parent, std::string name, PortType::Type type, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
+        Port(PortID id, Node* parent, std::string name, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
 
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -72,9 +72,9 @@ namespace dagbase
             return _name;
         }
 
-        [[nodiscard]] PortType::Type type() const
+        [[nodiscard]] Value::Type type() const
         {
-            return _type;
+            return _value.type();
         }
 
         void setDir(PortDirection::Direction dir)
@@ -255,7 +255,6 @@ namespace dagbase
         }
 	private:
         std::string _name;
-	    PortType::Type _type{PortType::TYPE_UNKNOWN};
 	    PortDirection::Direction _direction{PortDirection::DIR_UNKNOWN};
         PortID _id{ 0 };
         Node* _parent{nullptr};

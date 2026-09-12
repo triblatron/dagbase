@@ -108,36 +108,36 @@ INSTANTIATE_TEST_SUITE_P(Node, NodeFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("NODE_INTERNAL_BIT", dagbase::Node::NODE_INTERNAL_BIT)
 ));
 
-class PortType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::PortType::Type, const char*>>
+class ValueType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Value::Type, const char*>>
 {
 
 };
 
-TEST_P(PortType_testRoundTrip, testRoundTrip)
+TEST_P(ValueType_testRoundTrip, testRoundTrip)
 {
     auto typeStr = std::get<0>(GetParam());
     auto value = std::get<1>(GetParam());
     auto classStr = std::get<2>(GetParam());
 
-    EXPECT_STREQ(typeStr, dagbase::PortType::toString(value));
-    EXPECT_STREQ(classStr, dagbase::PortType::className(value));
-    EXPECT_EQ(value, dagbase::PortType::parseFromString(typeStr));
+    EXPECT_STREQ(typeStr, dagbase::Value::typeString(value));
+    EXPECT_STREQ(classStr, dagbase::Value::className(value));
+    EXPECT_EQ(value, dagbase::Value::parseType(typeStr));
 }
 
-INSTANTIATE_TEST_SUITE_P(PortType, PortType_testRoundTrip, ::testing::Values(
-    std::make_tuple("TYPE_UINT8", dagbase::PortType::TYPE_UINT8, "TypedPort<uint8_t>"),
-    std::make_tuple("TYPE_INT8", dagbase::PortType::TYPE_INT8, "TypedPort<int8_t>"),
-    std::make_tuple("TYPE_UINT16", dagbase::PortType::TYPE_UINT16, "TypedPort<uint16_t>"),
-    std::make_tuple("TYPE_INT16", dagbase::PortType::TYPE_INT16, "TypedPort<int16_t>"),
-    std::make_tuple("TYPE_UINT32", dagbase::PortType::TYPE_UINT32, "TypedPort<uint32_t>"),
-    std::make_tuple("TYPE_INT32", dagbase::PortType::TYPE_INT32, "TypedPort<int32_t>"),
-    std::make_tuple("TYPE_UINT64", dagbase::PortType::TYPE_UINT64, "TypedPort<uint64_t>"),
-    std::make_tuple("TYPE_INT64", dagbase::PortType::TYPE_INT64, "TypedPort<int64_t>"),
-    std::make_tuple("TYPE_FLOAT", dagbase::PortType::TYPE_FLOAT, "TypedPort<float>"),
-    std::make_tuple("TYPE_DOUBLE", dagbase::PortType::TYPE_DOUBLE, "TypedPort<double>"),
-    std::make_tuple("TYPE_STRING", dagbase::PortType::TYPE_STRING, "TypedPort<string>"),
-    std::make_tuple("TYPE_BOOL", dagbase::PortType::TYPE_BOOL, "TypedPort<bool>"),
-    std::make_tuple("TYPE_OPAQUE", dagbase::PortType::TYPE_OPAQUE, "TypedPort<void*>")
+INSTANTIATE_TEST_SUITE_P(PortType, ValueType_testRoundTrip, ::testing::Values(
+    std::make_tuple("TYPE_UINT8", dagbase::Value::Type::TYPE_UINT8, "TypedPort<uint8_t>"),
+    std::make_tuple("TYPE_INT8", dagbase::Value::Type::TYPE_INT8, "TypedPort<int8_t>"),
+    std::make_tuple("TYPE_UINT16", dagbase::Value::Type::TYPE_UINT16, "TypedPort<uint16_t>"),
+    std::make_tuple("TYPE_INT16", dagbase::Value::Type::TYPE_INT16, "TypedPort<int16_t>"),
+    std::make_tuple("TYPE_UINT32", dagbase::Value::Type::TYPE_UINT32, "TypedPort<uint32_t>"),
+    std::make_tuple("TYPE_INT32", dagbase::Value::Type::TYPE_INT32, "TypedPort<int32_t>"),
+    std::make_tuple("TYPE_UINT64", dagbase::Value::Type::TYPE_UINT64, "TypedPort<uint64_t>"),
+    std::make_tuple("TYPE_INT64", dagbase::Value::Type::TYPE_INT64, "TypedPort<int64_t>"),
+    std::make_tuple("TYPE_FLOAT", dagbase::Value::Type::TYPE_FLOAT, "TypedPort<float>"),
+    std::make_tuple("TYPE_DOUBLE", dagbase::Value::Type::TYPE_DOUBLE, "TypedPort<double>"),
+    std::make_tuple("TYPE_STRING", dagbase::Value::Type::TYPE_STRING, "TypedPort<string>"),
+    std::make_tuple("TYPE_BOOL", dagbase::Value::Type::TYPE_BOOL, "TypedPort<bool>"),
+    std::make_tuple("TYPE_OPAQUE", dagbase::Value::Type::TYPE_OPAQUE, "TypedPort<void*>")
 ));
 
 class StatusCode_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::StatusCode>>

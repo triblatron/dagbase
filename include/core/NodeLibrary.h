@@ -9,7 +9,6 @@
 
 #include <string>
 #include <string_view>
-#include <array>
 
 namespace dagbase
 {
@@ -28,7 +27,7 @@ namespace dagbase
 	public:
         NodeLibrary() = default;
 
-		virtual ~NodeLibrary() = default;
+		~NodeLibrary() override = default;
 
         NodeLibrary(const NodeLibrary& other) = default;
 
@@ -57,7 +56,7 @@ namespace dagbase
         //! Create a node from a stream.
         virtual Node* instantiateNode(dagbase::InputStream& str, dagbase::Lua& lua) = 0;
 
-        virtual Port* instantiatePort(const std::string& className, const std::string& name, PortType::Type type, PortDirection::Direction, Value value) = 0;
+        virtual Port* instantiatePort(const std::string& className, const std::string& name, PortDirection::Direction, Value value) = 0;
 
         virtual Port* instantiatePort(dagbase::InputStream& str, dagbase::Lua &lua) = 0;
 

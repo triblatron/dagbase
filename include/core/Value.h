@@ -216,6 +216,14 @@ namespace dagbase
         OutputStream& writeToStream(OutputStream& str) const;
 
         InputStream& readFromStream(InputStream& str);
+
+        static const char* typeString(Type value);
+
+        static const char* className(Type value);
+
+        static Type parseType(const char* str);
+
+        static Type parseClass(const char* str);
     private:
         ValueType _value;
     };
