@@ -235,8 +235,7 @@ namespace dagbase
     }
 
 
-    template<typename PortClass>
-    void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, PortClass value)
+    void readTypedPort(dagbase::KeyGenerator& rootKeyGen, dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, Value value)
     {
         auto* port = existingPort;
 
@@ -270,19 +269,19 @@ namespace dagbase
 
         if (portClass == "TypedPort<double>")
         {
-            readTypedPort<double>(rootKeyGen, portTable, node, existingPort, portTable.numberForNameOrDefault("value", 0.0));
+            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(portTable.numberForNameOrDefault("value", 0.0)));
         }
         else if (portClass == "TypedPort<int64_t>")
         {
-            readTypedPort<std::int64_t>(rootKeyGen, portTable, node, existingPort, portTable.integerForNameOrDefault("value", 0));
+            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(portTable.integerForNameOrDefault("value", 0)));
         }
         else if (portClass == "TypedPort<string>")
         {
-            readTypedPort<std::string>(rootKeyGen, portTable, node, existingPort, portTable.stringForNameOrDefault("value", ""));
+            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(portTable.stringForNameOrDefault("value", "")));
         }
         else if (portClass == "TypedPort<bool>")
         {
-            readTypedPort<bool>(rootKeyGen, portTable, node, existingPort, portTable.booleanForNameOrDefault("value", false));
+            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(portTable.booleanForNameOrDefault("value", false)));
         }
     }
 
