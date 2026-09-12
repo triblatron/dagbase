@@ -16,6 +16,7 @@
 #include <string>
 #include <string_view>
 #include <iterator>
+#include <set>
 
 namespace dagbase
 {
@@ -193,6 +194,9 @@ namespace dagbase
         dagbase::DebugPrinter& toLua(dagbase::DebugPrinter& printer);
 	    DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
 
+        void dfs(Node *node, const NodeArray *remainingNodes, std::set<Node *> *visited, std::vector<Node *> *nodeStack, std::set<Node *
+                 > *onStack, NodeArray *output);
+
         enum TopoSortResult
         {
             //! The sort completed successfully.
@@ -201,9 +205,12 @@ namespace dagbase
             CYCLES_DETECTED
         };
 
+        void findCyclePath(const NodeArray *remainingNodes, NodeArray *path);
+
         //! Perform a topological sort of this Graph.
         //! \return A valid order if successful, undefined otherwise.
-        TopoSortResult topologicalSort(NodeArray* order);
+	    //! \return A cycle path if a cycle was detected, empty otherwise.
+        TopoSortResult topologicalSort(NodeArray* order, NodeArray* cycle);
 
         //! Evaluate the nodes in this Graph using the given order.
         void evaluate(const NodeArray& order);

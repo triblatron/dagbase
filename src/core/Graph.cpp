@@ -11,12 +11,14 @@
 #include "core/Types.h"
 #include "core/CloningFacility.h"
 #include "util/Searchable.h"
-#include "util/DebugPrinter.h"
+#include "core/GraphNode.h"
 
 #include <queue>
 #include <algorithm>
+#include <set>
 
-#include "core/GraphNode.h"
+#include "../../../../../../../../../../../opt/homebrew/include/GL/glew.h"
+
 
 namespace dagbase
 {
@@ -247,7 +249,6 @@ namespace dagbase
         {
             std::string portName = portTable.stringForNameOrDefault("name", "<unnamed>");
             std::string portTypeStr = portTable.stringForNameOrDefault("type", "TYPE_UNKNOWN");
-            dagbase::Value::Type portType = dagbase::Value::parseType(portTypeStr.c_str());
             std::string dirStr = portTable.stringForNameOrDefault("direction", "DIR_UNKNOWN");
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
             std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
@@ -308,9 +309,9 @@ namespace dagbase
         return fromLua(lua, nodeLib, status);
     }
 
-    Graph::TopoSortResult Graph::topologicalSort(NodeArray *order)
+    Graph::TopoSortResult Graph::topologicalSort(NodeArray *order, NodeArray* cycle)
     {
-        if (order!=nullptr)
+        if (order!=nullptr && cycle)
         {
             for (auto signalPath : _signalPaths)
             {
@@ -323,6 +324,7 @@ namespace dagbase
             findAllNodes(&allNodesIncludingChildren);
             for (auto n : allNodesIncludingChildren)
             {
+                n->markNotProcessed();
                 if (n->hasNoDependencies())
                 {
                     nodesWithNoDependencies.push(n);
@@ -331,6 +333,7 @@ namespace dagbase
             while (!nodesWithNoDependencies.empty())
             {
                 auto n = nodesWithNoDependencies.front();
+                n->markProcessed();
                 nodesWithNoDependencies.pop();
                 order->a.emplace_back(n);
                 std::vector<dagbase::SignalPath*> allSignalPathsIncludingChildren;
@@ -354,6 +357,15 @@ namespace dagbase
             if (hasEdges())
             {
                 order->clear();
+                for (auto n : allNodesIncludingChildren)
+                {
+                    if (!n->isProcessed())
+                    {
+                        order->a.emplace_back(n);
+                    }
+                }
+                findCyclePath(order, cycle);
+
                 return Graph::CYCLES_DETECTED;
             }
             // else
@@ -834,6 +846,75 @@ namespace dagbase
         printer.println("}");
 
         return printer;
+    }
+
+    void Graph::dfs(Node* node, const NodeArray* remainingNodes, std::set<Node*>* visited, std::vector<Node*>* nodeStack, std::set<Node*>* onStack, NodeArray* output)
+	{
+	    if (visited && nodeStack && onStack && output)
+	    {
+	        visited->emplace(node);
+	        nodeStack->emplace_back(node);
+	        onStack->emplace(node);
+
+	        for (std::size_t i=0; i<node->numDynamicPorts(); ++i)
+	        {
+	            auto p = node->dynamicPort(i);
+
+	            if (p)
+	            {
+	                SignalPathTable::FindResultFrom result;
+	                _signalPaths.findBySource(p->id(), &result);
+	                for (auto it = result.p.first; it!=result.p.second; ++it)
+	                {
+	                    auto neighbour = (*it)->dest()->parent();
+
+	                    if (std::find(remainingNodes->begin(), remainingNodes->end(), neighbour) == remainingNodes->end())
+	                    {
+	                        continue;
+	                    }
+
+	                    if (onStack->find(neighbour)!=onStack->end())
+	                    {
+	                        auto idx = std::find(nodeStack->begin(), nodeStack->end(), neighbour);
+	                        if (idx != nodeStack->end())
+	                        {
+	                            auto copy = *nodeStack;
+	                            copy.erase(copy.begin(), copy.begin() + std::distance(nodeStack->begin(),idx));
+	                            output->a = copy;
+	                            output->a.emplace_back(neighbour);
+	                        }
+	                    }
+
+	                    if (visited->find(neighbour) == visited->end())
+	                    {
+	                        dfs(neighbour, remainingNodes, visited, nodeStack, onStack, output);
+	                    }
+	                }
+	            }
+
+	        }
+	        nodeStack->pop_back();
+	        onStack->erase(onStack->find(node));
+	    }
+	}
+
+    void Graph::findCyclePath(const NodeArray* remainingNodes, NodeArray *path)
+    {
+	    if (path)
+	    {
+	        std::set<Node*> visited;
+	        std::vector<Node*> stack;
+	        std::set<Node*> onStack;
+
+
+	        for (auto node : remainingNodes->a)
+	        {
+	            if (visited.find(node) == visited.end())
+	            {
+	                dfs(node, remainingNodes, &visited, &stack, &onStack, path);
+	            }
+	        }
+	    }
     }
 
 

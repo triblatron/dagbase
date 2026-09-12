@@ -34,8 +34,11 @@ namespace dagbase
             NODE_NONE           = 0,
 			NODE_INPUT_BIT		= 1U<<0U,
 			NODE_OUTPUT_BIT		= 1U<<1U,
-			NODE_INTERNAL_BIT	= 1U<<2U
+			NODE_INTERNAL_BIT	= 1U<<2U,
+	        NODE_PROCESSED_BIT  = 1U<<3U
 		};
+
+	    using ValueBuffer = std::vector<Value>;
 	public:
 		Node() = default;
 
@@ -120,6 +123,11 @@ namespace dagbase
 	        }
 
 	        return nullptr;
+	    }
+
+	    std::size_t numDynamicPorts() const
+	    {
+	        return _dynamicPorts.size();
 	    }
 
         //! Create a Node of the same type as this from a stream.
@@ -247,6 +255,8 @@ namespace dagbase
 
         [[nodiscard]]size_t numIncomingConnections() const;
 
+	    std::size_t numOutgoingConnections() const;
+
         [[nodiscard]]bool hasInputs()
         {
             for (std::size_t index=0; index<totalPorts(); ++index)
@@ -285,6 +295,21 @@ namespace dagbase
         //! Convert this Node to a Lua representation.
         virtual DebugPrinter &toLua(DebugPrinter &printer) const;
 
+        void markNotProcessed()
+        {
+            _flags = static_cast<NodeFlags>(_flags & ~NODE_PROCESSED_BIT);
+        }
+
+	    void markProcessed()
+        {
+            _flags = static_cast<NodeFlags>(_flags | NODE_PROCESSED_BIT);
+        }
+
+	    bool isProcessed() const
+        {
+            return (_flags & NODE_PROCESSED_BIT) != 0;
+        }
+
         static std::string flagsToString(NodeFlags value);
 
         static NodeFlags parseFlags(const std::string& str);
@@ -297,6 +322,7 @@ namespace dagbase
 	    void deleteDynamicPorts();
 	private:
         NodeID _id{NodeID::INVALID_ID};
+//	    ValueBuffer _values;
         std::string _name;
         // Position to allow for manual layout
         float _pos[2]{0,0};
