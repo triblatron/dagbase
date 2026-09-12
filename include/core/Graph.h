@@ -194,8 +194,8 @@ namespace dagbase
         dagbase::DebugPrinter& toLua(dagbase::DebugPrinter& printer);
 	    DebugPrinter& toLuaHelper(dagbase::DebugPrinter & str);
 
-        void dfs(Node *node, const VectorSet<Node *> &remainingNodes, std::vector<Node *> *nodeStack, VectorSet<Node *> *onStack, NodeArray
-                 *output);
+        void dfs(Node* node, const NodeSet& remainingNodes, std::vector<Node*>* nodeStack, NodeSet* onStack, NodeArray
+            * output);
 
         enum TopoSortResult
         {
@@ -205,7 +205,7 @@ namespace dagbase
             CYCLES_DETECTED
         };
 
-        void findCyclePath(const VectorSet<Node *> *remainingNodes, NodeArray *path);
+        void findCyclePath(const NodeSet& remainingNodes, NodeArray *path);
 
         //! Perform a topological sort of this Graph.
         //! \return A valid order if successful, undefined otherwise.

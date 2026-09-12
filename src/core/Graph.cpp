@@ -17,9 +17,6 @@
 #include <algorithm>
 #include <set>
 
-#include "../../../../../../../../../../../opt/homebrew/include/GL/glew.h"
-
-
 namespace dagbase
 {
 	Graph::~Graph()
@@ -357,7 +354,7 @@ namespace dagbase
             if (hasEdges())
             {
                 order->clear();
-                VectorSet<Node*> remainingNodes;
+                NodeSet remainingNodes;
                 for (auto n : allNodesIncludingChildren)
                 {
                     if (!n->isProcessed())
@@ -365,7 +362,7 @@ namespace dagbase
                         remainingNodes.emplace(n);
                     }
                 }
-                findCyclePath(&remainingNodes, cycle);
+                findCyclePath(remainingNodes, cycle);
 
                 return Graph::CYCLES_DETECTED;
             }
@@ -849,17 +846,17 @@ namespace dagbase
         return printer;
     }
 
-    void Graph::dfs(Node* node, const VectorSet<Node*>& remainingNodes, std::vector<Node*>* nodeStack, VectorSet<Node*>* onStack, NodeArray* output)
+    void dagbase::Graph::dfs(Node* node, const NodeSet& remainingNodes, std::vector<Node*>* nodeStack, NodeSet* onStack, NodeArray* output)
 	{
-	    if (nodeStack && onStack && output)
+        if (nodeStack && onStack && output)
 	    {
-	        node->markVisited();
-	        nodeStack->emplace_back(node);
-	        onStack->emplace(node);
+            node->markVisited();
+            nodeStack->emplace_back(node);
+            onStack->emplace(node);
 
-	        for (std::size_t i=0; i<node->numDynamicPorts(); ++i)
+            for (std::size_t i = 0; i<node->numDynamicPorts(); ++i)
 	        {
-	            auto p = node->dynamicPort(i);
+                auto p = node->dynamicPort(i);
 
 	            if (p)
 	            {
@@ -869,53 +866,53 @@ namespace dagbase
 	                {
 	                    auto neighbour = (*it)->dest()->parent();
 
-	                    if (remainingNodes.find(neighbour) == remainingNodes.end())
+                        if (remainingNodes.m.find(neighbour) == remainingNodes.end())
 	                    {
 	                        continue;
 	                    }
 
-	                    if (onStack->find(neighbour)!=onStack->end())
+                        if (onStack->m.find(neighbour) != onStack->end())
 	                    {
-	                        auto idx = std::find(nodeStack->begin(), nodeStack->end(), neighbour);
-	                        if (idx != nodeStack->end())
+                            auto idx = std::find(nodeStack->begin(), nodeStack->end(), neighbour);
+                            if (idx != nodeStack->end())
 	                        {
-	                            auto copy = *nodeStack;
-	                            copy.erase(copy.begin(), copy.begin() + std::distance(nodeStack->begin(),idx));
-	                            output->a = copy;
-	                            output->a.emplace_back(neighbour);
+                                auto copy = *nodeStack;
+                                copy.erase(copy.begin(), copy.begin() + std::distance(nodeStack->begin(), idx));
+                                output->a = copy;
+                                output->a.emplace_back(neighbour);
 	                        }
 	                    }
 
 	                    if (!neighbour->isVisited())
 	                    {
-	                        dfs(neighbour, remainingNodes, nodeStack, onStack, output);
+                            dfs(neighbour, remainingNodes, nodeStack, onStack, output);
 	                    }
 	                }
 	            }
 	        }
-	        nodeStack->pop_back();
-	        onStack->erase(onStack->find(node));
+            nodeStack->pop_back();
+            onStack->m.erase(onStack->m.find(node));
 	    }
 	}
 
-    void Graph::findCyclePath(const VectorSet<Node*>* remainingNodes, NodeArray *path)
+    void dagbase::Graph::findCyclePath(const NodeSet& remainingNodes, NodeArray* path)
     {
-	    if (path)
+        if (path)
 	    {
-	        VectorSet<Node*> visited;
+	        NodeSet visited;
 	        std::vector<Node*> stack;
-	        VectorSet<Node*> onStack;
+	        NodeSet onStack;
 
-	        for (auto node : *remainingNodes)
+            for (auto node : remainingNodes)
 	        {
 	            node->markNotVisited();
 	        }
 
-	        for (auto node : *remainingNodes)
+            for (auto node : remainingNodes)
 	        {
 	            if (!node->isVisited())
 	            {
-	                dfs(node, *remainingNodes, &stack, &onStack, path);
+                    dfs(node, remainingNodes, &stack, &onStack, path);
 	            }
 	        }
 	    }
