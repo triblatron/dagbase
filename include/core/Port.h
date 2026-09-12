@@ -25,66 +25,6 @@ namespace dagbase
     struct MetaPort;
     class Node;
 
-    class DAGBASE_API ValueVisitor
-    {
-    public:
-        void setInt(std::int64_t value)
-        {
-            _value = value;
-        }
-
-        void setDouble(double value)
-        {
-            _value = value;
-        }
-
-        void setString(std::string value)
-        {
-            _value = std::move(value);
-        }
-
-        void setBool(bool value)
-        {
-            _value = value;
-        }
-
-        void setValue(const Value& value)
-        {
-            _value = (value);
-        }
-
-        template<typename T>
-        void setValue(T value)
-        {
-            _value = value;
-        }
-
-        [[nodiscard]]Value value() const
-        {
-            return _value;
-        }
-    private:
-        Value _value;
-    };
-
-    class SetValueVisitor
-    {
-    public:
-        explicit SetValueVisitor(Value value)
-        :
-        _value(std::move(value))
-        {
-            // Do nothing.
-        }
-
-        [[nodiscard]]Value value() const
-        {
-            return _value;
-        }
-    private:
-        Value _value;
-    };
-
 	class DAGBASE_API Port : public dagbase::Class
     {
     public:
