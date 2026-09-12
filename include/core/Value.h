@@ -23,7 +23,7 @@ namespace dagbase
     {
     public:
         //! Typedef to improve readability when referencing the type of the variant.
-        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string, bool, Vec2, void*, std::vector<Value >> ValueType;
+        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*> ValueType;
         enum Type
         {
             TYPE_UINT8,
@@ -84,13 +84,13 @@ namespace dagbase
             std::is_convertible_v<T, std::int32_t> ||
             std::is_convertible_v<T, std::uint64_t> ||
             std::is_convertible_v<T, std::int64_t> ||
-            std::is_convertible_v<T, std::string> ||
+            std::is_convertible_v<T, std::string*> ||
             std::is_convertible_v<T, bool> ||
             std::is_convertible_v<T, float> ||
             std::is_convertible_v<T, double> ||
             std::is_convertible_v<T, Vec2> ||
             std::is_convertible_v<T, void*> ||
-            std::is_convertible_v<T, std::vector<Value>>>;
+            std::is_convertible_v<T, std::vector<Value>*>>;
 
         //! Perfect forwarding ctor for supported types.
         template<typename T,typename = EnableIfSupported<T>>
@@ -102,22 +102,16 @@ namespace dagbase
         }
 
         //! Copy ctor.
-        Value(const Value& other) = default;
+        Value(const Value& other);
 
         //! Move ctor.
-        Value(Value&& value) = default;
+        Value(Value&& value);
+
+        ~Value();
 
         //! Assignment of another Value.
-        Value& operator=(const Value& value)
-        {
-            if (this != &value)
-            {
-                _value = value._value;
-            }
+        Value& operator=(const Value& value);
 
-            return *this;
-        }
-        
         //! Perfect-forwarding assignment of supported types.
         template<typename T, typename = EnableIfSupported<T>>
         Value& operator=(T&& value)
@@ -149,7 +143,7 @@ namespace dagbase
 
         bool empty() const
         {
-            return type() == TYPE_VECTOR?std::get<TYPE_VECTOR>(_value).empty():true;
+            return type() == TYPE_VECTOR?std::get<TYPE_VECTOR>(_value)->empty():true;
         }
 
         Value operator[](std::size_t index)
@@ -158,9 +152,9 @@ namespace dagbase
             {
                 auto vec = std::get<TYPE_VECTOR>(_value);
 
-                if (index < vec.size())
+                if (index < vec->size())
                 {
-                    return vec[index];
+                    return (*vec)[index];
                 }
             }
 
@@ -175,12 +169,12 @@ namespace dagbase
             // If we are currently a vector, append the value.
             if (_value.index()==TYPE_VECTOR)
             {
-                std::get<std::vector<Value>>(_value).push_back(Value(v));
+                std::get<std::vector<Value>*>(_value)->push_back(Value(v));
             }
             else
             // If we are currently a scalar, convert to a vector with the original scalar and the new value.
             {
-                _value = std::vector<Value> {*this,Value(v)};
+                _value = new std::vector<Value> {*this,Value(v)};
             }
         }
 
@@ -203,6 +197,20 @@ namespace dagbase
 
         bool operator==(const Value& other) const
         {
+            if (type() == TYPE_STRING && other.type() == TYPE_STRING)
+            {
+                auto op1 = this->operator std::string*();
+                auto op2 = other.operator std::string*();
+
+                return op1 && op2 && *op1 == *op2;
+            }
+            if (type() == TYPE_VECTOR && other.type() == TYPE_VECTOR)
+            {
+                auto op1 = this->operator std::vector<Value>*();
+                auto op2 = other.operator std::vector<Value>*();
+
+                return op1 && op2 && *op1 == *op2;
+            }
             return _value == other._value;
         }
 

@@ -242,11 +242,11 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testPushBack, ::testing::Values(
     std::make_tuple(dagbase::Value(std::int64_t{1})),
     std::make_tuple(dagbase::Value(float(1.5f))),
     std::make_tuple(dagbase::Value(double(1.5))),
-    std::make_tuple(dagbase::Value("test")),
+    std::make_tuple(dagbase::Value(new std::string("test"))),
     std::make_tuple(dagbase::Value(true)),
     std::make_tuple(dagbase::Value(dagbase::Vec2{1.0f,2.0f})),
-    std::make_tuple(dagbase::Value(nullptr)),
-    std::make_tuple(dagbase::Value(std::vector<dagbase::Value>{dagbase::Value{1},dagbase::Value{2},dagbase::Value{3}}))
+    std::make_tuple(dagbase::Value((void*)nullptr)),
+    std::make_tuple(dagbase::Value(new std::vector<dagbase::Value>{dagbase::Value{1},dagbase::Value{2},dagbase::Value{3}}))
     ));
 
 class Value_testSerialise : public ::testing::TestWithParam<std::tuple<dagbase::Value>>
@@ -280,9 +280,9 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testSerialise, ::testing::Values(
     std::make_tuple(dagbase::Value(std::int64_t{1})),
     std::make_tuple(dagbase::Value(1.5f)),
     std::make_tuple(dagbase::Value(1.5)),
-    std::make_tuple(dagbase::Value("test")),
+    std::make_tuple(dagbase::Value(new std::string("test"))),
     std::make_tuple(dagbase::Value(false)),
     std::make_tuple(dagbase::Value(true)),
     std::make_tuple(dagbase::Value(dagbase::Vec2())),
-    std::make_tuple(dagbase::Value(std::vector<dagbase::Value>({dagbase::Value(std::uint32_t{100})})))
+    std::make_tuple(dagbase::Value(new std::vector<dagbase::Value>({dagbase::Value(std::uint32_t{100})})))
     ));

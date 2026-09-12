@@ -14,6 +14,68 @@
 
 namespace dagbase
 {
+    Value::Value(const Value &other)
+    {
+        if (other.type() == TYPE_STRING && other.operator std::string*())
+        {
+            _value = new std::string(*other.operator std::string*());
+        }
+        else if (other.type() == TYPE_VECTOR && other.operator std::vector<Value>*())
+        {
+            _value = new std::vector<Value>(*other.operator std::vector<Value>*());
+        }
+        else
+        {
+            _value = other._value;
+        }
+    }
+
+    Value::Value(Value &&value)
+    {
+        _value = value._value;
+        value._value = (std::uint8_t)0;
+    }
+
+    Value::~Value()
+    {
+        if (type() == TYPE_STRING)
+        {
+            delete this->operator std::string*();
+            *this = (std::string*)nullptr;
+        }
+        else if (type() == TYPE_VECTOR)
+        {
+            delete this->operator std::vector<Value>*();
+            *this = (std::vector<Value>*)nullptr;
+        }
+    }
+
+    Value & Value::operator=(const Value &value)
+    {
+        if (this != &value)
+        {
+            if (type() == TYPE_STRING)
+            {
+                delete this->operator std::string*();
+            }
+            else if (type() == TYPE_VECTOR)
+            {
+                delete this->operator std::vector<Value>*();
+            }
+            _value = value._value;
+            if (type() == TYPE_STRING)
+            {
+                _value = new std::string(*this->operator std::string*());
+            }
+            else if (type() == TYPE_VECTOR)
+            {
+                _value = new std::vector<Value>(*this->operator std::vector<Value>*());
+            }
+        }
+
+        return *this;
+    }
+
     bool Value::operator<(const Value &other) const
     {
         return _value < other._value;
@@ -27,8 +89,10 @@ namespace dagbase
                 Editable::editType(label, &std::get<TYPE_INT64>(_value));
                 break;
             case TYPE_STRING:
-                Editable::editType(label, &std::get<TYPE_STRING>(_value));
+            {
+                Editable::editType(label, std::get<TYPE_STRING>(_value));
                 break;
+            }
             case TYPE_DOUBLE:
                 Editable::editType(label, &std::get<TYPE_DOUBLE>(_value));
                 break;
@@ -80,7 +144,7 @@ namespace dagbase
                 str.writeDouble(this->operator double());
                 break;
             case TYPE_STRING:
-                str.writeString(this->operator std::string(), false);
+                str.writeString(*static_cast<std::string*>(*this), false);
                 break;
             case TYPE_BOOL:
                 str.writeBool(this->operator bool());
@@ -92,12 +156,16 @@ namespace dagbase
                 assert(false);
             case TYPE_VECTOR:
             {
-                const auto & vec = this->operator std::vector<Value>();
-                str.writeUInt32(vec.size());
-                for (const auto& v : vec)
-                {
-                    v.writeToStream(str);
-                }
+                const auto & vec = this->operator std::vector<Value>*();
+                std::size_t size{0};
+                if (vec)
+                    size = vec->size();
+                str.writeUInt32(size);
+                if (vec)
+                    for (const auto& v : *vec)
+                    {
+                        v.writeToStream(str);
+                    }
                 break;
             }
             case TYPE_UNKNOWN:
@@ -193,8 +261,8 @@ namespace dagbase
             }
             case TYPE_STRING:
             {
-                std::string valueFromStream{};
-                str.readString(&valueFromStream, false);
+                std::string* valueFromStream = new std::string();
+                str.readString(valueFromStream, false);
                 *this = valueFromStream;
                 break;
             }
@@ -218,7 +286,7 @@ namespace dagbase
             {
                 std::uint32_t size{};
                 str.readUInt32(&size);
-                (*this) = std::vector<Value>();
+                (*this) = new std::vector<Value>();
                 for (std::size_t i=0; i<size; ++i)
                 {
                     Value v;
