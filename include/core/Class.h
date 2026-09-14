@@ -52,6 +52,10 @@ namespace dagbase
         virtual OutputStream& writeToStream(OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         virtual InputStream& readFromStream(InputStream& str, NodeLibrary& nodeLib, Lua& lua);
+
+        virtual OutputStream& writeFlat(OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+
+        virtual InputStream& readFlat(InputStream& str, NodeLibrary& nodeLib, Lua& lua);
     private:
         MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };

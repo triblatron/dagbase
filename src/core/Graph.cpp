@@ -672,6 +672,201 @@ namespace dagbase
         return str;
     }
 
+    dagbase::OutputStream & Graph::writeFlat(dagbase::OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+	    str.writeHeader("Graph");
+	    str.writeField("numNodes");
+	    str.writeUInt32(_nodes.size());
+	    // Write out all Nodes
+	    for (auto p : _nodes)
+	    {
+	        std::string className = p.second->className();
+	        str.writeField("className");
+	        str.writeString(className, true);
+	        p.second->writeFlat(str, nodeLib, lua);
+	    }
+	    // Write out all Ports
+	    str.writeField("numPorts");
+	    str.writeUInt32(numPorts());
+	    for (auto p : _ports)
+	    {
+	        p.second->writeFlat(str, nodeLib, lua);
+	    }
+	    // Write out Node-Port relation
+	    str.writeField("numNodePorts");
+	    str.writeUInt32(numNodes());
+	    for (auto p : _nodes)
+	    {
+	        str.writeHeader("NodePort");
+	        str.writeField("node");
+	        p.first.writeToStream(str);
+	        str.writeField("numPorts");
+	        str.writeUInt32(p.second->numDynamicPorts());
+	        for (std::size_t i=0; i<p.second->numDynamicPorts(); ++i)
+	        {
+	            str.writeField("port");
+	            p.second->dynamicPort(i)->id().writeToStream(str);
+	            str.writeField("metaPort");
+	            p.second->dynamicMetaPort(i)->write(str);
+	        }
+	        str.writeFooter();
+	    }
+
+	    str.writeField("numSignalPaths");
+	    str.writeUInt32(numSignalPaths());
+	    for (auto p : _signalPaths)
+	    {
+	        p.second->writeFlat(str, nodeLib, lua);
+	    }
+
+	    // Write SignalPath-Node relation
+	    str.writeField("numSignalPathPorts");
+	    str.writeUInt32(numSignalPaths());
+	    for (auto p : _signalPaths)
+	    {
+	        str.writeHeader("SignalPathPort");
+	        str.writeField("id");
+	        p.first.writeToStream(str);
+	        str.writeField("from");
+	        p.second->from().writeToStream(str);
+	        str.writeField("to");
+	        p.second->to().writeToStream(str);
+	        str.writeFooter();
+	    }
+
+	    return str;
+    }
+
+    InputStream& Graph::readFlat(InputStream &str, NodeLibrary &nodeLib, Lua &lua)
+    {
+	    std::string className;
+	    str.readHeader(&className);
+        std::uint32_t numNodes=0;
+	    std::string fieldName;
+	    str.readField(&fieldName);
+        str.readUInt32(&numNodes);
+        if (_nodeLib!=nullptr)
+        {
+            for (std::size_t i=0; i<numNodes; ++i)
+            {
+                str.readField(&fieldName);
+                std::string nodeClass;
+                str.readString(&nodeClass, true);
+                auto node = nodeLib.instantiateNode(*this, nodeClass, "" );
+
+                if (node)
+                {
+                    node->readFlat(str, nodeLib, lua);
+                    addNode(node);
+                }
+            }
+        }
+
+	    std::uint32_t numPorts = 0;
+	    str.readField(&fieldName);
+	    str.readUInt32(&numPorts);
+
+	    for (std::uint32_t i=0; i<numPorts; ++i)
+	    {
+	        auto port = new Port();
+
+	        if (port)
+	        {
+	            port->readFlat(str, nodeLib, lua);
+	            addPort(port);
+	        }
+	    }
+
+	    std::uint32_t numNodePorts{0};
+	    str.readField(&fieldName);
+	    str.readUInt32(&numNodePorts);
+
+	    assert(numNodes==numNodePorts);
+
+	    for (std::uint32_t i=0; i<numNodePorts; ++i)
+	    {
+            str.readHeader(&className);
+	        str.readField(&fieldName);
+	        NodeID parentID{NodeID::INVALID_ID};
+	        parentID.readFromStream(str);
+	        str.readField(&fieldName);
+	        PortID portID{PortID::INVALID_ID};
+	        portID.readFromStream(str);
+	        str.readField(&fieldName);
+	        MetaPort metaPort;
+	        metaPort.read(str);
+	        auto n = node(parentID);
+	        auto p = port(portID);
+	        if (n && p)
+	        {
+	            n->addDynamicPort(p, metaPort.flags);
+	        }
+	    }
+
+        std::uint32_t numSignalPaths=0;
+	    str.readField(&fieldName);
+        str.readUInt32(&numSignalPaths);
+        for (std::uint32_t i=0; i<numSignalPaths; ++i)
+        {
+            auto p = new SignalPath();
+            p->readFlat(str, nodeLib, lua);
+            if (p != nullptr)
+            {
+                addSignalPath(p);
+            }
+        }
+
+	    // SignalPaths to Ports
+	    std::uint32_t numSignalPathPorts{0};
+	    str.readField(&fieldName);
+	    str.readUInt32(&numSignalPathPorts);
+	    assert(numSignalPaths == numSignalPathPorts);
+	    for (std::uint32_t i=0; i<numSignalPathPorts; ++i)
+	    {
+	        str.readHeader(&className);
+	        SignalPathID id{SignalPathID::INVALID_ID};
+	        str.readField(&fieldName);
+	        id.readFromStream(str);
+	        auto p = signalPath(id);
+	        PortID source{PortID::INVALID_ID};
+	        str.readField(&fieldName);
+	        source.readFromStream(str);
+	        PortID dest{PortID::INVALID_ID};
+	        str.readField(&fieldName);
+	        dest.readFromStream(str);
+	        if (p)
+	        {
+	            p->setSource(port(source));
+	            p->setDest(port(dest));
+	        }
+	        str.readFooter();
+	    }
+        std::uint32_t numChildren = 0;
+	    str.readField(&fieldName);
+        str.readUInt32(&numChildren);
+        for (std::uint32_t i=0; i<numChildren; ++i)
+        {
+            dagbase::Stream::ObjId id = 0;
+            Graph* child = nullptr;
+            auto ref = str.readRef(&id);
+            if (id != 0)
+            {
+                if (ref != nullptr)
+                {
+                    child = static_cast<Graph*>(ref);
+                }
+                else
+                {
+                    child = new Graph(str, nodeLib, lua);
+                    addChild(child);
+                }
+            }
+        }
+	    str.readFooter();
+
+	    return str;
+    }
+
     Graph::Graph(dagbase::InputStream &str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua)
     :
     _signalPaths(this),

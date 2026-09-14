@@ -87,6 +87,36 @@ namespace dagbase
         return format;
     }
 
+    OutputStream & Class::writeFlat(OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+        str.writeHeader("Class");
+        str.writeField("errod");
+        str.writeUInt32(_errod);
+        str.writeFooter();
+
+        return str;
+    }
+
+    InputStream & Class::readFlat(InputStream &str, NodeLibrary &nodeLib, Lua &lua)
+    {
+        std::string className;
+        str.readHeader(&className);
+
+        if (className!="Class")
+            return str;
+        std::string fieldName;
+        str.readField(&fieldName);
+        if (fieldName!="errod")
+            return str;
+        std::uint32_t errod;
+        str.readUInt32(&errod);
+
+        _errod = Error(errod);
+        str.readFooter();
+
+        return str;
+    }
+
     // void Class::setField( size_t index, lua_Integer value )
     // {
     //     _fields[index]->setValue(value);

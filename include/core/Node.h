@@ -326,6 +326,10 @@ namespace dagbase
             return (_flags & NODE_VISITED_BIT) != 0;
         }
 
+        OutputStream& writeFlat(OutputStream & str, NodeLibrary & nodeLib, Lua & lua) const override;
+
+	    InputStream& readFlat(InputStream& str, NodeLibrary& nodeLib, Lua& lua) override;
+
         static std::string flagsToString(NodeFlags value);
 
         static NodeFlags parseFlags(const std::string& str);

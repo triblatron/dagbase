@@ -8,6 +8,8 @@
 #include "util/VectorSet.h"
 #include "util/SearchableSet.h"
 #include "core/ConfigurationElement.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 
 #include <unordered_set>
 #include <cstdint>
@@ -123,7 +125,21 @@ namespace dagbase
             
             return {};
         }
-    private:             
+
+        OutputStream& writeToStream(OutputStream & str) const
+        {
+            str.writeUInt32(id);
+
+            return str;
+        }
+
+        InputStream& readFromStream(InputStream& str)
+        {
+            str.readUInt32(&id);
+
+            return str;
+        }
+    private:
         std::uint32_t id{INVALID_ID};
     };
 

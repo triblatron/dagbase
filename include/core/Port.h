@@ -228,7 +228,11 @@ namespace dagbase
 
         Variant find(std::string_view path) const;
 
-	    static std::string portFlagsToString(PortFlags flags);
+        OutputStream& writeFlat( OutputStream & str, NodeLibrary & nodeLib, Lua & lua) const override;
+
+	    InputStream& readFlat( InputStream& str, NodeLibrary& nodeLib, Lua& lua) override;
+
+        static std::string portFlagsToString(PortFlags flags);
 
 	    static PortFlags parsePortFlags(const std::string& str);
     protected:

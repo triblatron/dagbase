@@ -183,6 +183,8 @@ namespace dagbase
             _signalPaths.findByDest(id, result);
         }
 
+        InputStream& readFlat(InputStream & str, NodeLibrary & nodeLib, Lua & lua);
+
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
 		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str, Status* status = nullptr);
@@ -285,6 +287,9 @@ namespace dagbase
         //! Write this Graph to a stream.
         dagbase::OutputStream& write(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
+	    //! Write this Graph to a stream in a simplified manner that does not use writeRef().
+	    dagbase::OutputStream& writeFlat(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+
         //! Pretty-print this Graph for debugging purposes.
         void debug() const;
 
@@ -326,7 +331,7 @@ namespace dagbase
         {
             _parent = parent;
         }
-		typedef dagbase::VectorMapFromId<std::int64_t, dagbase::Node*> NodeMap;
+		typedef dagbase::VectorMapFromId<NodeID, dagbase::Node*> NodeMap;
 		NodeMap _nodes;
         typedef std::unordered_map<std::string, dagbase::Node*> NameToNodeMap;
         NameToNodeMap _nodeLookupByName;

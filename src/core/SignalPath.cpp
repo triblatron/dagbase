@@ -84,6 +84,25 @@ namespace dagbase
         return {};
     }
 
+    OutputStream & SignalPath::writeFlat(OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+        str.writeHeader("SignalPath");
+        str.writeField("id");
+        _id.writeToStream(str);
+
+        return str;
+    }
+
+    InputStream & SignalPath::readFlat(InputStream &str, NodeLibrary &nodeLib, Lua &lua)
+    {
+        std::string className, fieldName;
+        str.readHeader(&className);
+        str.readField(&fieldName);
+        _id.readFromStream(str);
+        
+        return str;
+    }
+
 
     SignalPath::SignalPath(Graph* parent, KeyGenerator& keyGen, PortID source, PortID dest)
         :

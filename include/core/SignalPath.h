@@ -29,6 +29,8 @@ namespace dagbase
             REMOVED_BIT = 1<<0
         };
     public:
+        SignalPath() = default;
+
         SignalPath(Graph* parent, KeyGenerator& keyGen, Port* source, Port* dest)
         :
         _parent(parent),
@@ -179,6 +181,10 @@ namespace dagbase
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         dagbase::Variant find(std::string_view path) const;
+
+        OutputStream& writeFlat(OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
+
+        InputStream& readFlat(InputStream & str, NodeLibrary & nodeLib, Lua & lua);
     private:
         Graph* _parent{ nullptr };
         SignalPathID _id;

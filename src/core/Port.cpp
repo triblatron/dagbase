@@ -445,6 +445,40 @@ namespace dagbase
         return {};
     }
 
+    OutputStream & Port::writeFlat(OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+        str.writeHeader("Port");
+        str.writeField("id");
+        _id.writeToStream(str);
+        str.writeField("name");
+        str.writeString(_name, true);
+        str.writeField("direction");
+        str.writeUInt32(_direction);
+        str.writeField("value");
+        _value.writeToStream(str);
+        str.writeFooter();
+        return str;
+    }
+
+    InputStream & Port::readFlat(InputStream &str, NodeLibrary &nodeLib, Lua &lua)
+    {
+        std::string className;
+        std::string fieldName;
+        str.readHeader(&className);
+        str.readField(&fieldName);
+        _id.readFromStream(str);
+        str.readField(&fieldName);
+        str.readString(&_name, true);
+        str.readField(&fieldName);
+        std::uint32_t rawDirection{0};
+        str.readUInt32(&rawDirection);
+        _direction = static_cast<PortDirection::Direction>(rawDirection);
+        str.readField(&fieldName);
+        _value.readFromStream(str);
+        str.readFooter();
+        return str;
+    }
+
     std::string Port::portFlagsToString(PortFlags flags)
     {
         std::string retval;

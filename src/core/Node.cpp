@@ -361,6 +361,53 @@ namespace dagbase
         return printer;
     }
 
+    OutputStream& Node::writeFlat(OutputStream &str, NodeLibrary &nodeLib, Lua &lua) const
+    {
+        str.writeHeader("Node");
+        Class::writeToStream(str, nodeLib, lua);
+        str.writeField("id");
+        _id.writeToStream(str);
+        str.writeField("name");
+        str.writeString(_name, true);
+        str.writeField("category");
+        str.writeUInt32(_category);
+        str.writeField("flags");
+        str.writeUInt32(_flags);
+        str.writeField("x");
+        str.writeFloat(_pos[0]);
+        str.writeField("y");
+        str.writeFloat(_pos[1]);
+        str.writeFooter();
+
+        return str;
+    }
+
+    InputStream & Node::readFlat(InputStream &str, NodeLibrary &nodeLib, Lua &lua)
+    {
+        std::string className;
+        str.readHeader(&className);
+        Class::readFromStream(str, nodeLib, lua);
+        std::string fieldName;
+        str.readField(&fieldName);
+        _id.readFromStream(str);
+        str.readField(&fieldName);
+        str.readString(&_name, true);
+        str.readField(&fieldName);
+        std::uint32_t category{0};
+        str.readUInt32(&category);
+        _category = static_cast<NodeCategory::Category>(category);
+        str.readField(&fieldName);
+        std::uint32_t flags{0};
+        str.readUInt32(&flags);
+        _flags = static_cast<Node::NodeFlags>(flags);
+        str.readField(&fieldName);
+        str.readFloat(&_pos[0]);
+        str.readField(&fieldName);
+        str.readFloat(&_pos[1]);
+        str.readFooter();
+        return str;
+    }
+
     std::string Node::flagsToString(NodeFlags value)
     {
         std::string retval;
