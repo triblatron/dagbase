@@ -144,6 +144,8 @@ namespace dagbase
 	    //! and can just call the copy constructor on *this.
 	    virtual Node* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
 
+	    virtual Node* instantiate() = 0;
+
         //! Write ourself to a binary output stream
         //! \param[in] str The stream
 	    //! \param[in] nodeLib : NodeLibrary The library from which the node came

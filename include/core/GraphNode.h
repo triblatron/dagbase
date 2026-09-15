@@ -15,6 +15,8 @@ namespace dagbase
     class DAGBASE_API GraphNode : public Node
     {
     public:
+        GraphNode() = default;
+
         GraphNode(dagbase::KeyGenerator& keyGen, std::string name, dagbase::NodeCategory::Category category=dagbase::NodeCategory::CAT_NONE);
 
         GraphNode(const GraphNode& other, dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen);
@@ -79,6 +81,11 @@ namespace dagbase
         Node* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) override
         {
             return new GraphNode(*this, facility, copyOp, keyGen);
+        }
+
+        GraphNode* instantiate() override
+        {
+            return new GraphNode();
         }
 
         dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;

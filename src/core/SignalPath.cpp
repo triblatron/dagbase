@@ -89,7 +89,7 @@ namespace dagbase
         str.writeHeader("SignalPath");
         str.writeField("id");
         _id.writeToStream(str);
-
+        str.writeFooter();
         return str;
     }
 
@@ -99,7 +99,8 @@ namespace dagbase
         str.readHeader(&className);
         str.readField(&fieldName);
         _id.readFromStream(str);
-        
+        str.readFooter();
+
         return str;
     }
 
