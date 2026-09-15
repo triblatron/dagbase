@@ -17,8 +17,6 @@
 #include <algorithm>
 #include <set>
 
-#include "core/SignalPathDef.h"
-
 namespace dagbase
 {
 	Graph::~Graph()
