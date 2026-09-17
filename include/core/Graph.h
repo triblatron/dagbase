@@ -185,6 +185,8 @@ namespace dagbase
 
         InputStream& readFlat(InputStream & str, NodeLibrary & nodeLib, Lua & lua);
 
+        std::uint32_t findChild(Graph* graph) const;
+
         //! Create a Graph from a Lua string representation.
         //! \retval nullptr if there is a syntax error.
 		static Graph* fromString(dagbase::NodeLibrary& nodeLib, const char* str, Status* status = nullptr);

@@ -88,7 +88,7 @@ namespace dagbase
             return new GraphNode();
         }
 
-        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const override;
 
         dagbase::Variant find(std::string_view path) const override;
 

@@ -48,6 +48,8 @@ namespace dagbase
         //! \throw runtime_error if the node class cannot be found.
 		virtual Node* instantiateNode(dagbase::KeyGenerator& keyGen, const std::string& className, const std::string& name) = 0;
 
+	    virtual Node* instantiateEmptyNode(dagbase::KeyGenerator& keyGen, const std::string& className) = 0;
+
         //! Write the given node to the stream.
         virtual dagbase::OutputStream& write(dagbase::OutputStream& str, Node* node, Lua &lua) = 0;
 
