@@ -6,6 +6,7 @@
 
 #include "core/Value.h"
 #include "core/Editable.h"
+#include "core/ConfigurationElement.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
 #include "util/enums.h"
@@ -30,7 +31,7 @@ namespace dagbase
         }
     }
 
-    Value::Value(Value &&value)
+    Value::Value(Value &&value) noexcept
     {
         _value = value._value;
         value._value = (std::uint8_t)0;
@@ -48,6 +49,13 @@ namespace dagbase
             delete this->operator std::vector<Value>*();
             *this = (std::vector<Value>*)nullptr;
         }
+    }
+
+    void Value::configure(dagbase::ConfigurationElement &config)
+    {
+        auto value = config.value();
+
+        _value = value.cast(Variant::TYPE_VALUE).as<Value>();
     }
 
     Value & Value::operator=(const Value &value)

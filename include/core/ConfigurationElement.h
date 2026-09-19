@@ -240,14 +240,9 @@ namespace dagbase
                 }
         }
 
-        static void readConfig(ConfigurationElement& config, const char* name, Variant* value)
-        {
-            if (value)
-                if (auto element = config.findElement(name); element)
-                {
-                    *value = element->value();
-                }
-        }
+        static void readConfig(ConfigurationElement& config, const char* name, Variant* value);
+
+        static void readConfig(ConfigurationElement& config, const char* name, Value* value);
 
         template<typename Associative>
         static void readConfigSet(ConfigurationElement& config, const char* name, Associative* value)

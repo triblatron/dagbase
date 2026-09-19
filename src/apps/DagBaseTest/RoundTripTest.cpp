@@ -39,7 +39,8 @@ INSTANTIATE_TEST_SUITE_P(Variant, VariantIndex_testRoundTrip, ::testing::Values(
         std::make_tuple("TYPE_COLOUR", dagbase::Variant::TYPE_COLOUR),
         std::make_tuple("TYPE_VEC2", dagbase::Variant::TYPE_VEC2),
         std::make_tuple("TYPE_UINT", dagbase::Variant::TYPE_UINT),
-        std::make_tuple("TYPE_FUNCTION", dagbase::Variant::TYPE_FUNCTION)
+        std::make_tuple("TYPE_FUNCTION", dagbase::Variant::TYPE_FUNCTION),
+        std::make_tuple("TYPE_VALUE", dagbase::Variant::TYPE_VALUE)
         ));
 
 class ConfigurationElementRelOp_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::ConfigurationElement::RelOp>>

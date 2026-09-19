@@ -14,6 +14,7 @@ struct ImGuiContext;
 
 namespace dagbase
 {
+    class ConfigurationElement;
     class InputStream;
     class OutputStream;
 
@@ -67,7 +68,7 @@ namespace dagbase
 
         explicit Value(ValueType value)
 	        :
-        _value(std::move(value))
+        _value(value)
         {
 	        // Do nothing.
         }
@@ -105,9 +106,11 @@ namespace dagbase
         Value(const Value& other);
 
         //! Move ctor.
-        Value(Value&& value);
+        Value(Value&& value) noexcept;
 
         ~Value();
+
+        void configure(dagbase::ConfigurationElement& config);
 
         //! Assignment of another Value.
         Value& operator=(const Value& value);

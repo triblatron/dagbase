@@ -362,6 +362,40 @@ namespace dagbase
         return false;
     }
 
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Variant *value)
+    {
+        if (value)
+            if (auto element = config.findElement(name); element)
+            {
+                if (element->numChildren()==0)
+                    *value = element->value();
+                else
+                {
+                    Variant::Index typeIndex{Variant::TYPE_UNKNOWN};
+                    readConfig<Variant::Index>(*element, "typeIndex", &Variant::parseIndex, &typeIndex);
+                    switch (typeIndex)
+                    {
+                        case Variant::TYPE_VALUE:
+                        {
+                            Value v;
+                            readConfig(*element, "value", &v);
+                            *value = Variant(v);
+                            break;
+                        }
+                    }
+                }
+            }
+    }
+
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Value *value)
+    {
+        if (value)
+        {
+            if (auto element = config.findElement(name); element)
+                value->configure(*element);
+        }
+    }
+
     void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, std::uint32_t *value)
     {
         if (value)
