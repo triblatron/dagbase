@@ -411,6 +411,27 @@ namespace dagbase
         }
     }
 
+    void Graph::removeSignalPathsForPort(Port *port)
+    {
+	    if (port)
+	    {
+	        // Mark all SignalPaths form and to this Port as removed.
+	        SignalPathTable::FindResultFrom resultFrom, resultTo;
+	        _signalPaths.findBySource(port->id(), &resultFrom);
+	        _signalPaths.findByDest(port->id(), &resultTo);
+	        // Delete all marked SignalPaths
+	        for (auto it=resultFrom.p.first; it!=resultFrom.p.second; ++it)
+	        {
+	            (*it)->markRemoved();
+	        }
+	        for (auto it=resultTo.p.first; it!=resultTo.p.second; ++it)
+	        {
+	            (*it)->markRemoved();
+	        }
+	        removeMarkedSignalPaths();
+	    }
+    }
+
     void Graph::removeNode(dagbase::Node *node)
     {
         if (node != nullptr)
@@ -890,6 +911,7 @@ namespace dagbase
 	    if (auto it=_ports.find(portId); it!=_ports.end())
 	    {
 	        it->second->parent()->removePort(it->second);
+	        removeSignalPathsForPort(it->second);
 	        _ports.erase(it);
 	        status.status = Status::STATUS_OK;
 	    }

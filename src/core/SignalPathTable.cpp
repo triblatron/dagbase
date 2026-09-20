@@ -133,6 +133,14 @@ namespace dagbase
         auto keepByID = std::remove_if(_signalPathsByID.begin(), _signalPathsByID.end(), [](const auto& p) {
             return p.second->isRemoved();
             });
+
+        for (auto& p : _signalPathsByID)
+        {
+            if (p.second->isRemoved())
+            {
+                delete p.second;
+            }
+        }
         _signalPathsByID.erase(keepByID, _signalPathsByID.end());
         assert(_signalPathsByID.size() == _signalPathsFrom.size());
         assert(_signalPathsFrom.size() == _signalPathsTo.size());
