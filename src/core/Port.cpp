@@ -412,6 +412,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "flags", std::uint32_t(_flags));
+        if (retval.has_value())
+            return retval;
+
         retval = findEndpoint(path, "value", Variant(_value));
         if (retval.has_value())
             return retval;

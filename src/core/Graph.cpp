@@ -883,6 +883,26 @@ namespace dagbase
 	    return std::numeric_limits<std::uint32_t>::max();
     }
 
+    Status Graph::deletePort(PortID portId)
+    {
+	    Status status{Status::STATUS_UNKNOWN};
+
+	    if (auto it=_ports.find(portId); it!=_ports.end())
+	    {
+	        it->second->parent()->removePort(it->second);
+	        _ports.erase(it);
+	        status.status = Status::STATUS_OK;
+	    }
+	    else
+	    {
+	        status.status = Status::STATUS_INVALID_PORT;
+	        status.resultType = Status::RESULT_PORT_ID;
+	        status.result = portId;
+	    }
+
+	    return status;
+    }
+
     Graph::Graph(dagbase::InputStream &str, dagbase::NodeLibrary& nodeLib, dagbase::Lua& lua)
     :
     _signalPaths(this),

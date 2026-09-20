@@ -408,6 +408,15 @@ namespace dagbase
         return str;
     }
 
+    void Node::removePort(Port *port)
+    {
+        if (auto it=std::find(_dynamicPorts.begin(), _dynamicPorts.end(), port); it!=_dynamicPorts.end())
+        {
+            _dynamicPorts.a.erase(it);
+            _dynamicMetaPorts.erase(_dynamicMetaPorts.begin() + std::distance(_dynamicPorts.begin(), it));
+        }
+    }
+
     std::string Node::flagsToString(NodeFlags value)
     {
         std::string retval;

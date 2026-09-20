@@ -162,6 +162,8 @@ namespace dagbase
 
         void deleteSignalPath(dagbase::SignalPath* signalPath);
 
+	    Status deletePort(PortID portId);
+
 		[[nodiscard]] dagbase::SignalPath* signalPath(dagbase::SignalPathID id)
 		{
 			return _signalPaths.findByID(id);

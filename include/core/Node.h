@@ -332,6 +332,8 @@ namespace dagbase
 
 	    InputStream& readFlat(InputStream& str, NodeLibrary& nodeLib, Lua& lua) override;
 
+        void removePort(Port* port);
+
         static std::string flagsToString(NodeFlags value);
 
         static NodeFlags parseFlags(const std::string& str);
