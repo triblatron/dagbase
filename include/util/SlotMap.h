@@ -5,6 +5,8 @@
 #pragma once
 
 #include "core/ConfigurationElement.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 #include "util/Searchable.h"
 
 #include <cstdint>
@@ -57,6 +59,22 @@ namespace dagbase
                 return str;
             }
 
+            OutputStream& writeToStream(OutputStream& str) const
+            {
+                index.writeToStream(str);
+                str.writeUInt32(gen);
+
+                return str;
+            }
+
+            InputStream& readFromStream(InputStream& str)
+            {
+                index.readFromStream(str);
+                str.readUInt32(&gen);
+
+                return str;
+            }
+
             //! The index into the slot map backing array.
             ID index{ID::INVALID_ID};
             //! The generation, used to determine the validity of an identifer against a slot.
@@ -81,6 +99,8 @@ namespace dagbase
             }
         };
         static_assert(std::is_standard_layout_v<Item>, "Item must have a standard layout");
+
+        SlotMap() = default;
 
         explicit SlotMap(std::size_t count)
         {
@@ -156,6 +176,16 @@ namespace dagbase
         //! \retval A pointer to the item if the identifier is valid, as determined by isValid().
         //! \retval nullptr otherwise.
         T* tryGet(Ident id)
+        {
+            if (isValid(id))
+            {
+                return &_data[id.index].item;
+            }
+
+            return nullptr;
+        }
+
+        const T* tryGet(Ident id) const
         {
             if (isValid(id))
             {
