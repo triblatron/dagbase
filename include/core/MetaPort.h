@@ -42,6 +42,8 @@ namespace dagbase
             flags = other.flags;
         }
 
+        MetaPort& operator=(const MetaPort& other) = default;
+
         void setFlags(Flags value)
         {
             flags = value;
