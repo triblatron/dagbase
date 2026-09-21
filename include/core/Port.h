@@ -40,12 +40,16 @@ namespace dagbase
             REMOVED_BIT         = (1U<<3U)
         };
     public:
+	    //! \constructor Default ctor for use with serialisation
 	    Port() = default;
 
+	    //! \constructor Used to instantiate a Port in isolation
         Port(PortID id, std::string name, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
 
+	    //! \constructor Used to copy a Port from another Port, deep copying specified fields
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
+	    //! \constructor Move ctor
         Port(Port &&port) = default;
 
         //! Construct from a stream and a node library.
