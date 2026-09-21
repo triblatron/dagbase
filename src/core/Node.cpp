@@ -245,6 +245,25 @@ namespace dagbase
         return true;
     }
 
+    void Node::addDynamicPort(dagbase::Port *port, dagbase::MetaPort::Flags flags)
+    {
+        if (port != nullptr)
+        {
+            _dynamicPorts.a.emplace_back(port);
+            if ((flags & MetaPort::FLAGS_OWN_BIT)==MetaPort::FLAGS_OWN_BIT)
+            {
+                port->setParent(this);
+            }
+            else
+            {
+                port->setSharedParent(this);
+            }
+            MetaPort desc;
+            desc.flags = flags;
+            _dynamicMetaPorts.emplace_back(desc);
+        }
+    }
+
     bool Node::operator==(const Node &other) const
     {
         if (this == &other)

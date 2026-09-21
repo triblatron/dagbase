@@ -250,7 +250,7 @@ namespace dagbase
             dagbase::PortDirection::Direction portDir = dagbase::PortDirection::parseFromString(dirStr.c_str());
             std::string portFlags = portTable.stringForNameOrDefault("flags", "FLAGS_NONE");
 
-            port = new Port(rootKeyGen.nextPortID(), node, portName, portDir, Port::parsePortFlags(portFlags), Value(value));
+            port = new Port(rootKeyGen.nextPortID(), portName, portDir, Port::parsePortFlags(portFlags), Value(value));
             // The metaPort flags are to be set later when we separately read the MetaPorts.
             node->addDynamicPort(port, dagbase::MetaPort::FLAGS_OWN_BIT);
         }

@@ -8,11 +8,11 @@
 #include "Variant.h"
 #include "util/SearchableArray.h"
 #include "core/Editable.h"
+#include "util/SearchableSet.h"
+#include "util/SlotMap.h"
 
 #include <string>
 #include <stdexcept>
-
-#include "util/SearchableSet.h"
 
 struct ImGuiContext;
 
@@ -39,7 +39,7 @@ namespace dagbase
 	        NODE_VISITED_BIT    = 1U<<4U
 		};
 
-	    using ValueBuffer = std::vector<Value>;
+	    using ValueBuffer = SlotMap<Name<Value>,Value>;
 	public:
 		Node() = default;
 
@@ -84,26 +84,9 @@ namespace dagbase
 	    //! Add a non-null dynamic port
 	    //! This is in addition to the intrinsic ports described by MetaPorts.
 	    //! \note The default implementation throws an exception
-	    void addDynamicPort(dagbase::Port* port, dagbase::MetaPort::Flags flags)
-	    {
-	        if (port != nullptr)
-	        {
-	            _dynamicPorts.a.emplace_back(port);
-	            if ((flags & MetaPort::FLAGS_OWN_BIT)==MetaPort::FLAGS_OWN_BIT)
-	            {
-	                port->setParent(this);
-	            }
-	            else
-	            {
-	                port->setSharedParent(this);
-	            }
-	            MetaPort desc;
-	            desc.flags = flags;
-	            _dynamicMetaPorts.emplace_back(desc);
-	        }
-	    }
+	    void addDynamicPort(dagbase::Port* port, dagbase::MetaPort::Flags flags);
 
-	    //! \return A Port corresponding to a given index
+        //! \return A Port corresponding to a given index
 	    //! \note The index includes both built-in and dynamically added Ports.
 	    //! \param[in] index The index of the Port, zero-based.
 	    [[nodiscard]]dagbase::Port* dynamicPort(size_t index)
@@ -333,6 +316,25 @@ namespace dagbase
 	    InputStream& readFlat(InputStream& str, NodeLibrary& nodeLib, Lua& lua) override;
 
         void removePort(Port* port);
+
+	    // ValueBuffer::Ident addValue(const Value& value)
+	    // {
+	    //     auto& allocatedValue = _values.alloc();
+	    //
+	    //     allocatedValue = value;
+	    //
+	    //     return _values.id(allocatedValue);
+	    // }
+	    //
+	    // Value* value(const ValueBuffer::Ident& id)
+	    // {
+	    //     return _values.tryGet(id);
+	    // }
+	    //
+	    // const Value* value(const ValueBuffer::Ident& id) const
+	    // {
+	    //     return _values.tryGet(id);
+	    // }
 
         static std::string flagsToString(NodeFlags value);
 

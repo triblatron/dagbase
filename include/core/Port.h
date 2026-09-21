@@ -8,6 +8,7 @@
 #include "Types.h"
 #include "NodeLibrary.h"
 #include "MetaPort.h"
+#include "util/SlotMap.h"
 
 #include <string>
 #include <vector>
@@ -41,7 +42,7 @@ namespace dagbase
     public:
 	    Port() = default;
 
-        Port(PortID id, Node* parent, std::string name, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
+        Port(PortID id, std::string name, PortDirection::Direction dir, PortFlags flags=FLAGS_NONE, Value value=Value());
 
         Port(const Port &port, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 
@@ -74,7 +75,7 @@ namespace dagbase
 
         [[nodiscard]] Value::Type type() const
         {
-            return _value.type();
+            return value().type();
         }
 
         void setDir(PortDirection::Direction dir)
@@ -211,20 +212,16 @@ namespace dagbase
             return "Port";
         }
 
-	    const Value& value() const
-        {
-            return _value;
-        }
+	    const Value& value() const;
 
-	    void setValue(const Value& value)
-        {
-            _value = value;
-        }
+        void setValue(const Value& value);
 
-	    Value& value()
-        {
-            return _value;
-        }
+        Value& value();
+
+        // void setValueID(const SlotMap<Name<Value>,Value>::Ident& id)
+        // {
+        //     _valueId = id;
+        // }
 
         Variant find(std::string_view path) const;
 
@@ -264,6 +261,7 @@ namespace dagbase
         Node* _parent{nullptr};
 	    Node* _sharedParent{nullptr};
         PortFlags _flags{FLAGS_NONE};
+	    // SlotMap<Name<Value>, Value>::Ident _valueId;
 	    Value _value;
 	};
 }

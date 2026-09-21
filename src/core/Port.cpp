@@ -15,16 +15,14 @@
 
 namespace dagbase
 {
-    Port::Port(PortID id, Node *parent, std::string name, PortDirection::Direction dir, PortFlags flags, Value value)
+    Port::Port(PortID id, std::string name, PortDirection::Direction dir, PortFlags flags, Value value)
         :
         _name(std::move(name)),
         _direction(dir),
         _id(id),
-        _parent(parent),
         _flags(flags),
         _value(std::move(value))
     {
-        // Do nothing.
     }
 
     Port::~Port()
@@ -85,6 +83,7 @@ namespace dagbase
                 _parent = static_cast<Node*>(facility.getClone(parentId));
             }
         }
+       // _valueId = _parent->addValue(other.value());
         _value = other._value;
     }
 
@@ -164,7 +163,7 @@ namespace dagbase
         str.writeField("name");
         str.writeString(_name, true);
         str.writeField("type");
-        str.writeUInt32(_value.type());
+        str.writeUInt32(value().type());
         str.writeField("direction");
         str.writeUInt32(_direction);
         str.writeField("parent");
@@ -193,9 +192,9 @@ namespace dagbase
     {
         printer.printIndent().print("id = ").print(_id).print(",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
-        printer.printIndent().print("type = \"").print(Value::typeString(_value.type())).print("\",\n");
+        printer.printIndent().print("type = \"").print(Value::typeString(value().type())).print("\",\n");
         printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
-        printer.printIndent().print("class = \"").print(Value::className(_value.type())).print("\",\n");
+        printer.printIndent().print("class = \"").print(Value::className(value().type())).print("\",\n");
         printer.printIndent().print("flags = \"").print(portFlagsToString(_flags)).print("\",\n");
         if (_parent!=nullptr)
         {
@@ -217,6 +216,27 @@ namespace dagbase
         return printer;
     }
 
+    const Value & Port::value() const
+    {
+        // return *parent()->value(_valueId);
+        return _value;
+    }
+
+    void Port::setValue(const Value &value)
+    {
+        _value = value;
+        // if (parent())
+        // {
+        //     *parent()->value(_valueId) = value;
+        // }
+    }
+
+    Value & Port::value()
+    {
+        return _value;
+        // return *parent()->value(_valueId);
+    }
+
     void Port::debug(dagbase::DebugPrinter& printer) const
     {
         printer.printIndent().print(this);
@@ -224,7 +244,7 @@ namespace dagbase
         printer.println("id: " + std::to_string(_id));
         printer.println("class: " + std::string(className()));
         printer.println("name: " + _name);
-        printer.println("type: " + std::string(Value::typeString(_value.type())));
+        printer.println("type: " + std::string(Value::typeString(value().type())));
         printer.println("direction: " + std::string(PortDirection::toString(_direction)));
         if (_parent!=nullptr)
         {
@@ -416,7 +436,7 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
-        retval = findEndpoint(path, "value", Variant(_value));
+        retval = findEndpoint(path, "value", Variant(value()));
         if (retval.has_value())
             return retval;
 
