@@ -10,6 +10,7 @@
 #include "io/MemoryBackingStore.h"
 #include "io/TextOutputStream.h"
 #include "io/TextInputStream.h"
+#include "util/EnumValue.h"
 
 #include "test/TestUtils.h"
 
@@ -286,3 +287,49 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testSerialise, ::testing::Values(
     std::make_tuple(dagbase::Value(dagbase::Vec2())),
     std::make_tuple(dagbase::Value(new std::vector<dagbase::Value>({dagbase::Value(std::uint32_t{100})})))
     ));
+
+class Value_testEnum : public ::testing::TestWithParam<std::tuple<dagbase::Value::Type, bool>>
+{
+
+};
+
+TEST_P(Value_testEnum, testExpectedValue)
+{
+    auto value = std::get<0>(GetParam());
+    auto equal = std::get<1>(GetParam());
+    dagbase::Value sut(value);
+    EXPECT_EQ(equal, sut==dagbase::Value(value));
+}
+
+INSTANTIATE_TEST_SUITE_P(Value, Value_testEnum, ::testing::Values(
+    std::make_tuple(dagbase::Value::TYPE_INT32, true)
+    ));
+
+class EnumValue_testTryGet : public ::testing::TestWithParam<std::tuple<dagbase::Variant::Index, bool>>
+{
+
+};
+
+TEST_P(EnumValue_testTryGet, testHeld)
+{
+    dagbase::Variant::Index value = std::get<0>(GetParam());
+    auto exists = std::get<1>(GetParam());
+
+    dagbase::EnumValue sut(value);
+    ASSERT_EQ(exists, sut.holds<dagbase::Variant::Index>());
+    auto actual = sut.tryGet<dagbase::Variant::Index>();
+    ASSERT_EQ(exists, actual.has_value());
+    EXPECT_EQ(value, actual.value());
+}
+
+INSTANTIATE_TEST_SUITE_P(EnumValue, EnumValue_testTryGet, ::testing::Values(
+    std::make_tuple(dagbase::Variant::TYPE_DOUBLE, true)
+    ));
+
+TEST(EnumValue_testTryGet, testNotHeld)
+{
+    dagbase::EnumValue sut(dagbase::Variant::TYPE_INTEGER);
+    ASSERT_FALSE(sut.holds<dagbase::Value::Type>());
+    auto actual = sut.tryGet<dagbase::Value::Type>();
+    ASSERT_FALSE(actual.has_value());
+}

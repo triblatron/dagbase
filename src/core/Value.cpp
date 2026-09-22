@@ -89,6 +89,11 @@ namespace dagbase
         return _value < other._value;
     }
 
+    bool Value::operator<=(const Value &other) const
+    {
+        return _value <= other._value;
+    }
+
     void Value::edit(const char* label, ImGuiContext *context)
     {
         switch (type())

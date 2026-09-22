@@ -3,6 +3,7 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Vec2.h"
+#include "util/EnumValue.h"
 
 #include <cstdint>
 #include <variant>
@@ -24,7 +25,7 @@ namespace dagbase
     {
     public:
         //! Typedef to improve readability when referencing the type of the variant.
-        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*> ValueType;
+        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*, EnumValue> ValueType;
         enum Type
         {
             TYPE_UINT8,
@@ -49,6 +50,8 @@ namespace dagbase
             TYPE_OPAQUE,
             //! A std::vector of values.
             TYPE_VECTOR,
+            //! An arbitrary enum based on any integer type.
+            TYPE_ENUM,
             //! Initial or invalid type.
             TYPE_UNKNOWN
         };
@@ -64,6 +67,24 @@ namespace dagbase
             std::get<T>(_value) += op;
             
             return *this;
+        }
+
+        template<typename Enum>
+        void assign(const Enum& value)
+        {
+            *this = static_cast<std::underlying_type_t<Enum>>(value);
+        }
+
+        template<typename Enum>
+        bool equals(const Enum& value) const
+        {
+            static_assert(std::is_enum_v<Enum>, "Enum must be an enum type");
+            if (std::holds_alternative<std::underlying_type_t<Enum>>(_value))
+            {
+                return std::get<std::underlying_type_t<Enum>>(_value) == value;
+            }
+
+            return false;
         }
 
         explicit Value(ValueType value)
@@ -183,10 +204,7 @@ namespace dagbase
 
         bool operator<(const Value& other) const;
 
-        bool operator<=(const Value& other) const
-        {
-            return _value <= other._value;
-        }
+        bool operator<=(const Value& other) const;
 
         bool operator>(const Value& other) const
         {

@@ -102,6 +102,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/SignalPathTable.h
         include/core/NodesPortsTable.h
         include/util/SlotMap.h
+        include/util/EnumValue.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
