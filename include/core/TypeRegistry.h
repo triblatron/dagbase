@@ -107,8 +107,8 @@ namespace dagbase
             auto pred = [index](const dagbase::Member& op) {
                 return op.data.value.index()==index;
             };
-            decltype(dagbase::Type::members)::const_iterator itBegin = std::find_if(members.begin(), members.end(), pred);
-            decltype(dagbase::Type::members)::const_iterator itEnd=std::find_if_not<std::vector<dagbase::Member>::const_iterator, decltype(pred)>(itBegin, members.end(), pred);
+            auto itBegin = std::find_if(members.begin(), members.end(), pred);
+            auto itEnd= std::find_if_not<std::vector<dagbase::Member>::const_iterator, decltype(pred)>(itBegin, members.end(), pred);
 
             return std::make_pair(itBegin, itEnd);
         }
@@ -117,17 +117,17 @@ namespace dagbase
         {
             Variant retval;
 
-            for (auto member : members)
+            for (const auto& member : members)
             {
                 retval = findInternal(path, member.name.value(), member);
                 if (retval.has_value())
                     return retval;
             }
-            retval = findEndpoint(path, "size", std::uint32_t(size));
+            retval = findEndpoint(path, "size", static_cast<std::uint32_t>(size));
             if (retval.has_value())
                 return retval;
 
-            for (auto p : values)
+            for (const auto& p : values)
             {
                 retval = findEndpoint(path, p.first.toString().c_str(), Variant(p.second));
                 if (retval.has_value())
