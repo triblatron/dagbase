@@ -80,7 +80,7 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParseRange, ::testing::Values(
         std::make_tuple("0-m/s", 0.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METREPERSECOND),
         std::make_tuple("0 - m/s", 0.0, std::numeric_limits<double>::infinity(), dagbase::Unit::METREPERSECOND),
         std::make_tuple("0 - 70%", 0.0, 70.0, dagbase::Unit::PERCENT),
-        std::make_tuple("0 - 110%", 0.0, 100.0, dagbase::Unit::PERCENT)
+        std::make_tuple("0 - 110%", 0.0, 110.0, dagbase::Unit::PERCENT)
         ));
 
 class Unit_testConvert : public ::testing::TestWithParam<std::tuple<double, dagbase::Unit, dagbase::Unit, double, dagbase::Unit::ConversionResult>>
