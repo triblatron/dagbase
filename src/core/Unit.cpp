@@ -29,17 +29,23 @@ namespace dagbase
     const Unit Unit::KILOMETRE{ Dimension::LENGTH, 1000.0, "km" };
     const Unit Unit::KILOGRAM{ Dimension::MASS, 1.0, "kg" };
     const Unit Unit::SECOND{ Dimension::TIME, 1.0, "s" };
-    const Unit Unit::HOUR{ Dimension::TIME, 60.0, "h" };
+    const Unit Unit::MINUTE{ Dimension::TIME, 60.0, "min" };
+    const Unit Unit::HOUR{ Dimension::TIME, 3600.0, "h" };
     const Unit Unit::METREPERSECOND{ Dimension::SPEED, 1.0, "ms^-1" };
     const Unit Unit::MILEPERHOUR{ Dimension::SPEED, 1.0 / 2.23693629, "mih^-1" };
     const Unit Unit::KILOMETREPERHOUR{ Dimension::SPEED, 1.0 / 3.6, "kmh^-1" };
     const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
     const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
-    const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px" };
-    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0, WRAP_SATURATE};
+    const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px", WRAP_NONE };
+    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0, WRAP_NONE };
     const Unit Unit::NEWTON{ Dimension::FORCE, 1.0, "N"};
-    const Unit Unit::RADIAN{ Dimension::NONE, 1.0, "rad", 0.0, 2.0*M_PI, WRAP_CYCLE};
-
+    const Unit Unit::RADIAN{ Dimension::NONE, 1.0, "rad", 0.0, 2.0*M_PI, WRAP_CYCLE };
+    const Unit Unit::DEGREE{ Dimension::NONE, M_PI/180.0, "deg", 0.0, 0.0, WRAP_NONE };
+    const Unit Unit::KELVIN{ Dimension::TEMPERATURE, 1.0, "K", 0.0, std::numeric_limits<double>::infinity(), WRAP_NONE };
+    const Unit Unit::AMPERE{ Dimension::CURRENT, 1.0, "A", 0.0 };
+    const Unit Unit::MOLE{ Dimension::AMOUNT, 1.0, "mol" };
+    const Unit Unit::CANDELA{ Dimension::LUMINOUS_INTENSITY, 1.0, "cd" };
+    
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
         if (value && unit)

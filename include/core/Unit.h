@@ -65,6 +65,7 @@ namespace dagbase
         static const Unit KILOMETRE;
         static const Unit KILOGRAM;
         static const Unit SECOND;
+        static const Unit MINUTE;
         static const Unit HOUR;
         static const Unit METREPERSECOND;
         static const Unit MILEPERHOUR;
@@ -75,6 +76,11 @@ namespace dagbase
         static const Unit PERCENT;
         static const Unit NEWTON;
         static const Unit RADIAN;
+        static const Unit DEGREE;
+        static const Unit KELVIN;
+        static const Unit AMPERE;
+        static const Unit MOLE;
+        static const Unit CANDELA;
 
         static void parseQuantity(const char* str, double* value, Unit* unit);
 

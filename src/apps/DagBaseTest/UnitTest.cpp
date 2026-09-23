@@ -39,7 +39,7 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testParse, ::testing::Values(
         std::make_tuple("1kph", 1.0, dagbase::Unit::KILOMETREPERHOUR),
         std::make_tuple("2.0 kph", 2.0, dagbase::Unit::KILOMETREPERHOUR),
         std::make_tuple("100%", 100.0, dagbase::Unit::PERCENT),
-        std::make_tuple("110%", 100.0, dagbase::Unit::PERCENT),
+        std::make_tuple("110%", 110.0, dagbase::Unit::PERCENT),
         std::make_tuple("8rad", std::fmod(8.0,2.0*M_PI), dagbase::Unit::RADIAN)
         ));
 
@@ -108,3 +108,4 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testConvert, ::testing::Values(
         std::make_tuple(48.28, dagbase::Unit::KILOMETREPERHOUR, dagbase::Unit::METRE, 0.0, dagbase::Unit::Unit::CONV_INCOMPATIBLE_DIMS),
         std::make_tuple(1, dagbase::Unit::KILOMETRE, dagbase::Unit::METRE, 1000.0, dagbase::Unit::Unit::CONV_OK)
         ));
+
