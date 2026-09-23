@@ -14,8 +14,8 @@
 
 #include <charconv>
 #if defined(_MSC_VER)
+#define _USE_MATH_DEFINES 1
 #include <math.h>
-#define _USE_MATH_DEFINES
 #else
 #include <cmath>
 #endif
