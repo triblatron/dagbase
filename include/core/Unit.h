@@ -12,6 +12,7 @@
 #include <map>
 #include <string_view>
 #include <limits>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -19,6 +20,7 @@ namespace dagbase
     {
         enum WrapPolicy : std::uint32_t
         {
+            WRAP_UNKNOWN,
             //! Leave the out-of-bounds value alone
             WRAP_NONE,
             //! Clamp to within bounds
@@ -81,6 +83,10 @@ namespace dagbase
         static void parseUnit(const char* str, Unit* unit);
 
         static ConversionResult convert(double sourceValue, Unit sourceUnit, Unit destUnit, double* destValue);
+
+        static const char* wrapPolicyToString(WrapPolicy value);
+
+        static WrapPolicy parseWrapPolicy(const char* str);
     private:
         static std::map<std::string_view, Unit> allUnits;
 
@@ -91,4 +97,6 @@ namespace dagbase
 
         static RegisterUnits registration;
     };
+
+    std::ostream DAGBASE_API & operator<<(std::ostream& str, const Unit& value);
 }

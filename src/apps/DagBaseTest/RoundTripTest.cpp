@@ -7,6 +7,7 @@
 #include "core/MetaProperty.h"
 #include "core/Node.h"
 #include "core/Types.h"
+#include "core/Unit.h"
 
 #include <gtest/gtest.h>
 
@@ -304,3 +305,25 @@ INSTANTIATE_TEST_SUITE_P(CopyOp, CopyOp_testRoundTrip, ::testing::Values(
     std::make_tuple("ADD_CHILD_GRAPHS_BIT", dagbase::ADD_CHILD_GRAPHS_BIT),
     std::make_tuple("DEEP_COPY_NODES_BIT DEEP_COPY_INPUTS_BIT DEEP_COPY_OUTPUTS_BIT", static_cast<dagbase::CopyOp>(dagbase::DEEP_COPY_NODES_BIT | dagbase::DEEP_COPY_INPUTS_BIT | dagbase::DEEP_COPY_OUTPUTS_BIT))
 ));
+
+class Unit_testWrapPolicy : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Unit::WrapPolicy>>
+{
+
+};
+
+TEST_P(Unit_testWrapPolicy, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Unit::wrapPolicyToString(value));
+    EXPECT_EQ(value, dagbase::Unit::parseWrapPolicy(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Unit, Unit_testWrapPolicy, ::testing::Values(
+    std::make_tuple("WRAP_UNKNOWN", dagbase::Unit::WRAP_UNKNOWN),
+    std::make_tuple("WRAP_NONE", dagbase::Unit::WRAP_NONE),
+    std::make_tuple("WRAP_DISCARD", dagbase::Unit::WRAP_DISCARD),
+    std::make_tuple("WRAP_SATURATE", dagbase::Unit::WRAP_SATURATE),
+    std::make_tuple("WRAP_CYCLE", dagbase::Unit::WRAP_CYCLE)
+    ));

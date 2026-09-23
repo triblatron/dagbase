@@ -5,6 +5,7 @@
 #include "config/config.h"
 
 #include "core/Unit.h"
+#include "util/enums.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -15,6 +16,7 @@
 #endif // _MSC_VER
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 namespace dagbase
 {
@@ -22,7 +24,7 @@ namespace dagbase
 
     const Unit Unit::NONE{ Dimension::NONE, 1.0, "" };
     const Unit Unit::METRE{ Dimension::LENGTH, 1.0, "m" };
-    const Unit Unit::YARD{ Dimension::TIME, 1.0, "s" };
+    const Unit Unit::YARD{ Dimension::LENGTH, 0.9144, "yd" };
     const Unit Unit::MILE{ Dimension::LENGTH, 1609.344, "mi" };
     const Unit Unit::KILOMETRE{ Dimension::LENGTH, 1000.0, "km" };
     const Unit Unit::KILOGRAM{ Dimension::MASS, 1.0, "kg" };
@@ -45,7 +47,6 @@ namespace dagbase
             char* endPtr=nullptr;
             *value = strtod(str, &endPtr);
 
-            parseUnit(endPtr, unit);
             if (endPtr!=str)
             {
                 parseUnit(endPtr, unit);
@@ -75,6 +76,31 @@ namespace dagbase
         }
 
         return CONV_NO_OUTPUT;
+    }
+
+    const char * Unit::wrapPolicyToString(WrapPolicy value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(WRAP_UNKNOWN)
+            ENUM_NAME(WRAP_NONE)
+            ENUM_NAME(WRAP_DISCARD)
+            ENUM_NAME(WRAP_SATURATE)
+            ENUM_NAME(WRAP_CYCLE)
+        }
+
+        return "<error>";
+    }
+
+    Unit::WrapPolicy Unit::parseWrapPolicy(const char *str)
+    {
+        TEST_ENUM(WRAP_UNKNOWN, str)
+        TEST_ENUM(WRAP_NONE, str)
+        TEST_ENUM(WRAP_DISCARD, str)
+        TEST_ENUM(WRAP_SATURATE, str)
+        TEST_ENUM(WRAP_CYCLE, str)
+
+        return WRAP_UNKNOWN;
     }
 
     void Unit::parseRange(const char *str, double *minValue, double *maxValue, Unit *unit)
@@ -161,6 +187,13 @@ namespace dagbase
     }
 
     Unit::RegisterUnits Unit::registration;
+
+    std::ostream & operator<<(std::ostream &str, const Unit &value)
+    {
+        str << "Unit { symbol: " << value.symbol << ", dimension: " << value.dimension << ", toSI: " << value.toSI << "min: " << value.minValue << ", max: " << value.maxValue << ", wrapPolicy: " << Unit::wrapPolicyToString(value.wrapPolicy) << " }";
+
+        return str;
+    }
 
     Unit::RegisterUnits::RegisterUnits()
     {
