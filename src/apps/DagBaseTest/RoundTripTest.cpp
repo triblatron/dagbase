@@ -8,8 +8,10 @@
 #include "core/Node.h"
 #include "core/Types.h"
 #include "core/Unit.h"
+#include "util/CharConv.h"
 
 #include <gtest/gtest.h>
+#include <charconv>
 
 class VariantIndex_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant::Index>>
 {
@@ -326,4 +328,28 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testWrapPolicy, ::testing::Values(
     std::make_tuple("WRAP_DISCARD", dagbase::Unit::WRAP_DISCARD),
     std::make_tuple("WRAP_SATURATE", dagbase::Unit::WRAP_SATURATE),
     std::make_tuple("WRAP_CYCLE", dagbase::Unit::WRAP_CYCLE)
+    ));
+
+class CharConv_testRoundTrip : public ::testing::TestWithParam<std::tuple<double>>
+{
+
+};
+
+TEST_P(CharConv_testRoundTrip, testRoundTrip)
+{
+    auto value = std::get<0>(GetParam());
+    constexpr int bufLen=50;
+    char buf[bufLen];
+    std::to_chars(buf, buf+bufLen, value);
+    auto actual = 0.0;
+    std::from_chars(buf, buf+bufLen, actual);
+    EXPECT_EQ(value, actual);
+}
+
+INSTANTIATE_TEST_SUITE_P(CharConv, CharConv_testRoundTrip, ::testing::Values(
+    std::make_tuple(1.0),
+    std::make_tuple(1.5),
+    std::make_tuple(1.23456),
+    std::make_tuple(1000.0),
+    std::make_tuple(M_PI)
     ));

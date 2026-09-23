@@ -103,6 +103,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/NodesPortsTable.h
         include/util/SlotMap.h
         include/util/EnumValue.h
+        include/util/CharConv.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -175,6 +176,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/SignalPathTable.cpp
         src/core/NodesPortsTable.cpp
         src/core/Value.cpp
+        src/util/CharConv.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
