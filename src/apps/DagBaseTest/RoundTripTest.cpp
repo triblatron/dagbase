@@ -11,7 +11,14 @@
 #include "util/CharConv.h"
 
 #include <gtest/gtest.h>
+
 #include <charconv>
+#if defined(_MSC_VER)
+#include <math.h>
+#define _USE_MATH_DEFINES
+#else
+#include <cmath>
+#endif
 
 class VariantIndex_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant::Index>>
 {
