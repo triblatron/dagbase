@@ -22,29 +22,31 @@ namespace dagbase
 {
     std::map<std::string_view,Unit> Unit::allUnits;
 
-    const Unit Unit::NONE{ Dimension::NONE, 1.0, "" };
-    const Unit Unit::METRE{ Dimension::LENGTH, 1.0, "m" };
-    const Unit Unit::YARD{ Dimension::LENGTH, 0.9144, "yd" };
-    const Unit Unit::MILE{ Dimension::LENGTH, 1609.344, "mi" };
-    const Unit Unit::KILOMETRE{ Dimension::LENGTH, 1000.0, "km" };
-    const Unit Unit::KILOGRAM{ Dimension::MASS, 1.0, "kg" };
-    const Unit Unit::SECOND{ Dimension::TIME, 1.0, "s" };
-    const Unit Unit::MINUTE{ Dimension::TIME, 60.0, "min" };
-    const Unit Unit::HOUR{ Dimension::TIME, 3600.0, "h" };
-    const Unit Unit::METREPERSECOND{ Dimension::SPEED, 1.0, "ms^-1" };
-    const Unit Unit::MILEPERHOUR{ Dimension::SPEED, 1.0 / 2.23693629, "mih^-1" };
-    const Unit Unit::KILOMETREPERHOUR{ Dimension::SPEED, 1.0 / 3.6, "kmh^-1" };
-    const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, 1.0, "ms^-2" };
-    const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, 1.0, "ms^-3" };
-    const Unit Unit::PIXEL{ Dimension::LENGTH, 1.0, "px", WRAP_NONE };
-    const Unit Unit::PERCENT{ Dimension::NONE, 1.0, "%", 0.0, 100.0, WRAP_NONE };
-    const Unit Unit::NEWTON{ Dimension::FORCE, 1.0, "N"};
-    const Unit Unit::RADIAN{ Dimension::NONE, 1.0, "rad", 0.0, 2.0*M_PI, WRAP_CYCLE };
-    const Unit Unit::DEGREE{ Dimension::NONE, M_PI/180.0, "deg", 0.0, 0.0, WRAP_NONE };
-    const Unit Unit::KELVIN{ Dimension::TEMPERATURE, 1.0, "K", 0.0, std::numeric_limits<double>::infinity(), WRAP_NONE };
-    const Unit Unit::AMPERE{ Dimension::CURRENT, 1.0, "A", 0.0 };
-    const Unit Unit::MOLE{ Dimension::AMOUNT, 1.0, "mol" };
-    const Unit Unit::CANDELA{ Dimension::LUMINOUS_INTENSITY, 1.0, "cd" };
+    const Unit Unit::NONE{ Dimension::NONE, {1.0,0.}, "" };
+    const Unit Unit::METRE{ Dimension::LENGTH, {1.0, 0.0}, "m" };
+    const Unit Unit::YARD{ Dimension::LENGTH, {0.9144, 0.0}, "yd" };
+    const Unit Unit::MILE{ Dimension::LENGTH, {1609.344, 0.0}, "mi" };
+    const Unit Unit::KILOMETRE{ Dimension::LENGTH, {1000.0, 0.0}, "km" };
+    const Unit Unit::KILOGRAM{ Dimension::MASS, {1.0, 0.0}, "kg" };
+    const Unit Unit::SECOND{ Dimension::TIME, {1.0, 0.0}, "s" };
+    const Unit Unit::MINUTE{ Dimension::TIME, {60.0, 0.0}, "min" };
+    const Unit Unit::HOUR{ Dimension::TIME, {3600.0, 0.0}, "h" };
+    const Unit Unit::METREPERSECOND{ Dimension::SPEED, {1.0, 0.0}, "ms^-1" };
+    const Unit Unit::MILEPERHOUR{ Dimension::SPEED, {1.0 / 2.23693629, 0.0}, "mih^-1" };
+    const Unit Unit::KILOMETREPERHOUR{ Dimension::SPEED, {1.0 / 3.6, 0.0}, "kmh^-1" };
+    const Unit Unit::METREPERSECONDSQUARED{ Dimension::ACCELERATION, {1.0, 0.0}, "ms^-2" };
+    const Unit Unit::METREPERSECONDCUBED{ Dimension::JERK, {1.0, 0.0}, "ms^-3" };
+    const Unit Unit::PIXEL{ Dimension::LENGTH, {1.0, 0.0}, "px", WRAP_NONE };
+    const Unit Unit::PERCENT{ Dimension::NONE, {1.0, 0.0}, "%", 0.0, 100.0, WRAP_NONE };
+    const Unit Unit::NEWTON{ Dimension::FORCE, {1.0, 0.0}, "N"};
+    const Unit Unit::RADIAN{ Dimension::NONE, {1.0, 0.0}, "rad", 0.0, 2.0*M_PI, WRAP_CYCLE };
+    const Unit Unit::DEGREE{ Dimension::NONE, {M_PI/180.0, 0.0}, "deg", 0.0, 0.0, WRAP_NONE };
+    const Unit Unit::KELVIN{ Dimension::TEMPERATURE, {1.0, 0.0}, "K", 0.0, std::numeric_limits<double>::infinity(), WRAP_NONE };
+    const Unit Unit::CELSIUS{ Dimension::TEMPERATURE, {1.0, 273.15}, "C", -273.15, std::numeric_limits<double>::infinity(), WRAP_NONE };
+    const Unit Unit::FAHRENHEIT{ Dimension::TEMPERATURE, {5.0/9.0, 255.372222}, "F", -273.15, std::numeric_limits<double>::infinity(), WRAP_NONE };
+    const Unit Unit::AMPERE{ Dimension::CURRENT, {1.0, 0.0}, "A", 0.0 };
+    const Unit Unit::MOLE{ Dimension::AMOUNT, {1.0, 0.0}, "mol" };
+    const Unit Unit::CANDELA{ Dimension::LUMINOUS_INTENSITY, {1.0, 0.0}, "cd" };
     
     void Unit::parseQuantity(const char *str, double *value, dagbase::Unit *unit)
     {
@@ -71,7 +73,7 @@ namespace dagbase
         {
             if (sourceUnit.dimension && destUnit.dimension && std::strcmp(sourceUnit.dimension, destUnit.dimension) == 0)
             {
-                *destValue = sourceValue * sourceUnit.toSI / destUnit.toSI;
+                *destValue = ((sourceValue * sourceUnit.toSI[0]+sourceUnit.toSI[1]) - destUnit.toSI[1]) / destUnit.toSI[0] ;
                 return CONV_OK;
             }
             else
@@ -196,7 +198,7 @@ namespace dagbase
 
     std::ostream & operator<<(std::ostream &str, const Unit &value)
     {
-        str << "Unit { symbol: " << value.symbol << ", dimension: " << value.dimension << ", toSI: " << value.toSI << "min: " << value.minValue << ", max: " << value.maxValue << ", wrapPolicy: " << Unit::wrapPolicyToString(value.wrapPolicy) << " }";
+        str << "Unit { symbol: " << value.symbol << ", dimension: " << value.dimension << ", toSI: [" << value.toSI[0] << ", " << value.toSI[1] << "], min: " << value.minValue << ", max: " << value.maxValue << ", wrapPolicy: " << Unit::wrapPolicyToString(value.wrapPolicy) << " }";
 
         return str;
     }
@@ -223,5 +225,8 @@ namespace dagbase
         allUnits.emplace(PERCENT.symbol, PERCENT);
         allUnits.emplace(NEWTON.symbol, NEWTON);
         allUnits.emplace( RADIAN.symbol, RADIAN);
+        allUnits.emplace(CELSIUS.symbol, CELSIUS);
+        allUnits.emplace(KELVIN.symbol, KELVIN);
+        allUnits.emplace(FAHRENHEIT.symbol, FAHRENHEIT);
     }
 }

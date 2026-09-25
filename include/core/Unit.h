@@ -39,7 +39,8 @@ namespace dagbase
         };
 
         const char* dimension{ nullptr };
-        double toSI{ 0.0 };
+        // Scale(0), bias(1) to convert to SI units
+        double toSI[2]{};
         const char* symbol{ nullptr };
         double minValue{ -std::numeric_limits<double>::infinity() };
         double maxValue={ std::numeric_limits<double>::infinity() };
@@ -48,7 +49,7 @@ namespace dagbase
         bool operator==(const Unit& other) const
         {
             return dimension && other.dimension && std::strcmp(dimension,other.dimension)==0 &&
-                toSI==other.toSI &&
+                toSI[0]==other.toSI[0] && toSI[1]==other.toSI[1] &&
                 symbol && other.symbol &&
                     strcmp(symbol,other.symbol)==0 &&
                         minValue==other.minValue &&
@@ -78,6 +79,8 @@ namespace dagbase
         static const Unit RADIAN;
         static const Unit DEGREE;
         static const Unit KELVIN;
+        static const Unit CELSIUS;
+        static const Unit FAHRENHEIT;
         static const Unit AMPERE;
         static const Unit MOLE;
         static const Unit CANDELA;
