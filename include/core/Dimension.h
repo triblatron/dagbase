@@ -12,8 +12,12 @@ namespace dagbase
 {
     struct DAGBASE_API Dimension
     {
-        //int powers[BaseDimension::NUM_BASE_DIMENSIONS] {};
+        void convertToPolynomial(std::int32_t poly[NUM_BASE_DIMENSIONS]) const;
+
+        bool operator==(const Dimension& other) const;
+
         const char* symbol;
+
         static constexpr const char* NONE{""};
         static constexpr const char* LENGTH{"L"};
         static constexpr const char* MASS{"M"};
@@ -22,7 +26,7 @@ namespace dagbase
         static constexpr const char* ACCELERATION{ "LT^-2"};
         static constexpr const char* JERK{"LT^-3"};
         static constexpr const char* FORCE{"MLT^-2"};
-        static constexpr const char* TEMPERATURE{"T"};
+        static constexpr const char* TEMPERATURE{"THETA"};
         static constexpr const char* AMOUNT{"N"};
         static constexpr const char* CURRENT{"I"};
         static constexpr const char* LUMINOUS_INTENSITY{"J"};

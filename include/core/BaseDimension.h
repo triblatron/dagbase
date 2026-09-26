@@ -16,7 +16,7 @@ namespace dagbase
         DIM_MASS,
         DIM_TIME,
         DIM_CURRENT,
-        DIM_TERPERATURE,
+        DIM_TEMPERATURE,
         DIM_AMOUNT,
         DIM_LUMINOUS_INTENSITY,
         NUM_BASE_DIMENSIONS

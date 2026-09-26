@@ -113,3 +113,52 @@ INSTANTIATE_TEST_SUITE_P(Unit, Unit_testConvert, ::testing::Values(
         std::make_tuple(-273.15, dagbase::Unit::CELSIUS, dagbase::Unit::KELVIN, 0.0, dagbase::Unit::Unit::CONV_OK)
         ));
 
+class Dimension_testCompareEqual : public ::testing::TestWithParam<std::tuple<const char*, const char*, bool>>
+{
+
+};
+
+TEST_P(Dimension_testCompareEqual, testExpectedValue)
+{
+    dagbase::Dimension op1{std::get<0>(GetParam())};
+    dagbase::Dimension op2{std::get<1>(GetParam())};
+    auto equal = std::get<2>(GetParam());
+    EXPECT_EQ(equal, op1 == op2) << "Expected " << op1.symbol << " to be equal to " << op2.symbol;
+}
+
+INSTANTIATE_TEST_SUITE_P(Dimension, Dimension_testCompareEqual, ::testing::Values(
+    std::make_tuple("M", "M", true),
+    std::make_tuple("T^2", "T^2", true),
+    std::make_tuple("MLT^-2", "LMT^-2", true),
+    std::make_tuple("M", "L", false),
+    std::make_tuple("ML^2T^-2", "MLT^-2", false)
+    ));
+
+class Dimension_testConvertToPolynomial : public ::testing::TestWithParam<std::tuple<const char*, std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>>>
+{
+
+};
+
+TEST_P(Dimension_testConvertToPolynomial, testExpectedValue)
+{
+    auto dim = dagbase::Dimension{std::get<0>(GetParam())};
+    auto poly = std::get<1>(GetParam());
+    std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS> actual{};
+    dim.convertToPolynomial(&actual[0]);
+    for (int i=0; i<dagbase::NUM_BASE_DIMENSIONS; ++i)
+    {
+        EXPECT_EQ(poly[i], actual[i]) << "Expected element " << i << " to be equal";
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(Dimension, Dimension_testConvertToPolynomial, ::testing::Values(
+    std::make_tuple("M", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{0, 1, 0, 0, 0, 0, 0}),
+    std::make_tuple("T^1", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{0, 0, 1, 0, 0, 0, 0}),
+    std::make_tuple("T^-1", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{0, 0, -1, 0, 0, 0, 0}),
+    std::make_tuple("LT^-1", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{1, 0, -1, 0, 0, 0, 0}),
+    std::make_tuple("MLT^-2", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{1, 1, -2, 0, 0, 0, 0}),
+    std::make_tuple("T^-2ML", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{1, 1, -2, 0, 0, 0, 0}),
+    std::make_tuple("T^-2ML^1", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{1, 1, -2, 0, 0, 0, 0}),
+    std::make_tuple("T^0", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{0, 0, 0, 0, 0, 0, 0}),
+    std::make_tuple("T^+1", std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS>{0, 0, 1, 0, 0, 0, 0})
+    ));
