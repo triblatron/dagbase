@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
+#include <array>
 
 class Unit_testParse : public ::testing::TestWithParam<std::tuple<const char*, double, dagbase::Unit>>
 {
