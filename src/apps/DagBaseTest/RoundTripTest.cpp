@@ -346,7 +346,7 @@ TEST_P(CharConv_testRoundTrip, testRoundTrip)
 {
     auto value = std::get<0>(GetParam());
     constexpr int bufLen=50;
-    char buf[bufLen];
+    char buf[bufLen]{};
     std::to_chars(buf, buf+bufLen, value);
     auto actual = 0.0;
     std::from_chars(buf, buf+bufLen, actual);
