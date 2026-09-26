@@ -98,7 +98,7 @@ namespace dagbase
             if (state == POLY_POWER)
             {
                 // End of power
-                if (!std::isdigit(c) && c!='-' & c!='+')
+                if (!std::isdigit(c) && c!='-' && c!='+')
                 {
                     power = static_cast<std::int32_t>(std::strtol(startOfPower, &endOfPower, 10 ));
 
