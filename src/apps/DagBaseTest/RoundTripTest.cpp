@@ -351,6 +351,9 @@ TEST_P(CharConv_testRoundTrip, testRoundTrip)
     auto actual = 0.0;
     std::from_chars(buf, buf+bufLen, actual);
     EXPECT_EQ(value, actual);
+    dagbase::convertToChar(buf, buf+bufLen, value);
+    std::from_chars(buf, buf+bufLen, actual);
+    EXPECT_EQ(value, actual);
 }
 
 INSTANTIATE_TEST_SUITE_P(CharConv, CharConv_testRoundTrip, ::testing::Values(
@@ -360,3 +363,12 @@ INSTANTIATE_TEST_SUITE_P(CharConv, CharConv_testRoundTrip, ::testing::Values(
     std::make_tuple(1000.0),
     std::make_tuple(M_PI)
     ));
+
+TEST(CharConv, testInsufficientSpace)
+{
+    double value = M_PI;
+    char buf[10]{};
+    dagbase::convertToChar(buf, buf+10, value);
+    for (char i : buf)
+        EXPECT_EQ(0, i);
+}

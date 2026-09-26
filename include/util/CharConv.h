@@ -10,6 +10,8 @@
 
 namespace dagbase
 {
-    //! Use the max_digits10 to convert a double to a string
-    char DAGBASE_API * convertToChar(double value, std::size_t* bufLen);
+    //! Use the C version of numeric_limits<double>::max_digits10() to convert a double to a string using snprintf()
+    //! \note This is a slow, snprintf()-based fallback if we find ourselves without to_chars() for double.
+    //! This is true for APPLE platforms before macOS 26.0 for some reason, even though the overload is in C++17.
+    void DAGBASE_API convertToChar(char* first, char* last, double value);
 }
