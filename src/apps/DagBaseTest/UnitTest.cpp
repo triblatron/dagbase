@@ -146,7 +146,7 @@ TEST_P(Dimension_testConvertToPolynomial, testExpectedValue)
     auto poly = std::get<1>(GetParam());
     std::array<std::int32_t, dagbase::NUM_BASE_DIMENSIONS> actual{};
     dim.convertToPolynomial(&actual[0]);
-    for (int i=0; i<dagbase::NUM_BASE_DIMENSIONS; ++i)
+    for (std::uint32_t i=0; i<dagbase::NUM_BASE_DIMENSIONS; ++i)
     {
         EXPECT_EQ(poly[i], actual[i]) << "Expected element " << i << " to be equal";
     }
