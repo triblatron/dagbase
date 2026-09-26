@@ -7,9 +7,12 @@
 #include "core/Unit.h"
 
 #include <gtest/gtest.h>
+#if defined(_MSC_VER)
 #define _USE_MATH_DEFINES
 #include <math.h>
+#else
 #include <cmath>
+#endif
 #include <array>
 
 class Unit_testParse : public ::testing::TestWithParam<std::tuple<const char*, double, dagbase::Unit>>
