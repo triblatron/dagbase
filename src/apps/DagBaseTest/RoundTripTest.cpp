@@ -13,6 +13,8 @@
 #include <gtest/gtest.h>
 
 #include <charconv>
+
+#include "util/Zigzag.h"
 #if defined(_MSC_VER)
 #define _USE_MATH_DEFINES 1
 #include <math.h>
@@ -372,3 +374,23 @@ TEST(CharConv, testInsufficientSpace)
     for (char i : buf)
         EXPECT_EQ(0, i);
 }
+
+class ZigZag_testRoundTrip : public ::testing::TestWithParam<std::tuple<std::int32_t, std::uint32_t>>
+{
+
+};
+
+TEST_P(ZigZag_testRoundTrip, testRoundTrip)
+{
+    auto input = std::get<0>(GetParam());
+    auto output = std::get<1>(GetParam());
+
+    EXPECT_EQ(output, dagbase::zigzagEncode(input));
+    EXPECT_EQ(input, dagbase::zigzagDecode(output));
+}
+
+INSTANTIATE_TEST_SUITE_P(ZigZag, ZigZag_testRoundTrip, ::testing::Values(
+    std::make_tuple(-1,1),
+    std::make_tuple(std::numeric_limits<int32_t>::min(),std::numeric_limits<uint32_t>::max()),
+    std::make_tuple(-12345,24689)
+    ));

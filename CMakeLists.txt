@@ -104,6 +104,7 @@ SET( ALL_PUBLIC_HEADERS
         include/util/SlotMap.h
         include/util/EnumValue.h
         include/util/CharConv.h
+		include/util/Zigzag.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
