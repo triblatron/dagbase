@@ -27,6 +27,6 @@ namespace dagbase
     constexpr std::make_signed_t<U> zigzagDecode(U n)
     {
         using S = std::make_signed_t<U>;
-        return static_cast<S>((n >> 1) ^ static_cast<U>(-(n & 1)));
+        return static_cast<S>((n >> 1) ^ static_cast<U>(U{0} - (n & 1)));
     }
 }
