@@ -155,6 +155,8 @@ namespace dagbase
             }
         }
 
+        Value asValueInteger(Value::Type type, Value defaultValue) const;
+
         Variant cast(Index type) const;
 
         bool has_value() const

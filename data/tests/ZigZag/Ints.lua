@@ -1,0 +1,36 @@
+root=
+{
+	cases=
+	{
+		{
+			inputType="TYPE_INT8",
+			input=-1,
+			outputType="TYPE_UINT8",
+			output=1,
+		},
+		{
+			inputType="TYPE_INT16",
+			input=-1,
+			outputType="TYPE_UINT16",
+			output=1,
+		},
+		{
+			inputType="TYPE_INT32",
+			input=-1,
+			outputType="TYPE_UINT32",
+			output=1,
+		},
+		{
+			inputType="TYPE_INT64",
+			input=-1,
+			outputType="TYPE_UINT64",
+			output=1,
+		},
+		{
+			inputType="TYPE_INT16",
+			input=1234,
+			outputType="TYPE_UINT16",
+			output=2468,
+		},
+	},
+}

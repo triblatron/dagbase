@@ -10,8 +10,10 @@
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
 #include "util/enums.h"
+#include "util/Zigzag.h"
 
 #include <cassert>
+#include <iostream>
 
 namespace dagbase
 {
@@ -92,6 +94,40 @@ namespace dagbase
     bool Value::operator<=(const Value &other) const
     {
         return _value <= other._value;
+    }
+
+    Value Value::zigzagEncode() const
+    {
+        switch (_value.index())
+        {
+            case TYPE_INT8:
+                return Value(dagbase::zigzagEncode(std::get<TYPE_INT8>(_value)));
+            case TYPE_INT16:
+                return Value(dagbase::zigzagEncode(std::get<TYPE_INT16>(_value)));
+            case TYPE_INT32:
+                return Value(dagbase::zigzagEncode(std::get<TYPE_INT32>(_value)));
+            case TYPE_INT64:
+                return Value(dagbase::zigzagEncode(std::get<TYPE_INT64>(_value)));
+            default:
+                return Value(0);
+        }
+    }
+
+    Value Value::zigzagDecode() const
+    {
+        switch (_value.index())
+        {
+            case TYPE_UINT8:
+                return Value(dagbase::zigzagDecode(std::get<TYPE_UINT8>(_value)));
+            case TYPE_UINT16:
+                return Value(dagbase::zigzagDecode(std::get<TYPE_UINT16>(_value)));
+            case TYPE_UINT32:
+                return Value(dagbase::zigzagDecode(std::get<TYPE_UINT32>(_value)));
+            case TYPE_UINT64:
+                return Value(dagbase::zigzagDecode(std::get<TYPE_UINT64>(_value)));
+            default:
+                return Value(0);
+        }
     }
 
     void Value::edit(const char* label, ImGuiContext *context)
@@ -358,6 +394,46 @@ namespace dagbase
 	    TEST_ALT_ENUM("TypedPort<vector>", TYPE_VECTOR, str);
 
         return TYPE_UNKNOWN;
+    }
+
+    std::ostream & operator<<(std::ostream &str, const Value &value)
+    {
+        str << "Value { ";
+        str << Value::typeString(value.type()) << ':';
+
+        switch (value.type())
+        {
+            case Value::TYPE_INT8:
+                str << std::get<std::int8_t>(value.value());
+                break;
+            case Value::TYPE_UINT8:
+                str << std::get<std::uint8_t>(value.value());
+                break;
+            case Value::TYPE_INT16:
+                str << std::get<std::int16_t>(value.value());
+                break;
+            case Value::TYPE_UINT16:
+                str << std::get<std::uint16_t>(value.value());
+                break;
+            case Value::TYPE_INT32:
+                str << std::get<std::int32_t>(value.value());
+                break;
+            case Value::TYPE_UINT32:
+                str << std::get<std::uint32_t>(value.value());
+                break;
+            case Value::TYPE_INT64:
+                str << std::get<std::int64_t>(value.value());
+                break;
+            case Value::TYPE_UINT64:
+                str << std::get<std::uint64_t>(value.value());
+                break;
+            default:
+                break;
+        }
+
+        str << " }";
+
+        return str;
     }
 
     const char *Value::typeString(Type type)

@@ -153,6 +153,38 @@ namespace dagbase
         return str;
     }
 
+    Value Variant::asValueInteger(Value::Type type, Value defaultValue) const
+    {
+        switch (index())
+        {
+            case TYPE_INTEGER:
+            case TYPE_UINT:
+                switch (type)
+                {
+                    case Value::TYPE_INT8:
+                        return Value(static_cast<std::int8_t>(asInteger(0)));
+                    case Value::TYPE_UINT8:
+                        return Value(static_cast<std::uint8_t>(asInteger(0)));
+                    case Value::TYPE_INT16:
+                        return Value(static_cast<std::int16_t>(asInteger(0)));
+                    case Value::TYPE_UINT16:
+                        return Value(static_cast<std::uint16_t>(asInteger(0)));
+                    case Value::TYPE_INT32:
+                        return Value(static_cast<std::int32_t>(asInteger(0)));
+                    case Value::TYPE_UINT32:
+                        return Value(static_cast<std::uint32_t>(asInteger(0)));
+                    case Value::TYPE_INT64:
+                        return Value(static_cast<std::int64_t>(asInteger(0)));
+                    case Value::TYPE_UINT64:
+                        return Value(static_cast<std::uint64_t>(asInteger(0)));
+                    default:
+                        return defaultValue;
+                }
+            default:
+                return defaultValue;
+        }
+    }
+
     Variant Variant::cast(Index type) const
     {
         if (has_value())

@@ -394,3 +394,70 @@ INSTANTIATE_TEST_SUITE_P(ZigZag, ZigZag_testRoundTrip, ::testing::Values(
     std::make_tuple(std::numeric_limits<int32_t>::min(),std::numeric_limits<uint32_t>::max()),
     std::make_tuple(-12345,24689)
     ));
+
+struct ZigZagCase
+{
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig<dagbase::Value::Type>(config, "inputType", &dagbase::Value::parseType, &inputType);
+        dagbase::ConfigurationElement::readConfig<dagbase::Value::Type>(config, "outputType", &dagbase::Value::parseType, &outputType);
+        dagbase::ConfigurationElement::readConfig(config, "input", &input);
+        dagbase::ConfigurationElement::readConfig(config, "output", &output);
+    }
+
+    void makeItSo() const
+    {
+        EXPECT_EQ(output.asValueInteger(outputType,dagbase::Value(0)), input.asValueInteger(inputType, dagbase::Value(0)).zigzagEncode());
+        auto encoded = input.asValueInteger(inputType,dagbase::Value(0)).zigzagEncode();
+        auto decoded = encoded.zigzagDecode();
+        EXPECT_EQ(input.asValueInteger(inputType, dagbase::Value(0)), decoded);
+    }
+
+    dagbase::Value::Type inputType{dagbase::Value::TYPE_UNKNOWN};
+    dagbase::Value::Type outputType{dagbase::Value::TYPE_UNKNOWN};
+    dagbase::Variant input;
+    dagbase::Variant output;
+};
+
+class ZigZag_testScripted : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        if (auto element = config.findElement("cases"); element)
+        {
+            element->eachChild([this](dagbase::ConfigurationElement& child) {
+                ZigZagCase entry;
+                entry.configure(child);
+                _cases.emplace_back(entry);
+
+                return true;
+            });
+        }
+    }
+
+    void makeItSo() const
+    {
+        for (auto testCase : _cases)
+        {
+            testCase.makeItSo();
+        }
+    }
+private:
+    using CaseArray = std::vector<ZigZagCase>;
+    CaseArray _cases;
+};
+
+TEST_P(ZigZag_testScripted, testExpectedValue)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(ZigZag, ZigZag_testScripted, ::testing::Values(
+    std::make_tuple("data/tests/ZigZag/Ints.lua")
+    ));

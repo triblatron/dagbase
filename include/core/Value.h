@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <iosfwd>
 
 struct ImGuiContext;
 
@@ -154,6 +155,11 @@ namespace dagbase
             return std::get<T>(_value);
         }
 
+        const ValueType& value() const
+        {
+            return _value;
+        }
+
         //! Convert to our variant, required for template ctor to compile.
         operator ValueType() const
         {
@@ -240,6 +246,10 @@ namespace dagbase
             return _value != other._value;
         }
 
+        Value zigzagEncode() const;
+
+        Value zigzagDecode() const;
+
         void edit(const char* label, ImGuiContext *context);
 
         OutputStream& writeToStream(OutputStream& str) const;
@@ -257,4 +267,5 @@ namespace dagbase
         ValueType _value;
     };
 
+    std::ostream DAGBASE_API & operator<<(std::ostream& str, const Value& value);
 }
