@@ -130,7 +130,7 @@ namespace dagbase
         }
     }
 
-    void Value::varintEncode(std::uint8_t moreBit, std::vector<std::uint8_t>* value)
+    void Value::varintEncode(std::uint8_t moreBit, std::pmr::vector<std::uint8_t>* value)
     {
         std::uint64_t moreBitMask = 1<<moreBit;
         if (value)
@@ -205,7 +205,7 @@ namespace dagbase
         }
     }
 
-    Value Value::fromVarint(std::uint8_t moreBit, const std::vector<std::uint8_t> &varint)
+    Value Value::fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t> &varint)
     {
         if (!varint.empty())
         {

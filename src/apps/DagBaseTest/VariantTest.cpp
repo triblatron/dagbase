@@ -16,6 +16,8 @@
 
 #include <gtest/gtest.h>
 
+#include <memory_resource>
+
 class Variant_testToString : public ::testing::TestWithParam<std::tuple<dagbase::Variant, std::string>>
 {
 
@@ -357,7 +359,9 @@ struct VarintCase
         std::uint8_t moreMask = 1<<moreBit;
         std::uint8_t mask = moreMask | (moreMask - 1);
         dagbase::Value asValue = value.asValueInteger(dagbase::Value::TYPE_UINT64, dagbase::Value(std::uint64_t{0}));
-        std::vector<std::uint8_t> actual;
+        std::byte buf[4];
+        std::pmr::monotonic_buffer_resource pool{buf, sizeof(buf)};
+        std::pmr::vector<std::uint8_t> actual{&pool};
         asValue.varintEncode(moreBit, &actual);
         ASSERT_EQ(bytes.size(), actual.size()) << "Case " << caseIndex << ":Expected " << bytes.size() << " bytes, got " << actual.size();
         for (std::size_t byteIndex=0; byteIndex<bytes.size(); ++byteIndex)
