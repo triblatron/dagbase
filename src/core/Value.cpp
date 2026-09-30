@@ -130,6 +130,77 @@ namespace dagbase
         }
     }
 
+    void Value::varintEncode(std::uint8_t moreBitMask, std::vector<std::uint8_t>* value)
+    {
+        if (value)
+        {
+            switch (type())
+            {
+                case TYPE_UINT8:
+                {
+                    auto extracted = std::get<std::uint8_t>(_value);
+                    if (extracted < moreBitMask)
+                    {
+                        value->emplace_back(extracted);
+                    }
+
+                    break;
+                }
+                case TYPE_UINT16:
+                {
+                    auto extracted = std::get<std::uint16_t>(_value);
+                    if (extracted < moreBitMask)
+                    {
+                        value->emplace_back(extracted);
+                    }
+
+                    break;
+                }
+                case TYPE_UINT32:
+                {
+                    auto extracted = std::get<std::uint32_t>(_value);
+                    if (extracted < moreBitMask)
+                    {
+                        value->emplace_back(extracted);
+                    }
+
+                    break;
+                }
+                case TYPE_UINT64:
+                {
+                    auto extracted = std::get<std::uint64_t>(_value);
+
+                    if (extracted < moreBitMask)
+                    {
+                        value->emplace_back(extracted);
+                    }
+                    else
+                    {
+                        std::uint8_t mask = (moreBitMask - 1);
+                        value->emplace_back(moreBitMask);
+                        (*value)[0] |= (extracted & mask);
+                        extracted >>= 7;
+                        std::size_t byteIndex=1;
+                        while (extracted>0)
+                        {
+                            value->emplace_back();
+                            (*value)[byteIndex] |= (extracted & mask);
+                            extracted >>= 7;
+                            if (extracted>0)
+                                (*value)[byteIndex] |= moreBitMask;
+                            byteIndex++;
+                        }
+                    }
+
+                    break;
+                }
+                default:
+                    value->emplace_back(0x0);
+                    break;
+            }
+        }
+    }
+
     void Value::edit(const char* label, ImGuiContext *context)
     {
         switch (type())

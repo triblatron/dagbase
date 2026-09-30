@@ -333,3 +333,75 @@ TEST(EnumValue_testTryGet, testNotHeld)
     auto actual = sut.tryGet<dagbase::Value::Type>();
     ASSERT_FALSE(actual.has_value());
 }
+
+struct VarintCase
+{
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig(config, "value", &value);
+        dagbase::ConfigurationElement::readConfig(config, "moreBit", &moreBit);
+        if (auto element=config.findElement("bytes"); element)
+        {
+            element->eachChild([this](dagbase::ConfigurationElement& child)  {
+                dagbase::Value v = child.value().asValueInteger(dagbase::Value::TYPE_UINT8, dagbase::Value(std::uint8_t{0}));
+                if (v.type() == dagbase::Value::TYPE_UINT8)
+                    bytes.emplace_back(std::get<std::uint8_t>(v.value()));
+
+                return true;
+            });
+        }
+    }
+
+    void makeItSo(std::size_t caseIndex) const
+    {
+        std::uint8_t moreMask = 1<<moreBit;
+        std::uint8_t mask = moreMask | (moreMask - 1);
+        dagbase::Value asValue = value.asValueInteger(dagbase::Value::TYPE_UINT64, dagbase::Value(std::uint64_t{0}));
+        std::vector<std::uint8_t> actual;
+        asValue.varintEncode(moreMask, &actual);
+        ASSERT_EQ(bytes.size(), actual.size()) << "Case " << caseIndex << ":Expected " << bytes.size() << " bytes, got " << actual.size();
+        for (std::size_t byteIndex=0; byteIndex<bytes.size(); ++byteIndex)
+        {
+            EXPECT_EQ(bytes[byteIndex], actual[byteIndex]) << "Case " << caseIndex << ":Expected byte " << byteIndex << " to be " << (std::uint32_t)bytes[byteIndex] << ", got " << (std::uint32_t)actual[byteIndex];
+        }
+    }
+
+    dagbase::Variant value;
+    // Bit index of the more bit, zero-based starting from the lsb
+    std::uint32_t moreBit{0};
+    std::vector<std::uint8_t> bytes;
+};
+
+class Value_testVarint : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+    }
+
+    void makeItSo()
+    {
+        for (std::size_t i=0; i<_cases.size(); ++i)
+        {
+            _cases[i].makeItSo(i);
+        }
+    }
+protected:
+    using CaseArray = std::vector<VarintCase>;
+    CaseArray _cases;
+};
+
+TEST_P(Value_testVarint, testExpectedValue)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(Value, Value_testVarint, ::testing::Values(
+    std::make_tuple("data/tests/Varint/Varint.lua")
+    ));

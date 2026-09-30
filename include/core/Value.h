@@ -250,6 +250,8 @@ namespace dagbase
 
         Value zigzagDecode() const;
 
+        void varintEncode(std::uint8_t moreBitMask, std::vector<std::uint8_t>* value);
+
         void edit(const char* label, ImGuiContext *context);
 
         OutputStream& writeToStream(OutputStream& str) const;
