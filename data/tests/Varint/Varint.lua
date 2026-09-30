@@ -54,7 +54,7 @@ root=
 		},
 		{
 			value=255,
-			moreBit=127,
+			moreBit=7,
 			bytes=
 			{
 				255,
@@ -78,6 +78,23 @@ root=
 				255,
 				255,
 				3,
+			},
+		},
+		{
+			value=0,
+			moreBit=3,
+			bytes=
+			{
+				0,
+			},
+		},
+		{
+			value=255,
+			moreBit=3,
+			bytes=
+			{
+				15,
+				31,
 			},
 		},
 	},

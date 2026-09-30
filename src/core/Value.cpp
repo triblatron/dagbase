@@ -130,8 +130,9 @@ namespace dagbase
         }
     }
 
-    void Value::varintEncode(std::uint8_t moreBitMask, std::vector<std::uint8_t>* value)
+    void Value::varintEncode(std::uint8_t moreBit, std::vector<std::uint8_t>* value)
     {
+        std::uint64_t moreBitMask = 1<<moreBit;
         if (value)
         {
             switch (type())
@@ -176,15 +177,18 @@ namespace dagbase
                     }
                     else
                     {
-                        std::uint8_t mask = (moreBitMask - 1);
+                        // The first byte could be a subset of another field.
+                        std::uint8_t remainingMask = (moreBitMask - 1);
                         value->emplace_back(moreBitMask);
-                        (*value)[0] |= (extracted & mask);
-                        extracted >>= 7;
+                        (*value)[0] |= (extracted & remainingMask);
+                        extracted >>= moreBit;
+                        // Assume we will be using the whole byte for further bytes.
+                        remainingMask = (1<<7) - 1;
+                        moreBitMask = 1<<7;
                         std::size_t byteIndex=1;
                         while (extracted>0)
                         {
-                            value->emplace_back();
-                            (*value)[byteIndex] |= (extracted & mask);
+                            value->emplace_back(extracted & remainingMask);
                             extracted >>= 7;
                             if (extracted>0)
                                 (*value)[byteIndex] |= moreBitMask;

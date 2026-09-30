@@ -358,7 +358,7 @@ struct VarintCase
         std::uint8_t mask = moreMask | (moreMask - 1);
         dagbase::Value asValue = value.asValueInteger(dagbase::Value::TYPE_UINT64, dagbase::Value(std::uint64_t{0}));
         std::vector<std::uint8_t> actual;
-        asValue.varintEncode(moreMask, &actual);
+        asValue.varintEncode(moreBit, &actual);
         ASSERT_EQ(bytes.size(), actual.size()) << "Case " << caseIndex << ":Expected " << bytes.size() << " bytes, got " << actual.size();
         for (std::size_t byteIndex=0; byteIndex<bytes.size(); ++byteIndex)
         {
