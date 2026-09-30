@@ -205,6 +205,25 @@ namespace dagbase
         }
     }
 
+    Value Value::fromVarint(std::uint8_t moreBit, const std::vector<std::uint8_t> &varint)
+    {
+        if (!varint.empty())
+        {
+            std::uint8_t moreBitMask = 1<<moreBit;
+            auto decoded = static_cast<std::uint64_t>(varint[0] & ~moreBitMask);
+            std::uint8_t shift = moreBit;
+            for (std::size_t byteIndex=1; byteIndex<varint.size(); ++byteIndex)
+            {
+                decoded |= (varint[byteIndex] & 127u) << shift;
+                shift += 7;
+            }
+
+            return Value(decoded);
+        }
+
+        return {};
+    }
+
     void Value::edit(const char* label, ImGuiContext *context)
     {
         switch (type())

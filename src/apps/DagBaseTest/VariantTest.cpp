@@ -364,6 +364,8 @@ struct VarintCase
         {
             EXPECT_EQ(bytes[byteIndex], actual[byteIndex]) << "Case " << caseIndex << ":Expected byte " << byteIndex << " to be " << (std::uint32_t)bytes[byteIndex] << ", got " << (std::uint32_t)actual[byteIndex];
         }
+        dagbase::Value decoded = dagbase::Value::fromVarint(moreBit, actual);
+        EXPECT_EQ(asValue, decoded) << "Case " << caseIndex << ":Expected decoded to be equal to value";
     }
 
     dagbase::Variant value;

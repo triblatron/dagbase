@@ -253,7 +253,9 @@ namespace dagbase
         //! Encode a 64-bit integer as a variable-length integer
         //! \param[in] moreBit : uint8 The bit number in [0,7] that controls whether there are more bytes
         //! \param[out] value : *vector<uint8> The output value, to be filled with bytes
-        void varintEncode(std::uint8_t moreBit, std::vector<std::uint8_t>* value);
+        void varintEncode(std::uint8_t moreBit, std::vector<std::uint8_t>* varint);
+
+        static Value fromVarint(std::uint8_t moreBit, const std::vector<std::uint8_t>& value);
 
         void edit(const char* label, ImGuiContext *context);
 
