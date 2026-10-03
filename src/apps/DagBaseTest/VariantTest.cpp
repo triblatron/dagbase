@@ -382,7 +382,7 @@ struct VarintCase
         std::uint8_t moreMask = 1<<moreBit;
         std::uint8_t mask = moreMask | (moreMask - 1);
         dagbase::Value asValue = value.asValueInteger(dagbase::Value::TYPE_UINT64, dagbase::Value(std::uint64_t{0}));
-        std::byte buf[4];
+        std::byte buf[8];
         std::pmr::monotonic_buffer_resource pool{buf, sizeof(buf)};
         std::pmr::vector<std::uint8_t> actual{&pool};
         asValue.varintEncode(moreBit, &actual);
@@ -401,15 +401,18 @@ struct VarintCase
         dagbase::OutputStream* ostr = dagbase::createOutputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, ostr);
         dagbase::Lua lua;
-        asValue.writeToStream(*ostr);
+        ostr->writeVariableLengthInteger(actual);
         ostr->flush();
 
         // Deserialise
         dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, istr);
         dagbase::Value actualValue{};
-        actualValue.readFromStream(*istr);
-        EXPECT_EQ(asValue, actualValue) << "Case " << caseIndex << ":Expected deserialised to be equal to value";
+        std::byte streamBuf[8];
+        std::pmr::monotonic_buffer_resource streamPool{buf, sizeof(buf)};
+        std::uint64_t actualFromStream{0};
+        istr->readVariableLengthInteger(moreBit, &actualFromStream);
+        EXPECT_EQ(std::uint64_t(asValue), actualFromStream) << "Case " << caseIndex << ":Expected deserialised to be equal to value";
     }
 
     dagbase::Variant value;

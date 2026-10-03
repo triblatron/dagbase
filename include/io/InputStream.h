@@ -156,6 +156,8 @@ namespace dagbase
             _ptrLookup[_lastReadId-1] = ref;
         }
 
+        InputStream& readVariableLengthInteger(std::size_t moreBit, std::uint64_t* value);
+
         virtual InputStream& readString(std::string* value, bool quoted) = 0;
 
         virtual InputStream& readHeader(std::string* className) = 0;
