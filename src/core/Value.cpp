@@ -132,7 +132,7 @@ namespace dagbase
 
     void Value::varintEncode(std::uint8_t moreBit, std::pmr::vector<std::uint8_t>* value)
     {
-        std::uint64_t moreBitMask = 1<<moreBit;
+        std::uint64_t moreBitMask = 1ULL<<moreBit;
         if (value)
         {
             switch (type())
