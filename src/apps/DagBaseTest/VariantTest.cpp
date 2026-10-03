@@ -11,6 +11,7 @@
 #include "io/TextOutputStream.h"
 #include "io/TextInputStream.h"
 #include "util/EnumValue.h"
+#include "io/StreamFactory.h"
 
 #include "test/TestUtils.h"
 
@@ -354,7 +355,7 @@ struct VarintCase
         }
     }
 
-    void makeItSo(std::size_t caseIndex) const
+    void makeItSo(std::size_t caseIndex, const char* formatClass) const
     {
         std::uint8_t moreMask = 1<<moreBit;
         std::uint8_t mask = moreMask | (moreMask - 1);
@@ -370,6 +371,20 @@ struct VarintCase
         }
         dagbase::Value decoded = dagbase::Value::fromVarint(moreBit, actual);
         EXPECT_EQ(asValue, decoded) << "Case " << caseIndex << ":Expected decoded to be equal to value";
+        // Serialise
+        dagbase::BackingStore* store = dagbase::createBackingStore("MemoryBackingStore");
+        dagbase::OutputStream* ostr = dagbase::createOutputStream(formatClass, *store, "");
+        ASSERT_NE(nullptr, ostr);
+        dagbase::Lua lua;
+        asValue.writeToStream(*ostr);
+        ostr->flush();
+
+        // Deserialise
+        dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, "");
+        ASSERT_NE(nullptr, istr);
+        dagbase::Value actualValue{};
+        actualValue.readFromStream(*istr);
+        EXPECT_EQ(asValue, actualValue);
     }
 
     dagbase::Variant value;
@@ -390,7 +405,8 @@ public:
     {
         for (std::size_t i=0; i<_cases.size(); ++i)
         {
-            _cases[i].makeItSo(i);
+            _cases[i].makeItSo(i, "TextFormat");
+            _cases[i].makeItSo(i, "BinaryFormat");
         }
     }
 protected:
