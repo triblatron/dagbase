@@ -355,7 +355,29 @@ struct VarintCase
         }
     }
 
-    void makeItSo(std::size_t caseIndex, const char* formatClass) const
+    static void buildFilename(std::uint32_t caseIndex, const char* storeClass, const char* formatClass, std::string* value)
+    {
+        if (value)
+        {
+            std::ostringstream str;
+            str << "scratch/Value_testVarint_case" << caseIndex << '_' << storeClass << '_' << formatClass;
+            if (std::strcmp(formatClass, "TextFormat")==0)
+            {
+                str << ".txt";
+            }
+            else if (std::strcmp(formatClass, "BinaryFormat")==0)
+            {
+                str << ".bin";
+            }
+            else
+            {
+                FAIL() << "Expected TextFormat or BinaryFormat, got " << formatClass;
+            }
+            *value = str.str();
+        }
+    }
+
+    void makeItSo(std::size_t caseIndex, const char* storeClass, const char* formatClass) const
     {
         std::uint8_t moreMask = 1<<moreBit;
         std::uint8_t mask = moreMask | (moreMask - 1);
@@ -372,19 +394,22 @@ struct VarintCase
         dagbase::Value decoded = dagbase::Value::fromVarint(moreBit, actual);
         EXPECT_EQ(asValue, decoded) << "Case " << caseIndex << ":Expected decoded to be equal to value";
         // Serialise
-        dagbase::BackingStore* store = dagbase::createBackingStore("MemoryBackingStore");
-        dagbase::OutputStream* ostr = dagbase::createOutputStream(formatClass, *store, "");
+        dagbase::BackingStore* store = dagbase::createBackingStore(storeClass);
+        ASSERT_NE(nullptr, store);
+        std::string filename;
+        buildFilename(caseIndex, storeClass, formatClass, &filename);
+        dagbase::OutputStream* ostr = dagbase::createOutputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, ostr);
         dagbase::Lua lua;
         asValue.writeToStream(*ostr);
         ostr->flush();
 
         // Deserialise
-        dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, "");
+        dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, istr);
         dagbase::Value actualValue{};
         actualValue.readFromStream(*istr);
-        EXPECT_EQ(asValue, actualValue);
+        EXPECT_EQ(asValue, actualValue) << "Case " << caseIndex << ":Expected deserialised to be equal to value";
     }
 
     dagbase::Variant value;
@@ -405,8 +430,10 @@ public:
     {
         for (std::size_t i=0; i<_cases.size(); ++i)
         {
-            _cases[i].makeItSo(i, "TextFormat");
-            _cases[i].makeItSo(i, "BinaryFormat");
+            _cases[i].makeItSo(i, "MemoryBackingStore", "TextFormat");
+            _cases[i].makeItSo(i, "MemoryBackingStore", "BinaryFormat");
+            _cases[i].makeItSo(i, "FileBackingStore", "TextFormat");
+            _cases[i].makeItSo(i, "FileBackingStore", "BinaryFormat");
         }
     }
 protected:
