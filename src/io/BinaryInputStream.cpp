@@ -28,6 +28,30 @@ namespace dagbase
         return *this;
     }
 
+    InputStream & BinaryInputStream::readVariableLengthInteger(std::size_t moreBit, std::uint64_t* value)
+    {
+        if (_store)
+        {
+            std::uint8_t moreBitMask = 1<<moreBit;
+            std::uint8_t byteFromStream{0};
+            _store->get(&byteFromStream, 1);
+            auto decoded = static_cast<std::uint64_t>(byteFromStream & ~moreBitMask);
+            std::uint8_t shift = moreBit;
+            while ((byteFromStream & moreBitMask)!=0)
+            {
+                _store->get(&byteFromStream, 1);
+                decoded |= (byteFromStream & 127u) << shift;
+                shift += 7;
+                moreBitMask = 1<<7;
+            }
+            if (value)
+            {
+                *value = decoded;
+            }
+        }
+        return *this;
+    }
+
     InputStream & BinaryInputStream::read(Lua &lua, Variant *value)
     {
         if (value)

@@ -41,7 +41,7 @@ namespace dagbase
         //! Write a buffer of bytes to the stream.
         virtual OutputStream& writeBuf(const value_type* buf, std::size_t len) = 0;
 
-        OutputStream& writeVariableLengthInteger(const std::pmr::vector<std::uint8_t>& value);
+        virtual OutputStream& writeVariableLengthInteger(const std::pmr::vector<std::uint8_t>& value) = 0;
 
         //! Type-safe version of writeRef() that takes a typed pointer.
         //! \retval true if the pointer has not yet been encountered.

@@ -29,6 +29,8 @@ namespace dagbase
 
         OutputStream& writeBuf(const value_type* buf, std::size_t len) override;
 
+        OutputStream& writeVariableLengthInteger(const std::pmr::vector<std::uint8_t>& value) override;
+
         OutputStream& writeUInt8(std::uint8_t value) override;
 
         OutputStream& writeInt8(std::int8_t value) override;

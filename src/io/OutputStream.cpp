@@ -7,13 +7,4 @@
 
 namespace dagbase
 {
-    OutputStream & OutputStream::writeVariableLengthInteger(const std::pmr::vector<std::uint8_t> &value)
-    {
-        for (auto b : value)
-        {
-            writeUInt8(b);
-        }
-
-        return *this;
-    }
 }

@@ -29,6 +29,8 @@ namespace dagbase
             _store = store;
         }
 
+        OutputStream& writeVariableLengthInteger(const std::pmr::vector<std::uint8_t>& value) override;
+
         OutputStream& beginSubBuffer() override;
 
         OutputStream& endSubBuffer() override;

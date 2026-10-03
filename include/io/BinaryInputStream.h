@@ -15,7 +15,7 @@ namespace dagbase
 
 namespace dagbase
 {
-    class DAGBASE_API BinaryInputStream : public InputStream
+    class DAGBASE_API BinaryInputStream final : public InputStream
     {
     public:
         explicit BinaryInputStream(BackingStore* store);
@@ -26,6 +26,8 @@ namespace dagbase
         }
 
         InputStream& readBuf(value_type* buf, std::size_t len) override;
+
+        InputStream& readVariableLengthInteger(std::size_t moreBit, std::uint64_t* value) override;
 
         InputStream& read(Lua& lua, Variant* value) override;
 

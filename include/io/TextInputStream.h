@@ -22,12 +22,14 @@ namespace dagbase
     public:
         explicit TextInputStream(BackingStore* store);
 
-        ~TextInputStream();
+        ~TextInputStream() override;
 
         void setBackingStore(BackingStore* backingStore)
         {
             _store = backingStore;
         }
+
+        InputStream& readVariableLengthInteger(std::size_t moreBit, std::uint64_t* value) override;
 
         InputStream& readBuf(value_type* buf, std::size_t len) override;
 

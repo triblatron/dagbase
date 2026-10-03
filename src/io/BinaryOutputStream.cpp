@@ -38,6 +38,13 @@ namespace dagbase
         return *this;
     }
 
+    OutputStream & BinaryOutputStream::writeVariableLengthInteger(const std::pmr::vector<std::uint8_t> &value)
+    {
+        writeBuf(value.data(), value.size()*sizeof(std::uint8_t));
+
+        return *this;
+    }
+
     OutputStream & BinaryOutputStream::writeUInt8(std::uint8_t value)
     {
         if (_store)
