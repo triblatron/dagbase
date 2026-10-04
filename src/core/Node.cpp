@@ -263,9 +263,9 @@ namespace dagbase
             _dynamicMetaPorts.emplace_back(desc);
             if (this == port->parent())
             {
-                Value& value = this->_values.alloc();
-                value = port->initialValue();
-                port->setValueId(_values.id(value));
+                auto* item = this->_values.alloc();
+                item->item = port->initialValue();
+                port->setValueId(_values.id(item));
                 assert(port->value()==port->initialValue());
             }
         }

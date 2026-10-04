@@ -27,6 +27,11 @@ namespace dagbase
     public:
         //! Typedef to improve readability when referencing the type of the variant.
         typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*, EnumValue> ValueType;
+        //static_assert(std::is_standard_layout_v<std::variant<int, float>>);
+        //static_assert(std::is_standard_layout_v<Vec2>);
+        //static_assert(std::is_standard_layout_v<EnumValue>);
+        //static_assert(std::is_standard_layout_v<Value::ValueType>);
+        //static_assert(std::is_standard_layout_v<Name<Value>>);   // should pass
         enum Type
         {
             TYPE_UINT8,
@@ -273,6 +278,7 @@ namespace dagbase
     private:
         ValueType _value;
     };
+    //static_assert(std::is_standard_layout_v<Value>);
 
     std::ostream DAGBASE_API & operator<<(std::ostream& str, const Value& value);
 }

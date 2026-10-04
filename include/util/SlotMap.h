@@ -92,7 +92,7 @@ namespace dagbase
             T item;
             Ident id;
 
-            static_assert(std::is_standard_layout_v<T>, "T must have a standard layout");
+//            static_assert(std::is_standard_layout_v<T>, "T must have a standard layout");
             template<typename ...Args>
             Item(Args&&... args)
                 :
@@ -102,7 +102,7 @@ namespace dagbase
             }
         };
 
-        static_assert(std::is_standard_layout_v<Item>, "Item must have a standard layout");
+//        static_assert(std::is_standard_layout_v<Item>, "Item must have a standard layout");
 
         using Array = std::vector<Item>;
 
@@ -137,7 +137,7 @@ namespace dagbase
         //! \note Runs in amortised constant time because an allocation may be necessary.
         //! \note Invalidates references if an allocation in the underlying array occurs.
         template<typename... Args>
-        T& alloc(Args&&... args)
+        Item* alloc(Args&&... args)
         {
             if (_freeHead == Ident::INVALID_INDEX)
             {
@@ -145,22 +145,20 @@ namespace dagbase
                 _data.back().id.index = _data.size()-1;
                 _data.back().id.gen = _nextGen;
                 ++_size;
-                return _data.back().item;
+                return &_data.back();
             }
             auto lastIndex = _data[_freeHead].id.index;
             new (&_data[_size]) Item(std::forward<Args>(args)...);
             _data[_freeHead].id.gen = _nextGen;
             _data[_freeHead].id.index = _size;
             _freeHead = lastIndex;
-            return _data[_size++].item;
+            return &_data[_size++];
         }
 
         //! Deallocate an item, rendering identifiers to it invalid.
         //! \note This is accomplished by incrementing the generation counter.
-        void free(T& value)
+        void free(Item* item)
         {
-            Item* item = (Item*)&value;
-
             item->item.T::~T();
 
             if (_freeHead == Ident::INVALID_INDEX)
@@ -184,18 +182,16 @@ namespace dagbase
         //! \return The identifier for a value.
         //! \note Uses the fact that an Item has the T as its first element
         //! so that a cast between pointers is safe.
-        Ident id(T& value)
+        Ident id(Item* item)
         {
-            Item * item = (Item*)&value;
-
             return item->id;
         }
 
         //! \return A reference to an item
         //! \note The identifier must be valid
-        T& get(Ident id)
+        Item& get(Ident id)
         {
-            return _data[id.index].item;
+            return _data[id.index];
         }
 
         //! Try to get an item.

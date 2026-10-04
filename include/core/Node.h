@@ -319,9 +319,9 @@ namespace dagbase
 
 	    ValueBuffer::Ident addValue(const Value& value)
 	    {
-	        auto& allocatedValue = _values.alloc();
+	        auto* allocatedValue = _values.alloc();
 
-	        allocatedValue = value;
+	        allocatedValue->item = value;
 
 	        return _values.id(allocatedValue);
 	    }

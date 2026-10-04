@@ -73,7 +73,7 @@ struct SlotMapScriptItem
         {
             case COMMAND_ALLOC:
             {
-                auto& item = sut.alloc(element);
+                auto* item = sut.alloc(element);
                 auto actual = sut.id(item);
                 ASSERT_EQ(id, actual);
 
@@ -81,7 +81,7 @@ struct SlotMapScriptItem
             }
             case COMMAND_FREE:
             {
-                sut.free(sut.get(id));
+                sut.free(&sut.get(id));
                 ASSERT_EQ(nullptr, sut.tryGet(id));
 
                 break;

@@ -237,7 +237,7 @@ namespace dagbase
 
 	    void setValue(Value value);
 
-	    void setValueId(SlotMap<ValueID, Value>::Ident id)
+	    void setValueId(SlotMap<Name<Value>, Value>::Ident id)
 	    {
 	        _valueId = id;
 	    }

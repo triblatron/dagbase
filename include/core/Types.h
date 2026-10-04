@@ -24,6 +24,7 @@ namespace dagbase
     class Port;
     class SignalPath;
     class Template;
+    class Value;
 
     //! The direction of a port.
     class DAGBASE_API PortDirection
@@ -219,6 +220,7 @@ namespace dagbase
 
         static ResultType parseResultType(const char* str);
     };
+    static_assert(std::is_standard_layout_v<Name<Value>>);   // the STL itself
 
     struct CompareNodesById;
     typedef SearchableSet<VectorSet<Node*, CompareNodesById>> NodeSet;
