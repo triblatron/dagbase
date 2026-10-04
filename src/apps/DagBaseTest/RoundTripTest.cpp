@@ -463,7 +463,7 @@ INSTANTIATE_TEST_SUITE_P(ZigZag, ZigZag_testScripted, ::testing::Values(
     std::make_tuple("data/tests/ZigZag/Ints.lua")
     ));
 
-class NodeComment_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Node::Comment>>
+class NodeComment_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Node::Active>>
 {
 
 };
@@ -478,9 +478,9 @@ TEST_P(NodeComment_testRoundTrip, testRoundTrip)
 }
 
 INSTANTIATE_TEST_SUITE_P(NodeComment, NodeComment_testRoundTrip, ::testing::Values(
-    std::make_tuple("COMMENT_NONE", dagbase::Node::COMMENT_NONE),
-    std::make_tuple("COMMENT_OUT", dagbase::Node::COMMENT_OUT),
-    std::make_tuple("COMMENT_THROUGH", dagbase::Node::COMMENT_THROUGH)
+    std::make_tuple("ACTIVE_ON", dagbase::Node::ACTIVE_ON),
+    std::make_tuple("ACTIVE_OFF", dagbase::Node::ACTIVE_OFF),
+    std::make_tuple("ACTIVE_PASS_THROUGH", dagbase::Node::ACTIVE_PASS_THROUGH)
     ));
 
 class ClassError_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Class::Error>>

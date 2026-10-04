@@ -322,7 +322,7 @@ namespace dagbase
             for (auto n : allNodesIncludingChildren)
             {
                 n->markNotProcessed();
-                if (n->commented() != Node::COMMENT_OUT && n->hasNoDependencies())
+                if (n->active() != Node::ACTIVE_OFF && n->hasNoDependencies())
                 {
                     nodesWithNoDependencies.push(n);
                 }
@@ -357,7 +357,7 @@ namespace dagbase
                 NodeSet remainingNodes;
                 for (auto n : allNodesIncludingChildren)
                 {
-                    if (n->commented() != Node::COMMENT_OUT &&  !n->isProcessed())
+                    if (n->active() != Node::ACTIVE_OFF &&  !n->isProcessed())
                     {
                         remainingNodes.emplace(n);
                     }
@@ -370,7 +370,7 @@ namespace dagbase
                 // Detect no upstream connections
                 for (auto n : remainingNodes)
                 {
-                    if (n->commented() != Node::COMMENT_OUT)
+                    if (n->active() != Node::ACTIVE_OFF)
                     {
                         for (std::size_t i=0; i<n->numDynamicPorts(); ++i)
                         {
@@ -379,7 +379,7 @@ namespace dagbase
                             _signalPaths.findByDest(p->id(), &incoming);
                             for (auto connection : incoming)
                             {
-                                if (connection->sourceNode()->commented() == Node::COMMENT_OUT)
+                                if (connection->sourceNode()->active() == Node::ACTIVE_OFF)
                                 {
                                     Status status{Status::STATUS_NO_UPSTREAM_CONNECTION};
                                     status.resultType = Status::RESULT_NODE_ID;
@@ -416,7 +416,7 @@ namespace dagbase
 	    if (f)
 	        for (auto p : _nodes)
 	        {
-	            if (p.second->commented() != Node::COMMENT_OUT)
+	            if (p.second->active() != Node::ACTIVE_OFF)
 	                if (!f(p.second))
 	                    return;
 	        }
@@ -593,7 +593,7 @@ namespace dagbase
 	    if (f)
 	        for (const auto &p : _ports)
 	        {
-	            if (p.second->parent()->commented()!=Node::COMMENT_OUT)
+	            if (p.second->parent()->active()!=Node::ACTIVE_OFF)
 	            {
 	                if (!f(p.second))
 	                    return;
@@ -1488,7 +1488,7 @@ namespace dagbase
 
         for (auto n : order)
         {
-            if (n->commented() != Node::COMMENT_OUT)
+            if (n->active() != Node::ACTIVE_OFF)
             {
                 n->update();
 

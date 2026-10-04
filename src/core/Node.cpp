@@ -287,7 +287,7 @@ namespace dagbase
 
     void Node::update()
     {
-        if (commented()==COMMENT_THROUGH)
+        if (active()==ACTIVE_PASS_THROUGH)
         {
             PortArray inputs, outputs;
             inputs.a.reserve(totalPorts()/2);
@@ -516,25 +516,25 @@ namespace dagbase
         return value;
     }
 
-    const char * Node::commentToString(Comment value)
+    const char * Node::commentToString(Active value)
     {
         switch (value)
         {
-            ENUM_NAME(COMMENT_NONE)
-            ENUM_NAME(COMMENT_OUT)
-            ENUM_NAME(COMMENT_THROUGH)
+            ENUM_NAME(ACTIVE_ON)
+            ENUM_NAME(ACTIVE_OFF)
+            ENUM_NAME(ACTIVE_PASS_THROUGH)
         }
 
         return "<error>";
     }
 
-    Node::Comment Node::parseComment(const char *str)
+    Node::Active Node::parseComment(const char *str)
     {
-        TEST_ENUM(COMMENT_NONE, str)
-        TEST_ENUM(COMMENT_OUT, str)
-        TEST_ENUM(COMMENT_THROUGH, str)
+        TEST_ENUM(ACTIVE_ON, str)
+        TEST_ENUM(ACTIVE_OFF, str)
+        TEST_ENUM(ACTIVE_PASS_THROUGH, str)
 
-        return COMMENT_NONE;
+        return ACTIVE_ON;
     }
 
     void Node::writeDynamicPorts(OutputStream &str, NodeLibrary &nodeLib, Lua &lua, const PortArray &_dynamicPorts, const MetaPortArray &_dynamicMetaPorts)

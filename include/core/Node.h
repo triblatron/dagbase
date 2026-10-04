@@ -41,19 +41,19 @@ namespace dagbase
 
 	    enum Masks : std::uint32_t
 	    {
-	        MASK_COMMENT        = 1U<<5U|1U<<6U
+	        MASK_ACTIVE        = 1U<<5U|1U<<6U
 	    };
 
 	    enum Shifts : uint32_t
 	    {
-	        SHIFT_COMMENT       = 5
+	        SHIFT_ACTIVE       = 5
 	    };
 
-	    enum Comment : std::uint32_t
+	    enum Active : std::uint32_t
 	    {
-	        COMMENT_NONE,
-	        COMMENT_OUT,
-	        COMMENT_THROUGH
+	        ACTIVE_ON,
+	        ACTIVE_OFF,
+	        ACTIVE_PASS_THROUGH
 	    };
 
 	    using ValueBuffer = SlotMap<ValueID,Value>;
@@ -226,11 +226,11 @@ namespace dagbase
 
 	    std::size_t numOutputs() const;
 
-	    void setCommented(Comment value)
+	    void setActive(Active value)
 	    {
 	        switch (value)
 	        {
-	            case COMMENT_THROUGH:
+	            case ACTIVE_PASS_THROUGH:
 	            {
 	                auto inputs = numInputs();
 	                auto outputs = numOutputs();
@@ -245,12 +245,12 @@ namespace dagbase
 	            default:
 	                break;
 	        }
-	        _flags = static_cast<NodeFlags>((_flags & ~MASK_COMMENT) | (value << SHIFT_COMMENT));
+	        _flags = static_cast<NodeFlags>((_flags & ~MASK_ACTIVE) | (value << SHIFT_ACTIVE));
 	    }
 
-	    Comment commented() const
+	    Active active() const
 	    {
-	        return static_cast<Comment>((_flags & MASK_COMMENT)>>SHIFT_COMMENT);
+	        return static_cast<Active>((_flags & MASK_ACTIVE)>>SHIFT_ACTIVE);
 	    }
 
         void setPosition(float x, float y)
@@ -390,9 +390,9 @@ namespace dagbase
 
         static NodeFlags parseFlags(const std::string& str);
 
-	    static const char* commentToString(Comment value);
+	    static const char* commentToString(Active value);
 
-	    static Comment parseComment(const char* str);
+	    static Active parseComment(const char* str);
 	protected:
 		typedef std::vector<dagbase::MetaPort> MetaPortArray;
 		typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;

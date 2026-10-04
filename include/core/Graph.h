@@ -74,14 +74,14 @@ namespace dagbase
 		[[nodiscard]] size_t numNodes() const
 		{
 			return _nodes.size() - std::count_if(_nodes.begin(), _nodes.end(), [](const NodeMap::value_type& p) {
-			    return p.second->commented() == dagbase::Node::COMMENT_OUT;
+			    return p.second->active() == dagbase::Node::ACTIVE_OFF;
 			});
 		}
 
         [[nodiscard]] std::size_t numPorts() const
         {
             return _ports.size() - std::count_if(_ports.begin(), _ports.end(), [](const PortMap::value_type& p) {
-                return p.second->parent()->commented() == dagbase::Node::COMMENT_OUT;
+                return p.second->parent()->active() == dagbase::Node::ACTIVE_OFF;
             });
         }
 
