@@ -18,6 +18,8 @@
 #include <iterator>
 #include <set>
 
+#include "Node.h"
+
 namespace dagbase
 {
     class ByteBuffer;
@@ -71,12 +73,16 @@ namespace dagbase
 
 		[[nodiscard]] size_t numNodes() const
 		{
-			return _nodes.size();
+			return _nodes.size() - std::count_if(_nodes.begin(), _nodes.end(), [](const NodeMap::value_type& p) {
+			    return p.second->commented() != dagbase::Node::COMMENT_NONE;
+			});
 		}
 
-        std::size_t numPorts() const
+        [[nodiscard]] std::size_t numPorts() const
         {
-            return _ports.size();
+            return _ports.size() - std::count_if(_ports.begin(), _ports.end(), [](const PortMap::value_type& p) {
+                return p.second->parent()->commented() != dagbase::Node::COMMENT_NONE;
+            });
         }
 
         //! Add a node if it is non-null, does nothing otherwise.
