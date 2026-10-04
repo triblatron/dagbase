@@ -76,6 +76,20 @@ namespace dagbase
         }
     }
 
+    std::size_t Node::numInputs() const
+    {
+        return std::count_if(_dynamicPorts.a.begin(), _dynamicPorts.a.end(), [](const Port* p) {
+            return p->dir() == PortDirection::DIR_IN;
+        });
+    }
+
+    std::size_t Node::numOutputs() const
+    {
+        return std::count_if(_dynamicPorts.a.begin(), _dynamicPorts.a.end(), [](const Port* p) {
+            return p->dir() == PortDirection::DIR_OUT;
+        });
+    }
+
     //! Reconnect from newSource to each input Port whose parent is in selection by adding new Ports.
     void dagbase::Node::reconnectInputs(NodeSet const& selection, Node *newSource, KeyGenerator& keyGen)
     {

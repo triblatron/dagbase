@@ -225,8 +225,23 @@ namespace dagbase
             return _flags;
         }
 
+	    std::size_t numInputs() const;
+
+	    std::size_t numOutputs() const;
+
 	    void setCommented(Comment value)
 	    {
+	        switch (value)
+	        {
+	            case COMMENT_THROUGH:
+	                if (numInputs() != numOutputs())
+	                {
+	                    return;
+	                }
+	                break;
+	            default:
+	                break;
+	        }
 	        _flags = static_cast<NodeFlags>((_flags & ~MASK_COMMENT) | (value << SHIFT_COMMENT));
 	    }
 
