@@ -234,10 +234,16 @@ namespace dagbase
 	        switch (value)
 	        {
 	            case COMMENT_THROUGH:
-	                if (numInputs() != numOutputs())
+	            {
+	                auto inputs = numInputs();
+	                auto outputs = numOutputs();
+	                if (inputs != outputs)
 	                {
-	                    return;
+	                    raiseError(WARNING_MISMATCHED_IO) << "Mismatched number of inputs " << inputs << " and outputs " << outputs;
+                        return;
 	                }
+
+	            }
 	                break;
 	            default:
 	                break;

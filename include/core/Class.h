@@ -21,10 +21,18 @@ namespace dagbase
     class DAGBASE_API Class
     {
     public:
-        enum Error
+        enum Error : std::uint32_t
         {
-            NoError,
-            TypeNotFound
+            ERROR_NONE,
+            ERROR_TYPE_NOT_FOUND,
+            WARNING_MISMATCHED_IO
+        };
+
+        enum Severity : std::uint32_t
+        {
+            SEVERITY_NONE,
+            SEVERITY_WARNING,
+            SEVERITY_ERROR
         };
     public:
         Class() = default;
@@ -45,6 +53,16 @@ namespace dagbase
 
         virtual void describe(ClassDescription& description) const;
 
+        Error error() const
+        {
+            return _errod;
+        }
+
+        Severity severity() const
+        {
+            return _severity;
+        }
+
         std::ostringstream & raiseError(Error code);
 
         std::string errorMessage() const;
@@ -56,9 +74,18 @@ namespace dagbase
         virtual OutputStream& writeFlat(OutputStream& str, NodeLibrary& nodeLib, Lua& lua) const;
 
         virtual InputStream& readFlat(InputStream& str, NodeLibrary& nodeLib, Lua& lua);
+
+        static const char* errorToString(Error value);
+
+        static Error parseError(const char* str);
+
+        static const char* severityToString(Severity value);
+
+        static Severity parseSeverity(const char* str);
     private:
         MetaClass* _metaClass{nullptr};
         std::ostringstream* _errorStr{ nullptr };
-        Error _errod{Error::NoError};
+        Error _errod{ERROR_NONE};
+        Severity _severity{SEVERITY_NONE};
     };
 }

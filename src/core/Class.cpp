@@ -3,11 +3,10 @@
 #include "core/Class.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
+#include "core/NodeLibrary.h"
+#include "util/enums.h"
 
 #include <sstream>
-
-#include "core/NodeLibrary.h"
-#include "io/OutputStream.h"
 
 namespace dagbase
 {
@@ -28,10 +27,19 @@ namespace dagbase
 
         switch ( code )
         {
-        case NoError:
+        case ERROR_NONE:
+            _severity = SEVERITY_NONE;
+            _errod = ERROR_NONE;
             break;
-        case TypeNotFound:
-            (*_errorStr) << "TypeNotFound:";
+        case ERROR_TYPE_NOT_FOUND:
+            _severity = SEVERITY_ERROR;
+            _errod = ERROR_TYPE_NOT_FOUND;
+            (*_errorStr) << "ERROR_TYPE_NOT_FOUND:";
+            break;
+        case WARNING_MISMATCHED_IO:
+            _severity = SEVERITY_WARNING;
+            _errod = WARNING_MISMATCHED_IO;
+            (*_errorStr) << "WARNING_MISMATCHED_IO:";
             break;
         }
 
@@ -115,6 +123,48 @@ namespace dagbase
         str.readFooter();
 
         return str;
+    }
+
+    const char * Class::errorToString(Error value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(ERROR_NONE)
+            ENUM_NAME(ERROR_TYPE_NOT_FOUND)
+            ENUM_NAME(WARNING_MISMATCHED_IO)
+        }
+
+        return "<error>";
+    }
+
+    Class::Error Class::parseError(const char *str)
+    {
+        TEST_ENUM(ERROR_NONE, str)
+        TEST_ENUM(ERROR_TYPE_NOT_FOUND, str)
+        TEST_ENUM(WARNING_MISMATCHED_IO, str)
+
+        return ERROR_NONE;
+    }
+
+    const char * Class::severityToString(Severity value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(SEVERITY_NONE)
+            ENUM_NAME(SEVERITY_WARNING)
+            ENUM_NAME(SEVERITY_ERROR)
+        }
+
+        return "<error>";
+    }
+
+    Class::Severity Class::parseSeverity(const char *str)
+    {
+        TEST_ENUM(SEVERITY_NONE, str)
+        TEST_ENUM(SEVERITY_WARNING, str)
+        TEST_ENUM(SEVERITY_ERROR, str)
+
+        return SEVERITY_NONE;
     }
 
     // void Class::setField( size_t index, lua_Integer value )

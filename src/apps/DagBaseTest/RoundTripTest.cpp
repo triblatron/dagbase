@@ -481,3 +481,43 @@ INSTANTIATE_TEST_SUITE_P(NodeComment, NodeComment_testRoundTrip, ::testing::Valu
     std::make_tuple("COMMENT_OUT", dagbase::Node::COMMENT_OUT),
     std::make_tuple("COMMENT_THROUGH", dagbase::Node::COMMENT_THROUGH)
     ));
+
+class ClassError_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Class::Error>>
+{
+
+};
+
+TEST_P(ClassError_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Class::errorToString(value));
+    EXPECT_EQ(value, dagbase::Class::parseError(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Class, ClassError_testRoundTrip, ::testing::Values(
+    std::make_tuple("ERROR_NONE", dagbase::Class::ERROR_NONE),
+    std::make_tuple("ERROR_TYPE_NOT_FOUND", dagbase::Class::ERROR_TYPE_NOT_FOUND),
+    std::make_tuple("WARNING_MISMATCHED_IO", dagbase::Class::WARNING_MISMATCHED_IO)
+    ));
+
+class ClassSeverity_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Class::Severity>>
+{
+
+};
+
+TEST_P(ClassSeverity_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Class::severityToString(value));
+    EXPECT_EQ(value, dagbase::Class::parseSeverity(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Class, ClassSeverity_testRoundTrip, ::testing::Values(
+    std::make_tuple("SEVERITY_NONE", dagbase::Class::SEVERITY_NONE),
+    std::make_tuple("SEVERITY_WARNING", dagbase::Class::SEVERITY_WARNING),
+    std::make_tuple("SEVERITY_ERROR", dagbase::Class::SEVERITY_ERROR)
+));
