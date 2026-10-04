@@ -36,8 +36,25 @@ namespace dagbase
 			NODE_OUTPUT_BIT		= 1U<<1U,
 			NODE_INTERNAL_BIT	= 1U<<2U,
 	        NODE_PROCESSED_BIT  = 1U<<3U,
-	        NODE_VISITED_BIT    = 1U<<4U
+	        NODE_VISITED_BIT    = 1U<<4U,
 		};
+
+	    enum Masks : std::uint32_t
+	    {
+	        MASK_COMMENT        = 1U<<5U|1U<<6U
+	    };
+
+	    enum Shifts : uint32_t
+	    {
+	        SHIFT_COMMENT       = 5
+	    };
+
+	    enum Comment : std::uint32_t
+	    {
+	        COMMENT_NONE,
+	        COMMENT_OUT,
+	        COMMENT_THROUGH
+	    };
 
 	    using ValueBuffer = SlotMap<ValueID,Value>;
 	public:
@@ -208,6 +225,16 @@ namespace dagbase
             return _flags;
         }
 
+	    void setCommented(Comment value)
+	    {
+	        _flags = static_cast<NodeFlags>((_flags & ~MASK_COMMENT) | (value << SHIFT_COMMENT));
+	    }
+
+	    Comment commented() const
+	    {
+	        return static_cast<Comment>((_flags & MASK_COMMENT)>>SHIFT_COMMENT);
+	    }
+
         void setPosition(float x, float y)
         {
             _pos[0] = x;
@@ -344,6 +371,10 @@ namespace dagbase
         static std::string flagsToString(NodeFlags value);
 
         static NodeFlags parseFlags(const std::string& str);
+
+	    static const char* commentToString(Comment value);
+
+	    static Comment parseComment(const char* str);
 	protected:
 		typedef std::vector<dagbase::MetaPort> MetaPortArray;
 		typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;

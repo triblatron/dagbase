@@ -461,3 +461,23 @@ TEST_P(ZigZag_testScripted, testExpectedValue)
 INSTANTIATE_TEST_SUITE_P(ZigZag, ZigZag_testScripted, ::testing::Values(
     std::make_tuple("data/tests/ZigZag/Ints.lua")
     ));
+
+class NodeComment_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Node::Comment>>
+{
+
+};
+
+TEST_P(NodeComment_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Node::commentToString(value));
+    EXPECT_EQ(value, dagbase::Node::parseComment(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(NodeComment, NodeComment_testRoundTrip, ::testing::Values(
+    std::make_tuple("COMMENT_NONE", dagbase::Node::COMMENT_NONE),
+    std::make_tuple("COMMENT_OUT", dagbase::Node::COMMENT_OUT),
+    std::make_tuple("COMMENT_THROUGH", dagbase::Node::COMMENT_THROUGH)
+    ));
