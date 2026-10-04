@@ -101,24 +101,26 @@ namespace dagbase
             ENUM_NAME(STATUS_SYNTAX_ERROR)
             ENUM_NAME(STATUS_FAILED_TO_CREATE_GRAPH)
             ENUM_NAME(STATUS_INTERNAL_ERROR)
+            ENUM_NAME(STATUS_NO_UPSTREAM_CONNECTION)
             ENUM_NAME(STATUS_UNKNOWN)
         }
 
         return "<error>";
     }
 
-    Status::StatusCode Status::parseStatusCode(const char* value)
+    Status::StatusCode Status::parseStatusCode(const char* str)
     {
-        TEST_ENUM(STATUS_OK, value);
-        TEST_ENUM(STATUS_FILE_NOT_FOUND, value);
-        TEST_ENUM(STATUS_OBJECT_NOT_FOUND, value);
-        TEST_ENUM(STATUS_INVALID_PORT, value);
-        TEST_ENUM(STATUS_INVALID_SELECTION, value);
-        TEST_ENUM(STATUS_CYCLE_DETECTED, value);
-        TEST_ENUM(STATUS_SYNTAX_ERROR, value);
-        TEST_ENUM(STATUS_FAILED_TO_CREATE_GRAPH, value);
-        TEST_ENUM(STATUS_INTERNAL_ERROR, value);
-        TEST_ENUM(STATUS_UNKNOWN, value);
+        TEST_ENUM(STATUS_OK, str);
+        TEST_ENUM(STATUS_FILE_NOT_FOUND, str);
+        TEST_ENUM(STATUS_OBJECT_NOT_FOUND, str);
+        TEST_ENUM(STATUS_INVALID_PORT, str);
+        TEST_ENUM(STATUS_INVALID_SELECTION, str);
+        TEST_ENUM(STATUS_CYCLE_DETECTED, str);
+        TEST_ENUM(STATUS_SYNTAX_ERROR, str);
+        TEST_ENUM(STATUS_FAILED_TO_CREATE_GRAPH, str);
+        TEST_ENUM(STATUS_INTERNAL_ERROR, str);
+        TEST_ENUM(STATUS_NO_UPSTREAM_CONNECTION, str);
+        TEST_ENUM(STATUS_UNKNOWN, str);
 
         return STATUS_UNKNOWN;
     }

@@ -306,7 +306,7 @@ namespace dagbase
         return fromLua(lua, nodeLib, status);
     }
 
-    Graph::TopoSortResult Graph::topologicalSort(NodeArray *order, NodeArray* cycle)
+    Status Graph::topologicalSort(NodeArray *order, NodeArray* cycle)
     {
         if (order!=nullptr && cycle)
         {
@@ -322,7 +322,7 @@ namespace dagbase
             for (auto n : allNodesIncludingChildren)
             {
                 n->markNotProcessed();
-                if (n->hasNoDependencies())
+                if (n->commented() != Node::COMMENT_OUT && n->hasNoDependencies())
                 {
                     nodesWithNoDependencies.push(n);
                 }
@@ -342,7 +342,7 @@ namespace dagbase
                     {
                         auto m = signalPath->destNode();
                         signalPath->markRemoved();
-                        if (signalPath->destNode()->numIncomingConnections()==1)
+                        if (m->numIncomingConnections()==1)
                         {
                             nodesWithNoDependencies.push(m);
                         }
@@ -357,20 +357,47 @@ namespace dagbase
                 NodeSet remainingNodes;
                 for (auto n : allNodesIncludingChildren)
                 {
-                    if (!n->isProcessed())
+                    if (n->commented() != Node::COMMENT_OUT &&  !n->isProcessed())
                     {
                         remainingNodes.emplace(n);
                     }
                 }
                 findCyclePath(remainingNodes, cycle);
 
-                return Graph::CYCLES_DETECTED;
+                if (!cycle->empty())
+                    return Status{Status::STATUS_CYCLE_DETECTED};
+
+                // Detect no upstream connections
+                for (auto n : remainingNodes)
+                {
+                    if (n->commented() != Node::COMMENT_OUT)
+                    {
+                        for (std::size_t i=0; i<n->numDynamicPorts(); ++i)
+                        {
+                            auto p = n->dynamicPort(i);
+                            SignalPathTable::FindResultFrom incoming;
+                            _signalPaths.findByDest(p->id(), &incoming);
+                            for (auto connection : incoming)
+                            {
+                                if (connection->sourceNode()->commented() == Node::COMMENT_OUT)
+                                {
+                                    Status status{Status::STATUS_NO_UPSTREAM_CONNECTION};
+                                    status.resultType = Status::RESULT_NODE_ID;
+                                    status.result = n->id();
+
+                                    return status;
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
             // else
             //     OK
             // endif
         }
-        return Graph::OK;
+        return Status{Status::STATUS_OK};
     }
 
     bool Graph::hasEdges() const

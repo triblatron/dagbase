@@ -179,6 +179,8 @@ namespace dagbase
             STATUS_FAILED_TO_CREATE_GRAPH,
             //! Something went wrong in our internal structures
             STATUS_INTERNAL_ERROR,
+            //! An input has no upstream connection, typically during topological sort
+            STATUS_NO_UPSTREAM_CONNECTION,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };
@@ -208,6 +210,10 @@ namespace dagbase
 
         Status& operator=(const Status& other) = default;
 
+        bool operator==(const Status& other) const
+        {
+            return status == other.status && resultType == other.resultType && result == other.result;
+        }
         void configure(dagbase::ConfigurationElement& config);
 
         Variant find(std::string_view path) const;

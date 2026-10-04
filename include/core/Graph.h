@@ -74,14 +74,14 @@ namespace dagbase
 		[[nodiscard]] size_t numNodes() const
 		{
 			return _nodes.size() - std::count_if(_nodes.begin(), _nodes.end(), [](const NodeMap::value_type& p) {
-			    return p.second->commented() != dagbase::Node::COMMENT_NONE;
+			    return p.second->commented() == dagbase::Node::COMMENT_OUT;
 			});
 		}
 
         [[nodiscard]] std::size_t numPorts() const
         {
             return _ports.size() - std::count_if(_ports.begin(), _ports.end(), [](const PortMap::value_type& p) {
-                return p.second->parent()->commented() != dagbase::Node::COMMENT_NONE;
+                return p.second->parent()->commented() == dagbase::Node::COMMENT_OUT;
             });
         }
 
@@ -211,20 +211,12 @@ namespace dagbase
         void dfs(Node* node, const NodeSet& remainingNodes, std::vector<Node*>* nodeStack, NodeSet* onStack, NodeArray
             * output);
 
-        enum TopoSortResult
-        {
-            //! The sort completed successfully.
-            OK,
-            //! One or more cycles were found, preventing a valid sort order.
-            CYCLES_DETECTED
-        };
-
         void findCyclePath(const NodeSet& remainingNodes, NodeArray *path);
 
         //! Perform a topological sort of this Graph.
         //! \return A valid order if successful, undefined otherwise.
 	    //! \return A cycle path if a cycle was detected, empty otherwise.
-        TopoSortResult topologicalSort(NodeArray* order, NodeArray* cycle);
+        Status topologicalSort(NodeArray* order, NodeArray* cycle);
 
         //! Evaluate the nodes in this Graph using the given order.
         void evaluate(const NodeArray& order);
