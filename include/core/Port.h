@@ -216,12 +216,31 @@ namespace dagbase
             return "Port";
         }
 
+	    Value initialValue() const
+        {
+            return _initialValue;
+        }
+
+        void setInitialValue(const Value& value)
+        {
+            _initialValue = value;
+        }
+
+        Value& initialValue()
+        {
+            return _initialValue;
+        }
+
+	    Value& value();
+
 	    const Value& value() const;
 
-        void setValue(const Value& value);
+	    void setValue(Value value);
 
-        Value& value();
-
+	    void setValueId(SlotMap<ValueID, Value>::Ident id)
+	    {
+	        _valueId = id;
+	    }
         // void setValueID(const SlotMap<Name<Value>,Value>::Ident& id)
         // {
         //     _valueId = id;
@@ -265,7 +284,7 @@ namespace dagbase
         Node* _parent{nullptr};
 	    Node* _sharedParent{nullptr};
         PortFlags _flags{FLAGS_NONE};
-	    // SlotMap<Name<Value>, Value>::Ident _valueId;
-	    Value _value;
+	    Value _initialValue;
+	    SlotMap<ValueID, Value>::Ident _valueId;
 	};
 }

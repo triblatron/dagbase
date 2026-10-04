@@ -153,6 +153,7 @@ namespace dagbase
     INF_ID_DECLARE(PortID, Port);
     INF_ID_DECLARE(TemplateID, Template);
     INF_ID_DECLARE(SignalPathID, SignalPath);
+    INF_ID_DECLARE(ValueID, Value);
 
     //! A return value from an RPC.
     struct DAGBASE_API Status

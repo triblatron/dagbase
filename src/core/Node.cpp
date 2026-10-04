@@ -261,6 +261,13 @@ namespace dagbase
             MetaPort desc;
             desc.flags = flags;
             _dynamicMetaPorts.emplace_back(desc);
+            if (port->parent())
+            {
+                Value& value = port->parent()->_values.alloc(port->id());
+                value = port->initialValue();
+                port->setValueId(_values.id(value));
+                assert(port->value()==port->initialValue());
+            }
         }
     }
 

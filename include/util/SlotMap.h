@@ -84,6 +84,9 @@ namespace dagbase
 
         //! \class Item
         //! Put the item first so we can cast a pointer to T to a pointer to Item safely.
+        //! \note This struct must have standard layout or a static assertion will fire.
+        //! Having standard layout makes the casting of T* to Item* safe.
+        //! It means we must be careful about inheritance and virtual functions are typically not allowed.
         struct Item
         {
             T item;
@@ -98,13 +101,36 @@ namespace dagbase
                 // Do nothing.
             }
         };
+
         static_assert(std::is_standard_layout_v<Item>, "Item must have a standard layout");
+
+        using Array = std::vector<Item>;
 
         SlotMap() = default;
 
         explicit SlotMap(std::size_t count)
         {
             _data.reserve(count);
+        }
+
+        typename Array::iterator begin()
+        {
+            return _data.begin();
+        }
+
+        typename Array::const_iterator begin() const
+        {
+            return _data.begin();
+        }
+
+        typename Array::iterator end()
+        {
+            return _data.end();
+        }
+
+        typename Array::const_iterator end() const
+        {
+            return _data.end();
         }
 
         //! Allocate an item, either by growing the array or using a free entry.
@@ -173,7 +199,7 @@ namespace dagbase
         }
 
         //! Try to get an item.
-        //! \retval A pointer to the item if the identifier is valid, as determined by isValid().
+        //! \retval Pointer to the item if the identifier is valid, as determined by isValid().
         //! \retval nullptr otherwise.
         T* tryGet(Ident id)
         {
@@ -230,7 +256,6 @@ namespace dagbase
             return {};
         }
     private:
-        using Array = std::vector<Item>;
         //! The data array, consisting of the element type and an identifier.
         Array _data;
         //! The number of elements in use.

@@ -39,7 +39,7 @@ namespace dagbase
 	        NODE_VISITED_BIT    = 1U<<4U
 		};
 
-	    using ValueBuffer = SlotMap<Name<Value>,Value>;
+	    using ValueBuffer = SlotMap<ValueID,Value>;
 	public:
 		Node() = default;
 
@@ -317,24 +317,29 @@ namespace dagbase
 
         void removePort(Port* port);
 
-	    // ValueBuffer::Ident addValue(const Value& value)
-	    // {
-	    //     auto& allocatedValue = _values.alloc();
-	    //
-	    //     allocatedValue = value;
-	    //
-	    //     return _values.id(allocatedValue);
-	    // }
-	    //
-	    // Value* value(const ValueBuffer::Ident& id)
-	    // {
-	    //     return _values.tryGet(id);
-	    // }
-	    //
-	    // const Value* value(const ValueBuffer::Ident& id) const
-	    // {
-	    //     return _values.tryGet(id);
-	    // }
+	    ValueBuffer::Ident addValue(const Value& value)
+	    {
+	        auto& allocatedValue = _values.alloc();
+
+	        allocatedValue = value;
+
+	        return _values.id(allocatedValue);
+	    }
+
+	    Value* value(const ValueBuffer::Ident& id)
+	    {
+	        return _values.tryGet(id);
+	    }
+
+	    const Value* value(const ValueBuffer::Ident& id) const
+	    {
+	        return _values.tryGet(id);
+	    }
+
+	    const ValueBuffer& values() const
+	    {
+	        return _values;
+	    }
 
         static std::string flagsToString(NodeFlags value);
 
@@ -347,16 +352,16 @@ namespace dagbase
 	    void clonePorts(const Node& other, CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen);
 	    void deleteDynamicPorts();
 	private:
-        NodeID _id{NodeID::INVALID_ID};
-//	    ValueBuffer _values;
+	    ValueBuffer _values;
         std::string _name;
-        // Position to allow for manual layout
-        float _pos[2]{0,0};
-		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
-        NodeFlags _flags{ NODE_NONE };
 	    MetaPortArray _dynamicMetaPorts;
 	    PortArray _dynamicPorts;
+        float _pos[2]{0,0};
 	    Graph* _parent{nullptr};
+	    NodeID _id{NodeID::INVALID_ID};
+        // Position to allow for manual layout
+		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};
+        NodeFlags _flags{ NODE_NONE };
 	};
 
     struct CompareNodesById

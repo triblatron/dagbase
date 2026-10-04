@@ -21,7 +21,7 @@ namespace dagbase
         _direction(dir),
         _id(id),
         _flags(flags),
-        _value(std::move(value))
+        _initialValue(std::move(value))
     {
     }
 
@@ -84,7 +84,7 @@ namespace dagbase
             }
         }
        // _valueId = _parent->addValue(other.value());
-        _value = other._value;
+        _initialValue = other._initialValue;
     }
 
     //! Reconnect to nodes of our output connections that are in the selection by adding new Ports
@@ -163,7 +163,7 @@ namespace dagbase
         str.writeField("name");
         str.writeString(_name, true);
         str.writeField("type");
-        str.writeUInt32(value().type());
+        str.writeUInt32(initialValue().type());
         str.writeField("direction");
         str.writeUInt32(_direction);
         str.writeField("parent");
@@ -183,7 +183,7 @@ namespace dagbase
             _sharedParent->writeToStream(str, nodeLib, lua);
         }
         str.writeField("value");
-        _value.writeToStream(str);
+        _initialValue.writeToStream(str);
         str.writeFooter();
         return str;
     }
@@ -192,9 +192,9 @@ namespace dagbase
     {
         printer.printIndent().print("id = ").print(_id).print(",\n");
         printer.printIndent().print("name = \"").print(_name).print("\",\n");
-        printer.printIndent().print("type = \"").print(Value::typeString(value().type())).print("\",\n");
+        printer.printIndent().print("type = \"").print(Value::typeString(initialValue().type())).print("\",\n");
         printer.printIndent().print("direction = \"").print(PortDirection::toString(_direction)).print("\",\n");
-        printer.printIndent().print("class = \"").print(Value::className(value().type())).print("\",\n");
+        printer.printIndent().print("class = \"").print(Value::className(initialValue().type())).print("\",\n");
         printer.printIndent().print("flags = \"").print(portFlagsToString(_flags)).print("\",\n");
         if (_parent!=nullptr)
         {
@@ -218,23 +218,38 @@ namespace dagbase
 
     const Value & Port::value() const
     {
-        // return *parent()->value(_valueId);
-        return _value;
+        if (parent())
+        {
+            auto value = parent()->value(_valueId);
+            if (value)
+            {
+                return *value;
+            }
+        }
+
+        return _initialValue;
     }
 
-    void Port::setValue(const Value &value)
+    void Port::setValue(const Value value)
     {
-        _value = value;
-        // if (parent())
-        // {
-        //     *parent()->value(_valueId) = value;
-        // }
+        if (parent())
+        {
+            *parent()->value(_valueId) = value;
+        }
     }
 
     Value & Port::value()
     {
-        return _value;
-        // return *parent()->value(_valueId);
+        if (parent())
+        {
+            auto value = parent()->value(_valueId);
+            if (value)
+            {
+                return *value;
+            }
+        }
+
+        return _initialValue;
     }
 
     void Port::debug(dagbase::DebugPrinter& printer) const
@@ -263,8 +278,8 @@ namespace dagbase
             printer.println("sharedParent:\"<none>\"");
         }
         printer.println("remove: " + std::to_string(isMarkedRemoved()));
-        printer.println("value:");
-        //printer.print(_value);
+        printer.println("initialValue:");
+        //printer.print(_initialValue);
     }
 
     Port::Port(dagbase::InputStream &str, NodeLibrary& nodeLib, dagbase::Lua& lua)
@@ -296,7 +311,7 @@ namespace dagbase
         str.readField(&fieldName);
         _sharedParent = str.readRef<Node>("Node", nodeLib, lua);
         str.readField(&fieldName);
-        _value.readFromStream(str);
+        _initialValue.readFromStream(str);
         str.readFooter();
         return str;
     }
@@ -478,8 +493,8 @@ namespace dagbase
         str.writeString(_name, true);
         str.writeField("direction");
         str.writeUInt32(_direction);
-        str.writeField("value");
-        _value.writeToStream(str);
+        str.writeField("initialValue");
+        _initialValue.writeToStream(str);
         str.writeFooter();
         return str;
     }
@@ -498,7 +513,7 @@ namespace dagbase
         str.readUInt32(&rawDirection);
         _direction = static_cast<PortDirection::Direction>(rawDirection);
         str.readField(&fieldName);
-        _value.readFromStream(str);
+        _initialValue.readFromStream(str);
         str.readFooter();
         return str;
     }

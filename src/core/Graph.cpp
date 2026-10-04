@@ -759,6 +759,8 @@ namespace dagbase
 	        {
 	            str.writeField("port");
 	            p.second->dynamicPort(i)->id().writeToStream(str);
+	            str.writeField("value");
+	            p.second->dynamicPort(i)->value().writeToStream(str);
 	            str.writeField("metaPort");
 	            p.second->dynamicMetaPort(i)->write(str);
 	        }
@@ -868,11 +870,14 @@ namespace dagbase
 	        std::uint32_t numDynamicPorts{0};
 	        str.readField(&fieldName);
 	        str.readUInt32(&numDynamicPorts);
-	        for (std::uint32_t i=0; i<numDynamicPorts; ++i)
+	        for (std::uint32_t j=0; j<numDynamicPorts; ++j)
 	        {
 	            str.readField(&fieldName);
 	            PortID portID{PortID::INVALID_ID};
 	            portID.readFromStream(str);
+	            str.readField(&fieldName);
+	            Value value;
+	            value.readFromStream(str);
 	            str.readField(&fieldName);
 	            MetaPort metaPort;
 	            metaPort.read(str);
@@ -885,6 +890,7 @@ namespace dagbase
 	            if (n && p)
 	            {
 	                n->addDynamicPort(p, metaPort.flags);
+	                p->setValue(value);
 	            }
 	        }
 	        str.readFooter();
