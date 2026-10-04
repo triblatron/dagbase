@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <cstdint>
 #include <string>
-
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -260,4 +260,5 @@ namespace dagbase
 
     ComparisonFlags DAGBASE_API parseComparisonFlags(const std::string& str);
 
+    std::ostream DAGBASE_API & operator<<(std::ostream& ostr, const Status& value);
 };

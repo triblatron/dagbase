@@ -161,10 +161,7 @@ namespace dagbase
 
         //! Perform our computation based on inputs and settings.
         //! \note This has an empty default implementation.
-        virtual void update()
-        {
-            // Do nothing.
-        }
+        virtual void update();
 
         //! Base class implementation of operator==().
         //! \note Typically called by a concrete implementation of equals().

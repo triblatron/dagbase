@@ -219,7 +219,7 @@ namespace dagbase
         Status topologicalSort(NodeArray* order, NodeArray* cycle);
 
         //! Evaluate the nodes in this Graph using the given order.
-        void evaluate(const NodeArray& order);
+        Status evaluate(const NodeArray& order);
 
         bool hasEdges() const;
 

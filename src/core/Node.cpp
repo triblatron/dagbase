@@ -285,6 +285,32 @@ namespace dagbase
         }
     }
 
+    void Node::update()
+    {
+        if (commented()==COMMENT_THROUGH)
+        {
+            PortArray inputs, outputs;
+            inputs.a.reserve(totalPorts()/2);
+            outputs.a.reserve(totalPorts()/2);
+            // Copy inputs to outputs
+            for (std::size_t i=0; i<totalPorts(); ++i)
+            {
+                if (dynamicPort(i)->dir() == PortDirection::DIR_IN)
+                {
+                    inputs.a.emplace_back(dynamicPort(i));
+                }
+                else if (dynamicPort(i)->dir() == PortDirection::DIR_OUT)
+                {
+                    outputs.a.emplace_back(dynamicPort(i));
+                }
+            }
+            for (std::size_t i=0; i<totalPorts()/2; ++i)
+            {
+                outputs.a[i]->setValue(inputs.a[i]->value());
+            }
+        }
+    }
+
     bool Node::operator==(const Node &other) const
     {
         if (this == &other)

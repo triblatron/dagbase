@@ -416,8 +416,9 @@ namespace dagbase
 	    if (f)
 	        for (auto p : _nodes)
 	        {
-	            if (!f(p.second))
-	                return;
+	            if (p.second->commented() != Node::COMMENT_OUT)
+	                if (!f(p.second))
+	                    return;
 	        }
     }
 
@@ -592,8 +593,11 @@ namespace dagbase
 	    if (f)
 	        for (const auto &p : _ports)
 	        {
-	            if (!f(p.second))
-	                return;
+	            if (p.second->parent()->commented()!=Node::COMMENT_OUT)
+	            {
+	                if (!f(p.second))
+	                    return;
+	            }
 	        }
     }
 
@@ -1478,26 +1482,45 @@ namespace dagbase
         }
     }
 
-    void Graph::evaluate(const NodeArray& order)
+    Status Graph::evaluate(const NodeArray& order)
     {
+	    Status status;
+
         for (auto n : order)
         {
-            for (size_t i=0; i<n->totalPorts(); ++i)
+            if (n->commented() != Node::COMMENT_OUT)
             {
                 n->update();
-                auto value = n->dynamicPort(i)->value();
-                SignalPathTable::FindResultFrom result;
-                _signalPaths.findBySource(n->dynamicPort(i)->id(), &result);
-                for (auto it=result.p.first; it!=result.p.second; ++it)
+
+                for (size_t i=0; i<n->totalPorts(); ++i)
                 {
-                    if ((*it))
+                    auto value = n->dynamicPort(i)->value();
+                    SignalPathTable::FindResultFrom result;
+                    _signalPaths.findBySource(n->dynamicPort(i)->id(), &result);
+                    for (auto it=result.p.first; it!=result.p.second; ++it)
                     {
-                        (*it)->dest()->setValue(value);
+                        if (*it)
+                        {
+                            (*it)->dest()->setValue(value);
+                        }
                     }
+                }
+                status.status = dagbase::Status::STATUS_OK;
+            }
+            else
+            {
+                if (n->numOutgoingConnections()!=0)
+                {
+                    status.status = Status::STATUS_NO_UPSTREAM_CONNECTION;
+                    status.resultType = Status::RESULT_NODE_ID;
+                    status.result = n->id();
+
+                    break;
                 }
             }
         }
 
+	    return status;
     }
 
     Graph *Graph::clone(dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, KeyGenerator* keyGen)

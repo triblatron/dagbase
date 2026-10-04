@@ -5,6 +5,7 @@
 #include "core/ConfigurationElement.h"
 
 #include <cstring>
+#include <iostream>
 
 namespace dagbase
 {
@@ -218,6 +219,13 @@ namespace dagbase
         TEST_BIT(CMP_CONNECTIONS_IDENT_BIT, str, value);
 
         return value;
+    }
+
+    std::ostream & operator<<(std::ostream &ostr, const Status &value)
+    {
+        ostr << "Status { status: " << Status::statusCodeToString(value.status) << ", resultType " << Status::resultTypeToString(value.resultType) << " }";
+
+        return ostr;
     }
 
     PortDirection::Direction PortDirection::parseFromString(const char* str)
