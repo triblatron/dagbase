@@ -438,6 +438,7 @@ namespace dagbase
     {
         if (auto it=std::find(_dynamicPorts.begin(), _dynamicPorts.end(), port); it!=_dynamicPorts.end())
         {
+            _values.free(&_values.get((*it)->valueId()));
             _dynamicPorts.a.erase(it);
             _dynamicMetaPorts.erase(_dynamicMetaPorts.begin() + std::distance(_dynamicPorts.begin(), it));
         }

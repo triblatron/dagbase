@@ -241,6 +241,12 @@ namespace dagbase
 	    {
 	        _valueId = id;
 	    }
+
+	    SlotMap<ValueID, Value>::Ident valueId() const
+	    {
+	        return _valueId;
+	    }
+
         // void setValueID(const SlotMap<Name<Value>,Value>::Ident& id)
         // {
         //     _valueId = id;
