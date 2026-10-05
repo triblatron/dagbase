@@ -19,6 +19,8 @@
 
 #include <memory_resource>
 
+#include "core/Variant.h"
+
 class Variant_testToString : public ::testing::TestWithParam<std::tuple<dagbase::Variant, std::string>>
 {
 
@@ -308,33 +310,59 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testEnum, ::testing::Values(
     std::make_tuple(dagbase::Value::TYPE_INT32, true)
     ));
 
-class EnumValue_testTryGet : public ::testing::TestWithParam<std::tuple<dagbase::Variant::Index, bool>>
+class EnumValue_testSet : public ::testing::TestWithParam<std::tuple<dagbase::Variant::Index, bool>>
 {
 
 };
 
-TEST_P(EnumValue_testTryGet, testHeld)
+const char* variantTypeToString(std::uint32_t value)
+{
+    return dagbase::Variant::indexToString(static_cast<dagbase::Variant::Index>(value));
+}
+
+std::uint32_t parseVariantType(const char* str)
+{
+    return dagbase::Variant::parseIndex(str);
+}
+
+TEST_P(EnumValue_testSet, testHeld)
 {
     dagbase::Variant::Index value = std::get<0>(GetParam());
     auto exists = std::get<1>(GetParam());
 
-    dagbase::EnumValue sut(value);
-    ASSERT_EQ(exists, sut.holds<dagbase::Variant::Index>());
-    auto actual = sut.tryGet<dagbase::Variant::Index>();
-    ASSERT_EQ(exists, actual.has_value());
-    EXPECT_EQ(value, actual.value());
+    dagbase::EnumValue sut([](std::uint32_t value) {
+        return dagbase::Variant::indexToString(static_cast<dagbase::Variant::Index>(value));
+    }, parseVariantType);
+    sut.set(value);
+    ASSERT_EQ(value, sut.get<dagbase::Variant::Index>());
 }
 
-INSTANTIATE_TEST_SUITE_P(EnumValue, EnumValue_testTryGet, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(EnumValue, EnumValue_testSet, ::testing::Values(
     std::make_tuple(dagbase::Variant::TYPE_DOUBLE, true)
     ));
 
-TEST(EnumValue_testTryGet, testNotHeld)
+TEST(EnumValue_testSet, testUnknown)
 {
-    dagbase::EnumValue sut(dagbase::Variant::TYPE_INTEGER);
-    ASSERT_FALSE(sut.holds<dagbase::Value::Type>());
-    auto actual = sut.tryGet<dagbase::Value::Type>();
-    ASSERT_FALSE(actual.has_value());
+    dagbase::EnumValue sut(variantTypeToString, parseVariantType);
+    sut.set("TYPE_SPOO");
+    ASSERT_EQ(dagbase::Variant::TYPE_UNKNOWN, sut.get<dagbase::Variant::Index>());
+}
+
+TEST(EnumValue, testNoParser)
+{
+    dagbase::EnumValue sut(nullptr, nullptr);
+    ASSERT_STREQ("<error>", sut.toString());
+    ASSERT_EQ(0, sut.get<dagbase::Variant::Index>());
+}
+
+TEST(Value, Value_setEnum)
+{
+    dagbase::Value sut;
+    auto enumValue = dagbase::EnumValue(variantTypeToString, parseVariantType);
+    enumValue.set("TYPE_DOUBLE");
+    sut = dagbase::Value(enumValue);
+    auto actual = std::get<dagbase::EnumValue>(sut.value());
+    EXPECT_EQ(dagbase::Variant::TYPE_DOUBLE, actual.get<dagbase::Variant::Index>());
 }
 
 struct VarintCase

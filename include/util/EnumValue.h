@@ -8,9 +8,7 @@
 
 #include "config/DagBaseExport.h"
 
-#include <type_traits>
-#include <typeinfo>
-#include <typeindex>
+#include <functional>
 #include <cstdint>
 
 namespace dagbase
@@ -18,77 +16,77 @@ namespace dagbase
     class DAGBASE_API EnumValue
     {
     public:
-        template<typename E>
-        using StringConverter = const char*(*)(E value);
-        template<typename E>
-        using Parser = E (*)(const char*);
+        using StringConverter = std::function<const char*(std::uint32_t value)>;
+        using Parser = std::function<std::uint32_t(const char*)>;
     public:
-        template<typename E, std::enable_if_t<std::is_enum_v<E>, bool> = true>
-        EnumValue(E e)
+        EnumValue(StringConverter stringConverter, Parser parser)
             :
-        _rawValue(static_cast<std::uint64_t>(static_cast<std::underlying_type_t<E>>(e))),
-        _type(typeid(E))
+        _stringConverter(std::move(stringConverter)),
+        _parser(std::move(parser))
         {
             // Do nothing.
         }
 
+        void set(const char* str)
+        {
+            if (_parser)
+                _value = _parser(str);
+            else
+                _value = 0;
+        }
+
         template<typename E>
-        bool holds() const
+        void set(E value)
         {
-            static_assert(std::is_enum_v<E>);
-            return _type == std::type_index(typeid(E));
+            _value = value;
         }
 
-        template <typename E>
-        std::optional<E> tryGet() const
+        template<typename E>
+        E get() const
         {
-            static_assert(std::is_enum_v<E>);
-            if (!holds<E>())
-                return std::nullopt;
-            return static_cast<E>(static_cast<std::underlying_type_t<E>>(_rawValue));
+            return static_cast<E>(_value);
         }
 
-        std::uint64_t raw() const
+        const char* toString() const
         {
-            return _rawValue;
-        }
-
-        std::type_index type() const
-        {
-            return _type;
+            if (_stringConverter)
+                return _stringConverter(_value);
+            return "<error>";
         }
 
         bool operator<(const EnumValue& other) const
         {
-            return _type == other._type && _rawValue < other._rawValue;
+            return _value < other._value;
         }
 
         bool operator<=(const EnumValue& other) const
         {
-            return _type == other._type && _rawValue <= other._rawValue;
+            return _value <= other._value;
         }
 
         bool operator>(const EnumValue& other) const
         {
-            return _type == other._type && _rawValue > other._rawValue;
+            return _value > other._value;
         }
 
         bool operator>=(const EnumValue& other) const
         {
-            return _type == other._type && _rawValue >= other._rawValue;
+            return _value >= other._value;
         }
 
         bool operator==(const EnumValue& other) const
         {
-            return _type == other._type && _rawValue == other._rawValue;
+            return _value == other._value;
         }
 
         bool operator!=(const EnumValue& other) const
         {
-            return _type != other._type || _rawValue != other._rawValue;
+            return _value != other._value;
         }
+
     private:
-        std::uint64_t _rawValue;
-        std::type_index _type;
+        StringConverter _stringConverter;
+        Parser _parser;
+        std::uint32_t _value{};
     };
 }
