@@ -4,6 +4,45 @@ root=
 	{
 		{
 			name="Index",
+			values=
+			{
+				{
+					name="TYPE_INTEGER",
+					value=0,
+				},
+				{
+					name="TYPE_DOUBLE",
+					value=1,
+				},
+				{
+					name="TYPE_BOOL",
+					value=2,
+				},
+				{
+					name="TYPE_STRING",
+					value=3,
+				},
+				{
+					name="TYPE_COLOUR",
+					value=4,
+				},
+				{
+					name="TYPE_VEC2",
+					value=5,
+				},
+				{
+					name="TYPE_UINT",
+					value=6,
+				},
+				{
+					name="TYPE_FUNCTION",
+					value=7,
+				},
+				{
+					name="TYPE_VALUE",
+					value=8,
+				},
+			},
 		},
 	},
 }

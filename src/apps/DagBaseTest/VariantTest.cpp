@@ -13,6 +13,7 @@
 #include "util/EnumValue.h"
 #include "io/StreamFactory.h"
 #include "core/TypeRegistry.h"
+#include "core/Node.h"
 
 #include "test/TestUtils.h"
 
@@ -341,6 +342,15 @@ void createIndex(dagbase::Type& type)
     type.flags = dagbase::Type::FLAGS_NONE;
 }
 
+void createNodeFlags(dagbase::Type& type)
+{
+    type.name = dagbase::Atom::intern("NodeFlags");
+    type.unknownValue = dagbase::Node::NodeFlags::NODE_NONE;
+    type.flags = dagbase::Type::BITMASK_BIT;
+    type.minValue = dagbase::Node::NodeFlags::NODE_NONE;
+    type.maxValue = dagbase::Node::NodeFlags::NODE_VISITED_BIT;
+}
+
 TEST_P(EnumValue_testSet, testHeld)
 {
     dagbase::Variant::Index value = std::get<0>(GetParam());
@@ -526,31 +536,55 @@ TEST(TypeRegistry, testRegisterEnum)
     EXPECT_EQ(sut, actual);
 }
 
+struct EnumerateNameValue
+{
+    dagbase::Atom name;
+    dagbase::Variant value;
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig(config, "name", &name);
+        dagbase::ConfigurationElement::readConfig(config, "value", &value);
+    }
+};
+
 struct EnumerateCase
 {
     using Enum = dagbase::Variant::Index;
 
     void configure(dagbase::ConfigurationElement& config)
     {
-        createIndex(type);
-        id = dagbase::TypeRegistry::getTypeRegistry().registerType(name, &type);
+        auto*  indexType = new dagbase::Type();
+        createIndex(*indexType);
+        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("Index"), indexType);
+        auto* nodeFlagsType = new dagbase::Type();
+        createNodeFlags(*nodeFlagsType);
+        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("NodeFlags"), nodeFlagsType);
+        dagbase::ConfigurationElement::readConfig(config, "name", &name);
+        type = dagbase::TypeRegistry::getTypeRegistry().findType(name);
+        dagbase::ConfigurationElement::readConfigVector(config, "values", &values);
     }
 
     void makeItSo() const
     {
-        auto value = type.minValue;
-        for (std::uint32_t i=0; i<(type.maxValue-type.minValue); ++i)
+        ASSERT_NE(nullptr, type);
+        auto value = type->minValue;
+        ASSERT_EQ(values.size(), type->maxValue-type->minValue+1);
+        for (std::uint32_t i=0; i<(type->maxValue-type->minValue); ++i)
         {
-            value = type.nextValue(value);
-            ASSERT_NE(value, type.unknownValue);
+            ASSERT_EQ(values[i].value.cast(dagbase::Variant::TYPE_UINT).asUint32(), value);
+            ASSERT_EQ(values[i].name.toString(), type->toString(value));
+            value = type->nextValue(value);
+            ASSERT_NE(value, type->unknownValue);
         }
-        value = type.nextValue(value);
-        ASSERT_EQ(type.unknownValue, value);
+        value = type->nextValue(value);
+        ASSERT_EQ(type->unknownValue, value);
     }
 
-    std::uint32_t id{0};
-    dagbase::Type type;
+    dagbase::Type* type{nullptr};
     dagbase::Atom name;
+    using NameValueArray = std::vector<EnumerateNameValue>;
+    NameValueArray values;
 };
 
 class Enum_testEnumerate : public ::testing::TestWithParam<std::tuple<const char*>>
@@ -584,5 +618,6 @@ TEST_P(Enum_testEnumerate, testExpectedNumber)
 }
 
 INSTANTIATE_TEST_SUITE_P(Enum, Enum_testEnumerate, ::testing::Values(
-    std::make_tuple("data/tests/Enum/Index.lua")
+    std::make_tuple("data/tests/Enum/Index.lua"),
+    std::make_tuple("data/tests/Enum/NodeFlags.lua")
     ));
