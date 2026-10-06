@@ -94,6 +94,13 @@ namespace dagbase
 
     struct DAGBASE_API Type
     {
+        enum Flags : std::uint32_t
+        {
+            FLAGS_NONE,
+            BITMASK_BIT
+        };
+
+        std::uint32_t id{0};
         Atom name;
         using Values = std::vector<std::pair<dagbase::Atom, std::uint32_t>>;
         Values values;
@@ -135,16 +142,32 @@ namespace dagbase
             }
             return {};
         }
-    };
 
-    template<typename Enum>
-    struct Enumeration : Type
-    {
-        using ToStringFunc = const char* (*)(Enum);
-        using ParseFunc = Enum(*)(const char*);
+        using ToStringFunc = std::function<std::string(std::uint32_t)>;
+        using ParseFunc = std::function<std::uint32_t(const std::string&)>;
+
         Type* base{nullptr};
+        std::uint32_t minValue{0};
+        std::uint32_t maxValue{0};
+        std::uint32_t unknownValue{0};
+
+        std::uint32_t nextValue(std::uint32_t value) const
+        {
+            if (value>=minValue && value<maxValue)
+            {
+                return value+1;
+            }
+
+            return unknownValue;
+        }
+
+        Flags flags{FLAGS_NONE};
         ToStringFunc toString{ nullptr };
         ParseFunc parse{ nullptr };
+
+        static std::string flagsToString(Flags value);
+
+        static Flags parseFlags(const std::string& str);
     };
 
 #define DAGBASE_BEGIN_COMPOUND(typeName)                                                                \
@@ -210,13 +233,14 @@ inline static void propName##_set(void *obj, dagbase::Variant value)            
             return registry;
         }
 
-        void registerType(const Atom &name, Type* type);
+        std::uint32_t registerType(const Atom &name, Type* type);
 
         void unregisterType(dagbase::Atom name);
 
         Type* findType(dagbase::Atom name);
     private:
-        dagbase::VectorMap<dagbase::Atom, Type*> _types;
+        VectorMap<Atom, Type*> _types;
+        std::uint32_t _nextTypeId{0};
     };
 
 

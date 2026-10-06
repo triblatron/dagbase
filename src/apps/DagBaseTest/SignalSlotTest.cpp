@@ -388,14 +388,18 @@ TestEnum::Enum TestEnum::parse(const char* str)
 
 dagbase::Type& TestEnum::getType()
 {
-    static dagbase::Enumeration<TestEnum::Enum> type;
+    static dagbase::Type type;
     static bool inited = false;
     
     if (!inited)
     {
         type.size = sizeof(TestEnum::Enum);
-        type.toString = &TestEnum::toString;
-        type.parse = &TestEnum::parse;
+        type.toString = [](std::uint32_t value) {
+            return TestEnum::toString(static_cast<TestEnum::Enum>(value));
+        };
+        type.parse = [](const std::string& str) {
+            return TestEnum::parse(str.c_str());
+        };
         type.values = {{dagbase::Atom::intern("TEST_FOO"), TEST_FOO}, {dagbase::Atom::intern("TEST_BAR"), TEST_BAR}, {dagbase::Atom::intern("TEST_BAZ"), TEST_BAZ}};
         type.complete = true;
         inited = true;

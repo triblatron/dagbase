@@ -178,6 +178,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/NodesPortsTable.cpp
         src/core/Value.cpp
         src/util/CharConv.cpp
+        src/util/EnumValue.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

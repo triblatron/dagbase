@@ -12,6 +12,7 @@
 #include "io/TextInputStream.h"
 #include "util/EnumValue.h"
 #include "io/StreamFactory.h"
+#include "core/TypeRegistry.h"
 
 #include "test/TestUtils.h"
 
@@ -325,14 +326,28 @@ std::uint32_t parseVariantType(const char* str)
     return dagbase::Variant::parseIndex(str);
 }
 
+void createIndex(dagbase::Type& type)
+{
+    type.name = dagbase::Atom::intern("Index");
+    type.unknownValue = dagbase::Variant::TYPE_UNKNOWN;
+    type.minValue = dagbase::Variant::TYPE_INTEGER;
+    type.maxValue = dagbase::Variant::TYPE_VALUE;
+    type.toString = [](std::uint32_t value) {
+        return dagbase::Variant::indexToString(static_cast<dagbase::Variant::Index>(value));
+    };
+    type.parse = [](const std::string& str) {
+        return (dagbase::Variant::parseIndex(str.c_str()));
+    };
+    type.flags = dagbase::Type::FLAGS_NONE;
+}
+
 TEST_P(EnumValue_testSet, testHeld)
 {
     dagbase::Variant::Index value = std::get<0>(GetParam());
     auto exists = std::get<1>(GetParam());
-
-    dagbase::EnumValue sut([](std::uint32_t value) {
-        return dagbase::Variant::indexToString(static_cast<dagbase::Variant::Index>(value));
-    }, parseVariantType);
+    dagbase::Type type;
+    createIndex(type);
+    dagbase::EnumValue sut(&type);
     sut.set(value);
     ASSERT_EQ(value, sut.get<dagbase::Variant::Index>());
 }
@@ -343,22 +358,26 @@ INSTANTIATE_TEST_SUITE_P(EnumValue, EnumValue_testSet, ::testing::Values(
 
 TEST(EnumValue_testSet, testUnknown)
 {
-    dagbase::EnumValue sut(variantTypeToString, parseVariantType);
+    dagbase::Type type;
+    createIndex(type);
+    dagbase::EnumValue sut(&type);
     sut.set("TYPE_SPOO");
     ASSERT_EQ(dagbase::Variant::TYPE_UNKNOWN, sut.get<dagbase::Variant::Index>());
 }
 
 TEST(EnumValue, testNoParser)
 {
-    dagbase::EnumValue sut(nullptr, nullptr);
-    ASSERT_STREQ("<error>", sut.toString());
+    dagbase::EnumValue sut;
+    ASSERT_EQ("<error>", sut.toString());
     ASSERT_EQ(0, sut.get<dagbase::Variant::Index>());
 }
 
 TEST(Value, Value_setEnum)
 {
+    dagbase::Type type;
+    createIndex(type);
     dagbase::Value sut;
-    auto enumValue = dagbase::EnumValue(variantTypeToString, parseVariantType);
+    auto enumValue = dagbase::EnumValue(&type);
     enumValue.set("TYPE_DOUBLE");
     sut = dagbase::Value(enumValue);
     auto actual = std::get<dagbase::EnumValue>(sut.value());
@@ -484,4 +503,86 @@ TEST_P(Value_testVarint, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(Value, Value_testVarint, ::testing::Values(
     std::make_tuple("data/tests/Varint/Varint.lua")
+    ));
+
+TEST(TypeRegistry, testRegisterEnum)
+{
+    dagbase::Type testType;
+    createIndex(testType);
+    auto id = dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("Index"), &testType);
+    ASSERT_GT(id, 0);
+    dagbase::EnumValue enumValue(&testType);
+    enumValue.set("TYPE_DOUBLE");
+    dagbase::Value sut = dagbase::Value(enumValue);
+    dagbase::MemoryBackingStore store;
+    dagbase::OutputStream* ostr = dagbase::createOutputStream("TextFormat", store, "");
+    ASSERT_NE(nullptr, ostr);
+    sut.writeToStream(*ostr);
+    ostr->flush();
+    auto istr = dagbase::createInputStream("TextFormat", store, "");
+    ASSERT_NE(nullptr, istr);
+    dagbase::Value actual;
+    actual.readFromStream(*istr);
+    EXPECT_EQ(sut, actual);
+}
+
+struct EnumerateCase
+{
+    using Enum = dagbase::Variant::Index;
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        createIndex(type);
+        id = dagbase::TypeRegistry::getTypeRegistry().registerType(name, &type);
+    }
+
+    void makeItSo() const
+    {
+        auto value = type.minValue;
+        for (std::uint32_t i=0; i<(type.maxValue-type.minValue); ++i)
+        {
+            value = type.nextValue(value);
+            ASSERT_NE(value, type.unknownValue);
+        }
+        value = type.nextValue(value);
+        ASSERT_EQ(type.unknownValue, value);
+    }
+
+    std::uint32_t id{0};
+    dagbase::Type type;
+    dagbase::Atom name;
+};
+
+class Enum_testEnumerate : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+    }
+
+    void makeItSo() const
+    {
+        for (const auto& testCase : _cases)
+        {
+            testCase.makeItSo();
+        }
+    }
+protected:
+    using EnumerateCaseArray = std::vector<EnumerateCase>;
+    EnumerateCaseArray _cases;
+};
+
+TEST_P(Enum_testEnumerate, testExpectedNumber)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(Enum, Enum_testEnumerate, ::testing::Values(
+    std::make_tuple("data/tests/Enum/Index.lua")
     ));

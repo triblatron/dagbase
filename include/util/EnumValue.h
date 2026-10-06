@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <optional>
-
 #include "config/DagBaseExport.h"
 
 #include <functional>
@@ -13,27 +11,26 @@
 
 namespace dagbase
 {
+    struct Type;
+    class InputStream;
+    class OutputStream;
+
     class DAGBASE_API EnumValue
     {
     public:
+        enum Enum
+        {
+            ENUM_VARIANT_TYPE,
+            ENUM_VALUE_TYPE
+        };
         using StringConverter = std::function<const char*(std::uint32_t value)>;
         using Parser = std::function<std::uint32_t(const char*)>;
     public:
-        EnumValue(StringConverter stringConverter, Parser parser)
-            :
-        _stringConverter(std::move(stringConverter)),
-        _parser(std::move(parser))
-        {
-            // Do nothing.
-        }
+        EnumValue() = default;
 
-        void set(const char* str)
-        {
-            if (_parser)
-                _value = _parser(str);
-            else
-                _value = 0;
-        }
+        EnumValue(Type* type);
+
+        void set(const char* str);
 
         template<typename E>
         void set(E value)
@@ -47,12 +44,7 @@ namespace dagbase
             return static_cast<E>(_value);
         }
 
-        const char* toString() const
-        {
-            if (_stringConverter)
-                return _stringConverter(_value);
-            return "<error>";
-        }
+        std::string toString() const;
 
         bool operator<(const EnumValue& other) const
         {
@@ -84,9 +76,11 @@ namespace dagbase
             return _value != other._value;
         }
 
+        OutputStream& writeToStream(OutputStream& str) const;
+
+        InputStream& readFromStream(InputStream& str);
     private:
-        StringConverter _stringConverter;
-        Parser _parser;
+        Type* _type{nullptr};
         std::uint32_t _value{};
     };
 }

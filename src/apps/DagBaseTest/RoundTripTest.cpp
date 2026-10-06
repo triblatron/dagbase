@@ -9,6 +9,7 @@
 #include "core/Types.h"
 #include "core/Unit.h"
 #include "util/CharConv.h"
+#include "core/TypeRegistry.h"
 
 #include <gtest/gtest.h>
 
@@ -522,3 +523,22 @@ INSTANTIATE_TEST_SUITE_P(Class, ClassSeverity_testRoundTrip, ::testing::Values(
     std::make_tuple("SEVERITY_WARNING", dagbase::Class::SEVERITY_WARNING),
     std::make_tuple("SEVERITY_ERROR", dagbase::Class::SEVERITY_ERROR)
 ));
+
+class TypeFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Type::Flags>>
+{
+
+};
+
+TEST_P(TypeFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_EQ(str, dagbase::Type::flagsToString(value));
+    EXPECT_EQ(value, dagbase::Type::parseFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Type, TypeFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("FLAGS_NONE", dagbase::Type::FLAGS_NONE),
+    std::make_tuple("BITMASK_BIT", dagbase::Type::BITMASK_BIT)
+    ));

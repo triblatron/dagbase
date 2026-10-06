@@ -118,7 +118,8 @@ namespace dagbase
             std::is_convertible_v<T, double> ||
             std::is_convertible_v<T, Vec2> ||
             std::is_convertible_v<T, void*> ||
-            std::is_convertible_v<T, std::vector<Value>*>>;
+            std::is_convertible_v<T, std::vector<Value>*> ||
+            std::is_convertible_v<T, EnumValue>>;
 
         //! Perfect forwarding ctor for supported types.
         template<typename T,typename = EnableIfSupported<T>>

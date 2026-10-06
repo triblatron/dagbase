@@ -314,6 +314,13 @@ namespace dagbase
             case TYPE_UNKNOWN:
                 assert(false);
                 break;
+            case TYPE_ENUM:
+            {
+                auto e = this->operator EnumValue();
+                e.writeToStream(str);
+
+                break;
+            }
         }
         str.writeFooter();
         
@@ -436,6 +443,13 @@ namespace dagbase
                     v.readFromStream(str);
                     push_back(v);
                 }
+                break;
+            }
+            case TYPE_ENUM:
+            {
+                EnumValue value;
+                value.readFromStream(str);
+                _value.emplace<EnumValue>(value);
                 break;
             }
             case TYPE_UNKNOWN:
