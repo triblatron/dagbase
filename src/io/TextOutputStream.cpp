@@ -27,11 +27,11 @@ namespace dagbase
         delete _printer;
     }
 
-    OutputStream & TextOutputStream::writeVariableLengthInteger(const std::pmr::vector<std::uint8_t> &value)
+    OutputStream & TextOutputStream::writeVariableLengthInteger(const std::uint8_t* value, std::size_t size)
     {
-        for (auto b : value)
+        for (std::size_t i=0; i<size; ++i)
         {
-            writeUInt8(b);
+            writeUInt8(value[i]);
         }
 
         return *this;

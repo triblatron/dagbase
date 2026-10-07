@@ -484,7 +484,7 @@ struct VarintCase
         dagbase::OutputStream* ostr = dagbase::createOutputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, ostr);
         dagbase::Lua lua;
-        ostr->writeVariableLengthInteger(actual);
+        ostr->writeVariableLengthInteger(actual.data(), actual.size());
         ostr->flush();
 
         // Deserialise
