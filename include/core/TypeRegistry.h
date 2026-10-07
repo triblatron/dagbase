@@ -97,7 +97,8 @@ namespace dagbase
         enum Flags : std::uint32_t
         {
             FLAGS_NONE,
-            BITMASK_BIT
+            BITMASK_BIT,
+            SUBFIELD_BIT
         };
 
         std::uint32_t id{0};
@@ -150,9 +151,21 @@ namespace dagbase
         std::uint32_t minValue{0};
         std::uint32_t maxValue{0};
         std::uint32_t unknownValue{0};
+        std::uint32_t mask{~0U};
+        std::uint32_t shift{0};
 
         std::uint32_t nextValue(std::uint32_t value) const
         {
+            if (flags & SUBFIELD_BIT)
+            {
+                auto extracted = (value & mask)>>shift;
+                if (extracted >= minValue && extracted<maxValue)
+                {
+                    return ((extracted+1)<<shift) & mask;
+                }
+                return (unknownValue<<shift) & mask;
+            }
+
             if (value>=minValue && value<maxValue)
             {
                 return value+1;

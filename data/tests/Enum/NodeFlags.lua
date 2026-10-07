@@ -28,5 +28,23 @@ root=
 				},
 			}
 		},
+		{
+			name="NodeActive",
+			values=
+			{
+				{
+					name="ACTIVE_ON",
+					value=0<<5,
+				},
+				{
+					name="ACTIVE_OFF",
+					value=1<<5,
+				},
+				{
+					name="ACTIVE_PASS_THROUGH",
+					value=2<<5,
+				},
+			},
+		},
 	},
 }

@@ -18,6 +18,7 @@ namespace dagbase
             return "FLAGS_NONE";
 
         BIT_NAME(value, BITMASK_BIT, retval)
+        BIT_NAME(value, SUBFIELD_BIT, retval)
 
         if (!retval.empty() && retval.back() == ' ')
             retval.pop_back();
@@ -30,6 +31,7 @@ namespace dagbase
         Flags mask{FLAGS_NONE};
 
         TEST_BIT(BITMASK_BIT, str, mask);
+        TEST_BIT(SUBFIELD_BIT, str, mask);
 
         return mask;
     }

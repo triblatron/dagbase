@@ -474,8 +474,8 @@ TEST_P(NodeComment_testRoundTrip, testRoundTrip)
     auto str = std::get<0>(GetParam());
     auto value = std::get<1>(GetParam());
 
-    EXPECT_STREQ(str, dagbase::Node::commentToString(value));
-    EXPECT_EQ(value, dagbase::Node::parseComment(str));
+    EXPECT_STREQ(str, dagbase::Node::activeToString(value));
+    EXPECT_EQ(value, dagbase::Node::parseActive(str));
 }
 
 INSTANTIATE_TEST_SUITE_P(NodeComment, NodeComment_testRoundTrip, ::testing::Values(
@@ -540,5 +540,6 @@ TEST_P(TypeFlags_testRoundTrip, testRoundTrip)
 
 INSTANTIATE_TEST_SUITE_P(Type, TypeFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("FLAGS_NONE", dagbase::Type::FLAGS_NONE),
-    std::make_tuple("BITMASK_BIT", dagbase::Type::BITMASK_BIT)
+    std::make_tuple("BITMASK_BIT", dagbase::Type::BITMASK_BIT),
+    std::make_tuple("SUBFIELD_BIT", dagbase::Type::SUBFIELD_BIT)
     ));

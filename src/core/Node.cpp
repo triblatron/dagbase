@@ -516,7 +516,7 @@ namespace dagbase
         return value;
     }
 
-    const char * Node::commentToString(Active value)
+    const char * Node::activeToString(Active value)
     {
         switch (value)
         {
@@ -528,7 +528,7 @@ namespace dagbase
         return "<error>";
     }
 
-    Node::Active Node::parseComment(const char *str)
+    Node::Active Node::parseActive(const char *str)
     {
         TEST_ENUM(ACTIVE_ON, str)
         TEST_ENUM(ACTIVE_OFF, str)

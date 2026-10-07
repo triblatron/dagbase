@@ -390,9 +390,9 @@ namespace dagbase
 
         static NodeFlags parseFlags(const std::string& str);
 
-	    static const char* commentToString(Active value);
+	    static const char* activeToString(Active value);
 
-	    static Active parseComment(const char* str);
+	    static Active parseActive(const char* str);
 	protected:
 		typedef std::vector<dagbase::MetaPort> MetaPortArray;
 		typedef SearchableArray<std::vector<dagbase::Port*>> PortArray;
