@@ -21,6 +21,7 @@
 
 #include <memory_resource>
 
+#include "core/MetaClassRegistration.h"
 #include "core/Variant.h"
 
 class Variant_testToString : public ::testing::TestWithParam<std::tuple<dagbase::Variant, std::string>>
@@ -348,7 +349,13 @@ void createNodeFlags(dagbase::Type& type)
     type.unknownValue = dagbase::Node::NodeFlags::NODE_NONE;
     type.flags = dagbase::Type::BITMASK_BIT;
     type.minValue = dagbase::Node::NodeFlags::NODE_NONE;
-    type.maxValue = dagbase::Node::NodeFlags::NODE_VISITED_BIT;
+    type.maxValue = 4;
+    type.toString = [](std::uint32_t value) {
+        return dagbase::Node::flagsToString(static_cast<dagbase::Node::NodeFlags>(value));
+    };
+    type.parse = [](const std::string& str) {
+        return dagbase::Node::parseFlags(str);
+    };
 }
 
 TEST_P(EnumValue_testSet, testHeld)
@@ -534,6 +541,7 @@ TEST(TypeRegistry, testRegisterEnum)
     dagbase::Value actual;
     actual.readFromStream(*istr);
     EXPECT_EQ(sut, actual);
+    dagbase::TypeRegistry::getTypeRegistry().unregisterType(testType.name);
 }
 
 struct EnumerateNameValue
@@ -554,12 +562,6 @@ struct EnumerateCase
 
     void configure(dagbase::ConfigurationElement& config)
     {
-        auto*  indexType = new dagbase::Type();
-        createIndex(*indexType);
-        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("Index"), indexType);
-        auto* nodeFlagsType = new dagbase::Type();
-        createNodeFlags(*nodeFlagsType);
-        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("NodeFlags"), nodeFlagsType);
         dagbase::ConfigurationElement::readConfig(config, "name", &name);
         type = dagbase::TypeRegistry::getTypeRegistry().findType(name);
         dagbase::ConfigurationElement::readConfigVector(config, "values", &values);
@@ -569,12 +571,20 @@ struct EnumerateCase
     {
         ASSERT_NE(nullptr, type);
         auto value = type->minValue;
-        ASSERT_EQ(values.size(), type->maxValue-type->minValue+1);
+        auto shifted = type->flags & dagbase::Type::BITMASK_BIT?1<<value:value;
+        std::cerr << "minValue: " << type->minValue << ", maxValue: " << type->maxValue << '\n';
+        ASSERT_EQ(values.size(), (type->maxValue-type->minValue)+1);
         for (std::uint32_t i=0; i<(type->maxValue-type->minValue); ++i)
         {
-            ASSERT_EQ(values[i].value.cast(dagbase::Variant::TYPE_UINT).asUint32(), value);
-            ASSERT_EQ(values[i].name.toString(), type->toString(value));
-            value = type->nextValue(value);
+            auto expectedValue = values[i].value.cast(dagbase::Variant::TYPE_UINT).asUint32();
+            ASSERT_EQ(expectedValue, shifted);
+            ASSERT_TRUE(type->toString);
+            ASSERT_TRUE(type->parse);
+            ASSERT_EQ(values[i].name.toString(), type->toString(shifted));
+            ASSERT_EQ(shifted, type->parse(values[i].name.toString()));
+            auto nextValue = type->nextValue(value);
+            value = nextValue;
+            shifted = type->flags & dagbase::Type::BITMASK_BIT?1<<value:value;
             ASSERT_NE(value, type->unknownValue);
         }
         value = type->nextValue(value);
@@ -590,6 +600,25 @@ struct EnumerateCase
 class Enum_testEnumerate : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
+    void SetUp() override
+    {
+        indexType = new dagbase::Type();
+        createIndex(*indexType);
+        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("Index"), indexType);
+        nodeFlagsType = new dagbase::Type();
+        createNodeFlags(*nodeFlagsType);
+        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("NodeFlags"), nodeFlagsType);
+
+    }
+
+    void TearDown() override
+    {
+        dagbase::TypeRegistry::getTypeRegistry().unregisterType(indexType->name);
+        dagbase::TypeRegistry::getTypeRegistry().unregisterType(nodeFlagsType->name);
+        delete indexType;
+        delete nodeFlagsType;
+    }
+
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
@@ -603,6 +632,8 @@ public:
         }
     }
 protected:
+    dagbase::Type* indexType{nullptr};
+    dagbase::Type* nodeFlagsType{nullptr};
     using EnumerateCaseArray = std::vector<EnumerateCase>;
     EnumerateCaseArray _cases;
 };

@@ -1,0 +1,32 @@
+root=
+{
+	cases=
+	{
+		{
+			name="NodeFlags",
+			values=
+			{
+				{
+					name="NODE_INPUT_BIT",
+					value=1<<0,
+				},
+				{
+					name="NODE_OUTPUT_BIT",
+					value=1<<1,
+				},
+				{
+					name="NODE_INTERNAL_BIT",
+					value=1<<2,
+				},
+				{
+					name="NODE_PROCESSED_BIT",
+					value=1<<3,
+				},
+				{
+					name="NODE_VISITED_BIT",
+					value=1<<4,
+				},
+			}
+		},
+	},
+}
