@@ -6,9 +6,12 @@
 #include "config/config.h"
 
 #include "util/EnumValue.h"
+
 #include "core/TypeRegistry.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
+
+#include <memory_resource>
 
 namespace dagbase
 {
@@ -42,7 +45,12 @@ namespace dagbase
     OutputStream & EnumValue::writeToStream(OutputStream &str) const
     {
         str.writeString(_type->name.toString(), false);
-        str.writeUInt32(_value);
+        char buf[sizeof(_value)+1]{};
+        Value v(static_cast<std::uint64_t>(_value));
+        std::pmr::monotonic_buffer_resource pool{buf, sizeof(buf)};
+        std::pmr::vector<std::uint8_t> actual{&pool};
+        v.varintEncode(7, &actual);
+        str.writeVariableLengthInteger(actual.data(), actual.size());
 
         return str;
     }
@@ -55,8 +63,9 @@ namespace dagbase
         {
             _type = type;
         }
-
-        str.readUInt32(&_value);
+        std::uint64_t valueFromStream;
+        str.readVariableLengthInteger(7, &valueFromStream);
+        _value = valueFromStream;
 
         return str;
     }
