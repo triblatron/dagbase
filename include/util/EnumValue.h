@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <cstdint>
+#include <string>
 
 namespace dagbase
 {
