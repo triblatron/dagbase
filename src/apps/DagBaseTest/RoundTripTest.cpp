@@ -138,6 +138,7 @@ TEST_P(ValueType_testRoundTrip, testRoundTrip)
     EXPECT_STREQ(typeStr, dagbase::Value::typeString(value));
     EXPECT_STREQ(classStr, dagbase::Value::className(value));
     EXPECT_EQ(value, dagbase::Value::parseType(typeStr));
+    EXPECT_EQ(value, dagbase::Value::parseClass(classStr));
 }
 
 INSTANTIATE_TEST_SUITE_P(PortType, ValueType_testRoundTrip, ::testing::Values(
@@ -153,7 +154,9 @@ INSTANTIATE_TEST_SUITE_P(PortType, ValueType_testRoundTrip, ::testing::Values(
     std::make_tuple("TYPE_DOUBLE", dagbase::Value::Type::TYPE_DOUBLE, "TypedPort<double>"),
     std::make_tuple("TYPE_STRING", dagbase::Value::Type::TYPE_STRING, "TypedPort<string>"),
     std::make_tuple("TYPE_BOOL", dagbase::Value::Type::TYPE_BOOL, "TypedPort<bool>"),
-    std::make_tuple("TYPE_OPAQUE", dagbase::Value::Type::TYPE_OPAQUE, "TypedPort<void*>")
+    std::make_tuple("TYPE_OPAQUE", dagbase::Value::Type::TYPE_OPAQUE, "TypedPort<void*>"),
+    std::make_tuple("TYPE_VECTOR", dagbase::Value::Type::TYPE_VECTOR, "TypedPort<vector<Value>>"),
+    std::make_tuple("TYPE_ENUM", dagbase::Value::Type::TYPE_ENUM, "TypedPort<EnumValue>")
 ));
 
 class StatusCode_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::StatusCode>>

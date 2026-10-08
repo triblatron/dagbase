@@ -10,9 +10,12 @@
 #include "util/enums.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
+#include "core/TypeRegistry.h"
 
 #include <stack>
 #include <cstdlib>
+#include <unistd.h>
+
 
 namespace dagbase
 {
@@ -372,14 +375,46 @@ namespace dagbase
                 else
                 {
                     Variant::Index typeIndex{Variant::TYPE_UNKNOWN};
+                    Value::Type valueType{Value::TYPE_UNKNOWN};
                     readConfig<Variant::Index>(*element, "typeIndex", &Variant::parseIndex, &typeIndex);
+                    readConfig<Value::Type>(*element, "valueType", &Value::parseType, &valueType);
                     switch (typeIndex)
                     {
                         case Variant::TYPE_VALUE:
                         {
-                            Value v;
-                            readConfig(*element, "value", &v);
-                            *value = Variant(v);
+                            switch (valueType)
+                            {
+                                case Value::TYPE_ENUM:
+                                {
+                                    Atom typeName;
+                                    readConfig(*element, "enumType", &typeName);
+                                    if (!typeName.empty())
+                                    {
+                                        Type* type = TypeRegistry::getTypeRegistry().findType(typeName);
+
+                                        if (type)
+                                        {
+                                            EnumValue enumValue(type);
+                                            std::string strValue;
+                                            readConfig(*element, "value", &strValue);
+                                            // Parse into a uint32
+                                            enumValue.set(strValue.c_str());
+                                            Value v = Value(enumValue);
+                                            *value = Variant(v);
+                                        }
+
+                                    }
+
+                                    break;
+                                }
+                                default:
+                                {
+                                    Value v;
+                                    readConfig(*element, "value", &v);
+                                    *value = Variant(v);
+                                    break;
+                                }
+                            }
                             break;
                         }
                     }

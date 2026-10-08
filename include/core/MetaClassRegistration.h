@@ -46,6 +46,31 @@ namespace dagbase
     }                                                                                                   \
     inline dagbase::MetaClassRegistration<typeName> typeName::registration(dagbase::Atom::intern(#typeName));
 
+#define DAGBASE_REGISTER_ENUM(typeName, enumName, toStringFunc, parseFunc, unknown, min, max)    \
+    struct typeName                                                                                     \
+    {                                                                                                   \
+        static Type& getType();                                                                         \
+        static dagbase::MetaClassRegistration<typeName> registration;                                   \
+                                                                                                        \
+    };                                                                                                  \
+    inline Type& typeName::getType()                                                                    \
+    {                                                                                                   \
+        static Type type;                                                                               \
+        type.name = dagbase::Atom::intern(#typeName);                                                   \
+        type.size = sizeof(enumName);                                                                   \
+        type.complete = true;                                                                           \
+        type.unknownValue = (unknown);                                                                  \
+        type.minValue = (min);                                                                          \
+        type.maxValue = (max);                                                                          \
+        type.toString = [](std::uint32_t value) {                                                       \
+            return toStringFunc(static_cast<enumName>(value));                                          \
+        };                                                                                              \
+        type.parse = [](const std::string& str) {                                                       \
+            return parseFunc(str.c_str());                                                              \
+        };                                                                                              \
+        return type;                                                                                    \
+    }                                                                                                   \
+    inline dagbase::MetaClassRegistration<typeName> typeName::registration(dagbase::Atom::intern(#typeName));
 
     DAGBASE_REGISTER_PRIMITIVE(Int8, std::int8_t)
     DAGBASE_REGISTER_PRIMITIVE(UInt8, std::uint8_t)

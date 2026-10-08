@@ -478,6 +478,7 @@ namespace dagbase
 	    TEST_ENUM(TYPE_VEC2, str);
 	    TEST_ENUM(TYPE_OPAQUE, str);
 	    TEST_ENUM(TYPE_VECTOR, str);
+        TEST_ENUM(TYPE_ENUM, str);
 	    TEST_ENUM(TYPE_UNKNOWN, str);
 
 		return TYPE_UNKNOWN;
@@ -485,21 +486,22 @@ namespace dagbase
 
     Value::Type Value::parseClass(const char *str)
     {
-	    TEST_ALT_ENUM("TypedPort<uint8_t", TYPE_UINT8, str);
+	    TEST_ALT_ENUM("TypedPort<uint8_t>", TYPE_UINT8, str);
 	    TEST_ALT_ENUM("TypedPort<int8_t>", TYPE_INT8, str);
 	    TEST_ALT_ENUM("TypedPort<uint16_t>", TYPE_UINT16, str);
 	    TEST_ALT_ENUM("TypedPort<int16_t>", TYPE_INT16, str);
-	    TEST_ALT_ENUM("TypedPort<uint32_t", TYPE_UINT32, str);
+	    TEST_ALT_ENUM("TypedPort<uint32_t>", TYPE_UINT32, str);
 	    TEST_ALT_ENUM("TypedPort<int32_t>", TYPE_INT32, str);
 	    TEST_ALT_ENUM("TypedPort<uint64_t>", TYPE_UINT64, str);
 	    TEST_ALT_ENUM("TypedPort<int64_t>", TYPE_INT64, str);
-	    TEST_ALT_ENUM("TypedPort<float", TYPE_FLOAT, str);
+	    TEST_ALT_ENUM("TypedPort<float>", TYPE_FLOAT, str);
 	    TEST_ALT_ENUM("TypedPort<double>", TYPE_DOUBLE, str);
 	    TEST_ALT_ENUM("TypedPort<string>", TYPE_STRING, str);
 	    TEST_ALT_ENUM("TypedPort<bool>", TYPE_BOOL, str);
 	    TEST_ALT_ENUM("TypedPort<Vec2>", TYPE_VEC2, str);
 	    TEST_ALT_ENUM("TypedPort<void*>", TYPE_OPAQUE, str);
-	    TEST_ALT_ENUM("TypedPort<vector>", TYPE_VECTOR, str);
+	    TEST_ALT_ENUM("TypedPort<vector<Value>>", TYPE_VECTOR, str);
+        TEST_ALT_ENUM("TypedPort<EnumValue>", TYPE_ENUM, str);
 
         return TYPE_UNKNOWN;
     }
@@ -563,6 +565,7 @@ namespace dagbase
             ENUM_NAME(TYPE_VEC2)
             ENUM_NAME(TYPE_OPAQUE)
             ENUM_NAME(TYPE_VECTOR)
+            ENUM_NAME(TYPE_ENUM)
             ENUM_NAME(TYPE_UNKNOWN)
         }
 
@@ -587,7 +590,8 @@ namespace dagbase
             ENUM_ALT_NAME(TYPE_BOOL, "TypedPort<bool>")
             ENUM_ALT_NAME(TYPE_OPAQUE, "TypedPort<void*>")
             ENUM_ALT_NAME(TYPE_VEC2, "TypedPort<Vec2>")
-            ENUM_ALT_NAME(TYPE_VECTOR, "TypedPort<vector>")
+            ENUM_ALT_NAME(TYPE_VECTOR, "TypedPort<vector<Value>>")
+            ENUM_ALT_NAME(TYPE_ENUM, "TypedPort<EnumValue>")
             ENUM_ALT_NAME(TYPE_UNKNOWN, "TypedPort<unknown>")
         }
 

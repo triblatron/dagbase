@@ -28,7 +28,7 @@ namespace dagbase
     public:
         EnumValue() = default;
 
-        EnumValue(Type* type);
+        explicit EnumValue(Type* type, const char* str=nullptr);
 
         void set(const char* str);
 

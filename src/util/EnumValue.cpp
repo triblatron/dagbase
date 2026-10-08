@@ -15,12 +15,16 @@
 
 namespace dagbase
 {
-    EnumValue::EnumValue(Type *type):
+    EnumValue::EnumValue(Type *type, const char* str):
         _type(type)
     {
         if (_type)
         {
             _value = _type->unknownValue;
+        }
+        if (str)
+        {
+            set(str);
         }
     }
 

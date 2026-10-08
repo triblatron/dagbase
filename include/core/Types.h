@@ -16,6 +16,8 @@
 #include <string>
 #include <iosfwd>
 
+#include "MetaClassRegistration.h"
+
 namespace dagbase
 {
     class ConfigurationElement;
@@ -261,4 +263,18 @@ namespace dagbase
     ComparisonFlags DAGBASE_API parseComparisonFlags(const std::string& str);
 
     std::ostream DAGBASE_API & operator<<(std::ostream& ostr, const Status& value);
+
+    enum TestEnum : std::uint32_t
+    {
+        TEST_UNKNOWN,
+        TEST_FOO,
+        TEST_BAR,
+        TEST_BAZ
+    };
+
+    const char DAGBASE_API * testToString(TestEnum value);
+
+    TestEnum DAGBASE_API parseTest(const char* str);
+
+    DAGBASE_REGISTER_ENUM(TestEnumWrapper, TestEnum, testToString, parseTest, TEST_UNKNOWN, TEST_FOO, TEST_BAZ)
 };

@@ -228,6 +228,28 @@ namespace dagbase
         return ostr;
     }
 
+    const char * testToString(TestEnum value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(TEST_UNKNOWN)
+            ENUM_NAME(TEST_FOO)
+            ENUM_NAME(TEST_BAR)
+            ENUM_NAME(TEST_BAZ)
+        }
+
+        return "<error>";
+    }
+
+    TestEnum parseTest(const char *str)
+    {
+        TEST_ENUM(TEST_FOO, str);
+        TEST_ENUM(TEST_BAR, str);
+        TEST_ENUM(TEST_BAZ, str);
+
+        return TEST_UNKNOWN;
+    }
+
     PortDirection::Direction PortDirection::parseFromString(const char* str)
 	{
 		Direction dir = DIR_UNKNOWN;
