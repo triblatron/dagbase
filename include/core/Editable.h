@@ -13,6 +13,8 @@ struct ImGuiContext;
 
 namespace dagbase
 {
+    class EnumValue;
+
     class DAGBASE_API Editable
     {
     public:
@@ -27,5 +29,7 @@ namespace dagbase
         static void editType(const char* label, double* value);
 
         static void editType(const char* label, std::string* value);
+
+        static void editType(const char* label, EnumValue* value);
     };
 }

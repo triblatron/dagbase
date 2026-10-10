@@ -36,6 +36,11 @@ namespace dagbase
         }
     }
 
+    std::string EnumValue::selectedString() const
+    {
+        return _type->toString(_type->minValue + _selectedIndex);
+    }
+
     std::string EnumValue::toString() const
     {
         if (_type && _type->toString)

@@ -242,6 +242,9 @@ namespace dagbase
             case TYPE_BOOL:
                 Editable::editType(label, &std::get<TYPE_BOOL>(_value));
                 break;
+            case TYPE_ENUM:
+                Editable::editType(label, &std::get<EnumValue>(_value));
+                break;
             default:
                 assert(false);
                 break;

@@ -45,6 +45,18 @@ namespace dagbase
             return static_cast<E>(_value);
         }
 
+        const Type* type() const
+        {
+            return _type;
+        }
+
+        int& selectedIndex()
+        {
+            return _selectedIndex;
+        }
+
+        std::string selectedString() const;
+
         std::string toString() const;
 
         bool operator<(const EnumValue& other) const
@@ -82,6 +94,7 @@ namespace dagbase
         InputStream& readFromStream(InputStream& str);
     private:
         Type* _type{nullptr};
+        int _selectedIndex{0};
         std::uint32_t _value{};
     };
 }
