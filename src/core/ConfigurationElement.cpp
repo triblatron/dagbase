@@ -14,8 +14,6 @@
 
 #include <stack>
 #include <cstdlib>
-#include <unistd.h>
-
 
 namespace dagbase
 {
