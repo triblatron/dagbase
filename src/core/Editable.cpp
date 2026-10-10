@@ -32,7 +32,7 @@ namespace dagbase
     {
         if (value)
         {
-            if (ImGui::BeginCombo(label, value->selectedString().c_str(), 0))
+            if (ImGui::BeginCombo(label, value->toString().c_str(), 0))
             {
                 auto type = value->type();
 
@@ -42,9 +42,12 @@ namespace dagbase
                     int n=0;
                     while (enumValue != type->unknownValue)
                     {
-                        const bool isSelected = (value->selectedIndex() == n);
+                        bool isSelected = value->isSelected(n);
                         if (ImGui::Selectable(type->toString(enumValue).c_str(), isSelected))
-                            value->selectedIndex() = n;
+                        {
+                            value->set(enumValue);
+                            isSelected = true;
+                        }
 
                         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         if (isSelected)

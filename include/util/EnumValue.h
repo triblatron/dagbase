@@ -50,12 +50,7 @@ namespace dagbase
             return _type;
         }
 
-        int& selectedIndex()
-        {
-            return _selectedIndex;
-        }
-
-        std::string selectedString() const;
+        bool isSelected(int n) const;
 
         std::string toString() const;
 
@@ -94,7 +89,6 @@ namespace dagbase
         InputStream& readFromStream(InputStream& str);
     private:
         Type* _type{nullptr};
-        int _selectedIndex{0};
         std::uint32_t _value{};
     };
 }
