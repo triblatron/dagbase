@@ -12,7 +12,7 @@
 #include "io/InputStream.h"
 #include "MetaClassRegistration.h"
 #include "util/Name.h"
-
+#include "PortDirection.h"
 #include <unordered_set>
 #include <cstdint>
 #include <string>
@@ -28,29 +28,6 @@ namespace dagbase
     class SignalPath;
     class Template;
     class Value;
-
-    //! The direction of a port.
-    class DAGBASE_API PortDirection
-    {
-    public:
-        enum Direction
-        {
-            //! Initial or invalid port direction.
-            DIR_UNKNOWN,
-            //! Input port.
-            DIR_IN,
-            //! Output port.
-            DIR_OUT,
-            //! Internal port, cannot be connected.
-            DIR_INTERNAL
-        };
-
-        //! Parse a string representation of a port direction.
-        static Direction parseFromString(const char* str);
-
-        //! Convert a port direction to a string.
-        static const char* toString(Direction dir);
-    };
 
 //! Macro to declare a ID type
 //! This ensures type safety because IDs will have different types.

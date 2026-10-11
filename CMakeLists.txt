@@ -107,6 +107,7 @@ SET( ALL_PUBLIC_HEADERS
 		include/util/Zigzag.h
         include/util/Name.h
         include/core/Status.h
+        include/core/PortDirection.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -182,6 +183,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/util/CharConv.cpp
         src/util/EnumValue.cpp
         src/core/Status.cpp
+        src/core/PortDirection.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

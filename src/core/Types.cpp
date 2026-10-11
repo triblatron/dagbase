@@ -103,37 +103,4 @@ namespace dagbase
 
         return TEST_UNKNOWN;
     }
-
-    PortDirection::Direction PortDirection::parseFromString(const char* str)
-	{
-		Direction dir = DIR_UNKNOWN;
-
-		if (std::strcmp(str, "DIR_IN") == 0)
-		{
-			dir = DIR_IN;
-		}
-		else if (std::strcmp(str, "DIR_OUT") == 0)
-		{
-			dir = DIR_OUT;
-		}
-		else if (std::strcmp(str, "DIR_INTERNAL") == 0)
-		{
-			dir = DIR_INTERNAL;
-		}
-
-		return dir;
-	}
-
-    static const char* directionNames[]=
-    {
-        "DIR_UNKNOWN",
-        "DIR_IN",
-        "DIR_OUT",
-        "DIR_INTERNAL"
-    };
-
-    const char *PortDirection::toString(PortDirection::Direction dir)
-    {
-        return directionNames[dir];
-    }
 }
