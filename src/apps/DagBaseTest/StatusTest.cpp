@@ -4,7 +4,7 @@
 
 #include "config/config.h"
 
-#include "core/Types.h"
+#include "core/Status.h"
 #include "core/LuaInterface.h"
 #include "test/TestUtils.h"
 

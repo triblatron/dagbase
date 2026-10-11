@@ -6,7 +6,7 @@
 #include "core/ConfigurationElement.h"
 #include "core/MetaProperty.h"
 #include "core/Node.h"
-#include "core/Types.h"
+#include "core/Status.h"
 #include "core/Unit.h"
 #include "util/CharConv.h"
 #include "core/TypeRegistry.h"
