@@ -150,6 +150,7 @@ namespace dagbase
         Type* base{nullptr};
         std::uint32_t minValue{0};
         std::uint32_t maxValue{0};
+        Atom unknownName;
         std::uint32_t unknownValue{0};
         std::uint32_t mask{~0U};
         std::uint32_t shift{0};

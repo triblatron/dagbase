@@ -627,11 +627,60 @@ struct EnumerateCase
     NameValueArray values;
 };
 
+void createDynamic(dagbase::Type& type, std::uint32_t minValue, const dagbase::Atom& unknownName, std::uint32_t unknownValue, const std::vector<dagbase::Atom>& names, const dagbase::VectorMap<std::string, std::uint32_t>& values)
+{
+    type.name = dagbase::Atom::intern("DynamicEnum");
+    type.base = dagbase::TypeRegistry::getTypeRegistry().findType(dagbase::Atom::intern("UInt32"));
+    type.unknownValue = 0;
+    //type.flags = dagbase::Type::DYNAMIC_BIT;
+    type.toString = [&names, unknownName, &type](std::uint32_t value) {
+        if (value<=names.size())
+            return names[value-type.minValue].toString();
+
+        return unknownName.toString();
+    };
+    type.unknownValue = unknownValue;
+    type.parse = [&type, &values](const std::string& str) {
+        if (auto it=values.find(str); it!=values.end())
+        {
+            return it->second;
+        }
+
+        return type.unknownValue;
+    };
+    type.minValue = minValue;
+    type.maxValue = names.size();
+}
+
 class Enum_testEnumerate : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
     void configure(dagbase::ConfigurationElement& config)
     {
+        dynamicType = new dagbase::Type();
+        if (auto element=config.findElement("dynamicEnum.unknown"); element)
+        {
+            dagbase::ConfigurationElement::readConfig(*element, "name", &_unknownName);
+            dagbase::ConfigurationElement::readConfig(*element, "value", &_unknownValue);
+        }
+        if (auto element=config.findElement("dynamicEnum.values"); element)
+        {
+            element->eachChild([this](dagbase::ConfigurationElement& child) {
+                std::string name;
+                std::uint32_t value;
+
+                dagbase::ConfigurationElement::readConfig(child, "name", &name);
+                dagbase::ConfigurationElement::readConfig(child, "value", &value);
+
+                _names.emplace_back(dagbase::Atom::intern(name));
+                _values.emplace(name, value);
+
+                return true;
+            });
+        }
+        dagbase::ConfigurationElement::readConfig(config, "dynamicEnum.minValue", &_minValue);
+        createDynamic(*dynamicType, _minValue, _unknownName, _unknownValue, _names, _values);
+        dagbase::TypeRegistry::getTypeRegistry().registerType(dagbase::Atom::intern("DynamicEnum"), dynamicType);
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
     }
 
@@ -661,6 +710,7 @@ protected:
         dagbase::TypeRegistry::getTypeRegistry().unregisterType(indexType->name);
         dagbase::TypeRegistry::getTypeRegistry().unregisterType(nodeFlagsType->name);
         dagbase::TypeRegistry::getTypeRegistry().unregisterType(nodeActiveType->name);
+        dagbase::TypeRegistry::getTypeRegistry().unregisterType(dynamicType->name);
         delete indexType;
         delete nodeFlagsType;
         delete nodeActiveType;
@@ -669,8 +719,14 @@ protected:
     dagbase::Type* indexType{nullptr};
     dagbase::Type* nodeFlagsType{nullptr};
     dagbase::Type* nodeActiveType{nullptr};
+    dagbase::Type* dynamicType{nullptr};
     using EnumerateCaseArray = std::vector<EnumerateCase>;
     EnumerateCaseArray _cases;
+    dagbase::Atom _unknownName;
+    std::uint32_t _unknownValue{0};
+    std::uint32_t _minValue{0};
+    std::vector<dagbase::Atom> _names;
+    dagbase::VectorMap<std::string, std::uint32_t> _values;
 };
 
 TEST_P(Enum_testEnumerate, testExpectedNumber)
@@ -685,5 +741,6 @@ TEST_P(Enum_testEnumerate, testExpectedNumber)
 
 INSTANTIATE_TEST_SUITE_P(Enum, Enum_testEnumerate, ::testing::Values(
     std::make_tuple("data/tests/Enum/Index.lua"),
-    std::make_tuple("data/tests/Enum/NodeFlags.lua")
+    std::make_tuple("data/tests/Enum/NodeFlags.lua"),
+    std::make_tuple("data/tests/Enum/Dynamic.lua")
     ));
