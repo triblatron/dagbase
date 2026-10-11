@@ -91,6 +91,11 @@ namespace dagbase
         return {};
     }
 
+    std::ostream& Status::print() const
+    {
+        return std::cout << *this << std::endl;
+    }
+
     const char* Status::statusCodeToString(Status::StatusCode value)
     {
         switch (value)
