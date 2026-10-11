@@ -10,13 +10,14 @@
 #include "core/ConfigurationElement.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
+#include "MetaClassRegistration.h"
+#include "util/Name.h"
 
 #include <unordered_set>
 #include <cstdint>
 #include <string>
 #include <iosfwd>
 
-#include "MetaClassRegistration.h"
 
 namespace dagbase
 {
@@ -49,101 +50,6 @@ namespace dagbase
 
         //! Convert a port direction to a string.
         static const char* toString(Direction dir);
-    };
-
-    template<typename Tag>
-    class Name
-    {                        
-    public:                                                                   
-        static constexpr std::uint32_t INVALID_ID = ~0U;
-    public:
-        Name() = default;
-
-        explicit Name(std::uint32_t id)
-        :                    
-        id(id)               
-        {                    
-        }                    
-                             
-        Name(const Name& other) = default;
-
-        Name& operator=(const Name& other) 
-        {                    
-            if (this != &other) 
-            {                
-                id = other.id;  
-            }               
-            return *this;
-        }                    
-                             
-        Name& operator=(std::int64_t id_)   
-        {                    
-            this->id = id_;   
-                             
-            return *this;    
-        }                    
-                             
-        Name operator++(int)
-        {                    
-            Name old = *this;
-            id++;            
-                             
-            return old;      
-        }
-
-        Name operator+(const Name& op2) const
-        {                    
-            auto result = Name(id + op2.id);
-            
-            return result;
-        }
-        
-        bool operator<(const Name& op2) const
-        {
-            return id<op2.id;
-        }
-        
-        operator std::uint32_t() const       
-        {                    
-            return id;
-        }                    
-                             
-        void configure(dagbase::ConfigurationElement& config)                     
-        {
-            id = config.asInteger(INVALID_ID);
-        }
-        
-        bool valid() const   
-        {                    
-            return id!=INVALID_ID;
-        }
-        
-        Variant find(std::string_view path) const
-        {
-            Variant retval;
-            
-            retval = findEndpoint(path, "id", id);
-            if (retval.has_value())
-                return retval;
-            
-            return {};
-        }
-
-        OutputStream& writeToStream(OutputStream & str) const
-        {
-            str.writeUInt32(id);
-
-            return str;
-        }
-
-        InputStream& readFromStream(InputStream& str)
-        {
-            str.readUInt32(&id);
-
-            return str;
-        }
-    private:
-        std::uint32_t id{INVALID_ID};
     };
 
 //! Macro to declare a ID type
@@ -258,9 +164,9 @@ namespace dagbase
         CMP_CONNECTIONS_BIT = CMP_CONNECTIONS_IDENT_BIT|CMP_CONNECTIONS_COUNT_BIT,
     };
 
-    std::string DAGBASE_API comparisonFlagsToString(ComparisonFlags value);
+    std::string DAGBASE_API comparisonFlagsToString(dagbase::ComparisonFlags value);
 
-    ComparisonFlags DAGBASE_API parseComparisonFlags(const std::string& str);
+    dagbase::ComparisonFlags DAGBASE_API parseComparisonFlags(const std::string& str);
 
     std::ostream DAGBASE_API & operator<<(std::ostream& ostr, const Status& value);
 

@@ -26,7 +26,7 @@ namespace dagbase
 	struct NodeDescriptor;
     class NodeLibrary;
 
-	class DAGBASE_API Node : public dagbase::Class, public Editable
+	class DAGBASE_API Node : public dagbase::Class, public dagbase::Editable
 	{
 	public:
 	    enum NodeFlags : std::uint32_t
@@ -80,7 +80,7 @@ namespace dagbase
 
         //! Compare for equality with another Node.
         //! \note Typically downcasts to a concrete type to determine a result.
-        [[nodiscard]]virtual bool equals(const Node& other, ComparisonFlags flags) const;
+        [[nodiscard]]virtual bool equals(const Node& other, dagbase::ComparisonFlags flags) const;
 
 	    [[nodiscard]]const dagbase::MetaPort * dynamicMetaPort(size_t index) const
 	    {
@@ -142,7 +142,7 @@ namespace dagbase
 	    //! \note A deep copy of Ports is required.
 	    //! \note Since this method is virtual, we know the exact type
 	    //! and can just call the copy constructor on *this.
-	    virtual Node* clone(CloningFacility& facility, CopyOp copyOp, KeyGenerator* keyGen) = 0;
+	    virtual Node* clone(CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen) = 0;
 
 	    virtual Node* instantiate() = 0;
 
@@ -151,7 +151,7 @@ namespace dagbase
 	    //! \param[in] nodeLib : NodeLibrary The library from which the node came
 	    //! \param[in] lua : Lua The Lua interpreter in case there are Ports which have Lua functions as values
         //! \param lua
-        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, NodeLibrary& nodeLib, Lua &lua) const override;
+        dagbase::OutputStream& writeToStream(dagbase::OutputStream& str, dagbase::NodeLibrary& nodeLib, dagbase::Lua &lua) const override;
 
         //! \return The total number of Ports in this Node, including intrinsic/static and dynamic/extrinsic Ports.
 	    [[nodiscard]]size_t totalPorts() const
