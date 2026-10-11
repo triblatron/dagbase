@@ -30,7 +30,8 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         C.cpp
         StatusTest.cpp
         GraphTest.cpp
-        SlotMapTest.cpp)
+        SlotMapTest.cpp
+        )
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)
 ENDIF(UNIX)

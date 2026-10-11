@@ -108,6 +108,7 @@ SET( ALL_PUBLIC_HEADERS
         include/util/Name.h
         include/core/Status.h
         include/core/PortDirection.h
+        include/core/Script.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
