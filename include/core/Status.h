@@ -73,6 +73,8 @@ namespace dagbase
 
         Variant find(std::string_view path) const;
 
+        std::ostream& print() const;
+
         static const char* statusCodeToString(StatusCode value);
 
         static StatusCode parseStatusCode(const char* str);
