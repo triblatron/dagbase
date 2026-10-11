@@ -27,6 +27,32 @@ TEST(Coroutine, testReturnsACoroutineIfGivenAFunction)
 	EXPECT_TRUE(sut->ok());
 }
 
+class Coroutine_testReset : public ::testing::TestWithParam<std::tuple<const char*, const char*>>
+{
+
+};
+
+TEST_P(Coroutine_testReset, testExpectedResult)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    lua.execute(configFilename);
+    ASSERT_TRUE(lua.ok());
+    auto funcName = std::get<1>(GetParam());
+    dagbase::Coroutine* sut = dagbase::Coroutine::fromNamedFunction(lua.get(), funcName);
+    ASSERT_NE(nullptr, sut);
+    int actualNumResults = 0;
+    sut->resume(0, &actualNumResults);
+    ASSERT_EQ(1, actualNumResults);
+    sut->reset();
+    sut->resume(0, &actualNumResults);
+    ASSERT_EQ(1, actualNumResults);
+}
+
+INSTANTIATE_TEST_SUITE_P(Coroutine, Coroutine_testReset, ::testing::Values(
+    std::make_tuple("data/tests/Coroutine/Resume.lua", "test")
+    ));
+
 class Function_testCall : public ::testing::TestWithParam<std::tuple<const char*, int, int, bool, int, dagbase::Variant>>
 {
 

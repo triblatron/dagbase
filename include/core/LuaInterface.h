@@ -521,6 +521,8 @@ namespace dagbase
 
         int                         resume(int numArgs = 0, int* numResults=nullptr);
 
+        int                         reset();
+
         //! Named constructor for an existing thread.
         static Coroutine*           fromExistingThread(lua_State* existingThread);
         //! Named constructor if there is a function on the top of the stack

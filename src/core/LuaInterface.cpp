@@ -159,7 +159,6 @@ namespace dagbase
 
     int Coroutine::resume(int numArgs, int* numResults)
     {
-        //      SIM_REQUIRE( "Main function at top of stack", lua_isfunction( _thread, -1 ) );
 #if LUA_VERSION_NUM == 501
         int reasonCode = lua_resume(_thread, numArgs);
 #elif LUA_VERSION_NUM == 503
@@ -172,6 +171,12 @@ namespace dagbase
 
         return reasonCode;
     }
+
+    int Coroutine::reset()
+    {
+        return lua_closethread(_thread, nullptr);
+    }
+
     BalancedStackGuard::BalancedStackGuard(lua_State* lua)
         :
         _lua(lua)
