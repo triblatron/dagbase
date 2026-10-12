@@ -18,5 +18,7 @@ namespace dagbase
         virtual void step(Node* self) = 0;
 
         virtual bool isFinished() const = 0;
+
+        virtual void reset() = 0;
     };
 }

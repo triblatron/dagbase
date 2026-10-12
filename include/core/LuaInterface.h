@@ -519,6 +519,8 @@ namespace dagbase
         Coroutine(lua_State* lua, const char* function);
         ~Coroutine();
 
+        void                        setMainFunction(const char* mainName);
+
         int                         resume(int numArgs = 0, int* numResults=nullptr);
 
         int                         reset();

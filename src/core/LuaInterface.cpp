@@ -157,6 +157,20 @@ namespace dagbase
         }
     }
 
+    void Coroutine::setMainFunction(const char *mainName)
+    {
+        if (mainName)
+        {
+            lua_getglobal(_thread, mainName);
+            bool isFunction = lua_isfunction(_thread, -1);
+            if (isFunction == false)
+            {
+                // Clean up the nil.
+                lua_pop(_thread, 1);
+            }
+        }
+    }
+
     int Coroutine::resume(int numArgs, int* numResults)
     {
 #if LUA_VERSION_NUM == 501
