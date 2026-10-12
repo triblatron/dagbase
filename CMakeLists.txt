@@ -185,6 +185,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/util/EnumValue.cpp
         src/core/Status.cpp
         src/core/PortDirection.cpp
+		src/core/Script.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
