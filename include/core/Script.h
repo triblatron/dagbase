@@ -16,5 +16,7 @@ namespace dagbase
         virtual ~Script() = default;
 
         virtual void step(Node* self) = 0;
+
+        virtual bool isFinished() const = 0;
     };
 }
