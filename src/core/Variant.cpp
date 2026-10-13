@@ -396,6 +396,21 @@ namespace dagbase
         // Do nothing.
     }
 
+    void Variant::fromLua(Lua &lua, int index)
+    {
+        if (lua.top()>=index)
+        {
+            if (lua_isinteger(lua.get(), index))
+            {
+                _value.emplace(lua_tointeger(lua.get(), index));
+            }
+            else if (lua_isnumber(lua.get(), index))
+            {
+                _value.emplace(lua_tonumber(lua.get(), index));
+            }
+        }
+    }
+
     bool Variant::operator==(const Variant &other) const
     {
         if (has_value() && other.has_value() && _value->index() == other._value->index())

@@ -109,6 +109,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Status.h
         include/core/PortDirection.h
         include/core/Script.h
+        include/core/ScriptProtocol.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -186,6 +187,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/Status.cpp
         src/core/PortDirection.cpp
 		src/core/Script.cpp
+        src/core/ScriptProtocol.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
@@ -219,6 +221,16 @@ TARGET_COMPILE_OPTIONS( imgui PRIVATE -fPIC )
 ENDIF(LINUX)
 set_target_properties( dagbase PROPERTIES DEFINE_SYMBOL DAGBASE_LIBRARY )
 REMOVE_DEFINITIONS( -DDAGBASE_LIBRARY )
+set(SWIG_RUNTIME_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/lua_runtime.h)
+
+# The command must be in the directory that needs the generated file.
+ADD_CUSTOM_COMMAND( OUTPUT ${SWIG_RUNTIME_HEADER} 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/include
+        COMMAND ${SWIG_EXECUTABLE} -lua -external-runtime lua_runtime.h
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include COMMENT "Building Lua interface header..." )
+
+add_custom_target(luaRuntime DEPENDS ${SWIG_RUNTIME_HEADER})
+set_property(SOURCE ${SWIG_RUNTIME_HEADER} PROPERTY GENERATED TRUE)
+ADD_DEPENDENCIES(dagbase luaRuntime)
 
 INCLUDE( CheckIncludeFile )
 INCLUDE( CheckIncludeFileCXX )

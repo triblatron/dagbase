@@ -744,3 +744,21 @@ INSTANTIATE_TEST_SUITE_P(Enum, Enum_testEnumerate, ::testing::Values(
     std::make_tuple("data/tests/Enum/NodeFlags.lua"),
     std::make_tuple("data/tests/Enum/Dynamic.lua")
     ));
+
+TEST(Variant, testFromLuaInteger)
+{
+    dagbase::Lua lua;
+    lua_pushinteger(lua.get(), 1);
+    dagbase::Variant sut;
+    sut.fromLua(lua, 1);
+    EXPECT_EQ(1, sut.asInteger());
+}
+
+TEST(Variant, testFromLuaNumber)
+{
+    dagbase::Lua lua;
+    lua_pushnumber(lua.get(), 1.0);
+    dagbase::Variant sut;
+    sut.fromLua(lua, 1);
+    EXPECT_EQ(1.0, sut.asDouble());
+}

@@ -71,6 +71,8 @@ namespace dagbase
                                             !std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, bool>>>
         Variant(T&& val) : _value(std::string(std::forward<T>(val))) {}
 
+        void fromLua(Lua& lua, int index);
+
         bool operator==(const Variant& other) const;
 
         bool operator<(const Variant& other) const

@@ -20,6 +20,8 @@ extern "C" {
 #include <sstream>
 #include <functional>
 
+struct swig_type_info;
+
 namespace dagbase
 {
     class DAGBASE_API BalancedStackGuard
@@ -470,6 +472,15 @@ namespace dagbase
         {
             return _errorStr.str();
         }
+
+        int top() const
+        {
+            return lua_gettop(_thread);
+        }
+
+        void pushObj(void* obj, swig_type_info* type);
+
+        void convertObj(void** obj, swig_type_info* type, int index=-1);
 
         bool tableExists(const char* name) const
         {

@@ -2,6 +2,8 @@
 
 #include "core/LuaInterface.h"
 #include "util/dbc.h"
+#include "lua_runtime.h"
+#include "../../../../../../cmake-build-debug/include/lua_runtime.h"
 
 namespace dagbase
 {
@@ -47,6 +49,16 @@ namespace dagbase
             }
             std::cerr << std::endl;
         }
+    }
+
+    void Lua::pushObj(void *obj, swig_type_info *type)
+    {
+        SWIG_NewPointerObj(_thread, obj, type, 0);
+    }
+
+    void Lua::convertObj(void **obj, swig_type_info *type, int index)
+    {
+        SWIG_ConvertPtr(_thread, index, obj, type, 0);
     }
 
     const ErrorDescriptor Lua::_errors[Lua::NumErrors+1]=
