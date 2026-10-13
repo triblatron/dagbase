@@ -3,7 +3,6 @@
 #include "core/LuaInterface.h"
 #include "util/dbc.h"
 #include "lua_runtime.h"
-#include "../../../../../../cmake-build-debug/include/lua_runtime.h"
 
 namespace dagbase
 {
