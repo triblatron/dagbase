@@ -9,6 +9,7 @@ SET( CMAKE_CXX_EXTENSIONS OFF )
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 FIND_PACKAGE(Lua 5.4)
+FIND_PACKAGE(SWIG)
 include(FetchContent)
 FetchContent_Declare(googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
