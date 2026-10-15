@@ -25,6 +25,7 @@ namespace dagbase
     class KeyGenerator;
 	struct NodeDescriptor;
     class NodeLibrary;
+    class Script;
 
 	class DAGBASE_API Node : public dagbase::Class, public dagbase::Editable
 	{
@@ -222,6 +223,11 @@ namespace dagbase
             return _flags;
         }
 
+	    void setScript(Script* script)
+	    {
+	        _script = script;
+	    }
+
 	    std::size_t numInputs() const;
 
 	    std::size_t numOutputs() const;
@@ -407,6 +413,7 @@ namespace dagbase
 	    PortArray _dynamicPorts;
         float _pos[2]{0,0};
 	    Graph* _parent{nullptr};
+	    Script* _script{nullptr};
 	    NodeID _id{NodeID::INVALID_ID};
         // Position to allow for manual layout
 		NodeCategory::Category _category{NodeCategory::CAT_UNKNOWN};

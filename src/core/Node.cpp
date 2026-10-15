@@ -8,13 +8,14 @@
 #include "core/KeyGenerator.h"
 #include "core/CloningFacility.h"
 #include "core/Graph.h"
+#include "core/Script.h"
 #include "util/enums.h"
+#include "util/Searchable.h"
 
 #include "imgui.h"
 
 #include <iostream>
 
-#include "util/Searchable.h"
 
 namespace dagbase
 {
@@ -287,6 +288,10 @@ namespace dagbase
 
     void Node::update()
     {
+        if (_script)
+        {
+            _script->step(this);
+        }
         if (active()==ACTIVE_PASS_THROUGH)
         {
             PortArray inputs, outputs;

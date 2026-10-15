@@ -61,6 +61,7 @@ namespace dagbase
 		    if (auto graphNode = dynamic_cast<GraphNode*>(node); graphNode)
 		    {
 		        addChild(graphNode->graph());
+		        graphNode->graph()->setService(_service);
 		    }
         }
 	}
@@ -1627,6 +1628,20 @@ namespace dagbase
 	    return status;
     }
 
+    void Graph::setService(void *service)
+    {
+	    _service = service;
+	    depthFirstTraversal([service](Graph* child) {
+	        child->setServiceHelper(service);
+	        return true;
+	    });
+    }
+
+    void Graph::setServiceHelper(void *service)
+    {
+	    _service = service;
+    }
+
     Graph::Graph(const Graph & other, dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen)
         :
         _signalPaths(this)
@@ -1706,6 +1721,10 @@ namespace dagbase
         retval = findEndpoint(path, "totalSignalPaths", std::uint32_t(totalSignalPaths()));
         if (retval.has_value())
             return retval;
+
+        retval = findEndpoint(path, "service", _service!=nullptr);
+	    if (retval.has_value())
+	        return retval;
 
         retval = findInternal(path, "nodes", _nodes);
 	    if (retval.has_value())

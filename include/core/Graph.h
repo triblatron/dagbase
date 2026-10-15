@@ -66,6 +66,15 @@ namespace dagbase
 
 		Status cloneNodes(const NodeArray& internals, const Graph& sourceGraph, dagbase::CloningFacility& facility, KeyGenerator& keyGen);
 
+	    void setService(void* service);
+
+	    void setServiceHelper(void* service);
+
+	    void* service()
+	    {
+	        return _service;
+	    }
+
         [[nodiscard]]Graph* parent()
         {
             return _parent;
