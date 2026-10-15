@@ -88,11 +88,6 @@ namespace dagbase
         //! Add a node if it is non-null, does nothing otherwise.
 		void addNode(dagbase::Node* node);
 
-		dagbase::Node* lastAddedNode()
-		{
-			return _lastAddedNode;
-		}
-
         //! Remove a non-null node.
         void removeNode(dagbase::Node* node);
 
@@ -351,7 +346,7 @@ namespace dagbase
         Graph* _parent{nullptr};
         dagbase::NodeLibrary* _nodeLib{nullptr};
 
-	    dagbase::Node* _lastAddedNode{ nullptr };
+        void* _service{nullptr};
 
         void readPort(dagbase::Table& portTable, dagbase::Node* node, dagbase::Port* existingPort, dagbase::KeyGenerator& rootKeyGen);
         static Graph* fromLua(dagbase::Lua& lua, dagbase::NodeLibrary& nodeLib, Status* status=nullptr);

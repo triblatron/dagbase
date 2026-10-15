@@ -50,7 +50,6 @@ namespace dagbase
             if (result.second && it==_nodeLookupByName.end())
             {
                 _nodeLookupByName.emplace(node->name(), node);
-                _lastAddedNode = node;
             }
             for (std::size_t portIndex = 0; portIndex < node->totalPorts(); ++portIndex)
             {
