@@ -240,6 +240,7 @@ namespace dagbase
 			if (child != nullptr)
 			{
                 child->setParent(this);
+			    child->setService(_service);
 				_children.a.emplace_back(child);
 			}
 		}

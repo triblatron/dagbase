@@ -58,7 +58,7 @@ namespace dagbase
                 if (port && metaPort && metaPort->isOwned())
                     addPort(port);
             }
-		    if (auto graphNode = dynamic_cast<GraphNode*>(node); graphNode)
+		    if (auto graphNode = dynamic_cast<GraphNode*>(node); graphNode && graphNode->graph())
 		    {
 		        addChild(graphNode->graph());
 		        graphNode->graph()->setService(_service);
@@ -161,8 +161,7 @@ namespace dagbase
                 child->depthFirstTraversal(f);
             }
 
-            if (!f(this))
-                return;
+            f(this);
         }
     }
 
