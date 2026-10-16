@@ -50,14 +50,19 @@ namespace dagbase
         }
     }
 
-    void Lua::pushObj(void *obj, swig_type_info *type)
+    void Lua::pushObj(void *obj, swig_type_info *type, int own)
     {
-        SWIG_NewPointerObj(_thread, obj, type, 0);
+        SWIG_NewPointerObj(_thread, obj, type, own);
     }
 
-    void Lua::convertObj(void **obj, swig_type_info *type, int index)
+    void Lua::convertObj(void **obj, swig_type_info *type, int flags, int index)
     {
-        SWIG_ConvertPtr(_thread, index, obj, type, 0);
+        SWIG_ConvertPtr(_thread, index, obj, type, flags);
+    }
+
+    swig_type_info * Lua::typeQuery(const char *typeName)
+    {
+        return SWIG_TypeQuery(_thread, typeName);
     }
 
     const ErrorDescriptor Lua::_errors[Lua::NumErrors+1]=

@@ -478,9 +478,11 @@ namespace dagbase
             return lua_gettop(_thread);
         }
 
-        void pushObj(void* obj, swig_type_info* type);
+        void pushObj(void* obj, swig_type_info* type, int own);
 
-        void convertObj(void** obj, swig_type_info* type, int index=-1);
+        void convertObj(void** obj, swig_type_info* type, int flags, int index=-1);
+
+        swig_type_info* typeQuery(const char* typeName);
 
         bool tableExists(const char* name) const
         {
