@@ -18,7 +18,9 @@ namespace dagbase
 {
     class ConfigurationElement;
     class InputStream;
+    class Lua;
     class OutputStream;
+    class Port;
 
     //! A value type to be used throughout the software, uses std::variant.
     //! Provides useful conversions and constructors.
@@ -26,7 +28,7 @@ namespace dagbase
     {
     public:
         //! Typedef to improve readability when referencing the type of the variant.
-        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*, EnumValue> ValueType;
+        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*, EnumValue, Port*> ValueType;
         //static_assert(std::is_standard_layout_v<std::variant<int, float>>);
         //static_assert(std::is_standard_layout_v<Vec2>);
         //static_assert(std::is_standard_layout_v<EnumValue>);
@@ -58,6 +60,8 @@ namespace dagbase
             TYPE_VECTOR,
             //! An arbitrary enum based on any integer type.
             TYPE_ENUM,
+            //! A Port
+            TYPE_PORT,
             //! Initial or invalid type.
             TYPE_UNKNOWN
         };
@@ -213,6 +217,8 @@ namespace dagbase
                 _value = new std::vector<Value> {*this,Value(v)};
             }
         }
+
+        void toLua(Lua& lua);
 
         bool operator<(const Value& other) const;
 

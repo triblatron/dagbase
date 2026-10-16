@@ -408,6 +408,42 @@ namespace dagbase
             {
                 _value.emplace(lua_tonumber(lua.get(), index));
             }
+            else if (lua_isstring(lua.get(), index))
+            {
+                _value.emplace(lua_tostring(lua.get(), index));
+            }
+            else if (lua_isboolean(lua.get(), index))
+            {
+                _value.emplace(lua_toboolean(lua.get(), index));
+            }
+        }
+    }
+
+    void Variant::toLua(Lua &lua)
+    {
+        switch (index())
+        {
+            case TYPE_UINT:
+                lua_pushinteger(lua.get(), asUint32());
+                break;
+            case TYPE_INTEGER:
+                lua_pushinteger(lua.get(), asInteger());
+                break;
+            case TYPE_DOUBLE:
+                lua_pushnumber(lua.get(), asDouble());
+                break;
+            case TYPE_STRING:
+                lua_pushstring(lua.get(), asString().c_str());
+                break;
+            case TYPE_BOOL:
+                lua_pushboolean(lua.get(), asBool());
+                break;
+            case TYPE_VALUE:
+            {
+                auto value = std::get<Value>(_value.value());
+                value.toLua(lua);
+                break;
+            }
         }
     }
 

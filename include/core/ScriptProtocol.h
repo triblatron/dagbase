@@ -19,6 +19,6 @@ namespace dagbase
     public:
         virtual ~ScriptProtocol() = default;
 
-        virtual void request(Node* self, Lua& lua, std::uint32_t opCode, const std::pmr::vector<Variant>& args, std::vector<Variant>* results) = 0;
+        virtual void request(Node* self, std::uint32_t opCode, const std::pmr::vector<Variant>& args, std::vector<Variant>* results) = 0;
     };
 }

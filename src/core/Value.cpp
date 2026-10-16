@@ -11,6 +11,7 @@
 #include "io/OutputStream.h"
 #include "util/enums.h"
 #include "util/Zigzag.h"
+#include "core/LuaInterface.h"
 
 #include <cassert>
 #include <iostream>
@@ -84,6 +85,20 @@ namespace dagbase
         }
 
         return *this;
+    }
+
+    void Value::toLua(Lua &lua)
+    {
+        switch (type())
+        {
+            case TYPE_PORT:
+            {
+                lua.pushObj(std::get<Port*>(_value), lua.typeQuery("_p_dagbase__Port"), 0);
+                break;
+            }
+            default:
+                assert(false);
+        }
     }
 
     bool Value::operator<(const Value &other) const
