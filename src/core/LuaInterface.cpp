@@ -68,24 +68,29 @@ namespace dagbase
     const ErrorDescriptor Lua::_errors[Lua::NumErrors+1]=
     {
         {
-            NoError,
-            "NoError",
-            "The operation was successful"
+                NoError,
+                "NoError",
+                "The operation was successful"
+          },
+        {
+                ScriptNotFound,
+                "ScriptNotFound",
+                "The specified script was not found:"
+          },
+        {
+                FailedToExecute,
+                "FailedToExecute",
+                "The script failed to execute with error:"
         },
         {
-            ScriptNotFound,
-            "ScriptNotFound",
-            "The specified script was not found:"
+              InvalidArgument,
+                "InvalidArgument",
+                "An invalid argument was supplied:"
         },
         {
-            FailedToExecute,
-            "FailedToExecute",
-            "The script failed to execute with error:"
-        },
-        {
-            InvalidArgument,
-            "InvalidArgument",
-            "An invalid argument was supplied:"
+            ResumeError,
+            "ResumeError",
+            "An error occurred executing a coroutine:"
         },
         {
             NumErrors,
@@ -167,7 +172,7 @@ namespace dagbase
 #if LUA_VERSION_RELEASE_NUM>=50406
             lua_closethread(_thread, nullptr);
 #else
-			lua_resetthread(_thread);
+            lua_resetthread(_thread);
 #endif			
             _thread = nullptr;
         }
@@ -199,6 +204,10 @@ namespace dagbase
 #error "Unknown Lua version"
 #endif
 
+        if (reasonCode != LUA_OK && reasonCode != LUA_YIELD)
+        {
+            raiseError(Lua::ResumeError) << lua_tostring(_thread,-1);
+        }
         return reasonCode;
     }
 

@@ -386,6 +386,7 @@ namespace dagbase
             ScriptNotFound,
             FailedToExecute,
             InvalidArgument,
+            ResumeError,
             NumErrors
         };
     public:

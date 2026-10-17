@@ -6,6 +6,10 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Variant.h"
+
+#include <string_view>
+
 namespace dagbase
 {
     class Node;
@@ -20,5 +24,7 @@ namespace dagbase
         virtual bool isFinished() const = 0;
 
         virtual void reset() = 0;
+
+        virtual Variant find(std::string_view path) const = 0;
     };
 }
