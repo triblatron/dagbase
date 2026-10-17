@@ -422,6 +422,11 @@ namespace dagbase
             return _thread;
         }
 
+        bool isFunction(int index) const
+        {
+            return _thread && lua_isfunction(_thread, index);
+        }
+
         void eval(const char* code)
         {
             if (code != nullptr)
@@ -480,6 +485,11 @@ namespace dagbase
         std::string errorMessage() const
         {
             return _errorStr.str();
+        }
+
+        void pop(int n)
+        {
+            lua_pop(_thread,n);
         }
 
         int top() const

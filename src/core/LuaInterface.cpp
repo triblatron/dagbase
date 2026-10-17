@@ -231,8 +231,6 @@ namespace dagbase
         // printStack(_thread);
         clearError();
 
-        // Pop the function, because it may change before we call resume() again
-        lua_pop(_thread, 1);
         return retval;
     }
 
