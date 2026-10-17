@@ -32,13 +32,16 @@ namespace dagbase
             case LUA_TTABLE:
                 break;
             case LUA_TFUNCTION:
+                std::cerr << "Function";
                 break;
             case LUA_TUSERDATA:
+                std::cerr << "UserData" << lua_touserdata(L, i);
                 break;
             case LUA_TTHREAD:
+                std::cerr << "Thread";
                 break;
             case LUA_TLIGHTUSERDATA:
-                std::cerr << lua_touserdata(L, i);
+                std::cerr << "LightUserData:" << lua_touserdata(L, i);
 
                 break;
             default:
@@ -92,7 +95,12 @@ namespace dagbase
             "ResumeError",
             "An error occurred executing a coroutine:"
         },
-        {
+      {
+            FailedToSetMainFunction,
+          "FailedToSetMainFunction",
+            "An error occurred set the main function of a coroutine, typically because it does not exist:"
+        },
+      {
             NumErrors,
             "UnknownError",
             "An unknown error"
@@ -186,8 +194,10 @@ namespace dagbase
             bool isFunction = lua_isfunction(_thread, -1);
             if (isFunction == false)
             {
+                raiseError(FailedToSetMainFunction) << mainName;
                 // Clean up the nil.
                 lua_pop(_thread, 1);
+                //printStack(_thread);
             }
         }
     }
@@ -206,14 +216,24 @@ namespace dagbase
 
         if (reasonCode != LUA_OK && reasonCode != LUA_YIELD)
         {
+            //printStack(_thread);
             raiseError(Lua::ResumeError) << lua_tostring(_thread,-1);
+            // Restore balance to the stack:Pop the error object.
+            lua_pop(_thread, top());
         }
         return reasonCode;
     }
 
     int Coroutine::reset()
     {
-        return lua_closethread(_thread, nullptr);
+        int retval =  lua_closethread(_thread, nullptr);
+        // std::cerr << "Coroutine::reset():After stack is:\n";
+        // printStack(_thread);
+        clearError();
+
+        // Pop the function, because it may change before we call resume() again
+        lua_pop(_thread, 1);
+        return retval;
     }
 
     BalancedStackGuard::BalancedStackGuard(lua_State* lua)

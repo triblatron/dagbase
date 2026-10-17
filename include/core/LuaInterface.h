@@ -387,6 +387,7 @@ namespace dagbase
             FailedToExecute,
             InvalidArgument,
             ResumeError,
+            FailedToSetMainFunction,
             NumErrors
         };
     public:
@@ -459,6 +460,13 @@ namespace dagbase
         bool ok() const
         {
             return _errod == &_errors[NoError];
+        }
+
+        void clearError()
+        {
+            _errod = &_errors[NoError];
+            _errorStr.clear();
+            _errorStr.str("");
         }
 
         std::ostringstream & raiseError(Error code)
