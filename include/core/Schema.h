@@ -34,7 +34,7 @@ namespace dagbase
         SHIFT_RC = 4
     };
 
-    const char* DAGBASE_API schemaVersionFlagsToString(SchemaVersionFlags value);
+    const char DAGBASE_API *  schemaVersionFlagsToString(SchemaVersionFlags value);
     SchemaVersionFlags DAGBASE_API parseSchemaVersionFlags(const char* str);
 
     struct DAGBASE_API SchemaVersion
