@@ -114,7 +114,7 @@ namespace dagbase
         return str.str();
     }
 
-    OutputStream & Header::writeToStream(OutputStream &str) const
+    OutputStream & SchemaHeader::writeToStream(OutputStream &str) const
     {
         str.writeHeader("Header");
         str.writeField("magic");
@@ -126,7 +126,7 @@ namespace dagbase
         return str;
     }
 
-    InputStream & Header::readFromStream(InputStream &str)
+    InputStream & SchemaHeader::readFromStream(InputStream &str)
     {
         std::string className, fieldName;
         str.readHeader(&className);

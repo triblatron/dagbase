@@ -70,7 +70,7 @@ namespace dagbase
         std::string toString() const;
     };
 
-    struct DAGBASE_API Header
+    struct DAGBASE_API SchemaHeader
     {
         std::uint32_t magic{0xdeadbeef};
         SchemaVersion version{0,0,1,SchemaVersion::makeFlags(VERSION_NONE, 0)};
@@ -79,7 +79,7 @@ namespace dagbase
 
         InputStream& readFromStream(InputStream& str);
 
-        bool operator==(const Header& other) const
+        bool operator==(const SchemaHeader& other) const
         {
             return magic == other.magic && version == other.version;
         }

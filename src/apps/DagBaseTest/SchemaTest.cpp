@@ -42,7 +42,7 @@ INSTANTIATE_TEST_SUITE_P(SchemaVersion, SchemaVersion_testToString, ::testing::V
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 64)}, "1.0.0-rc")
     ));
 
-class SchemaHeader_testStreaming : public ::testing::TestWithParam<std::tuple<dagbase::Header, const char*>>
+class SchemaHeader_testStreaming : public ::testing::TestWithParam<std::tuple<dagbase::SchemaHeader, const char*>>
 {
 
 };
@@ -59,7 +59,7 @@ TEST_P(SchemaHeader_testStreaming, testRoundTrip)
     ostr->flush();
     delete ostr;
     auto istr = dagbase::createInputStream(format, *store, "");
-    dagbase::Header actual;
+    dagbase::SchemaHeader actual;
     actual.readFromStream(*istr);
     EXPECT_EQ(header, actual);
     delete istr;
@@ -67,8 +67,8 @@ TEST_P(SchemaHeader_testStreaming, testRoundTrip)
 }
 
 INSTANTIATE_TEST_SUITE_P(SchemaHeader, SchemaHeader_testStreaming, ::testing::Values(
-    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "TextFormat"),
-    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "BinaryFormat"),
-    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "TextFormat"),
-    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "BinaryFormat")
+    std::make_tuple(dagbase::SchemaHeader{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "TextFormat"),
+    std::make_tuple(dagbase::SchemaHeader{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "BinaryFormat"),
+    std::make_tuple(dagbase::SchemaHeader{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "TextFormat"),
+    std::make_tuple(dagbase::SchemaHeader{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "BinaryFormat")
     ));
