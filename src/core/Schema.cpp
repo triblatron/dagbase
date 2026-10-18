@@ -11,6 +11,9 @@
 #include <sstream>
 #include <cassert>
 
+#include "io/InputStream.h"
+#include "io/OutputStream.h"
+
 namespace dagbase
 {
     const char* schemaVersionFlagsToString(SchemaVersionFlags value)
@@ -42,6 +45,39 @@ namespace dagbase
         std::uint8_t retval = flags | ((rc<<SHIFT_RC)&MASK_RC);
 
         return retval;
+    }
+
+    OutputStream & SchemaVersion::writeToStream(OutputStream &str) const
+    {
+        str.writeHeader("SchemaVersion");
+        str.writeField("major");
+        str.writeUInt8(major);
+        str.writeField("minor");
+        str.writeUInt8(minor);
+        str.writeField("patch");
+        str.writeUInt8(patch);
+        str.writeField("flags");
+        str.writeUInt8(flags);
+        str.writeFooter();
+
+        return str;
+    }
+
+    InputStream & SchemaVersion::readFromStream(InputStream &str)
+    {
+        std::string className, fieldName;
+        str.readHeader(&className);
+        str.readField(&fieldName);
+        str.readUInt8(&major);
+        str.readField(&fieldName);
+        str.readUInt8(&minor);
+        str.readField(&fieldName);
+        str.readUInt8(&patch);
+        str.readField(&fieldName);
+        str.readUInt8(&flags);
+        str.readFooter();
+
+        return str;
     }
 
     std::string SchemaVersion::toString() const
@@ -76,5 +112,30 @@ namespace dagbase
             }
         }
         return str.str();
+    }
+
+    OutputStream & Header::writeToStream(OutputStream &str) const
+    {
+        str.writeHeader("Header");
+        str.writeField("magic");
+        str.writeUInt32(magic);
+        str.writeField("version");
+        version.writeToStream(str);
+        str.writeFooter();
+
+        return str;
+    }
+
+    InputStream & Header::readFromStream(InputStream &str)
+    {
+        std::string className, fieldName;
+        str.readHeader(&className);
+        str.readField(&fieldName);
+        str.readUInt32(&magic);
+        str.readField(&fieldName);
+        version.readFromStream(str);
+        str.readFooter();
+
+        return str;
     }
 }

@@ -5,8 +5,13 @@
 #include "config/config.h"
 
 #include "core/Schema.h"
+#include "io/StreamFactory.h"
+#include "io/MemoryBackingStore.h"
+#include "io/OutputStream.h"
+#include "io/InputStream.h"
 
 #include <gtest/gtest.h>
+
 
 class SchemaVersion_testToString : public ::testing::TestWithParam<std::tuple<dagbase::SchemaVersion, const char*>>
 {
@@ -35,4 +40,35 @@ INSTANTIATE_TEST_SUITE_P(SchemaVersion, SchemaVersion_testToString, ::testing::V
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 16)}, "1.0.0-rc.16"),
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 63)}, "1.0.0-rc.63"),
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 64)}, "1.0.0-rc")
+    ));
+
+class SchemaHeader_testStreaming : public ::testing::TestWithParam<std::tuple<dagbase::Header, const char*>>
+{
+
+};
+
+TEST_P(SchemaHeader_testStreaming, testRoundTrip)
+{
+    auto header = std::get<0>(GetParam());
+    auto format = std::get<1>(GetParam());
+    dagbase::BackingStore* store = dagbase::createBackingStore("MemoryBackingStore");
+    ASSERT_NE(nullptr, store);
+    auto ostr = dagbase::createOutputStream(format,*store,"");
+    ASSERT_NE(nullptr, ostr);
+    header.writeToStream(*ostr);
+    ostr->flush();
+    delete ostr;
+    auto istr = dagbase::createInputStream(format, *store, "");
+    dagbase::Header actual;
+    actual.readFromStream(*istr);
+    EXPECT_EQ(header, actual);
+    delete istr;
+    delete store;
+}
+
+INSTANTIATE_TEST_SUITE_P(SchemaHeader, SchemaHeader_testStreaming, ::testing::Values(
+    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "TextFormat"),
+    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 0, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_NONE, 0)}}, "BinaryFormat"),
+    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "TextFormat"),
+    std::make_tuple(dagbase::Header{0xdeadbeef, {1, 0, 1, dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 4)}}, "BinaryFormat")
     ));

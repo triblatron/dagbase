@@ -11,6 +11,9 @@
 
 namespace dagbase
 {
+    class InputStream;
+    class OutputStream;
+
     enum SchemaVersionFlags : std::uint8_t
     {
         VERSION_NONE = 0,
@@ -27,6 +30,7 @@ namespace dagbase
         MASK_FLAGS = 0x03,
         MASK_RC = 0x3f<<2,
     };
+
     enum SchemaVersionShifts : std::uint8_t
     {
         SHIFT_FLAGS = 0,
@@ -54,6 +58,15 @@ namespace dagbase
         //! \retval a default SchemaVersionFlags otherwise
         static std::uint8_t makeFlags(SchemaVersionFlags flags, std::uint8_t rc);
 
+        bool operator==(const SchemaVersion& other) const
+        {
+            return major == other.major && minor == other.minor && patch == other.patch && flags == other.flags;
+        }
+
+        OutputStream& writeToStream(OutputStream& str) const;
+
+        InputStream& readFromStream(InputStream& str);
+
         std::string toString() const;
     };
 
@@ -61,5 +74,14 @@ namespace dagbase
     {
         std::uint32_t magic{0xdeadbeef};
         SchemaVersion version{0,0,1,SchemaVersion::makeFlags(VERSION_NONE, 0)};
+
+        OutputStream& writeToStream(OutputStream& str) const;
+
+        InputStream& readFromStream(InputStream& str);
+
+        bool operator==(const Header& other) const
+        {
+            return magic == other.magic && version == other.version;
+        }
     };
 }
