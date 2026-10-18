@@ -111,6 +111,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/PortDirection.h
         include/core/Script.h
         include/core/ScriptProtocol.h
+        include/core/Schema.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -189,6 +190,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/PortDirection.cpp
 		src/core/Script.cpp
         src/core/ScriptProtocol.cpp
+        src/core/Schema.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}

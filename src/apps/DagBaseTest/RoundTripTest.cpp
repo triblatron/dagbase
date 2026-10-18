@@ -15,6 +15,7 @@
 
 #include <charconv>
 
+#include "core/Schema.h"
 #include "util/Zigzag.h"
 #if defined(_MSC_VER)
 #define _USE_MATH_DEFINES 1
@@ -545,4 +546,25 @@ INSTANTIATE_TEST_SUITE_P(Type, TypeFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("FLAGS_NONE", dagbase::Type::FLAGS_NONE),
     std::make_tuple("BITMASK_BIT", dagbase::Type::BITMASK_BIT),
     std::make_tuple("SUBFIELD_BIT", dagbase::Type::SUBFIELD_BIT)
+    ));
+
+class SchemaVersionFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::SchemaVersionFlags>>
+{
+
+};
+
+TEST_P(SchemaVersionFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::schemaVersionFlagsToString(value));
+    EXPECT_EQ(value, dagbase::parseSchemaVersionFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(SchemaVersionFlags, SchemaVersionFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("VERSION_NONE", dagbase::VERSION_NONE),
+    std::make_tuple("VERSION_ALPHA", dagbase::VERSION_ALPHA),
+    std::make_tuple("VERSION_BETA", dagbase::VERSION_BETA),
+    std::make_tuple("VERSION_RC", dagbase::VERSION_RC)
     ));
