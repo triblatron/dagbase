@@ -32,5 +32,7 @@ INSTANTIATE_TEST_SUITE_P(SchemaVersion, SchemaVersion_testToString, ::testing::V
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_BETA, 1)}, "1.0.0-beta.1"),
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 1)}, "1.0.0-rc.1"),
     std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 15)}, "1.0.0-rc.15"),
-    std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 16)}, "1.0.0-rc")
+    std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 16)}, "1.0.0-rc.16"),
+    std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 63)}, "1.0.0-rc.63"),
+    std::make_tuple(dagbase::SchemaVersion{1,0,0,dagbase::SchemaVersion::makeFlags(dagbase::VERSION_RC, 64)}, "1.0.0-rc")
     ));

@@ -24,14 +24,13 @@ namespace dagbase
 
     enum SchemaVersionMasks : std::uint8_t
     {
-        MASK_FLAGS = 0xf,
-        MASK_RC = 0xf<<4
+        MASK_FLAGS = 0x03,
+        MASK_RC = 0x3f<<2,
     };
-
     enum SchemaVersionShifts : std::uint8_t
     {
         SHIFT_FLAGS = 0,
-        SHIFT_RC = 4
+        SHIFT_RC = 2
     };
 
     const char* DAGBASE_API schemaVersionFlagsToString(SchemaVersionFlags value);
@@ -61,6 +60,6 @@ namespace dagbase
     struct DAGBASE_API Header
     {
         std::uint32_t magic{0xdeadbeef};
-        SchemaVersion version;
+        SchemaVersion version{0,0,1,SchemaVersion::makeFlags(VERSION_NONE, 0)};
     };
 }
