@@ -70,6 +70,8 @@ namespace dagbase
         //! Default ctor, initialises variant member to its first choice, an int64_t.
         Value() = default;
 
+        explicit Value(Type type);
+
         //! Increment operator for types that can be added.
         template<typename T>
         Value& operator+=(T const& op)
@@ -142,7 +144,7 @@ namespace dagbase
 
         ~Value();
 
-        void configure(dagbase::ConfigurationElement& config);
+        void configure(dagbase::ConfigurationElement& config, bool fromType=false);
 
         //! Assignment of another Value.
         Value& operator=(const Value& value);

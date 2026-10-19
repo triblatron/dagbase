@@ -18,6 +18,83 @@
 
 namespace dagbase
 {
+    Value::Value(Type type)
+    {
+        switch (type)
+        {
+            case TYPE_UINT8:
+                _value = (std::uint8_t{0});
+
+                break;
+            case TYPE_INT8:
+                _value = std::int8_t{0};
+
+                break;
+            case TYPE_UINT16:
+                _value = (std::uint16_t{0});
+
+                break;
+            case TYPE_INT16:
+                _value = std::int16_t{0};
+
+                break;
+            case TYPE_UINT32:
+                _value = (std::uint32_t{0});
+
+                break;
+            case TYPE_INT32:
+                _value = std::int32_t{0};
+
+                break;
+            case TYPE_UINT64:
+                _value = (std::uint64_t{0});
+
+                break;
+            case TYPE_INT64:
+                _value = std::int64_t{0};
+
+                break;
+            case TYPE_BOOL:
+                _value = false;
+
+                break;
+            case TYPE_STRING:
+                _value = new std::string();
+
+                break;
+            case TYPE_VEC2:
+                _value = Vec2{.x = 0.0f,.y = 0.0f};
+
+                break;
+            case TYPE_FLOAT:
+                _value = 0.0f;
+
+                break;
+            case TYPE_DOUBLE:
+                _value = 0.0;
+
+                break;
+            case TYPE_OPAQUE:
+                _value = (void*)nullptr;
+                break;
+            case TYPE_VECTOR:
+                _value = new std::vector<Value>();
+
+                break;
+            case TYPE_ENUM:
+                _value = EnumValue();
+
+                break;
+            case TYPE_PORT:
+                _value = (Port*)nullptr;
+
+                break;
+            case TYPE_UNKNOWN:
+                //assert(false);
+                break;
+        }
+    }
+
     Value::Value(const Value &other)
     {
         if (other.type() == TYPE_STRING && other.operator std::string*())
@@ -54,11 +131,57 @@ namespace dagbase
         }
     }
 
-    void Value::configure(dagbase::ConfigurationElement &config)
+    void Value::configure(dagbase::ConfigurationElement &config, bool fromType)
     {
         auto value = config.value();
 
-        _value = value.cast(Variant::TYPE_VALUE).as<Value>();
+        if (!fromType)
+        {
+            _value = value.cast(Variant::TYPE_VALUE).as<Value>();
+        }
+        else if (value.index() == Variant::TYPE_INTEGER)
+        {
+            switch (type())
+            {
+                case TYPE_UINT8:
+                    _value = static_cast<std::uint8_t>(value.asInteger());
+                    break;
+                case TYPE_INT8:
+                    _value = static_cast<std::int8_t>(value.asInteger());
+                    break;
+                case TYPE_UINT16:
+                    _value = static_cast<std::uint16_t>(value.asInteger());
+                    break;
+                case TYPE_INT16:
+                    _value = static_cast<std::int16_t>(value.asInteger());
+                    break;
+                case TYPE_UINT32:
+                    _value = static_cast<std::uint32_t>(value.asInteger());
+                    break;
+                case TYPE_INT32:
+                    _value = static_cast<std::int32_t>(value.asInteger());
+                    break;
+                case TYPE_UINT64:
+                    _value = static_cast<std::uint64_t>(value.asInteger());
+                    break;
+                case TYPE_INT64:
+                    _value = value.asInteger();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (value.index() == Variant::TYPE_DOUBLE)
+        {
+            switch (type())
+            {
+                case TYPE_UINT64:
+                    _value = static_cast<std::uint64_t>(value.asDouble());
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     Value & Value::operator=(const Value &value)

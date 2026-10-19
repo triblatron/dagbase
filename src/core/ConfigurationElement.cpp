@@ -363,7 +363,7 @@ namespace dagbase
         return false;
     }
 
-    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Variant *value)
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Variant *value, bool fromType)
     {
         if (value)
             if (auto element = config.findElement(name); element)
@@ -407,8 +407,8 @@ namespace dagbase
                                 }
                                 default:
                                 {
-                                    Value v;
-                                    readConfig(*element, "value", &v);
+                                    Value v(valueType);
+                                    readConfig(*element, "value", fromType, &v);
                                     *value = Variant(v);
                                     break;
                                 }
@@ -420,12 +420,12 @@ namespace dagbase
             }
     }
 
-    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, Value *value)
+    void ConfigurationElement::readConfig(ConfigurationElement &config, const char *name, bool fromType, Value *value)
     {
         if (value)
         {
             if (auto element = config.findElement(name); element)
-                value->configure(*element);
+                value->configure(*element, fromType);
         }
     }
 

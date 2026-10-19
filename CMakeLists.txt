@@ -112,6 +112,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Script.h
         include/core/ScriptProtocol.h
         include/core/Schema.h
+        include/util/VariableLengthInteger.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )

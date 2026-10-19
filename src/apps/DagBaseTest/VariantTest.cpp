@@ -762,3 +762,57 @@ TEST(Variant, testFromLuaNumber)
     sut.fromLua(lua, 1);
     EXPECT_EQ(1.0, sut.asDouble());
 }
+
+struct ReadValueItem
+{
+    dagbase::Value::Type valueType{dagbase::Value::TYPE_UNKNOWN};
+    dagbase::Value value;
+    dagbase::Variant expected;
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig<dagbase::Value::Type>(config, "valueType", &dagbase::Value::parseType, &valueType);
+        value = dagbase::Value(valueType);
+        dagbase::ConfigurationElement::readConfig(config, "value", true, &value);
+        dagbase::ConfigurationElement::readConfig(config, "expected", &expected);
+    }
+
+    void makeItSo() const
+    {
+        EXPECT_EQ(expected.asValueInteger(valueType, dagbase::Value(0)), value);
+    }
+};
+
+class Value_testReadConfig : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_items);
+    }
+
+    void makeItSo()
+    {
+        for (const auto& item : _items)
+        {
+            item.makeItSo();
+        }
+    }
+protected:
+    using ReadValueItemArray = std::vector<ReadValueItem>;
+    ReadValueItemArray _items;
+};
+
+TEST_P(Value_testReadConfig, testExpectedValue)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(Value, Value_testReadConfig, ::testing::Values(
+    std::make_tuple("data/tests/Value/readConfig.lua")
+    ));
