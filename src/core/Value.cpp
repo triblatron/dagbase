@@ -655,10 +655,10 @@ namespace dagbase
         switch (value.type())
         {
             case Value::TYPE_INT8:
-                str << std::get<std::int8_t>(value.value());
+                str << (int)std::get<std::int8_t>(value.value());
                 break;
             case Value::TYPE_UINT8:
-                str << std::get<std::uint8_t>(value.value());
+                str << (int)std::get<std::uint8_t>(value.value());
                 break;
             case Value::TYPE_INT16:
                 str << std::get<std::int16_t>(value.value());
