@@ -63,7 +63,7 @@ namespace dagbase
 
                 break;
             case TYPE_VEC2:
-                _value = Vec2{.x = 0.0f,.y = 0.0f};
+                _value = Vec2{0.0f,0.0f};
 
                 break;
             case TYPE_FLOAT:
