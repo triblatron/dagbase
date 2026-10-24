@@ -378,6 +378,14 @@ namespace dagbase
                     readConfig<Value::Type>(*element, "valueType", &Value::parseType, &valueType);
                     switch (typeIndex)
                     {
+                        case Variant::TYPE_UINT:
+                        {
+                            std::uint32_t i{};
+                            readConfig(*element, "value", &i);
+                            *value = Variant(i);
+
+                            break;
+                        }
                         case Variant::TYPE_VALUE:
                         {
                             switch (valueType)

@@ -346,6 +346,92 @@ namespace dagbase
         }
     }
 
+    // Value Value::cast(Type toType)
+    // {
+    //     switch (type())
+    //     {
+    //         case TYPE_UINT8:
+    //             return cast<std::uint8_t,
+    //     }
+    // }
+
+    Value Value::widen() const
+    {
+        Type toType{TYPE_UNKNOWN};
+        if (isUnsignedInteger())
+        {
+            toType = TYPE_UINT64;
+        }
+        else if (isSignedInteger())
+        {
+            toType = TYPE_INT64;
+        }
+        else
+        {
+            // Not supported on types other than signed or unsigned integers.
+            return {};
+        }
+
+        switch (toType)
+        {
+            case TYPE_UINT64:
+            {
+                Value retval(TYPE_UINT64);
+                switch (type())
+                {
+                    case TYPE_UINT8:
+                        retval._value.emplace<std::uint64_t>(std::get<std::uint8_t>(_value));
+                        break;
+                    case TYPE_UINT16:
+                        retval._value.emplace<std::uint64_t>(std::get<std::uint16_t>(_value));
+                        break;
+                    case TYPE_UINT32:
+                        retval._value.emplace<std::uint64_t>(std::get<std::uint32_t>(_value));
+                        break;
+                    case TYPE_UINT64:
+                        retval._value.emplace<std::uint64_t>(std::get<std::uint64_t>(_value));
+                        break;
+                    default:
+                        // We should not get into here because we rejected non-integer types above.
+                        assert(false);
+
+                        break;
+                }
+                return retval;
+            }
+            case TYPE_INT64:
+            {
+                Value retval(TYPE_INT64);
+                switch (type())
+                {
+                    case TYPE_INT8:
+                        retval._value.emplace<std::int64_t>(std::get<std::int8_t>(_value));
+                        break;
+                    case TYPE_INT16:
+                        retval._value.emplace<std::int64_t>(std::get<std::int16_t>(_value));
+                        break;
+                    case TYPE_INT32:
+                        retval._value.emplace<std::int64_t>(std::get<std::int32_t>(_value));
+                        break;
+                    case TYPE_INT64:
+                        retval._value.emplace<std::int64_t>(std::get<std::int64_t>(_value));
+                        break;
+                    default:
+                        // We should not get into here because we rejected non-integer types above.
+                        assert(false);
+
+                        break;
+                }
+                return retval;
+            }
+            default:
+                assert(false);
+                break;
+        }
+
+        return *this;
+    }
+
     Value Value::fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t> &varint, Type type)
     {
         if (!varint.empty())

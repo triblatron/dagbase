@@ -822,6 +822,15 @@ struct VarintTypesCase
         dagbase::ConfigurationElement::readConfig<dagbase::Value::Type>(config, "valueType", &dagbase::Value::parseType, &valueType);
         value = dagbase::Value(valueType);
         dagbase::ConfigurationElement::readConfig(config, "value", true, &value);
+        if (value.isUnsignedInteger())
+        {
+            expected = dagbase::Value(dagbase::Value::TYPE_UINT64);
+        }
+        else if (value.isSignedInteger())
+        {
+            expected = dagbase::Value(dagbase::Value::TYPE_INT64);
+        }
+        dagbase::ConfigurationElement::readConfig(config, "expected", true, &expected);
     }
 
     void makeItSo()
@@ -829,7 +838,7 @@ struct VarintTypesCase
         std::array<std::byte, 10> pool{};
         std::pmr::monotonic_buffer_resource buf(pool.data(),pool.size());
         std::pmr::vector<std::uint8_t> encoded{&buf};
-
+        EXPECT_EQ(expected, value.widen());
         value.varintEncode(7, &encoded);
         dagbase::Value decoded = dagbase::Value::fromVarint(7, encoded, valueType);
         EXPECT_EQ(value, decoded);
@@ -837,6 +846,7 @@ struct VarintTypesCase
 
     dagbase::Value::Type valueType;
     dagbase::Value value;
+    dagbase::Value expected;
 };
 
 class Varint_testTypes : public ::testing::TestWithParam<std::tuple<const char*>>
@@ -845,17 +855,27 @@ public:
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+        dagbase::ConfigurationElement::readConfig(config, "selector", &_caseSelector);
     }
 
     void makeItSo()
     {
-        for (auto testCase : _cases)
+        if (_caseSelector.has_value() && _caseSelector.asUint32() < _cases.size())
         {
-            testCase.makeItSo();
+            _cases[_caseSelector.asUint32()].makeItSo();
+        }
+        else
+        {
+            for (auto testCase : _cases)
+            {
+                testCase.makeItSo();
+            }
         }
     }
+
     using CaseArray = std::vector<VarintTypesCase>;
     CaseArray _cases;
+    dagbase::Variant _caseSelector;
 };
 
 TEST_P(Varint_testTypes, testRoundTrip)
