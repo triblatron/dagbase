@@ -16,6 +16,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "util/VariableLengthInteger.h"
+
 namespace dagbase
 {
     Value::Value(Type type)
@@ -278,61 +280,62 @@ namespace dagbase
                 case TYPE_UINT8:
                 {
                     auto extracted = std::get<std::uint8_t>(_value);
-                    if (extracted < moreBitMask)
-                    {
-                        value->emplace_back(extracted);
-                    }
-
+                    VariableLengthInteger<std::uint8_t> integer{extracted};
+                    integer.encode(value, moreBit);
+                    break;
+                }
+                case TYPE_INT8:
+                {
+                    auto extracted = std::get<std::int8_t>(_value);
+                    VariableLengthInteger<std::int8_t> integer{extracted};
+                    integer.encode(value, moreBit);
                     break;
                 }
                 case TYPE_UINT16:
                 {
                     auto extracted = std::get<std::uint16_t>(_value);
-                    if (extracted < moreBitMask)
-                    {
-                        value->emplace_back(extracted);
-                    }
+                    VariableLengthInteger<std::uint16_t> integer{extracted};
+                    integer.encode(value, moreBit);
+
+                    break;
+                }
+                case TYPE_INT16:
+                {
+                    auto extracted = std::get<std::int16_t>(_value);
+                    VariableLengthInteger<std::int16_t> integer{extracted};
+                    integer.encode(value, moreBit);
 
                     break;
                 }
                 case TYPE_UINT32:
                 {
                     auto extracted = std::get<std::uint32_t>(_value);
-                    if (extracted < moreBitMask)
-                    {
-                        value->emplace_back(extracted);
-                    }
+                    VariableLengthInteger<std::uint32_t> integer{extracted};
+                    integer.encode(value, moreBit);
+
+                    break;
+                }
+                case TYPE_INT32:
+                {
+                    auto extracted = std::get<std::int32_t>(_value);
+                    VariableLengthInteger<std::int32_t> integer{extracted};
+                    integer.encode(value, moreBit);
 
                     break;
                 }
                 case TYPE_UINT64:
                 {
                     auto extracted = std::get<std::uint64_t>(_value);
+                    VariableLengthInteger<std::uint64_t> integer{extracted};
+                    integer.encode(value, moreBit);
 
-                    if (extracted < moreBitMask)
-                    {
-                        value->emplace_back(extracted);
-                    }
-                    else
-                    {
-                        // The first byte could be a subset of another field.
-                        std::uint8_t remainingMask = (moreBitMask - 1);
-                        value->emplace_back(moreBitMask);
-                        (*value)[0] |= (extracted & remainingMask);
-                        extracted >>= moreBit;
-                        // Assume we will be using the whole byte for further bytes.
-                        remainingMask = (1<<7) - 1;
-                        moreBitMask = 1<<7;
-                        std::size_t byteIndex=1;
-                        while (extracted>0)
-                        {
-                            value->emplace_back(extracted & remainingMask);
-                            extracted >>= 7;
-                            if (extracted>0)
-                                (*value)[byteIndex] |= moreBitMask;
-                            byteIndex++;
-                        }
-                    }
+                    break;
+                }
+                case TYPE_INT64:
+                {
+                    auto extracted = std::get<std::int64_t>(_value);
+                    VariableLengthInteger<std::int64_t> integer{extracted};
+                    integer.encode(value, moreBit);
 
                     break;
                 }
@@ -343,20 +346,80 @@ namespace dagbase
         }
     }
 
-    Value Value::fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t> &varint)
+    Value Value::fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t> &varint, Type type)
     {
         if (!varint.empty())
         {
-            std::uint8_t moreBitMask = 1<<moreBit;
-            auto decoded = static_cast<std::uint64_t>(varint[0] & ~moreBitMask);
-            std::uint8_t shift = moreBit;
-            for (std::size_t byteIndex=1; byteIndex<varint.size(); ++byteIndex)
+            Value value{type};
+            switch (type)
             {
-                decoded |= (varint[byteIndex] & 127u) << shift;
-                shift += 7;
+                case TYPE_UINT8:
+                {
+                    VariableLengthInteger<std::uint8_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::uint8_t>(i.value);
+                    return value;
+                }
+                case TYPE_INT8:
+                {
+                    VariableLengthInteger<std::int8_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::int8_t>(i.value);
+                    return value;
+                }
+                case TYPE_UINT16:
+                {
+                    VariableLengthInteger<std::uint16_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::uint16_t>(i.value);
+                    return value;
+                }
+                case TYPE_INT16:
+                {
+                    VariableLengthInteger<std::int16_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::int16_t>(i.value);
+                    return value;
+                }
+                case TYPE_UINT32:
+                {
+                    VariableLengthInteger<std::uint32_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::uint32_t>(i.value);
+                    return value;
+                }
+                case TYPE_INT32:
+                {
+                    VariableLengthInteger<std::int32_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::int32_t>(i.value);
+                    return value;
+                }
+                case TYPE_UINT64:
+                {
+                    VariableLengthInteger<std::uint64_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::uint64_t>(i.value);
+                    return value;
+                }
+                case TYPE_INT64:
+                {
+                    VariableLengthInteger<std::int64_t> i{};
+                    i.decode(varint, moreBit);
+                    value._value.emplace<std::int64_t>(i.value);
+                    return value;
+                }
             }
-
-            return Value(decoded);
+            // std::uint8_t moreBitMask = 1<<moreBit;
+            // auto decoded = static_cast<std::uint64_t>(varint[0] & ~moreBitMask);
+            // std::uint8_t shift = moreBit;
+            // for (std::size_t byteIndex=1; byteIndex<varint.size(); ++byteIndex)
+            // {
+            //     decoded |= (varint[byteIndex] & 127u) << shift;
+            //     shift += 7;
+            // }
+            //
+            // return Value(decoded);
         }
 
         return {};

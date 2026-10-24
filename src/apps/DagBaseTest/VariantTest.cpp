@@ -23,6 +23,7 @@
 
 #include "core/MetaClassRegistration.h"
 #include "core/Variant.h"
+#include "util/VariableLengthInteger.h"
 
 class Variant_testToString : public ::testing::TestWithParam<std::tuple<dagbase::Variant, std::string>>
 {
@@ -815,4 +816,61 @@ TEST_P(Value_testReadConfig, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(Value, Value_testReadConfig, ::testing::Values(
     std::make_tuple("data/tests/Value/readConfig.lua")
+    ));
+
+struct VarintTypesCase
+{
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig<dagbase::Value::Type>(config, "valueType", &dagbase::Value::parseType, &valueType);
+        value = dagbase::Value(valueType);
+        dagbase::ConfigurationElement::readConfig(config, "value", true, &value);
+    }
+
+    void makeItSo()
+    {
+        std::array<std::byte, 10> pool{};
+        std::pmr::monotonic_buffer_resource buf(pool.data(),pool.size());
+        std::pmr::vector<std::uint8_t> encoded{&buf};
+
+        value.varintEncode(7, &encoded);
+        dagbase::Value decoded = dagbase::Value::fromVarint(7, encoded, valueType);
+        EXPECT_EQ(value, decoded);
+    }
+
+    dagbase::Value::Type valueType;
+    dagbase::Value value;
+};
+
+class Varint_testTypes : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+    }
+
+    void makeItSo()
+    {
+        for (auto testCase : _cases)
+        {
+            testCase.makeItSo();
+        }
+    }
+    using CaseArray = std::vector<VarintTypesCase>;
+    CaseArray _cases;
+};
+
+TEST_P(Varint_testTypes, testRoundTrip)
+{
+    dagbase::Lua lua;
+    auto configFilename = std::get<0>(GetParam());
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(Varint, Varint_testTypes, ::testing::Values(
+    std::make_tuple("data/tests/Varint/Types.lua")
     ));

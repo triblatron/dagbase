@@ -22,9 +22,8 @@ namespace dagbase
     {
         T value;
 
-        void encode(std::pmr::vector<std::uint8_t>* buf) const
+        void encode(std::pmr::vector<std::uint8_t>* buf, std::uint8_t moreBit=7) const
         {
-            std::uint8_t moreBit = 7;
             T moreBitMask = T(1)<<moreBit;
             auto extracted = value;
 
@@ -56,15 +55,14 @@ namespace dagbase
 
         }
 
-        void decode(const std::pmr::vector<std::uint8_t>& buf)
+        void decode(const std::pmr::vector<std::uint8_t>& buf, std::uint8_t moreBit=7)
         {
-            std::uint8_t moreBit = 7;
             std::uint8_t moreBitMask = 1<<moreBit;
             auto decoded = static_cast<T>(buf[0] & ~moreBitMask);
             std::uint8_t shift = moreBit;
             for (std::size_t byteIndex=1; byteIndex<buf.size(); ++byteIndex)
             {
-                decoded |= (buf[byteIndex] & 127u) << shift;
+                decoded |= T(buf[byteIndex] & 127u) << T(shift);
                 shift += 7;
             }
             value = decoded;
@@ -76,17 +74,17 @@ namespace dagbase
     {
         T value;
 
-        void encode(std::pmr::vector<std::uint8_t>* buf) const
+        void encode(std::pmr::vector<std::uint8_t>* buf, std::uint8_t moreBit=7) const
         {
             VariableLengthInteger<std::make_unsigned_t<T>> unsignedValue;
             unsignedValue.value = zigzagEncode(value);
-            unsignedValue.encode(buf);
+            unsignedValue.encode(buf, moreBit);
         }
 
-        void decode(const std::pmr::vector<std::uint8_t>& buf)
+        void decode(const std::pmr::vector<std::uint8_t>& buf, std::uint8_t moreBit=7)
         {
             VariableLengthInteger<std::make_unsigned_t<T>> unsignedValue;
-            unsignedValue.decode(buf);
+            unsignedValue.decode(buf, moreBit);
             value = zigzagDecode(unsignedValue.value);
         }
     };

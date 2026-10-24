@@ -269,7 +269,7 @@ namespace dagbase
         //! \param[out] value : *vector<uint8> The output value, to be filled with bytes
         void varintEncode(std::uint8_t moreBit, std::pmr::vector<std::uint8_t>* varint);
 
-        static Value fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t>& value);
+        static Value fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t>& value, Type type=TYPE_UINT64);
 
         void edit(const char* label, ImGuiContext *context);
 
