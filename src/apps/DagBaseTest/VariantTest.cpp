@@ -14,16 +14,16 @@
 #include "io/StreamFactory.h"
 #include "core/TypeRegistry.h"
 #include "core/Node.h"
+#include "core/MetaClassRegistration.h"
+#include "core/Variant.h"
+#include "util/VariableLengthInteger.h"
 
 #include "test/TestUtils.h"
 
 #include <gtest/gtest.h>
 
 #include <memory_resource>
-
-#include "core/MetaClassRegistration.h"
-#include "core/Variant.h"
-#include "util/VariableLengthInteger.h"
+#include <array>
 
 class Variant_testToString : public ::testing::TestWithParam<std::tuple<dagbase::Variant, std::string>>
 {
@@ -491,9 +491,6 @@ struct VarintCase
         // Deserialise
         dagbase::InputStream *istr = dagbase::createInputStream(formatClass, *store, filename.c_str());
         ASSERT_NE(nullptr, istr);
-        dagbase::Value actualValue{};
-        std::byte streamBuf[8];
-        std::pmr::monotonic_buffer_resource streamPool{buf, sizeof(buf)};
         std::uint64_t actualFromStream{0};
         istr->readVariableLengthInteger(moreBit, &actualFromStream);
         EXPECT_EQ(std::uint64_t(asValue), actualFromStream) << "Case " << caseIndex << ":Expected deserialised to be equal to value";
