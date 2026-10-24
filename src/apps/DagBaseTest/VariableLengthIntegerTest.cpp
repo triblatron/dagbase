@@ -8,11 +8,11 @@
 #include "util/VariableLengthInteger.h"
 #include "core/LuaInterface.h"
 #include "core/ConfigurationElement.h"
+#include "util/CharConv.h"
 
 #include <memory_resource>
 #include <vector>
-
-#include "util/CharConv.h"
+#include <array>
 
 template<typename T>
 struct VariableLengthIntegerCase
