@@ -19,6 +19,8 @@ namespace dagbase
     public:
         virtual ~Script() = default;
 
+        virtual void configure(dagbase::ConfigurationElement& config) = 0;
+
         virtual void step(Node* self) = 0;
 
         virtual bool isFinished() const = 0;

@@ -56,6 +56,8 @@ namespace dagbase
     void Lua::pushObj(void *obj, swig_type_info *type, int own)
     {
         SWIG_NewPointerObj(_thread, obj, type, own);
+        // std::cerr << "Lua::pushObj():After pushing, Lua stack is:\n";
+        // printStack(_thread);
     }
 
     void Lua::convertObj(void **obj, swig_type_info *type, int flags, int index)

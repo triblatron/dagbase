@@ -126,6 +126,11 @@ namespace dagbase
         return false;
     }
 
+    void Function::push(Lua &lua)
+    {
+        lua_rawgeti(lua.get(), LUA_REGISTRYINDEX, _ref);
+    }
+
     void Function::operator()(int nargs, int nresults)
     {
         if (!_lua)

@@ -64,6 +64,8 @@ namespace dagbase
 
         bool equals(const Function& other) const;
 
+        void push(Lua& lua);
+
         OutputStream& write(OutputStream& str) const;
 
         static int writer(lua_State* L, const void* data, std::size_t size, void* userData);
