@@ -221,6 +221,8 @@ namespace dagbase
             // Restore balance to the stack:Pop the error object.
             lua_pop(_thread, top());
         }
+        // std::cerr << "resume():After lua_resume(), Lua stack is:\n";
+        // printStack(_thread);
         return reasonCode;
     }
 

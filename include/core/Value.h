@@ -269,6 +269,18 @@ namespace dagbase
         //! \param[out] value : *vector<uint8> The output value, to be filled with bytes
         void varintEncode(std::uint8_t moreBit, std::pmr::vector<std::uint8_t>* varint);
 
+        bool isUnsignedInteger() const
+        {
+            return type() == TYPE_UINT8 || type() == TYPE_UINT16 || type() == TYPE_UINT32 || type() == TYPE_UINT64;
+        }
+
+        bool isSignedInteger() const
+        {
+            return type() == TYPE_INT8 || type() == TYPE_INT16 || type() == TYPE_INT32 || type() == TYPE_INT64;
+        }
+
+        Value widen() const;
+
         static Value fromVarint(std::uint8_t moreBit, const std::pmr::vector<std::uint8_t>& value, Type type=TYPE_UINT64);
 
         void edit(const char* label, ImGuiContext *context);
