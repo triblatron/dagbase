@@ -416,6 +416,8 @@ namespace dagbase
             {
                 _value.emplace(lua_toboolean(lua.get(), index));
             }
+            else
+                std::cerr << "Variant::fromLua():Warning team:Unsupported type " << lua_typename(lua.get(), lua_type(lua.get(), index)) << '\n';
         }
     }
 
