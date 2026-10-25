@@ -501,6 +501,7 @@ namespace dagbase
                 break;
             case TYPE_OPAQUE:
                 assert(false);
+                break;
             case TYPE_VECTOR:
             {
                 const auto & vec = this->operator std::vector<Value>*();
@@ -636,6 +637,7 @@ namespace dagbase
             }
             case TYPE_OPAQUE:
                 assert(false);
+                break;
             case TYPE_VECTOR:
             {
                 std::uint32_t size{};
