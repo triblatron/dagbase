@@ -118,6 +118,18 @@ namespace dagbase
         SIM_ENSURE("Thread created", lua_isthread(lua, -1));
     }
 
+    Coroutine::Coroutine(const Coroutine &other, Lua& lua)
+    {
+        if (other._funcRef != LUA_REFNIL)
+        {
+            _thread = lua_newthread(lua.get());
+            if (_thread)
+            {
+                lua_rawgeti(_thread, LUA_REGISTRYINDEX, other._funcRef);
+            }
+        }
+    }
+
     Coroutine* Coroutine::fromExistingThread(lua_State* existingThread)
     {
         SIM_REQUIRE("existingThread is valid", existingThread != 0);
@@ -236,6 +248,13 @@ namespace dagbase
         clearError();
 
         return retval;
+    }
+
+    Coroutine * Coroutine::clone(Lua& lua) const
+    {
+        // 1. Create a new thread
+        return new Coroutine(*this, lua);
+        // 2. Copy the function, if it is present on the stack, meaning that we have not yet completed.
     }
 
     BalancedStackGuard::BalancedStackGuard(lua_State* lua)

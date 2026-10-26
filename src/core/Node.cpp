@@ -44,6 +44,10 @@ namespace dagbase
         }
         _pos[0] = other._pos[0];
         _pos[1] = other._pos[1];
+        if (other._script)
+        {
+            _script = other._script->clone();
+        }
     }
 
     Node::~Node()

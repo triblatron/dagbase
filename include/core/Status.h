@@ -36,6 +36,8 @@ namespace dagbase
             STATUS_INTERNAL_ERROR,
             //! An input has no upstream connection, typically during topological sort
             STATUS_NO_UPSTREAM_CONNECTION,
+            //! A function was found in a config which duplicates an existing function
+            STATUS_DUPLICATE_FUNCTION,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };

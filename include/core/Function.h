@@ -64,7 +64,12 @@ namespace dagbase
 
         bool equals(const Function& other) const;
 
-        void push(Lua& lua);
+        void push();
+
+        lua_State* lua()
+        {
+            return _lua;
+        }
 
         OutputStream& write(OutputStream& str) const;
 

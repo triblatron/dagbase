@@ -549,6 +549,9 @@ namespace dagbase
         //! @param[in] lua The parent of the new thread.
         //! @param[in] function The name of the function to be run in the new thread.
         Coroutine(lua_State* lua, const char* function);
+
+        Coroutine(const Coroutine& other, Lua& lua);
+
         ~Coroutine();
 
         void                        setMainFunction(const char* mainName);
@@ -556,6 +559,8 @@ namespace dagbase
         int                         resume(int numArgs = 0, int* numResults=nullptr);
 
         int                         reset();
+
+        Coroutine* clone(Lua& lua) const;
 
         //! Named constructor for an existing thread.
         static Coroutine*           fromExistingThread(lua_State* existingThread);

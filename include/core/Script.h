@@ -29,6 +29,8 @@ namespace dagbase
 
         virtual void setMainFunction(const std::string&) = 0;
 
+        virtual Script* clone() const = 0;
+
         virtual Variant find(std::string_view path) const = 0;
     };
 }

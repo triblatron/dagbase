@@ -24,6 +24,7 @@ namespace dagbase
         _ref = luaL_ref(_lua, LUA_REGISTRYINDEX);
         // Put the value back on the top of the stack.
         lua_rawgeti(lua, LUA_REGISTRYINDEX, _ref);
+        assert(lua_isfunction(_lua, -1));
     }
 
     OutputStream &Function::write(OutputStream &str) const
@@ -126,9 +127,13 @@ namespace dagbase
         return false;
     }
 
-    void Function::push(Lua &lua)
+    void Function::push()
     {
-        lua_rawgeti(lua.get(), LUA_REGISTRYINDEX, _ref);
+        if (_ref != LUA_NOREF && _ref != LUA_REFNIL)
+        {
+            lua_rawgeti(_lua, LUA_REGISTRYINDEX, _ref);
+            assert(lua_isfunction(_lua, -1));
+        }
     }
 
     void Function::operator()(int nargs, int nresults)
