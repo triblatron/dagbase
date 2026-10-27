@@ -114,20 +114,13 @@ namespace dagbase
         Lua()
     {
         SIM_REQUIRE("lua exists", lua != 0);
-        SIM_REQUIRE("function name exists", function != 0);
+        SIM_REQUIRE("function name exists", function != nullptr);
         SIM_ENSURE("Thread created", lua_isthread(lua, -1));
     }
 
     Coroutine::Coroutine(const Coroutine &other, Lua& lua)
     {
-        if (other._funcRef != LUA_REFNIL)
-        {
-            _thread = lua_newthread(lua.get());
-            if (_thread)
-            {
-                lua_rawgeti(_thread, LUA_REGISTRYINDEX, other._funcRef);
-            }
-        }
+        _thread = lua_newthread(lua.get());
     }
 
     Coroutine* Coroutine::fromExistingThread(lua_State* existingThread)
