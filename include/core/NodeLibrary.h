@@ -18,6 +18,7 @@ namespace dagbase
     class Lua;
 	class OutputStream;
     class Node;
+    class Script;
 
     //! |class NodeLibrary
     //! A set of Nodes that can be instantiated by class name
@@ -51,7 +52,7 @@ namespace dagbase
 	    virtual Node* instantiateEmptyNode(dagbase::KeyGenerator& keyGen, const std::string& className) = 0;
 
         //! Write the given node to the stream.
-        virtual dagbase::OutputStream& write(dagbase::OutputStream& str, Node* node, Lua &lua) = 0;
+        virtual dagbase::OutputStream& write(dagbase::OutputStream& str, Node* node, Lua& lua) = 0;
 
 		virtual dagbase::Class* instantiate(const char* className, dagbase::InputStream& str, dagbase::Lua& lua) = 0;
 
@@ -60,7 +61,9 @@ namespace dagbase
 
         virtual Port* instantiatePort(const std::string& className, const std::string& name, PortDirection::Direction, Value value) = 0;
 
-        virtual Port* instantiatePort(dagbase::InputStream& str, dagbase::Lua &lua) = 0;
+        virtual Port* instantiatePort(dagbase::InputStream& str, dagbase::Lua& lua) = 0;
+
+	    virtual Script* instantiateScript(dagbase::InputStream& str, dagbase::Lua& lua) = 0;
 
 	    virtual Variant find(std::string_view path) const = 0;
 

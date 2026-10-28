@@ -108,7 +108,7 @@ namespace dagbase
             "An unknown error"
         }
     };
-    
+
     Coroutine::Coroutine(lua_State* lua, const char* function)
         :
         Lua()

@@ -12,7 +12,10 @@
 
 namespace dagbase
 {
+    class InputStream;
+    class Lua;
     class Node;
+    class OutputStream;
 
     class DAGBASE_API Script
     {
@@ -32,5 +35,9 @@ namespace dagbase
         virtual Script* clone() const = 0;
 
         virtual Variant find(std::string_view path) const = 0;
+
+        virtual OutputStream& writeToStream(OutputStream& stream) const = 0;
+
+        virtual InputStream& readFromStream(InputStream& stream, Lua& lua) = 0;
     };
 }

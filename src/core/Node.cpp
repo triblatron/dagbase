@@ -452,6 +452,11 @@ namespace dagbase
         str.writeFloat(_pos[0]);
         str.writeField("y");
         str.writeFloat(_pos[1]);
+        str.writeField("script");
+        if (str.writeRef(_script))
+        {
+            _script->writeToStream(str);
+        }
         str.writeFooter();
 
         return str;
@@ -479,6 +484,14 @@ namespace dagbase
         str.readFloat(&_pos[0]);
         str.readField(&fieldName);
         str.readFloat(&_pos[1]);
+        str.readField(&fieldName);
+        Stream::Ref scriptRef{nullptr};
+        Stream::ObjId scriptId{~0U};
+        scriptRef = str.readRef(&scriptId);
+        if (scriptId != 0)
+        {
+            _script = nodeLib.instantiateScript(str, lua);
+        }
         str.readFooter();
         return str;
     }
