@@ -81,6 +81,14 @@ namespace dagbase
         }
     }
 
+    void Node::setScriptProtocol(ScriptProtocol *proto)
+    {
+        if (_script)
+        {
+            _script->setScriptProtocol(proto);
+        }
+    }
+
     std::size_t Node::numInputs() const
     {
         return std::count_if(_dynamicPorts.a.begin(), _dynamicPorts.a.end(), [](const Port* p) {

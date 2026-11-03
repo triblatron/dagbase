@@ -26,6 +26,7 @@ namespace dagbase
 	struct NodeDescriptor;
     class NodeLibrary;
     class Script;
+    class ScriptProtocol;
 
 	class DAGBASE_API Node : public dagbase::Class, public dagbase::Editable
 	{
@@ -228,7 +229,9 @@ namespace dagbase
 	        _script = script;
 	    }
 
-	    std::size_t numInputs() const;
+	    void setScriptProtocol(dagbase::ScriptProtocol* proto);
+
+        std::size_t numInputs() const;
 
 	    std::size_t numOutputs() const;
 

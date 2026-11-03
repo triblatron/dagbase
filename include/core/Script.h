@@ -16,6 +16,7 @@ namespace dagbase
     class Lua;
     class Node;
     class OutputStream;
+    class ScriptProtocol;
 
     class DAGBASE_API Script
     {
@@ -31,6 +32,8 @@ namespace dagbase
         virtual void reset() = 0;
 
         virtual void setMainFunction(const std::string&) = 0;
+
+        virtual void setScriptProtocol(ScriptProtocol* proto) = 0;
 
         virtual Script* clone() const = 0;
 

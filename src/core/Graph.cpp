@@ -1641,6 +1641,22 @@ namespace dagbase
 	    _service = service;
     }
 
+    void Graph::setScriptProtocol(ScriptProtocol *proto)
+    {
+	    depthFirstTraversal([proto](Graph* child) {
+            child->setScriptProtocolHelper(proto);
+            return true;
+        });
+    }
+
+    void Graph::setScriptProtocolHelper(ScriptProtocol *proto)
+    {
+	    eachNode([proto](Node* node) {
+	        node->setScriptProtocol(proto);
+	        return true;
+	    });
+    }
+
     Graph::Graph(const Graph & other, dagbase::CloningFacility& facility, dagbase::CopyOp copyOp, dagbase::KeyGenerator* keyGen)
         :
         _signalPaths(this)

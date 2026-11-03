@@ -70,6 +70,10 @@ namespace dagbase
 
 	    void setServiceHelper(void* service);
 
+	    void setScriptProtocol(ScriptProtocol* proto);
+
+	    void setScriptProtocolHelper(ScriptProtocol* proto);
+
 	    void* service()
 	    {
 	        return _service;
