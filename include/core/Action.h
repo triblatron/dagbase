@@ -3,6 +3,7 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Variant.h"
+#include "core/Status.h"
 
 #include <vector>
 
@@ -23,6 +24,6 @@ namespace dagbase
 
         virtual ~Action() = default;
 
-        virtual void makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) = 0;
+        virtual Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) = 0;
     };
 }

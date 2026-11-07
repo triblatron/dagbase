@@ -65,10 +65,10 @@ namespace dagbase
         }
 
         //! Use stored state to undo a call to makeItSo().
-        virtual void undo() = 0;
+        virtual dagbase::Status undo() = 0;
 
         //! Provides default implementation that just calls makeItSo().
-        virtual void redo() = 0;
+        virtual dagbase::Status redo(std::pmr::vector<dagbase::Variant>* results) = 0;
 
         static std::string flagsToString(Flags flags);
 
