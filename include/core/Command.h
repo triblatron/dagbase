@@ -6,8 +6,6 @@
 
 #include <cstdint>
 
-#include "core/MetaProperty.h"
-
 namespace dagbase
 {
     //! A base class for commands using the Command pattern

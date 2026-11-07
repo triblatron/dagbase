@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../include/config/Export.h"
+#include "config/DagBaseExport.h"
 
 #include "core/Variant.h"
 
@@ -8,7 +8,7 @@
 
 namespace dagbase
 {
-    class DAG_API Action
+    class DAGBASE_API Action
     {
     public:
         Action() = default;
