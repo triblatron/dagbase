@@ -64,6 +64,10 @@ namespace dagbase
         if (retval.has_value())
             return retval;
 
+        retval = findEndpoint(path, "warning", std::uint32_t{warning});
+        if (retval.has_value())
+            return retval;
+
         retval = findEndpoint(path, "resultType", std::uint32_t{resultType});
         if (retval.has_value())
             return retval;
@@ -141,6 +145,27 @@ namespace dagbase
         return STATUS_UNKNOWN;
     }
 
+    const char * Status::warningToString(Warning value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(WARNING_NONE)
+            ENUM_NAME(WARNING_CANNOT_UNDO)
+            ENUM_NAME(WARNING_UNKNOWN)
+        }
+
+        return "<error>";
+    }
+
+    Status::Warning Status::parseWarning(const char *str)
+    {
+        TEST_ENUM(WARNING_NONE, str);
+        TEST_ENUM(WARNING_CANNOT_UNDO, str)
+        TEST_ENUM(WARNING_UNKNOWN, str);
+
+        return WARNING_UNKNOWN;
+    }
+
     const char * Status::resultTypeToString(ResultType value)
     {
         switch (value)
@@ -165,7 +190,7 @@ namespace dagbase
 
     std::ostream & operator<<(std::ostream &ostr, const Status &value)
     {
-        ostr << "Status { status: " << Status::statusCodeToString(value.status) << ", resultType " << Status::resultTypeToString(value.resultType) << " }";
+        ostr << "Status { status: " << Status::statusCodeToString(value.status) << ", warning: " << Status::warningToString(value.warning) << ", resultType " << Status::resultTypeToString(value.resultType) << " }";
 
         return ostr;
     }

@@ -9,6 +9,13 @@
 
 class TestCommand : public dagbase::Command
 {
+public:
+    explicit TestCommand(bool canUndo=true)
+    {
+        if (!canUndo)
+            clearFlag(CMD_UNDOABLE_BIT);
+    }
+
     dagbase::Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) override
     {
         ++numCalls;
@@ -80,5 +87,21 @@ TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
     status = sut.makeItSo(1, {}, nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN_OPCODE, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numCalls);
+    delete cmd;
+}
+
+TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
+{
+    auto cmd = new TestCommand(false);
+    dagbase::CommandSystem sut;
+    auto status = sut.registerCommand(0, cmd);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    status = sut.makeItSo(0, {}, nullptr);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    ASSERT_EQ(dagbase::Status::WARNING_CANNOT_UNDO, status.warning) << "Got " << dagbase::Status::warningToString(status.warning);
+    EXPECT_EQ(1, cmd->numCalls);
+    status = sut.undo();
+    ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    EXPECT_EQ(0, cmd->numUndos);
     delete cmd;
 }

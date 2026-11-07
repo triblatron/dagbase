@@ -48,7 +48,16 @@ namespace dagbase
             STATUS_UNKNOWN
         };
 
+        enum Warning : std::uint32_t
+        {
+            WARNING_NONE,
+            //! A command cannot be undone, typically because it has side effects
+            WARNING_CANNOT_UNDO,
+            WARNING_UNKNOWN
+        };
         StatusCode status{STATUS_UNKNOWN};
+        Warning warning{WARNING_NONE};
+
         enum ResultType : std::uint32_t
         {
             RESULT_NONE,
@@ -62,7 +71,7 @@ namespace dagbase
 
         Status() = default;
 
-        explicit Status(StatusCode code)
+        explicit Status(StatusCode code, Warning warning = WARNING_NONE)
         :
         status(code)
         {
@@ -75,7 +84,7 @@ namespace dagbase
 
         bool operator==(const Status& other) const
         {
-            return status == other.status && resultType == other.resultType && result == other.result;
+            return status == other.status && warning == other.warning && resultType == other.resultType && result == other.result;
         }
         void configure(dagbase::ConfigurationElement& config);
 
@@ -86,6 +95,10 @@ namespace dagbase
         static const char* statusCodeToString(StatusCode value);
 
         static StatusCode parseStatusCode(const char* str);
+
+        static const char* warningToString(Warning value);
+
+        static Warning parseWarning(const char* str);
 
         static const char* resultTypeToString(ResultType value);
 

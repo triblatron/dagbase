@@ -21,7 +21,8 @@ namespace dagbase
         enum Flags : std::uint32_t
         {
             CMD_NONE,
-            CMD_COMPLETE = 1<<0
+            CMD_COMPLETE = 1<<0,
+            CMD_UNDOABLE_BIT = 1<<1,
         };
     public:
         ~Command() override = default;
@@ -35,9 +36,9 @@ namespace dagbase
 
         //! \return whether this Command supports undo, typically because it is free of side effects.
         //! \note If this returns false, the undo stack should be cleared prior to executing this Command.
-        virtual bool isUndoable() const
+        bool isUndoable() const
         {
-            return true;
+            return isFlagSet(CMD_UNDOABLE_BIT);
         }
 
         //! Set one or more flags
@@ -79,6 +80,6 @@ namespace dagbase
             setFlag(CMD_COMPLETE);
         }
     private:
-        Flags _flags{CMD_NONE};
+        Flags _flags{CMD_UNDOABLE_BIT};
     };
 }

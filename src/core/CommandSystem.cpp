@@ -34,7 +34,16 @@ namespace dagbase
         if (auto it=_commands.find(opcode); it!=_commands.end())
         {
             status = it->second->makeItSo(args, results);
-            _undoStack.push(it->second);
+            if (it->second->isUndoable())
+            {
+                _undoStack.push(it->second);
+            }
+            else
+            {
+                status.warning = Status::WARNING_CANNOT_UNDO;
+                CommandStack empty;
+                _undoStack.swap(empty);
+            }
         }
         else
         {

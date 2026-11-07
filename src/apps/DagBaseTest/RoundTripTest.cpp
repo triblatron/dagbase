@@ -193,6 +193,26 @@ INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
     std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
 ));
 
+class StatusWarning_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::Warning>>
+{
+
+};
+
+TEST_P(StatusWarning_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+
+    EXPECT_STREQ(str, dagbase::Status::warningToString(value));
+    EXPECT_EQ(value, dagbase::Status::parseWarning(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Status, StatusWarning_testRoundTrip, ::testing::Values(
+    std::make_tuple("WARNING_NONE", dagbase::Status::WARNING_NONE),
+    std::make_tuple("WARNING_CANNOT_UNDO", dagbase::Status::WARNING_CANNOT_UNDO),
+    std::make_tuple("WARNING_UNKNOWN", dagbase::Status::WARNING_UNKNOWN)
+    ));
+
 class ResultType_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status::ResultType>>
 {
 
