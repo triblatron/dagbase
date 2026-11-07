@@ -31,28 +31,36 @@ namespace dagbase
         //! Reset state ready for reusing this object.
         virtual void reset();
 
+        //! Support the Prototype pattern.
+        //! \note Typically delegates to the copy ctor.
         virtual Command * clone() const = 0;
 
+        //! \return whether this Command supports undo, typically because it is free of side effects.
+        //! \note If this returns false, the undo stack should be cleared prior to executing this Command.
         virtual bool isUndoable() const
         {
             return true;
         }
 
+        //! Set one or more flags
         void setFlag(Flags flag)
         {
             _flags = static_cast<Flags>(_flags | flag);
         }
 
+        //! Clear one or more flags.
         void clearFlag(Flags flag)
         {
             _flags = static_cast<Flags>(_flags & ~flag);
         }
 
+        //! \return whether one or more flags are set.
         bool isFlagSet(Flags flag) const
         {
             return (_flags & flag) != 0;
         }
 
+        //! \return whether this Command has finished processing
         bool isComplete() const
         {
             return isFlagSet(CMD_COMPLETE);
