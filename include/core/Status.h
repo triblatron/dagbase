@@ -38,6 +38,12 @@ namespace dagbase
             STATUS_NO_UPSTREAM_CONNECTION,
             //! A function was found in a config which duplicates an existing function
             STATUS_DUPLICATE_FUNCTION,
+            //! An existing opcode was used to try to register a command
+            STATUS_DUPLICATE_OPCODE,
+            //! A non-existent opcode was used when trying to execute a command
+            STATUS_UNKNOWN_OPCODE,
+            //! An undo or redo operation was attempted with an empty stack
+            STATUS_EMPTY_STACK,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };

@@ -33,6 +33,7 @@ ADD_EXECUTABLE( DagBaseTest ../../test/TestUtils.cpp ConfigurationElementTest.cp
         SlotMapTest.cpp
         SchemaTest.cpp
         VariableLengthIntegerTest.cpp
+        CommandTest.cpp
 )
 IF (UNIX)
 LIST(APPEND LUA_LIBRARIES dl)

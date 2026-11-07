@@ -7,6 +7,8 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Variant.h"
+#include "core/Status.h"
+#include "util/VectorMap.h"
 
 #include <cstdint>
 #include <vector>
@@ -19,18 +21,18 @@ namespace dagbase
     class DAGBASE_API CommandSystem
     {
     public:
-        using CommandArray = std::vector<Command*>;
+        using CommandMap = dagbase::VectorMap<std::uint32_t, Command*>;
         using CommandStack = std::stack<Command*>;
     public:
-        void registerCommand(dagbase::Command* command);
+        dagbase::Status registerCommand(std::uint32_t opcode, dagbase::Command* command);
 
-        void makeItSo(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results);
+        dagbase::Status makeItSo(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results);
 
-        void undo();
+        dagbase::Status undo();
 
-        void redo();
+        dagbase::Status redo(std::pmr::vector<dagbase::Variant>* results);
     private:
-        CommandArray _commands;
+        CommandMap _commands;
         CommandStack _undoStack;
         CommandStack _redoStack;
     };
