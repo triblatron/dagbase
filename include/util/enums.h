@@ -33,7 +33,13 @@
     {                                                                   \
         mask = static_cast<decltype(mask)>(mask | needle);              \
     }
-    
+
+#define TEST_BIT_CSTR(needle, haystack, mask)                           \
+    if (strstr(haystack, #needle)!=nullptr)                             \
+    {                                                                   \
+        mask = static_cast<decltype(mask)>(mask | needle);              \
+    }
+
 #define TEST_BITSET(needle, haystack, mask) \
     if (haystack.find(#needle "_BIT")!=std::string::npos)               \
     {                                                                   \

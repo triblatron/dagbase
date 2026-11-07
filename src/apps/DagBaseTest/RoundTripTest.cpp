@@ -10,13 +10,14 @@
 #include "core/Unit.h"
 #include "util/CharConv.h"
 #include "core/TypeRegistry.h"
+#include "core/Command.h"
+#include "core/Schema.h"
+#include "util/Zigzag.h"
 
 #include <gtest/gtest.h>
 
 #include <charconv>
 
-#include "core/Schema.h"
-#include "util/Zigzag.h"
 #if defined(_MSC_VER)
 #define _USE_MATH_DEFINES 1
 #include <math.h>
@@ -568,4 +569,22 @@ INSTANTIATE_TEST_SUITE_P(SchemaVersionFlags, SchemaVersionFlags_testRoundTrip, :
     std::make_tuple("VERSION_ALPHA", dagbase::VERSION_ALPHA),
     std::make_tuple("VERSION_BETA", dagbase::VERSION_BETA),
     std::make_tuple("VERSION_RC", dagbase::VERSION_RC)
+    ));
+
+class CommandFlags_testRoundTrip : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Command::Flags>>
+{
+
+};
+
+TEST_P(CommandFlags_testRoundTrip, testRoundTrip)
+{
+    auto str = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+    EXPECT_EQ(str, dagbase::Command::flagsToString(value));
+    EXPECT_EQ(value, dagbase::Command::parseFlags(str));
+}
+
+INSTANTIATE_TEST_SUITE_P(Command, CommandFlags_testRoundTrip, ::testing::Values(
+    std::make_tuple("CMD_NONE", dagbase::Command::CMD_NONE),
+    std::make_tuple("CMD_COMPLETE", dagbase::Command::CMD_COMPLETE)
     ));
