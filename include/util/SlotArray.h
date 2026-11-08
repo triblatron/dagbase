@@ -142,15 +142,16 @@ namespace dagbase
                 return &_data.back();
             }
             auto lastIndex = _data[_freeHead].id.index;
-            new (&_data[_size]) Item(ptr);
             if (_data[_freeHead].item->isSameType(*ptr))
             {
                 _data[_freeHead].item->reset();
+                ptr = _data[_freeHead].item;
             }
             else
             {
-                _data[_freeHead].item = ptr->clone();
+                new (&_data[_size]) Item(ptr->clone());
             }
+
             _data[_freeHead].id.gen = _nextGen;
             _data[_freeHead].id.index = _size;
             _freeHead = lastIndex;

@@ -38,7 +38,7 @@ namespace dagbase
         }
 
         //! Reset state ready for reusing this object.
-        virtual void reset();
+        virtual void reset() = 0;
 
         //! Support the Prototype pattern.
         //! \note Typically delegates to the copy ctor.

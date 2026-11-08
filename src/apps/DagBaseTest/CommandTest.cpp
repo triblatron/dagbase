@@ -43,6 +43,13 @@ public:
         return status;
     }
 
+    void reset() override
+    {
+        Command::reset();
+        numCalls = 0;
+        numUndos = 0;
+    }
+
     dagbase::Status step() override
     {
         dagbase::Status status{dagbase::Status::STATUS_OK};
@@ -146,5 +153,13 @@ TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
     auto actual = sut.command(ident);
     ASSERT_NE(nullptr, actual);
     EXPECT_TRUE(actual->isComplete());
+    sut.free(ident);
+    status = sut.makeItSo(0, {}, nullptr, &ident);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    auto actual2 = sut.command(ident);
+    ASSERT_EQ(actual, actual2);
+    EXPECT_FALSE(actual2->isComplete());
+    status = sut.step();
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     sut.free(ident);
 }
