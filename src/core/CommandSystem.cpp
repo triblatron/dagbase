@@ -9,6 +9,14 @@
 
 namespace dagbase
 {
+    CommandSystem::~CommandSystem()
+    {
+        for (auto p : _commands)
+        {
+            delete p.second;
+        }
+    }
+
     dagbase::Status CommandSystem::registerCommand(std::uint32_t opcode, dagbase::Command *command)
     {
         Status status{Status::STATUS_UNKNOWN};
@@ -27,27 +35,52 @@ namespace dagbase
     }
 
     dagbase::Status CommandSystem::makeItSo(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant> &args,
-        std::pmr::vector<dagbase::Variant> *results)
+        std::pmr::vector<dagbase::Variant> *results, CommandArray::Ident* ident)
     {
         Status status{Status::STATUS_UNKNOWN};
 
         if (auto it=_commands.find(opcode); it!=_commands.end())
         {
-            status = it->second->makeItSo(args, results);
-            if (it->second->isUndoable())
+            auto cmd = it->second;
+            if (cmd->isLongRunning())
             {
-                _undoStack.push(it->second);
+                auto item = _inFlightCommands.alloc(cmd);
+                cmd = item->item;
+
+                if (ident)
+                    *ident = _inFlightCommands.id(item);
             }
             else
             {
-                status.warning = Status::WARNING_CANNOT_UNDO;
-                CommandStack empty;
-                _undoStack.swap(empty);
+                status = cmd->makeItSo(args, results);
+                if (cmd->isUndoable())
+                {
+                    _undoStack.push(cmd);
+                }
+                else
+                {
+                    status.warning = Status::WARNING_CANNOT_UNDO;
+                    CommandStack empty;
+                    _undoStack.swap(empty);
+                }
             }
         }
         else
         {
             status.status = Status::STATUS_UNKNOWN_OPCODE;
+        }
+
+        return status;
+    }
+
+    dagbase::Status CommandSystem::step()
+    {
+        Status status{Status::STATUS_OK};
+
+        // Step long-running commands
+        for (auto item : _inFlightCommands)
+        {
+            status = item.item->step();
         }
 
         return status;

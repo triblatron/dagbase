@@ -10,17 +10,53 @@
 class TestCommand : public dagbase::Command
 {
 public:
-    explicit TestCommand(bool canUndo=true)
+    explicit TestCommand(bool canUndo=true, bool instant=true)
+        :
+    _instant(instant)
     {
         if (!canUndo)
             clearFlag(CMD_UNDOABLE_BIT);
+
+        if (!instant)
+            setFlag(CMD_LONG_RUNNING_BIT);
+    }
+
+    TestCommand(const TestCommand& other)
+        :
+    Command(other)
+    {
+        _instant = other._instant;
     }
 
     dagbase::Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) override
     {
+        dagbase::Status status;
+
         ++numCalls;
 
-        return dagbase::Status{dagbase::Status::STATUS_OK};
+        if (_instant || numCalls == 2)
+        {
+            status.status = dagbase::Status::STATUS_OK;
+            markComplete();
+        }
+
+        return status;
+    }
+
+    void reset() override
+    {
+        Command::reset();
+        numCalls = 0;
+        numUndos = 0;
+    }
+
+    dagbase::Status step() override
+    {
+        dagbase::Status status{dagbase::Status::STATUS_OK};
+
+        markComplete();
+
+        return status;
     }
 
     dagbase::Status undo() override
@@ -41,6 +77,7 @@ public:
 public:
     int numCalls{0};
     int numUndos{0};
+    bool _instant{true};
 };
 
 TEST(CommandSystem_testRegisterDuplicate, testExpectedResult)
@@ -51,7 +88,6 @@ TEST(CommandSystem_testRegisterDuplicate, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status);
     status = sut.registerCommand(0, cmd);
     ASSERT_EQ(dagbase::Status::STATUS_DUPLICATE_OPCODE, status.status);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
@@ -75,7 +111,6 @@ TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
     status = sut.redo(nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(2, cmd->numCalls);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
@@ -87,7 +122,6 @@ TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
     status = sut.makeItSo(1, {}, nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN_OPCODE, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numCalls);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
@@ -103,5 +137,29 @@ TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
     status = sut.undo();
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numUndos);
-    delete cmd;
+}
+
+TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
+{
+    auto cmd = new TestCommand(true, false);
+    dagbase::CommandSystem sut;
+    auto status = sut.registerCommand(0, cmd);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    dagbase::CommandSystem::CommandArray::Ident ident;
+    status = sut.makeItSo(0, {}, nullptr, &ident);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    status = sut.step();
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    auto actual = sut.command(ident);
+    ASSERT_NE(nullptr, actual);
+    EXPECT_TRUE(actual->isComplete());
+    sut.free(ident);
+    status = sut.makeItSo(0, {}, nullptr, &ident);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    auto actual2 = sut.command(ident);
+    ASSERT_EQ(actual, actual2);
+    EXPECT_FALSE(actual2->isComplete());
+    status = sut.step();
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    sut.free(ident);
 }

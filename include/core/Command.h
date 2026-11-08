@@ -26,13 +26,23 @@ namespace dagbase
             //! \note This can be false after a call to makeItSo() if the command is long-running
             CMD_COMPLETE = 1<<0,
             //! Can the command be undone, typically because it is free of side effects?
-            CMD_UNDOABLE_BIT = 1<<1
+            CMD_UNDOABLE_BIT = 1<<1,
+            CMD_LONG_RUNNING_BIT = 1<<2
         };
     public:
+        Command() = default;
+
+        Command(const Command& other);
+
         ~Command() override = default;
 
+        bool isSameType(const Command& other) const
+        {
+            return typeid(*this) == typeid(other);
+        }
+
         //! Reset state ready for reusing this object.
-        virtual void reset();
+        virtual void reset() = 0;
 
         //! Support the Prototype pattern.
         //! \note Typically delegates to the copy ctor.
@@ -67,6 +77,17 @@ namespace dagbase
         bool isComplete() const
         {
             return isFlagSet(CMD_COMPLETE);
+        }
+
+        bool isLongRunning() const
+        {
+            return isFlagSet(CMD_LONG_RUNNING_BIT);
+        }
+
+        virtual dagbase::Status step()
+        {
+            // Do nothing by default
+            return dagbase::Status{dagbase::Status::STATUS_OK};
         }
 
         //! Use stored state to undo a call to makeItSo().

@@ -6,8 +6,13 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Atom.h"
+#include "core/Variant.h"
+
 #include <cstdint>
 #include <string>
+#include <vector>
+#include <limits>
 
 namespace dagbase
 {
@@ -83,5 +88,39 @@ namespace dagbase
         {
             return magic == other.magic && version == other.version;
         }
+    };
+
+    //! 64bit FNV-1a hash
+    using SchemaIdentifier = std::uint64_t;
+
+    struct DAGBASE_API SchemaSemantics
+    {
+        SchemaIdentifier id{0};
+        Atom name;
+        Atom symbol;
+        Atom dimension;
+        Variant minValue;
+        Variant maxValue;
+        //! \note Encoded as a variable-length integer
+        std::uint32_t minLength{0};
+        //! \note Encoded as a variable-length integer
+        std::uint32_t maxLength{std::numeric_limits<std::uint32_t>::max()};
+        std::string validation;
+    };
+
+    struct DAGBASE_API SchemaType
+    {
+        SchemaIdentifier id{0};
+        Atom name;
+        SchemaIdentifier layout{0};
+        SchemaSemantics semantic;
+    };
+
+    struct DAGBASE_API Schema
+    {
+        //! Number of types in the Schema
+        //! \note This will be encoded as a variable-length integer in the stream.
+        std::uint32_t numTypes{0};
+        std::vector<SchemaType> types;
     };
 }

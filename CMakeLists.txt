@@ -116,6 +116,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/CommandSystem.h
         include/core/Action.h
         include/core/Command.h
+        include/util/SlotArray.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
