@@ -23,8 +23,13 @@ namespace dagbase
             CMD_NONE,
             CMD_COMPLETE = 1<<0,
             CMD_UNDOABLE_BIT = 1<<1,
+            CMD_LONG_RUNNING_BIT = 1<<2
         };
     public:
+        Command() = default;
+
+        Command(const Command& other);
+
         ~Command() override = default;
 
         //! Reset state ready for reusing this object.
@@ -63,6 +68,17 @@ namespace dagbase
         bool isComplete() const
         {
             return isFlagSet(CMD_COMPLETE);
+        }
+
+        bool isLongRunning() const
+        {
+            return isFlagSet(CMD_LONG_RUNNING_BIT);
+        }
+
+        virtual dagbase::Status step()
+        {
+            // Do nothing by default
+            return dagbase::Status{dagbase::Status::STATUS_OK};
         }
 
         //! Use stored state to undo a call to makeItSo().

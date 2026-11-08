@@ -609,5 +609,7 @@ TEST_P(CommandFlags_testRoundTrip, testRoundTrip)
 
 INSTANTIATE_TEST_SUITE_P(Command, CommandFlags_testRoundTrip, ::testing::Values(
     std::make_tuple("CMD_NONE", dagbase::Command::CMD_NONE),
-    std::make_tuple("CMD_COMPLETE", dagbase::Command::CMD_COMPLETE)
+    std::make_tuple("CMD_COMPLETE", dagbase::Command::CMD_COMPLETE),
+    std::make_tuple("CMD_UNDOABLE_BIT", dagbase::Command::CMD_UNDOABLE_BIT),
+    std::make_tuple("CMD_LONG_RUNNING_BIT", dagbase::Command::CMD_LONG_RUNNING_BIT)
     ));

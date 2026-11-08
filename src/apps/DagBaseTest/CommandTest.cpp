@@ -16,6 +16,16 @@ public:
     {
         if (!canUndo)
             clearFlag(CMD_UNDOABLE_BIT);
+
+        if (!instant)
+            setFlag(CMD_LONG_RUNNING_BIT);
+    }
+
+    TestCommand(const TestCommand& other)
+        :
+    Command(other)
+    {
+        _instant = other._instant;
     }
 
     dagbase::Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) override
@@ -29,6 +39,15 @@ public:
             status.status = dagbase::Status::STATUS_OK;
             markComplete();
         }
+
+        return status;
+    }
+
+    dagbase::Status step() override
+    {
+        dagbase::Status status{dagbase::Status::STATUS_OK};
+
+        markComplete();
 
         return status;
     }
@@ -62,7 +81,6 @@ TEST(CommandSystem_testRegisterDuplicate, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status);
     status = sut.registerCommand(0, cmd);
     ASSERT_EQ(dagbase::Status::STATUS_DUPLICATE_OPCODE, status.status);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
@@ -86,7 +104,6 @@ TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
     status = sut.redo(nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(2, cmd->numCalls);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
@@ -98,7 +115,6 @@ TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
     status = sut.makeItSo(1, {}, nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN_OPCODE, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numCalls);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
@@ -114,7 +130,6 @@ TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
     status = sut.undo();
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numUndos);
-    delete cmd;
 }
 
 TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
@@ -123,10 +138,12 @@ TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
     dagbase::CommandSystem sut;
     auto status = sut.registerCommand(0, cmd);
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.makeItSo(0, {}, nullptr);
+    dagbase::CommandSystem::CommandArray::Ident ident;
+    status = sut.makeItSo(0, {}, nullptr, &ident);
     ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    ASSERT_FALSE(cmd->isComplete());
-    status = sut.makeItSo(0, {}, nullptr);
+    status = sut.step();
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    ASSERT_TRUE(cmd->isComplete());
+    auto actual = sut.command(ident);
+    ASSERT_NE(nullptr, actual);
+    EXPECT_TRUE(actual->isComplete());
 }

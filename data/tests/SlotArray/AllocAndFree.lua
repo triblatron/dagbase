@@ -1,0 +1,33 @@
+root=
+{
+	items=
+	{
+		{
+			cmd="COMMAND_ALLOC",
+			id=
+			{
+				index=0,
+				gen=1,
+			},
+			element=1,
+			assertions =
+			{
+				{
+					path="size",
+					value=1,
+					typeIndex="TYPE_UINT",
+				},
+				{
+					path="nextGen",
+					value=1,
+					typeIndex="TYPE_UINT",
+				},
+				{
+					path="freeHead",
+					value=~0,
+					typeIndex="TYPE_UINT",
+				},
+			},
+		},
+	},
+}

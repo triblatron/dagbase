@@ -6,6 +6,11 @@
 
 namespace dagbase
 {
+    Command::Command(const Command &other)
+    {
+        _flags = other._flags;
+    }
+
     void Command::reset()
     {
         clearFlag(CMD_COMPLETE);
@@ -19,6 +24,8 @@ namespace dagbase
             return "CMD_NONE";
 
         BIT_NAME(flags, CMD_COMPLETE, retval)
+        BIT_NAME(flags, CMD_UNDOABLE_BIT, retval)
+        BIT_NAME(flags, CMD_LONG_RUNNING_BIT, retval)
 
         if (!retval.empty() && retval.back() == ' ')
             retval.pop_back();
@@ -31,6 +38,8 @@ namespace dagbase
         Flags retval{CMD_NONE};
 
         TEST_BIT_CSTR(CMD_COMPLETE, str, retval)
+        TEST_BIT_CSTR(CMD_UNDOABLE_BIT, str, retval)
+        TEST_BIT_CSTR(CMD_LONG_RUNNING_BIT, str, retval)
 
         return retval;
     }
