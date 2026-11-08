@@ -146,4 +146,5 @@ TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
     auto actual = sut.command(ident);
     ASSERT_NE(nullptr, actual);
     EXPECT_TRUE(actual->isComplete());
+    sut.free(ident);
 }

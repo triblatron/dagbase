@@ -95,13 +95,7 @@ namespace dagbase
         using Array = std::vector<Item>;
         SlotArray() = default;
 
-        ~SlotArray()
-        {
-            for (auto item : _data)
-            {
-                delete item.item;
-            }
-        }
+        ~SlotArray() = default;
 
         explicit SlotArray(std::size_t count)
         {
@@ -143,7 +137,6 @@ namespace dagbase
             }
             auto lastIndex = _data[_freeHead].id.index;
             new (&_data[_size]) Item(ptr);
-            _data[_size].item->reset();
             _data[_freeHead].id.gen = _nextGen;
             _data[_freeHead].id.index = _size;
             _freeHead = lastIndex;
@@ -154,6 +147,7 @@ namespace dagbase
         //! \note This is accomplished by incrementing the generation counter.
         void free(Item* item)
         {
+            delete item->item;
             if (_freeHead == Ident::INVALID_INDEX)
             {
                 _freeHead = item->id.index;

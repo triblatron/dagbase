@@ -81,10 +81,6 @@ namespace dagbase
         for (auto item : _inFlightCommands)
         {
             status = item.item->step();
-            if (item.item->isComplete())
-            {
-                _inFlightCommands.free(&item);
-            }
         }
 
         return status;

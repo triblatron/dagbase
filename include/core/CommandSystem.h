@@ -39,6 +39,11 @@ namespace dagbase
             return item;
         }
 
+        void free(const CommandArray::Ident& ident)
+        {
+            _inFlightCommands.free(&_inFlightCommands.get(ident));
+        }
+
         dagbase::Status undo();
 
         dagbase::Status redo(std::pmr::vector<dagbase::Variant>* results);
