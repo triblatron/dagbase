@@ -20,9 +20,13 @@ namespace dagbase
     public:
         enum Flags : std::uint32_t
         {
+            //! No flags are set
             CMD_NONE,
+            //! Has the command finished running?
+            //! \note This can be false after a call to makeItSo() if the command is long-running
             CMD_COMPLETE = 1<<0,
-            CMD_UNDOABLE_BIT = 1<<1,
+            //! Can the command be undone, typically because it is free of side effects?
+            CMD_UNDOABLE_BIT = 1<<1
         };
     public:
         ~Command() override = default;
