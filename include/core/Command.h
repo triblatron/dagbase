@@ -32,6 +32,11 @@ namespace dagbase
 
         ~Command() override = default;
 
+        bool isSameType(const Command& other) const
+        {
+            return typeid(*this) == typeid(other);
+        }
+
         //! Reset state ready for reusing this object.
         virtual void reset();
 

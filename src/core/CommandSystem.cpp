@@ -44,7 +44,7 @@ namespace dagbase
             auto cmd = it->second;
             if (cmd->isLongRunning())
             {
-                auto item = _inFlightCommands.alloc(cmd->clone());
+                auto item = _inFlightCommands.alloc(cmd);
                 cmd = item->item;
 
                 if (ident)

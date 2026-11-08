@@ -19,6 +19,16 @@ struct SlotArrayElement
         initial = i;
     }
 
+    bool isSameType(const SlotArrayElement& other) const
+    {
+        return true;
+    }
+
+    SlotArrayElement* clone()
+    {
+        return new SlotArrayElement(*this);
+    }
+
     void reset()
     {
         i = initial;
