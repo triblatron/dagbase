@@ -16,6 +16,11 @@
 
 namespace dagbase
 {
+    //! An array of pointers to re-usable polymorphic objects
+    //! \note T must implement:
+    //! isSameType() to determine whether an input is of the same concrete type as *this
+    //! clone() to support the Prototype pattern
+    //! and reset() to set internal state back to just constructed.
     template<typename T>
     class SlotArray
     {
