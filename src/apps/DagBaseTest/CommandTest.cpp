@@ -10,7 +10,9 @@
 class TestCommand : public dagbase::Command
 {
 public:
-    explicit TestCommand(bool canUndo=true)
+    explicit TestCommand(bool canUndo=true, bool instant=true)
+        :
+    _instant(instant)
     {
         if (!canUndo)
             clearFlag(CMD_UNDOABLE_BIT);
@@ -18,9 +20,17 @@ public:
 
     dagbase::Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) override
     {
+        dagbase::Status status;
+
         ++numCalls;
 
-        return dagbase::Status{dagbase::Status::STATUS_OK};
+        if (_instant || numCalls == 2)
+        {
+            status.status = dagbase::Status::STATUS_OK;
+            markComplete();
+        }
+
+        return status;
     }
 
     dagbase::Status undo() override
@@ -41,6 +51,7 @@ public:
 public:
     int numCalls{0};
     int numUndos{0};
+    bool _instant{true};
 };
 
 TEST(CommandSystem_testRegisterDuplicate, testExpectedResult)
@@ -104,4 +115,18 @@ TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     EXPECT_EQ(0, cmd->numUndos);
     delete cmd;
+}
+
+TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
+{
+    auto cmd = new TestCommand(true, false);
+    dagbase::CommandSystem sut;
+    auto status = sut.registerCommand(0, cmd);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    status = sut.makeItSo(0, {}, nullptr);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    ASSERT_FALSE(cmd->isComplete());
+    status = sut.makeItSo(0, {}, nullptr);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    ASSERT_TRUE(cmd->isComplete());
 }
