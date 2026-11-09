@@ -13,6 +13,7 @@
 #include <vector>
 #include <string_view>
 #include <type_traits>
+#include <iostream>
 
 namespace dagbase
 {
@@ -50,7 +51,7 @@ namespace dagbase
             friend
             std::ostream& operator<<(std::ostream& str, const Ident& value)
             {
-                str << "SlotMap.Ident { index: " << value.index << ", gen: " << value.gen << " }";
+                str << "SlotArray.Ident { index: " << value.index << ", gen: " << value.gen << " }";
 
                 return str;
             }
