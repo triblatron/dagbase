@@ -163,3 +163,27 @@ TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     sut.free(ident);
 }
+
+TEST(CommandSystem_testExecuteMultipleInFlight, testExpectedResult)
+{
+    auto cmd = new TestCommand(true, false);
+    dagbase::CommandSystem sut;
+    auto status = sut.registerCommand(0, cmd);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    dagbase::CommandSystem::CommandArray::Ident ident, ident2;
+    status = sut.makeItSo(0, {}, nullptr, &ident);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    status = sut.makeItSo(0, {}, nullptr, &ident2);
+    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    status = sut.step();
+    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
+    auto actual = sut.command(ident);
+    ASSERT_NE(nullptr, actual);
+    EXPECT_TRUE(actual->isComplete());
+    sut.free(ident);
+    auto actual2 = sut.command(ident2);
+    ASSERT_NE(nullptr, actual2);
+    EXPECT_TRUE(actual2->isComplete());
+    EXPECT_NE(actual,actual2);
+    sut.free(ident2);
+}
