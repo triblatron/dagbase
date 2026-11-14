@@ -15,7 +15,7 @@ namespace dagbase
     //! via a generic interface.  This does not have to be
     //! as efficient as for a Node, so setting arguments by
     //! name is desirable.
-    class DAGBASE_API Command : public Action
+    class Command : public Action
     {
     public:
         enum Flags : std::uint32_t
@@ -47,6 +47,11 @@ namespace dagbase
         //! Support the Prototype pattern.
         //! \note Typically delegates to the copy ctor.
         virtual Command * clone() const = 0;
+
+        virtual void configure(dagbase::ConfigurationElement& config)
+        {
+            // Do nothing by default.
+        }
 
         //! \return whether this Command supports undo, typically because it is free of side effects.
         //! \note If this returns false, the undo stack should be cleared prior to executing this Command.

@@ -28,31 +28,26 @@ namespace dagbase
     {
         ConfigurationElement::readConfig<StatusCode>(config, "statusCode", &parseStatusCode, &status);
         ConfigurationElement::readConfig<ResultType>(config, "resultType", &parseResultType, &resultType);
-        switch (resultType)
+        if (auto element = config.findElement("nodeID"); element)
         {
-            case RESULT_NONE:
-                break;
-            case RESULT_NODE_ID:
-            {
-                NodeID value;
-                ConfigurationElement::readConfig<NodeID>(config, "nodeID", &value);
-                result.emplace(value);
-                break;
-            }
-            case RESULT_PORT_ID:
-            {
-                PortID value;
-                ConfigurationElement::readConfig<PortID>(config, "portID", &value);
-                result.emplace(value);
-                break;
-            }
-            case RESULT_SIGNAL_PATH_ID:
-            {
-                SignalPathID value;
-                ConfigurationElement::readConfig<SignalPathID>(config, "signalPathID", &value);
-                result.emplace(value);
-                break;
-            }
+            NodeID value;
+            ConfigurationElement::readConfig<NodeID>(config, "nodeID", &value);
+            resultType = RESULT_NODE_ID;
+            result.emplace(value);
+        }
+        if (auto element = config.findElement("portID"); element)
+        {
+            PortID value;
+            ConfigurationElement::readConfig<PortID>(config, "portID", &value);
+            resultType = RESULT_PORT_ID;
+            result.emplace(value);
+        }
+        if (auto element = config.findElement("signalPathID"); element)
+        {
+            SignalPathID value;
+            ConfigurationElement::readConfig<SignalPathID>(config, "signalPathID", &value);
+            resultType = RESULT_SIGNAL_PATH_ID;
+            result.emplace(value);
         }
     }
 
