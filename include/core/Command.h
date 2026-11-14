@@ -15,7 +15,7 @@ namespace dagbase
     //! via a generic interface.  This does not have to be
     //! as efficient as for a Node, so setting arguments by
     //! name is desirable.
-    class Command : public Action
+    class DAGBASE_API Command : public Action
     {
     public:
         enum Flags : std::uint32_t
