@@ -122,4 +122,26 @@ namespace dagbase
 
         return status;
     }
+
+    dagbase::Status CommandSystem::log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant> &args)
+    {
+        if (_logStr && (*_logStr))
+        {
+            (*_logStr) << "op(";
+            (*_logStr) << opcode << ',';
+            for (std::size_t i = 0; i < args.size(); ++i)
+            {
+                if (args[i].index() == dagbase::Variant::TYPE_STRING)
+                    (*_logStr) << '\"';
+                (*_logStr) << args[i].toString();
+                if (args[i].index() == dagbase::Variant::TYPE_STRING)
+                    (*_logStr) << '\"';
+                if (i<args.size()-1)
+                    (*_logStr) << ',';
+            }
+            (*_logStr) << ")\n";
+            _logStr->flush();
+        }
+        return dagbase::Status{Status::STATUS_OK};
+    }
 }

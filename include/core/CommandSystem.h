@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <vector>
 #include <stack>
+#include <iosfwd>
 
 namespace dagbase
 {
@@ -47,10 +48,18 @@ namespace dagbase
         dagbase::Status undo();
 
         dagbase::Status redo(std::pmr::vector<dagbase::Variant>* results);
+
+        void setLog(std::ostream* logStr)
+        {
+            _logStr = logStr;
+        }
+
+        dagbase::Status log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args);
     private:
         CommandMap _commands;
         CommandStack _undoStack;
         CommandStack _redoStack;
         CommandArray _inFlightCommands;
+        std::ostream* _logStr{nullptr};
     };
 }

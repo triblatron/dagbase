@@ -187,3 +187,26 @@ TEST(CommandSystem_testExecuteMultipleInFlight, testExpectedResult)
     EXPECT_NE(actual,actual2);
     sut.free(ident2);
 }
+
+class CommandSystem_testLog : public ::testing::TestWithParam<std::tuple<std::uint32_t, std::pmr::vector<dagbase::Variant>, const char*>>
+{
+
+};
+
+TEST_P(CommandSystem_testLog, testExpectedResult)
+{
+    auto opcode = std::get<0>(GetParam());
+    auto args = std::get<1>(GetParam());
+    auto log = std::get<2>(GetParam());
+    dagbase::CommandSystem sut;
+    std::ostringstream oss;
+    sut.setLog(&oss);
+    auto actualStatus = sut.log(opcode, args);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status) << "Got " << dagbase::Status::statusCodeToString(actualStatus.status);
+    auto actualLog = oss.str();
+    EXPECT_EQ(log, actualLog);
+}
+
+INSTANTIATE_TEST_CASE_P(CommandSystem, CommandSystem_testLog, ::testing::Values(
+    std::make_tuple(std::uint32_t{0}, std::pmr::vector<dagbase::Variant>{dagbase::Variant("GroupTyped"), dagbase::Variant("group1")}, "op(0,\"GroupTyped\",\"group1\")\n")
+    ));
