@@ -144,4 +144,9 @@ namespace dagbase
         }
         return dagbase::Status{Status::STATUS_OK};
     }
+
+    dagbase::Status CommandSystem::playback(dagbase::Lua &lua)
+    {
+
+    }
 }

@@ -4,8 +4,13 @@
 
 #include "core/CommandSystem.h"
 #include "core/Command.h"
+#include "core/LuaInterface.h"
 
 #include <gtest/gtest.h>
+
+#include <fstream>
+
+#include "test/TestUtils.h"
 
 class TestCommand : public dagbase::Command
 {
@@ -59,6 +64,20 @@ public:
         return status;
     }
 
+    dagbase::Variant find(std::string_view path) const
+    {
+        dagbase::Variant result;
+
+        result = dagbase::findEndpoint(path, "numCalls", std::int64_t{numCalls});
+        if (result.has_value())
+            return result;
+
+        result = dagbase::findEndpoint(path, "numUndos", std::int64_t{numUndos});
+        if (result.has_value())
+            return result;
+
+        return {};
+    }
     dagbase::Status undo() override
     {
         ++numUndos;
@@ -209,4 +228,53 @@ TEST_P(CommandSystem_testLog, testExpectedResult)
 
 INSTANTIATE_TEST_CASE_P(CommandSystem, CommandSystem_testLog, ::testing::Values(
     std::make_tuple(std::uint32_t{0}, std::pmr::vector<dagbase::Variant>{dagbase::Variant("GroupTyped"), dagbase::Variant("group1")}, "op(0,\"GroupTyped\",\"group1\")\n")
+    ));
+
+class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
+{
+
+};
+
+static int operation(lua_State* L)
+{
+    if (lua_gettop(L)<1)
+    {
+        lua_pushfstring(L, "Expected 1 arguments, got %d", lua_gettop(L));
+        lua_error(L);
+        return -1;
+    }
+    std::uint32_t opcode = lua_tointeger(L,1);
+    lua_getglobal(L, "cmdsys");
+    auto cmdSys = static_cast<dagbase::CommandSystem*>(lua_touserdata(L, -1));
+    cmdSys->makeItSo(opcode, {}, nullptr);
+    return 0;
+}
+
+TEST_P(CommandSystem_testPlayback, testExpectedResult)
+{
+    auto logFilename = std::get<0>(GetParam());
+    auto path = std::get<1>(GetParam());
+    auto value = std::get<2>(GetParam());
+    auto tolerance = std::get<3>(GetParam());
+    auto op = std::get<4>(GetParam());
+    dagbase::CommandSystem sut;
+    auto cmd = new TestCommand(true, true);
+    sut.registerCommand(0, cmd);
+    std::pmr::vector<dagbase::Variant> results;
+    auto actualStatus = sut.makeItSo(0, {}, &results);
+    ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status);
+    dagbase::Lua lua;
+    lua_register(lua.get(), "op", &operation);
+//    dagbase::Function func(lua.get(), "operation");
+    lua_pushlightuserdata(lua.get(), &sut);
+    lua_setglobal(lua.get(), "cmdsys");
+    lua.execute(logFilename);
+    ASSERT_TRUE(lua.ok());
+    sut.playback(lua);
+    auto actual = cmd->find(path);
+    assertComparison(value, actual, tolerance, op, path);
+}
+
+INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlayback, ::testing::Values(
+    std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", "numCalls", std::int64_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));

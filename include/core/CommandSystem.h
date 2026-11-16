@@ -55,6 +55,8 @@ namespace dagbase
         }
 
         dagbase::Status log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args);
+
+        dagbase::Status playback(dagbase::Lua& lua);
     private:
         CommandMap _commands;
         CommandStack _undoStack;
