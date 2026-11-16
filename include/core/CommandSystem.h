@@ -10,6 +10,8 @@
 #include "core/Status.h"
 #include "util/VectorMap.h"
 #include "util/SlotArray.h"
+#include "core/LuaInterface.h"
+
 #include <cstdint>
 #include <vector>
 #include <stack>
@@ -26,6 +28,8 @@ namespace dagbase
         using CommandStack = std::stack<Command*>;
         using CommandArray = SlotArray<Command>;
     public:
+        CommandSystem();
+
         ~CommandSystem();
 
         dagbase::Status registerCommand(std::uint32_t opcode, dagbase::Command* command);
@@ -56,12 +60,13 @@ namespace dagbase
 
         dagbase::Status log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args);
 
-        dagbase::Status playback(dagbase::Lua& lua);
+        dagbase::Status playback(const char* filename);
     private:
         CommandMap _commands;
         CommandStack _undoStack;
         CommandStack _redoStack;
         CommandArray _inFlightCommands;
         std::ostream* _logStr{nullptr};
+        dagbase::Lua _lua;
     };
 }

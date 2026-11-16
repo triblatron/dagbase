@@ -235,20 +235,6 @@ class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<co
 
 };
 
-static int operation(lua_State* L)
-{
-    if (lua_gettop(L)<1)
-    {
-        lua_pushfstring(L, "Expected 1 arguments, got %d", lua_gettop(L));
-        lua_error(L);
-        return -1;
-    }
-    std::uint32_t opcode = lua_tointeger(L,1);
-    lua_getglobal(L, "cmdsys");
-    auto cmdSys = static_cast<dagbase::CommandSystem*>(lua_touserdata(L, -1));
-    cmdSys->makeItSo(opcode, {}, nullptr);
-    return 0;
-}
 
 TEST_P(CommandSystem_testPlayback, testExpectedResult)
 {
@@ -263,14 +249,8 @@ TEST_P(CommandSystem_testPlayback, testExpectedResult)
     std::pmr::vector<dagbase::Variant> results;
     auto actualStatus = sut.makeItSo(0, {}, &results);
     ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status);
-    dagbase::Lua lua;
-    lua_register(lua.get(), "op", &operation);
 //    dagbase::Function func(lua.get(), "operation");
-    lua_pushlightuserdata(lua.get(), &sut);
-    lua_setglobal(lua.get(), "cmdsys");
-    lua.execute(logFilename);
-    ASSERT_TRUE(lua.ok());
-    sut.playback(lua);
+    sut.playback(logFilename);
     auto actual = cmd->find(path);
     assertComparison(value, actual, tolerance, op, path);
 }

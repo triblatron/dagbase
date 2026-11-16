@@ -9,6 +9,37 @@
 
 namespace dagbase
 {
+    static int operation(lua_State* L)
+    {
+        if (lua_gettop(L)<1)
+        {
+            lua_pushfstring(L, "Expected 1 arguments, got %d", lua_gettop(L));
+            lua_error(L);
+            return -1;
+        }
+        std::uint32_t opcode = lua_tointeger(L,1);
+        dagbase::Lua lua(L,false);
+        std::pmr::vector<dagbase::Variant> args;
+        for (int i=2; i<=lua_gettop(L); ++i)
+        {
+            dagbase::Variant arg;
+            arg.fromLua(lua, i);
+            args.emplace_back(arg);
+        }
+        lua_getglobal(L, "cmdsys");
+        auto cmdSys = static_cast<dagbase::CommandSystem*>(lua_touserdata(L, -1));
+        cmdSys->makeItSo(opcode, args, nullptr);
+        return 0;
+    }
+
+    CommandSystem::CommandSystem()
+    {
+        lua_register(_lua.get(), "op", &operation);
+        lua_pushlightuserdata(_lua.get(), this);
+        lua_setglobal(_lua.get(), "cmdsys");
+
+    }
+
     CommandSystem::~CommandSystem()
     {
         for (auto p : _commands)
@@ -145,8 +176,10 @@ namespace dagbase
         return dagbase::Status{Status::STATUS_OK};
     }
 
-    dagbase::Status CommandSystem::playback(dagbase::Lua &lua)
+    dagbase::Status CommandSystem::playback(const char* logFilename)
     {
+        _lua.execute(logFilename);
 
+        return dagbase::Status{dagbase::Status::STATUS_OK};
     }
 }
