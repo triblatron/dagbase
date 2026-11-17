@@ -64,7 +64,7 @@ public:
         return status;
     }
 
-    dagbase::Variant find(std::string_view path) const
+    dagbase::Variant find(std::string_view path) const override
     {
         dagbase::Variant result;
 
@@ -78,6 +78,7 @@ public:
 
         return {};
     }
+
     dagbase::Status undo() override
     {
         ++numUndos;
@@ -117,19 +118,19 @@ TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     status = sut.makeItSo(0, {}, nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(1, cmd->numCalls);
+    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numCalls"));
     status = sut.undo();
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(1, cmd->numUndos);
+    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numUndos"));
     status = sut.undo();
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(1, cmd->numUndos);
+    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numUndos"));
     status = sut.redo(nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(2, cmd->numCalls);
+    EXPECT_EQ(dagbase::Variant(std::int64_t{2}), sut.find("numCalls"));
     status = sut.redo(nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(2, cmd->numCalls);
+    EXPECT_EQ(dagbase::Variant(std::int64_t{2}), sut.find("numCalls"));
 }
 
 TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
@@ -152,10 +153,10 @@ TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
     status = sut.makeItSo(0, {}, nullptr);
     ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
     ASSERT_EQ(dagbase::Status::WARNING_CANNOT_UNDO, status.warning) << "Got " << dagbase::Status::warningToString(status.warning);
-    EXPECT_EQ(1, cmd->numCalls);
+    EXPECT_EQ(dagbase::Variant(), sut.find("numCalls"));
     status = sut.undo();
     ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(0, cmd->numUndos);
+    EXPECT_EQ(dagbase::Variant(), sut.find("numUndos"));
 }
 
 TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
@@ -251,10 +252,10 @@ TEST_P(CommandSystem_testPlayback, testExpectedResult)
     ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status);
 //    dagbase::Function func(lua.get(), "operation");
     sut.playback(logFilename);
-    auto actual = cmd->find(path);
+    auto actual = sut.find(path);
     assertComparison(value, actual, tolerance, op, path);
 }
 
 INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlayback, ::testing::Values(
-    std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", "numCalls", std::int64_t{2}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", "numCalls", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));

@@ -83,7 +83,10 @@ namespace dagbase
             }
             else
             {
+                cmd = cmd->clone();
                 status = cmd->makeItSo(args, results);
+                CommandStack emptyRedo;
+                _redoStack.swap(emptyRedo);
                 if (cmd->isUndoable())
                 {
                     _undoStack.push(cmd);
@@ -145,6 +148,7 @@ namespace dagbase
             auto cmd = _redoStack.top();
             status = cmd->redo(results);
             _redoStack.pop();
+            _undoStack.push(cmd);
         }
         else
         {
@@ -181,5 +185,27 @@ namespace dagbase
         _lua.execute(logFilename);
 
         return dagbase::Status{dagbase::Status::STATUS_OK};
+    }
+
+    dagbase::Variant CommandSystem::find(std::string_view path) const
+    {
+        dagbase::Variant retval;
+
+        if (!_undoStack.empty())
+        {
+            retval = _undoStack.top()->find(path);
+            if (retval.has_value())
+                return retval;
+        }
+
+        if (!_redoStack.empty())
+        {
+            retval = _redoStack.top()->find(path);
+            if (retval.has_value())
+                return retval;
+        }
+
+
+        return {};
     }
 }

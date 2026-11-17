@@ -101,6 +101,11 @@ namespace dagbase
         //! Provides default implementation that just calls makeItSo().
         virtual dagbase::Status redo(std::pmr::vector<dagbase::Variant>* results) = 0;
 
+        virtual dagbase::Variant find(std::string_view path) const
+        {
+            return {};
+        }
+
         static std::string flagsToString(Flags flags);
 
         static Flags parseFlags(const char* str);
