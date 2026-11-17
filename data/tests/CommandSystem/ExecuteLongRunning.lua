@@ -41,6 +41,7 @@ root=
 				statusCode="STATUS_UNKNOWN",
 			},
 			identOp="RELOP_EQ",
+			numResets=1,
 			assertions=
 			{
 			}

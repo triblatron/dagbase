@@ -54,6 +54,7 @@ public:
         Command::reset();
         numCalls = 0;
         numUndos = 0;
+        ++numResets;
     }
 
     dagbase::Status step() override
@@ -74,6 +75,10 @@ public:
             return result;
 
         result = dagbase::findEndpoint(path, "numUndos", std::int64_t{numUndos});
+        if (result.has_value())
+            return result;
+
+        result = dagbase::findEndpoint(path, "numResets", std::int64_t{numResets});
         if (result.has_value())
             return result;
 
@@ -98,6 +103,7 @@ public:
 public:
     int numCalls{0};
     int numUndos{0};
+    int numResets{0};
     bool _instant{true};
 };
 
@@ -120,6 +126,7 @@ struct CommandSystemCase
         dagbase::ConfigurationElement::readConfig(config, "canUndo", &canUndo);
         dagbase::ConfigurationElement::readConfig(config, "instant", &instant);
         dagbase::ConfigurationElement::readConfig(config, "status", &status);
+        dagbase::ConfigurationElement::readConfig(config, "numResets", &numResets);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
         dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "identOp", &dagbase::ConfigurationElement::parseRelOp, &identOp);
     }
@@ -144,10 +151,10 @@ struct CommandSystemCase
                     switch (identOp)
                     {
                         case dagbase::ConfigurationElement::RELOP_EQ:
-                            EXPECT_EQ(*ident, actualIdent);
+                            EXPECT_EQ(ident->index, actualIdent.index);
                             break;
                         case dagbase::ConfigurationElement::RELOP_NE:
-                            EXPECT_NE(*ident, actualIdent);
+                            EXPECT_NE(ident->index, actualIdent.index);
                             break;
                         case dagbase::ConfigurationElement::RELOP_UNKNOWN:
                             // NOP
@@ -157,6 +164,13 @@ struct CommandSystemCase
                             break;
                     }
                     *ident = actualIdent;
+                    if (!instant)
+                    {
+                        auto actualCommand = sut.command(actualIdent);
+
+                        ASSERT_NE(nullptr, actualCommand);
+                        EXPECT_EQ(dagbase::Variant(std::int64_t{numResets}), actualCommand->find("numResets"));
+                    }
                 }
                 break;
             }
@@ -221,6 +235,7 @@ struct CommandSystemCase
     Command cmd{CMD_UNKNOWN};
     bool canUndo{true};
     bool instant{true};
+    int numResets{0};
     dagbase::ConfigurationElement::RelOp identOp{dagbase::ConfigurationElement::RELOP_UNKNOWN};
     using AssertionArray = std::vector<Assertion<dagbase::CommandSystem>>;
     AssertionArray assertions;
