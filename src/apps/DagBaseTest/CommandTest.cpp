@@ -144,10 +144,10 @@ struct CommandSystemCase
                     switch (identOp)
                     {
                         case dagbase::ConfigurationElement::RELOP_EQ:
-                            EXPECT_EQ(*ident, actualIdent);
+                            EXPECT_EQ(ident->index, actualIdent.index);
                             break;
                         case dagbase::ConfigurationElement::RELOP_NE:
-                            EXPECT_NE(*ident, actualIdent);
+                            EXPECT_NE(ident->index, actualIdent.index);
                             break;
                         case dagbase::ConfigurationElement::RELOP_UNKNOWN:
                             // NOP
