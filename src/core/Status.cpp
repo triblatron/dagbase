@@ -27,6 +27,7 @@ namespace dagbase
     void Status::configure(dagbase::ConfigurationElement &config)
     {
         ConfigurationElement::readConfig<StatusCode>(config, "statusCode", &parseStatusCode, &status);
+        ConfigurationElement::readConfig<Warning>(config, "warning", &parseWarning, &warning);
         ConfigurationElement::readConfig<ResultType>(config, "resultType", &parseResultType, &resultType);
         if (auto element = config.findElement("nodeID"); element)
         {

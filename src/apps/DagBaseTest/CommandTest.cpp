@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "test/TestUtils.h"
+#include "util/enums.h"
 
 class TestCommand : public dagbase::Command
 {
@@ -100,89 +101,171 @@ public:
     bool _instant{true};
 };
 
-TEST(CommandSystem_testRegisterDuplicate, testExpectedResult)
+struct CommandSystemCase
 {
-    auto cmd = new TestCommand();
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status);
-    status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_DUPLICATE_OPCODE, status.status);
+    enum Command : std::uint32_t
+    {
+        CMD_UNKNOWN,
+        CMD_REGISTER,
+        CMD_EXECUTE,
+        CMD_UNDO,
+        CMD_REDO,
+        CMD_STEP
+    };
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig<Command>(config, "cmd", &parseCommand, &cmd);
+        dagbase::ConfigurationElement::readConfig(config, "opcode", &opcode);
+        dagbase::ConfigurationElement::readConfig(config, "canUndo", &canUndo);
+        dagbase::ConfigurationElement::readConfig(config, "instant", &instant);
+        dagbase::ConfigurationElement::readConfig(config, "status", &status);
+        dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
+        dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "identOp", &dagbase::ConfigurationElement::parseRelOp, &identOp);
+    }
+
+    void makeItSo(dagbase::CommandSystem& sut, dagbase::CommandSystem::CommandArray::Ident* ident)
+    {
+        dagbase::Status actualStatus{dagbase::Status::STATUS_UNKNOWN};
+        switch (cmd)
+        {
+            case CMD_REGISTER:
+            {
+                auto command = new TestCommand(canUndo, instant);
+                actualStatus = sut.registerCommand(opcode, command);
+                break;
+            }
+            case CMD_EXECUTE:
+            {
+                dagbase::CommandSystem::CommandArray::Ident actualIdent;
+                actualStatus = sut.makeItSo(0, {}, nullptr, &actualIdent);
+                if (ident)
+                {
+                    switch (identOp)
+                    {
+                        case dagbase::ConfigurationElement::RELOP_EQ:
+                            EXPECT_EQ(*ident, actualIdent);
+                            break;
+                        case dagbase::ConfigurationElement::RELOP_NE:
+                            EXPECT_NE(*ident, actualIdent);
+                            break;
+                        case dagbase::ConfigurationElement::RELOP_UNKNOWN:
+                            // NOP
+                            break;
+                        default:
+                            FAIL() << "Unsupported identOp "  << dagbase::ConfigurationElement::relOpToString(identOp);
+                            break;
+                    }
+                    *ident = actualIdent;
+                }
+                break;
+            }
+            case CMD_UNDO:
+            {
+                actualStatus = sut.undo();
+                break;
+            }
+            case CMD_REDO:
+            {
+                actualStatus = sut.redo(nullptr);
+                break;
+            }
+            case CMD_STEP:
+            {
+                actualStatus = sut.step();
+                auto actual = sut.command(*ident);
+                ASSERT_NE(nullptr, actual);
+                EXPECT_TRUE(actual->isComplete());
+                sut.free(*ident);
+                break;
+            }
+            default:
+                FAIL() << "Unhandled command " << commandToString(cmd);
+                break;
+        }
+        EXPECT_EQ(status, actualStatus);
+        for (auto a : assertions)
+        {
+            a.makeItSo(sut, commandToString(cmd));
+        }
+    }
+
+    static const char* commandToString(Command cmd)
+    {
+        switch (cmd)
+        {
+            ENUM_NAME(CMD_UNKNOWN)
+            ENUM_NAME(CMD_REGISTER)
+            ENUM_NAME(CMD_EXECUTE)
+            ENUM_NAME(CMD_UNDO)
+            ENUM_NAME(CMD_REDO)
+            ENUM_NAME(CMD_STEP)
+        }
+
+        return "<error>";
+    }
+
+    static Command parseCommand(const char* str)
+    {
+        TEST_ENUM(CMD_REGISTER, str)
+        TEST_ENUM(CMD_EXECUTE, str)
+        TEST_ENUM(CMD_UNDO, str)
+        TEST_ENUM(CMD_REDO, str)
+        TEST_ENUM(CMD_STEP, str)
+
+        return CMD_UNKNOWN;
+    }
+
+    dagbase::Status status{dagbase::Status::STATUS_UNKNOWN};
+    std::uint32_t opcode{0};
+    Command cmd{CMD_UNKNOWN};
+    bool canUndo{true};
+    bool instant{true};
+    dagbase::ConfigurationElement::RelOp identOp{dagbase::ConfigurationElement::RELOP_UNKNOWN};
+    using AssertionArray = std::vector<Assertion<dagbase::CommandSystem>>;
+    AssertionArray assertions;
+};
+
+class CommandSystem_testScripted : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+    }
+
+    void makeItSo()
+    {
+        dagbase::CommandSystem::CommandArray::Ident ident;
+        for (auto testCase : _cases)
+        {
+            testCase.makeItSo(_sut, &ident);
+        }
+    }
+protected:
+    using CaseArray = std::vector<CommandSystemCase>;
+    CaseArray _cases;
+    dagbase::CommandSystem _sut;
+};
+
+TEST_P(CommandSystem_testScripted, testExpectedResult)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
 }
 
-TEST(CommandSystem_testExecuteSuccessful, testExpectedResult)
-{
-    auto cmd = new TestCommand();
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.makeItSo(0, {}, nullptr);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numCalls"));
-    status = sut.undo();
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numUndos"));
-    status = sut.undo();
-    ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(std::int64_t{1}), sut.find("numUndos"));
-    status = sut.redo(nullptr);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(std::int64_t{2}), sut.find("numCalls"));
-    status = sut.redo(nullptr);
-    ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(std::int64_t{2}), sut.find("numCalls"));
-}
-
-TEST(CommandSystem_testExecuteUnknownOpcode, testExpectedResult)
-{
-    auto cmd = new TestCommand();
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.makeItSo(1, {}, nullptr);
-    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN_OPCODE, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(0, cmd->numCalls);
-}
-
-TEST(CommandSystem_testExecuteWithSideEffects, testExpectedResult)
-{
-    auto cmd = new TestCommand(false);
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.makeItSo(0, {}, nullptr);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    ASSERT_EQ(dagbase::Status::WARNING_CANNOT_UNDO, status.warning) << "Got " << dagbase::Status::warningToString(status.warning);
-    EXPECT_EQ(dagbase::Variant(), sut.find("numCalls"));
-    status = sut.undo();
-    ASSERT_EQ(dagbase::Status::STATUS_EMPTY_STACK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    EXPECT_EQ(dagbase::Variant(), sut.find("numUndos"));
-}
-
-TEST(CommandSystem_testExecuteLongRunning, testExpectedResult)
-{
-    auto cmd = new TestCommand(true, false);
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    dagbase::CommandSystem::CommandArray::Ident ident;
-    status = sut.makeItSo(0, {}, nullptr, &ident);
-    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.step();
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    auto actual = sut.command(ident);
-    ASSERT_NE(nullptr, actual);
-    EXPECT_TRUE(actual->isComplete());
-    sut.free(ident);
-    status = sut.makeItSo(0, {}, nullptr, &ident);
-    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    auto actual2 = sut.command(ident);
-    ASSERT_EQ(actual, actual2);
-    EXPECT_FALSE(actual2->isComplete());
-    status = sut.step();
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    sut.free(ident);
-}
+INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testScripted, ::testing::Values(
+    std::make_tuple("data/tests/CommandSystem/Register.lua"),
+    std::make_tuple("data/tests/CommandSystem/RegisterDuplicateOpcode.lua"),
+    std::make_tuple("data/tests/CommandSystem/ExecuteSuccessful.lua"),
+    std::make_tuple("data/tests/CommandSystem/ExecuteWithSideEffects.lua"),
+    std::make_tuple("data/tests/CommandSystem/ExecuteLongRunning.lua"),
+    std::make_tuple("data/tests/CommandSystem/ExecuteMultipleInFlight.lua")
+    ));
 
 TEST(CommandSystem_testExecuteMultipleInFlight, testExpectedResult)
 {

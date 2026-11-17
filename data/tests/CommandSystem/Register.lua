@@ -1,0 +1,16 @@
+root=
+{
+	cases=
+	{
+		{
+			cmd="CMD_REGISTER",
+			opcode=0,
+			canUndo=true,
+			instant=true,
+			status=
+			{
+				statusCode="STATUS_OK",
+			}
+		},
+	},
+}

@@ -44,7 +44,12 @@ namespace dagbase
             //! Equality comparison, required to satisfy the compiler.
             bool operator==(const Ident& other) const
             {
-                return index == other.index && gen == other.gen;
+                return index == other.index;// && gen == other.gen;
+            }
+
+            bool operator!=(const Ident& other) const
+            {
+                return index != other.index;// || gen != other.gen;
             }
 
             //! Output operator, useful for pretty-printing in tests.
