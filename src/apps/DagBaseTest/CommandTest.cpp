@@ -5,13 +5,14 @@
 #include "core/CommandSystem.h"
 #include "core/Command.h"
 #include "core/LuaInterface.h"
+#include "test/TestUtils.h"
+#include "util/enums.h"
+#include "core/Arguments.h"
 
 #include <gtest/gtest.h>
 
 #include <fstream>
 
-#include "test/TestUtils.h"
-#include "util/enums.h"
 
 class TestCommand : public dagbase::Command
 {
@@ -356,4 +357,104 @@ TEST_P(CommandSystem_testPlayback, testExpectedResult)
 
 INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlayback, ::testing::Values(
     std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", "numCalls", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    ));
+
+struct ArgumentsCase
+{
+    enum Command : std::uint32_t
+    {
+        CMD_UNKNOWN,
+        CMD_APPEND,
+        CMD_GET
+    };
+
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfig<Command>(config, "cmd", &parseCommand, &cmd);
+        dagbase::ConfigurationElement::readConfig(config, "value", &value, true);
+        dagbase::ConfigurationElement::readConfig(config, "index", &index);
+    }
+
+    void makeItSo(dagbase::Arguments& sut)
+    {
+        switch (cmd)
+        {
+            case CMD_APPEND:
+            {
+                sut.append(std::get<dagbase::Value>(value.value().value()));
+
+                break;
+            }
+            case CMD_GET:
+            {
+                dagbase::Value actual;
+
+                sut.get(index, &actual);
+
+                EXPECT_EQ(dagbase::Variant(value), value);
+
+                break;
+            }
+            default:
+                FAIL() << "Unhandled command " << commandToString(cmd);
+        }
+    }
+
+    static const char* commandToString(Command value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(CMD_UNKNOWN)
+            ENUM_NAME(CMD_APPEND)
+            ENUM_NAME(CMD_GET)
+        }
+
+        return "<error>";
+    }
+
+    static Command parseCommand(const char* str)
+    {
+        TEST_ENUM(CMD_APPEND, str)
+        TEST_ENUM(CMD_GET, str)
+
+        return CMD_UNKNOWN;
+    }
+    Command cmd{CMD_UNKNOWN};
+    dagbase::Variant value;
+    std::uint32_t index{0};
+};
+
+class Arguments_testAppend : public ::testing::TestWithParam<std::tuple<const char*>>
+{
+public:
+    void configure(dagbase::ConfigurationElement& config)
+    {
+        dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+    }
+
+    void makeItSo()
+    {
+        for (auto testCase : _cases)
+        {
+            testCase.makeItSo(_sut);
+        }
+    }
+protected:
+    using CaseArray = std::vector<ArgumentsCase>;
+    CaseArray _cases;
+    dagbase::Arguments _sut;
+};
+
+TEST_P(Arguments_testAppend, testExpectedResult)
+{
+    auto configFilename = std::get<0>(GetParam());
+    dagbase::Lua lua;
+    auto config = dagbase::ConfigurationElement::fromFile(lua, configFilename);
+    ASSERT_NE(nullptr, config);
+    configure(*config);
+    makeItSo();
+}
+
+INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
+    std::make_tuple("data/tests/Arguments/Append.lua")
     ));

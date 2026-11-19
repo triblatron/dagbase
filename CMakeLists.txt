@@ -117,6 +117,7 @@ SET( ALL_PUBLIC_HEADERS
         include/core/Action.h
         include/core/Command.h
         include/util/SlotArray.h
+        include/core/Arguments.h
 )
 
 SET( DEP_ROOT CACHE PATH "Dependency root" )
@@ -199,6 +200,7 @@ SET( dagbase_SRC ${GENERATED_HEADERS} ${ALL_PUBLIC_HEADERS} src/core/LuaInterfac
         src/core/CommandSystem.cpp
         src/core/Action.cpp
         src/core/Command.cpp
+        src/core/Arguments.cpp
 )
 
 ADD_LIBRARY( dagbase SHARED ${dagbase_SRC}
