@@ -6,6 +6,8 @@
 
 #include "config/DagBaseExport.h"
 
+#include "core/Value.h"
+
 #include <cstdint>
 #include <cstddef>
 #include <variant>
@@ -13,8 +15,6 @@
 
 namespace dagbase
 {
-    class Value;
-
     class DAGBASE_API Arguments
     {
     public:
@@ -30,5 +30,15 @@ namespace dagbase
         IndexArray _indices;
         using Buffer = std::vector<std::byte>;
         Buffer _buffer;
+
+        template<typename T>
+        void insert(const Value& value, void*& ptr, std::size_t& available)
+        {
+            std::align(alignof(T), sizeof(T), ptr, available);
+            new (ptr) T(std::get<T>(value.value()));
+            Index entry;
+            entry.ptr = static_cast<T*>(ptr);
+            _indices.emplace_back(entry);
+        }
     };
 }

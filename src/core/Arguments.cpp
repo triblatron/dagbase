@@ -15,6 +15,7 @@ namespace dagbase
         switch (value.type())
         {
             case Value::TYPE_UINT8:
+                size = sizeof(std::uint8_t) + alignof(std::uint8_t);
                 break;
             case Value::TYPE_INT8:
                 break;
@@ -39,6 +40,7 @@ namespace dagbase
         switch (value.type())
         {
             case Value::TYPE_UINT8:
+                insert<std::uint8_t>(value, ptr, available);
                 break;
             case Value::TYPE_INT8:
                 break;
@@ -53,11 +55,7 @@ namespace dagbase
             case Value::TYPE_UINT64:
                 break;
             case Value::TYPE_INT64:
-                std::align(alignof(std::int64_t), sizeof(std::int64_t), ptr, available);
-                new (ptr) std::int64_t(std::get<int64_t>(value.value()));
-                Index entry;
-                entry.ptr = static_cast<std::int64_t*>(ptr);
-                _indices.emplace_back(entry);
+                insert<std::int64_t>(value, ptr, available);
 
                 break;
         }

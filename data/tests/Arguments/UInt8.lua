@@ -1,0 +1,44 @@
+root=
+{
+	cases=
+	{
+		{
+			cmd="CMD_APPEND",
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_UINT8",
+				value=1,
+			}
+		},
+		{
+			cmd="CMD_GET",
+			index=0,
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_UINT8",
+				value=1,
+			}
+		},
+		{
+			cmd="CMD_APPEND",
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_UINT8",
+				value=255,
+			}
+		},
+		{
+			cmd="CMD_GET",
+			index=1,
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_UINT8",
+				value=255,
+			}
+		},
+	},
+}

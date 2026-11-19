@@ -456,5 +456,6 @@ TEST_P(Arguments_testAppend, testExpectedResult)
 }
 
 INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
+    std::make_tuple("data/tests/Arguments/UInt8.lua"),
     std::make_tuple("data/tests/Arguments/Int64.lua")
     ));
