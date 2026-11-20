@@ -48,7 +48,7 @@ namespace dagbase
         template<typename T>
         void* alignPtr(void*& ptr, std::size_t& available)
         {
-            available = _nextIndex + sizeof(T) + alignof(T) - _buffer.size();
+            available = sizeof(T) + alignof(T);
 
             return std::align(alignof(T), sizeof(T), ptr, available);
         }

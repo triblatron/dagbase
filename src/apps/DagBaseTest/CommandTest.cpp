@@ -392,7 +392,7 @@ struct ArgumentsCase
 
                 sut.get(index, &actual);
 
-                EXPECT_EQ(dagbase::Variant(value), value);
+                EXPECT_EQ(dagbase::Variant(actual), value);
 
                 break;
             }
@@ -463,5 +463,6 @@ TEST_P(Arguments_testAppend, testExpectedResult)
 INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
     std::make_tuple("data/tests/Arguments/UInt8.lua"),
     std::make_tuple("data/tests/Arguments/Int64.lua"),
-    std::make_tuple("data/tests/Arguments/Mixture.lua")
+    std::make_tuple("data/tests/Arguments/Mixture.lua"),
+    std::make_tuple("data/tests/Arguments/MixturePreallocated.lua")
     ));

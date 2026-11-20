@@ -55,7 +55,7 @@ root=
 		},
 		{
 			cmd="CMD_GET",
-			index=1,
+			index=2,
 			value=
 			{
 				typeIndex="TYPE_VALUE",
