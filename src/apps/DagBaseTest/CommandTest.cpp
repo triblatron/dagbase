@@ -373,6 +373,7 @@ struct ArgumentsCase
         dagbase::ConfigurationElement::readConfig<Command>(config, "cmd", &parseCommand, &cmd);
         dagbase::ConfigurationElement::readConfig(config, "value", &value, true);
         dagbase::ConfigurationElement::readConfig(config, "index", &index);
+        dagbase::ConfigurationElement::readConfig(config, "bufferSize", &bufferSize);
     }
 
     void makeItSo(dagbase::Arguments& sut)
@@ -382,7 +383,7 @@ struct ArgumentsCase
             case CMD_APPEND:
             {
                 sut.append(std::get<dagbase::Value>(value.value().value()));
-
+                EXPECT_EQ(bufferSize, sut.bufferSize());
                 break;
             }
             case CMD_GET:
@@ -422,6 +423,7 @@ struct ArgumentsCase
     Command cmd{CMD_UNKNOWN};
     dagbase::Variant value;
     std::uint32_t index{0};
+    std::uint32_t bufferSize{0};
 };
 
 class Arguments_testAppend : public ::testing::TestWithParam<std::tuple<const char*>>
@@ -460,5 +462,6 @@ TEST_P(Arguments_testAppend, testExpectedResult)
 
 INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
     std::make_tuple("data/tests/Arguments/UInt8.lua"),
-    std::make_tuple("data/tests/Arguments/Int64.lua")
+    std::make_tuple("data/tests/Arguments/Int64.lua"),
+    std::make_tuple("data/tests/Arguments/Mixture.lua")
     ));

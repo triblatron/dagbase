@@ -23,6 +23,16 @@ namespace dagbase
         void append(const Value& value);
 
         void get(std::uint32_t index, Value* value);
+
+        std::size_t size() const
+        {
+            return _indices.size();
+        }
+
+        std::size_t bufferSize() const
+        {
+            return _buffer.size();
+        }
     private:
         struct Index
         {
@@ -36,12 +46,19 @@ namespace dagbase
         Buffer _buffer;
         std::size_t _nextIndex{0};
         template<typename T>
-        void insert(const Value& value, void*& ptr, std::size_t& available)
+        void* alignPtr(void*& ptr, std::size_t& available)
         {
-            std::align(alignof(T), sizeof(T), ptr, available);
+            available = _nextIndex + sizeof(T) + alignof(T) - _buffer.size();
+
+            return std::align(alignof(T), sizeof(T), ptr, available);
+        }
+        template<typename T>
+        void insert(const Value& value, void* ptr, std::size_t& available)
+        {
             new (ptr) T(std::get<T>(value.value()));
             Index entry{};
             entry.index = static_cast<std::byte*>(ptr) - _buffer.data();
+            entry.type = value.type();
             _indices.emplace_back(entry);
         }
     };

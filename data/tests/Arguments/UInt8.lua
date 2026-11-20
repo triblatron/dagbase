@@ -10,7 +10,8 @@ root=
 				typeIndex="TYPE_VALUE",
 				valueType="TYPE_UINT8",
 				value=1,
-			}
+			},
+			bufferSize=1,
 		},
 		{
 			cmd="CMD_APPEND",
@@ -19,7 +20,8 @@ root=
 				typeIndex="TYPE_VALUE",
 				valueType="TYPE_UINT8",
 				value=255,
-			}
+			},
+			bufferSize=2,
 		},
 		{
 			cmd="CMD_GET",
