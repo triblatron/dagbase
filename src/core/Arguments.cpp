@@ -9,6 +9,11 @@
 
 namespace dagbase
 {
+    Arguments::Arguments(std::size_t n)
+    {
+        _buffer.resize(n);
+    }
+
     void Arguments::append(const Value &value)
     {
         std::size_t size=0;
@@ -33,41 +38,20 @@ namespace dagbase
                 size = sizeof(std::int64_t) + alignof(std::int64_t);
                 break;
         }
-        std::size_t oldSize = _buffer.size();
-        _buffer.resize(_buffer.size() + size);
-        void* ptr = _buffer.data() + oldSize;
-        std::size_t available = _buffer.size() - oldSize;
-        switch (value.type())
+        auto oldSize = _buffer.size();
+        if (_nextIndex + size > oldSize)
         {
-            case Value::TYPE_UINT8:
-                insert<std::uint8_t>(value, ptr, available);
-                break;
-            case Value::TYPE_INT8:
-                break;
-            case Value::TYPE_UINT16:
-                break;
-            case Value::TYPE_INT16:
-                break;
-            case Value::TYPE_UINT32:
-                break;
-            case Value::TYPE_INT32:
-                break;
-            case Value::TYPE_UINT64:
-                break;
-            case Value::TYPE_INT64:
-                insert<std::int64_t>(value, ptr, available);
-
-                break;
+            _buffer.resize(_nextIndex+size);
         }
-    }
-
-    void Arguments::get(std::uint32_t index, Value *value)
-    {
-        if (value && index < _indices.size())
+        void* ptr = _buffer.data() + _nextIndex;
+        _nextIndex += size;
+        if (_nextIndex<_buffer.size())
         {
-            switch (_indices[index].ptr.index())
+            std::size_t available = _nextIndex - size;
+            switch (value.type())
             {
                 case Value::TYPE_UINT8:
+                    insert<std::uint8_t>(value, ptr, available);
                     break;
                 case Value::TYPE_INT8:
                     break;
@@ -82,7 +66,36 @@ namespace dagbase
                 case Value::TYPE_UINT64:
                     break;
                 case Value::TYPE_INT64:
-                    *value = *std::get<std::int64_t*>(_indices[index].ptr);
+                    insert<std::int64_t>(value, ptr, available);
+
+                    break;
+            }
+        }
+    }
+
+    void Arguments::get(std::uint32_t index, Value *value)
+    {
+        if (value && index < _indices.size())
+        {
+            switch (_indices[index].type)
+            {
+                case Value::TYPE_UINT8:
+                    *value = *std::launder(reinterpret_cast<std::uint8_t*>(_buffer.data() + _indices[index].index));
+                    break;
+                case Value::TYPE_INT8:
+                    break;
+                case Value::TYPE_UINT16:
+                    break;
+                case Value::TYPE_INT16:
+                    break;
+                case Value::TYPE_UINT32:
+                    break;
+                case Value::TYPE_INT32:
+                    break;
+                case Value::TYPE_UINT64:
+                    break;
+                case Value::TYPE_INT64:
+                    *value = *std::launder(reinterpret_cast<std::int64_t*>(_buffer.data() + _indices[index].index));
 
                     break;
             }

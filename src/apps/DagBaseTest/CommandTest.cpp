@@ -430,19 +430,22 @@ public:
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
+        std::uint32_t size{0};
+        dagbase::ConfigurationElement::readConfig(config, "size", &size);
+        _sut = new dagbase::Arguments(size);
     }
 
     void makeItSo()
     {
         for (auto testCase : _cases)
         {
-            testCase.makeItSo(_sut);
+            testCase.makeItSo(*_sut);
         }
     }
 protected:
     using CaseArray = std::vector<ArgumentsCase>;
     CaseArray _cases;
-    dagbase::Arguments _sut;
+    dagbase::Arguments* _sut;
 };
 
 TEST_P(Arguments_testAppend, testExpectedResult)
