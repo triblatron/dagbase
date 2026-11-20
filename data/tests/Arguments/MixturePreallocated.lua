@@ -18,8 +18,8 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_INT64",
-				value=255,
+				valueType="TYPE_DOUBLE",
+				value=123.456,
 			},
 			bufferSize=16,
 		},
@@ -28,8 +28,8 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_INT32",
-				value=1<<31-1,
+				valueType="TYPE_FLOAT",
+				value=123.456,
 			},
 			bufferSize=20,
 		},
@@ -49,8 +49,8 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_INT64",
-				value=255,
+				valueType="TYPE_DOUBLE",
+				value=123.456,
 			}
 		},
 		{
@@ -59,8 +59,8 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_INT32",
-				value=1<<31-1,
+				valueType="TYPE_FLOAT",
+				value=123.456,
 			}
 		},
 	},
