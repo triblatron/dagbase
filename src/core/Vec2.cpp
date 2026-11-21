@@ -7,6 +7,7 @@
 #include "core/Vec2.h"
 #include "io/OutputStream.h"
 #include "io/InputStream.h"
+#include "core/ConfigurationElement.h"
 
 #include <sstream>
 
