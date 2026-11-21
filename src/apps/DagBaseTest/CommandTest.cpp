@@ -8,8 +8,6 @@
 #include "test/TestUtils.h"
 #include "util/enums.h"
 #include "core/Arguments.h"
-#include "core/TypeRegistry.h"
-#include "core/Types.h"
 
 #include <gtest/gtest.h>
 
@@ -201,7 +199,7 @@ struct CommandSystemCase
                 break;
         }
         EXPECT_EQ(status, actualStatus);
-        for (auto a : assertions)
+        for (const auto& a : assertions)
         {
             a.makeItSo(sut, commandToString(cmd));
         }
@@ -376,15 +374,18 @@ struct ArgumentsCase
         dagbase::ConfigurationElement::readConfig(config, "value", &value, true);
         dagbase::ConfigurationElement::readConfig(config, "index", &index);
         dagbase::ConfigurationElement::readConfig(config, "bufferSize", &bufferSize);
+        dagbase::ConfigurationElement::readConfig(config, "status", &status);
     }
 
     void makeItSo(dagbase::Arguments& sut)
     {
+        dagbase::Status actualStatus;
+
         switch (cmd)
         {
             case CMD_APPEND:
             {
-                sut.append(std::get<dagbase::Value>(value.value().value()));
+                actualStatus = sut.append(std::get<dagbase::Value>(value.value().value()));
                 EXPECT_EQ(bufferSize, sut.bufferSize());
                 break;
             }
@@ -392,7 +393,7 @@ struct ArgumentsCase
             {
                 dagbase::Value actual;
 
-                sut.get(index, &actual);
+                actualStatus = sut.get(index, &actual);
 
                 EXPECT_EQ(dagbase::Variant(actual), value);
 
@@ -401,6 +402,8 @@ struct ArgumentsCase
             default:
                 FAIL() << "Unhandled command " << commandToString(cmd);
         }
+
+        EXPECT_EQ(status, actualStatus);
     }
 
     static const char* commandToString(Command value)
@@ -426,19 +429,12 @@ struct ArgumentsCase
     dagbase::Variant value;
     std::uint32_t index{0};
     std::uint32_t bufferSize{0};
+    dagbase::Status status{dagbase::Status::STATUS_OK};
 };
 
 class Arguments_testAppend : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
-    void SetUp()
-    {
-    }
-
-    void TearDown()
-    {
-    }
-
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);
@@ -447,7 +443,7 @@ public:
         _sut = new dagbase::Arguments(size);
     }
 
-    void makeItSo()
+    void makeItSo() const
     {
         for (auto testCase : _cases)
         {
@@ -457,7 +453,7 @@ public:
 protected:
     using CaseArray = std::vector<ArgumentsCase>;
     CaseArray _cases;
-    dagbase::Arguments* _sut;
+    dagbase::Arguments* _sut{nullptr};
 };
 
 TEST_P(Arguments_testAppend, testExpectedResult)
