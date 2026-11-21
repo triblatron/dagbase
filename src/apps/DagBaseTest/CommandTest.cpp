@@ -364,11 +364,10 @@ struct ArgumentsCase
             }
             case CMD_GET:
             {
-                dagbase::Value actual;
+                actual = std::make_shared<dagbase::Value>();//new dagbase::Value();
+                actualStatus = sut.get(index, actual.get());
 
-                actualStatus = sut.get(index, &actual);
-
-                EXPECT_EQ(dagbase::Variant(actual), value);
+                EXPECT_EQ(value, dagbase::Variant(*actual));
 
                 break;
             }
@@ -403,6 +402,7 @@ struct ArgumentsCase
     std::uint32_t index{0};
     std::uint32_t bufferSize{0};
     dagbase::Status status{dagbase::Status::STATUS_OK};
+    std::shared_ptr<dagbase::Value> actual;
 };
 
 class Arguments_testAppend : public ::testing::TestWithParam<std::tuple<const char*>>
@@ -416,9 +416,9 @@ public:
         _sut = new dagbase::Arguments(size);
     }
 
-    void makeItSo() const
+    void makeItSo()
     {
-        for (auto testCase : _cases)
+        for (auto& testCase : _cases)
         {
             testCase.makeItSo(*_sut);
         }
@@ -444,7 +444,8 @@ INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
     std::make_tuple("data/tests/Arguments/Int64.lua"),
     std::make_tuple("data/tests/Arguments/Mixture.lua"),
     std::make_tuple("data/tests/Arguments/MixturePreallocated.lua"),
-    std::make_tuple("data/tests/Arguments/Compound.lua")
+    std::make_tuple("data/tests/Arguments/Compound.lua"),
+    std::make_tuple("data/tests/Arguments/String.lua")
     ));
 
 TEST(Arguments, testGetEmptyArguments)

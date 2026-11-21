@@ -86,6 +86,23 @@ namespace dagbase
             _indices.emplace_back(Index{offset, value.type()});
             _nextIndex = end;
         }
+        template<typename T, typename Ptr>
+        void appendTemplatePtr(const Value& value)
+        {
+            // Round offset to next multiple of alignment
+            // This works because alignof() always gives a power of two.
+            // The -1 in the first part ensures we round up rather than down.
+            // The -1 in the mask gives the low order bits and the ~ flips them
+            const std::size_t offset = (_nextIndex + alignof(T) - 1) & ~(alignof(T) - 1);
+            const std::size_t end = offset + sizeof(T);
+            if (end > _buffer.size())
+                _buffer.resize(end);
+
+            new (_buffer.data() + offset) T(std::get<Ptr>(value.value()).get());
+
+            _indices.emplace_back(Index{offset, value.type()});
+            _nextIndex = end;
+        }
 
         //! Helper to load a value from the buffer at offset bytes
         //! \note Fixes the mismatched overload error for std::string* arguments.

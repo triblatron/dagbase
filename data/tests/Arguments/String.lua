@@ -1,0 +1,27 @@
+root=
+{
+	size=0,
+	cases=
+	{
+		{
+			cmd="CMD_APPEND",
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_STRING",
+				value="test",
+			},
+			bufferSize=8,
+		},
+		{
+			cmd="CMD_GET",
+			index=0,
+			value=
+			{
+				typeIndex="TYPE_VALUE",
+				valueType="TYPE_STRING",
+				value="test",
+			}
+		},
+	},
+}

@@ -99,9 +99,9 @@ namespace dagbase
 
     Value::Value(const Value &other)
     {
-        if (other.type() == TYPE_STRING && other.operator std::string*())
+        if (other.type() == TYPE_STRING && other.operator std::shared_ptr<std::string>())
         {
-            _value = new std::string(*other.operator std::string*());
+            _value = other.operator std::shared_ptr<std::string>();
         }
         else if (other.type() == TYPE_VECTOR && other.operator std::vector<Value>*())
         {
@@ -121,12 +121,7 @@ namespace dagbase
 
     Value::~Value()
     {
-        if (type() == TYPE_STRING)
-        {
-            delete this->operator std::string*();
-            *this = (std::string*)nullptr;
-        }
-        else if (type() == TYPE_VECTOR)
+        if (type() == TYPE_VECTOR)
         {
             delete this->operator std::vector<Value>*();
             *this = (std::vector<Value>*)nullptr;
@@ -190,20 +185,12 @@ namespace dagbase
     {
         if (this != &value)
         {
-            if (type() == TYPE_STRING)
-            {
-                delete this->operator std::string*();
-            }
-            else if (type() == TYPE_VECTOR)
+            if (type() == TYPE_VECTOR)
             {
                 delete this->operator std::vector<Value>*();
             }
             _value = value._value;
-            if (type() == TYPE_STRING)
-            {
-                _value = new std::string(*this->operator std::string*());
-            }
-            else if (type() == TYPE_VECTOR)
+            if (type() == TYPE_VECTOR)
             {
                 _value = new std::vector<Value>(*this->operator std::vector<Value>*());
             }
@@ -520,7 +507,7 @@ namespace dagbase
                 break;
             case TYPE_STRING:
             {
-                Editable::editType(label, std::get<TYPE_STRING>(_value));
+                Editable::editType(label, std::get<TYPE_STRING>(_value).get());
                 break;
             }
             case TYPE_DOUBLE:
@@ -577,7 +564,7 @@ namespace dagbase
                 str.writeDouble(this->operator double());
                 break;
             case TYPE_STRING:
-                str.writeString(*static_cast<std::string*>(*this), false);
+                str.writeString(*static_cast<std::shared_ptr<std::string>>(*this), false);
                 break;
             case TYPE_BOOL:
                 str.writeBool(this->operator bool());
@@ -702,8 +689,8 @@ namespace dagbase
             }
             case TYPE_STRING:
             {
-                std::string* valueFromStream = new std::string();
-                str.readString(valueFromStream, false);
+                std::shared_ptr<std::string> valueFromStream = std::make_shared<std::string>();
+                str.readString(valueFromStream.get(), false);
                 *this = valueFromStream;
                 break;
             }

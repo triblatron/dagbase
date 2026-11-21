@@ -19,10 +19,6 @@ namespace dagbase
     Status Arguments::append(const Value &value)
     {
         Status status{Status::STATUS_OK};
-        std::size_t size=0;
-        auto oldSize = _buffer.size();
-        void* ptr = _buffer.data() + _nextIndex;
-        std::size_t available = 0;//_nextIndex + size - oldSize;
 
         switch (value.type())
         {
@@ -60,7 +56,7 @@ namespace dagbase
                 appendTemplate<bool>(value);
                 break;
             case Value::TYPE_STRING:
-                appendTemplate<std::string*>(value);
+                appendTemplatePtr<std::string*, std::shared_ptr<std::string>>(value);
                 break;
             case Value::TYPE_VEC2:
                 appendTemplate<Vec2>(value);
@@ -127,7 +123,7 @@ namespace dagbase
                     *value = load<bool>(offset);
                     break;
                 case Value::TYPE_STRING:
-                    *value = load<std::string*>(_indices[index].index);
+                    *value = std::make_shared<std::string>(*load<std::string*>(_indices[index].index));
                     break;
                 case Value::TYPE_VEC2:
                     *value = load<Vec2>(_indices[index].index);

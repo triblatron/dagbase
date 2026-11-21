@@ -290,7 +290,7 @@ INSTANTIATE_TEST_SUITE_P(Value, Value_testSerialise, ::testing::Values(
     std::make_tuple(dagbase::Value(std::int64_t{1})),
     std::make_tuple(dagbase::Value(1.5f)),
     std::make_tuple(dagbase::Value(1.5)),
-    std::make_tuple(dagbase::Value(new std::string("test"))),
+    std::make_tuple(dagbase::Value(std::make_shared<std::string>("test"))),
     std::make_tuple(dagbase::Value(false)),
     std::make_tuple(dagbase::Value(true)),
     std::make_tuple(dagbase::Value(dagbase::Vec2())),
@@ -891,3 +891,12 @@ TEST_P(Varint_testTypes, testRoundTrip)
 INSTANTIATE_TEST_SUITE_P(Varint, Varint_testTypes, ::testing::Values(
     std::make_tuple("data/tests/Varint/Types.lua")
     ));
+
+TEST(Value, testStringAssignment)
+{
+    dagbase::Value sut;
+    dagbase::Value other;
+    other = std::make_shared<std::string>("test");
+    sut = other;
+    EXPECT_EQ("test",*sut.operator std::shared_ptr<std::string>());
+}

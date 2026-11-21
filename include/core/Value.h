@@ -11,6 +11,7 @@
 #include <vector>
 #include <utility>
 #include <iosfwd>
+#include <memory>
 
 struct ImGuiContext;
 
@@ -28,7 +29,7 @@ namespace dagbase
     {
     public:
         //! Typedef to improve readability when referencing the type of the variant.
-        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::string*, bool, Vec2, void*, std::vector<Value >*, EnumValue, Port*> ValueType;
+        typedef std::variant<std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, float, double, std::shared_ptr<std::string>, bool, Vec2, void*, std::vector<Value >*, EnumValue, Port*> ValueType;
         //static_assert(std::is_standard_layout_v<std::variant<int, float>>);
         //static_assert(std::is_standard_layout_v<Vec2>);
         //static_assert(std::is_standard_layout_v<EnumValue>);
@@ -118,7 +119,7 @@ namespace dagbase
             std::is_convertible_v<T, std::int32_t> ||
             std::is_convertible_v<T, std::uint64_t> ||
             std::is_convertible_v<T, std::int64_t> ||
-            std::is_convertible_v<T, std::string*> ||
+            std::is_convertible_v<T, std::shared_ptr<std::string>> ||
             std::is_convertible_v<T, bool> ||
             std::is_convertible_v<T, float> ||
             std::is_convertible_v<T, double> ||
@@ -240,8 +241,8 @@ namespace dagbase
         {
             if (type() == TYPE_STRING && other.type() == TYPE_STRING)
             {
-                auto op1 = this->operator std::string*();
-                auto op2 = other.operator std::string*();
+                auto op1 = this->operator std::shared_ptr<std::string>();
+                auto op2 = other.operator std::shared_ptr<std::string>();
 
                 return op1 && op2 && *op1 == *op2;
             }

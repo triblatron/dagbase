@@ -274,7 +274,7 @@ namespace dagbase
         }
         else if (portClass == "TypedPort<string>")
         {
-            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(new std::string(portTable.stringForNameOrDefault("value", ""))));
+            readTypedPort(rootKeyGen, portTable, node, existingPort, Value(std::make_shared<std::string>(portTable.stringForNameOrDefault("value", ""))));
         }
         else if (portClass == "TypedPort<bool>")
         {

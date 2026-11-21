@@ -420,6 +420,13 @@ namespace dagbase
                                     *value = Variant(Value(vec));
                                     break;
                                 }
+                                case Value::TYPE_STRING:
+                                {
+                                    std::shared_ptr<std::string> strValue = std::make_shared<std::string>();
+                                    readConfig(*element, "value", strValue.get());
+                                    *value = Variant(Value(strValue));
+                                    break;
+                                }
                                 default:
                                 {
                                     Value v(valueType);
