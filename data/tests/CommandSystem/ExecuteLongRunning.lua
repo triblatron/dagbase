@@ -21,6 +21,10 @@ root=
 			},
 			assertions=
 			{
+				{
+					path="numResets",
+					value=0,
+				},
 			}
 		},
 		{
@@ -41,9 +45,12 @@ root=
 				statusCode="STATUS_UNKNOWN",
 			},
 			identOp="RELOP_EQ",
-			numResets=1,
 			assertions=
 			{
+				{
+					path="numResets",
+					value=1,
+				},
 			}
 		},
 		{

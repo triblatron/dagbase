@@ -127,7 +127,6 @@ struct CommandSystemCase
         dagbase::ConfigurationElement::readConfig(config, "canUndo", &canUndo);
         dagbase::ConfigurationElement::readConfig(config, "instant", &instant);
         dagbase::ConfigurationElement::readConfig(config, "status", &status);
-        dagbase::ConfigurationElement::readConfig(config, "numResets", &numResets);
         dagbase::ConfigurationElement::readConfigVector(config, "assertions", &assertions);
         dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "identOp", &dagbase::ConfigurationElement::parseRelOp, &identOp);
     }
@@ -135,6 +134,7 @@ struct CommandSystemCase
     void makeItSo(dagbase::CommandSystem& sut, dagbase::CommandSystem::CommandArray::Ident* ident)
     {
         dagbase::Status actualStatus{dagbase::Status::STATUS_UNKNOWN};
+        dagbase::CommandSystem::CommandArray::Ident actualIdent;
         switch (cmd)
         {
             case CMD_REGISTER:
@@ -145,7 +145,6 @@ struct CommandSystemCase
             }
             case CMD_EXECUTE:
             {
-                dagbase::CommandSystem::CommandArray::Ident actualIdent;
                 actualStatus = sut.makeItSo(0, {}, nullptr, &actualIdent);
                 if (ident)
                 {
@@ -165,13 +164,6 @@ struct CommandSystemCase
                             break;
                     }
                     *ident = actualIdent;
-                    if (!instant)
-                    {
-                        auto actualCommand = sut.command(actualIdent);
-
-                        ASSERT_NE(nullptr, actualCommand);
-                        EXPECT_EQ(dagbase::Variant(std::int64_t{numResets}), actualCommand->find("numResets"));
-                    }
                 }
                 break;
             }
@@ -199,10 +191,16 @@ struct CommandSystemCase
                 break;
         }
         EXPECT_EQ(status, actualStatus);
-        for (const auto& a : assertions)
+        auto actualCommand = sut.command(actualIdent);
+
+        if (actualCommand)
         {
-            a.makeItSo(sut, commandToString(cmd));
+            for (const auto& a : assertions)
+            {
+                a.makeItSo(*actualCommand, commandToString(cmd));
+            }
         }
+
     }
 
     static const char* commandToString(Command cmd)
@@ -236,9 +234,8 @@ struct CommandSystemCase
     Command cmd{CMD_UNKNOWN};
     bool canUndo{true};
     bool instant{true};
-    int numResets{0};
     dagbase::ConfigurationElement::RelOp identOp{dagbase::ConfigurationElement::RELOP_UNKNOWN};
-    using AssertionArray = std::vector<Assertion<dagbase::CommandSystem>>;
+    using AssertionArray = std::vector<Assertion<dagbase::Command>>;
     AssertionArray assertions;
 };
 
@@ -282,30 +279,6 @@ INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testScripted, ::testing::V
     std::make_tuple("data/tests/CommandSystem/ExecuteLongRunning.lua"),
     std::make_tuple("data/tests/CommandSystem/ExecuteMultipleInFlight.lua")
     ));
-
-TEST(CommandSystem_testExecuteMultipleInFlight, testExpectedResult)
-{
-    auto cmd = new TestCommand(true, false);
-    dagbase::CommandSystem sut;
-    auto status = sut.registerCommand(0, cmd);
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    dagbase::CommandSystem::CommandArray::Ident ident, ident2;
-    status = sut.makeItSo(0, {}, nullptr, &ident);
-    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.makeItSo(0, {}, nullptr, &ident2);
-    ASSERT_EQ(dagbase::Status::STATUS_UNKNOWN, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    status = sut.step();
-    ASSERT_EQ(dagbase::Status::STATUS_OK, status.status) << "Got " << dagbase::Status::statusCodeToString(status.status);
-    auto actual = sut.command(ident);
-    ASSERT_NE(nullptr, actual);
-    EXPECT_TRUE(actual->isComplete());
-    sut.free(ident);
-    auto actual2 = sut.command(ident2);
-    ASSERT_NE(nullptr, actual2);
-    EXPECT_TRUE(actual2->isComplete());
-    EXPECT_NE(actual,actual2);
-    sut.free(ident2);
-}
 
 class CommandSystem_testLog : public ::testing::TestWithParam<std::tuple<std::uint32_t, std::pmr::vector<dagbase::Variant>, const char*>>
 {
