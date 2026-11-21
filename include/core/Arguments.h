@@ -38,7 +38,7 @@ namespace dagbase
     private:
         struct Index
         {
-            std::ptrdiff_t index;
+            std::size_t index{0};
             dagbase::Value::Type type{dagbase::Value::TYPE_UNKNOWN};
             //std::variant<std::uint8_t*, std::int8_t*, std::uint16_t*, std::int16_t*, std::uint32_t*, std::int32_t*, std::uint64_t*, std::int64_t*> ptr;
         };
@@ -47,21 +47,20 @@ namespace dagbase
         using Buffer = std::vector<std::byte>;
         Buffer _buffer;
         std::size_t _nextIndex{0};
-        template<typename T>
-        void* alignPtr(void*& ptr, std::size_t& available)
-        {
-            available = sizeof(T) + alignof(T);
 
-            return std::align(alignof(T), sizeof(T), ptr, available);
-        }
         template<typename T>
-        void insert(const Value& value, void* ptr, std::size_t& available)
+        void appendTemplate(const Value& value)
         {
-            new (ptr) T(std::get<T>(value.value()));
-            Index entry{};
-            entry.index = static_cast<std::byte*>(ptr) - _buffer.data();
-            entry.type = value.type();
-            _indices.emplace_back(entry);
+            const std::size_t offset = (_nextIndex + alignof(T) - 1) & ~(alignof(T) - 1);
+            const std::size_t end = offset + sizeof(T);
+            if (end > _buffer.size())
+                _buffer.resize(end);
+
+            new (_buffer.data() + offset) T(std::get<T>(value.value()));
+
+            _indices.emplace_back(Index{offset, value.type()});
+            _nextIndex = end;
         }
+
     };
 }
