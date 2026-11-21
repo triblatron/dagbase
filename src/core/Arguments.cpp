@@ -7,8 +7,6 @@
 #include "core/Arguments.h"
 #include "core/Value.h"
 
-#include <memory>
-#include <new>
 #include <string>
 
 namespace dagbase

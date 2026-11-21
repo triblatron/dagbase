@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <variant>
 #include <vector>
+#include <memory>
+#include <new>
 
 namespace dagbase
 {
