@@ -51,6 +51,10 @@ namespace dagbase
         template<typename T>
         void appendTemplate(const Value& value)
         {
+            // Round offset to next multiple of alignment
+            // This works because alignof() always gives a power of two.
+            // The -1 in the first part ensures we round up rather than down.
+            // The -1 in the mask gives the low order bits and the ~ flips them
             const std::size_t offset = (_nextIndex + alignof(T) - 1) & ~(alignof(T) - 1);
             const std::size_t end = offset + sizeof(T);
             if (end > _buffer.size())
