@@ -17,6 +17,12 @@ namespace dagbase
         return "Vec2 { " + std::to_string(vec.x) + ", " + std::to_string(vec.y) + " }";
     }
 
+    void Vec2::configure(ConfigurationElement &config)
+    {
+        ConfigurationElement::readConfig(config, "x", &x);
+        ConfigurationElement::readConfig(config, "y", &y);
+    }
+
     OutputStream & Vec2::write(OutputStream &str) const
     {
         str.writeFloat(x);

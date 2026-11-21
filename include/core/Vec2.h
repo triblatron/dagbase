@@ -10,6 +10,7 @@
 
 namespace dagbase
 {
+    class ConfigurationElement;
     class OutputStream;
     class InputStream;
 
@@ -47,6 +48,8 @@ namespace dagbase
         {
             return *this > other || *this == other;
         }
+
+        void configure(ConfigurationElement& config);
 
         OutputStream& write(OutputStream& str) const;
 

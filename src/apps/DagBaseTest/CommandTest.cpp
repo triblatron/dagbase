@@ -464,5 +464,6 @@ INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
     std::make_tuple("data/tests/Arguments/UInt8.lua"),
     std::make_tuple("data/tests/Arguments/Int64.lua"),
     std::make_tuple("data/tests/Arguments/Mixture.lua"),
-    std::make_tuple("data/tests/Arguments/MixturePreallocated.lua")
+    std::make_tuple("data/tests/Arguments/MixturePreallocated.lua"),
+    std::make_tuple("data/tests/Arguments/Compound.lua")
     ));

@@ -413,6 +413,13 @@ namespace dagbase
 
                                     break;
                                 }
+                                case Value::TYPE_VEC2:
+                                {
+                                    Vec2 vec;
+                                    readConfig(*element, "value", &vec);
+                                    *value = Variant(Value(vec));
+                                    break;
+                                }
                                 default:
                                 {
                                     Value v(valueType);

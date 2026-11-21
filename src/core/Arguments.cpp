@@ -62,14 +62,19 @@ namespace dagbase
                 appendTemplate<std::string*>(value);
                 break;
             case Value::TYPE_VEC2:
+                appendTemplate<dagbase::Vec2>(value);
                 break;
             case Value::TYPE_OPAQUE:
+                // Not supported.
                 break;
             case Value::TYPE_VECTOR:
+                appendTemplate<std::vector<dagbase::Value>*>(value);
                 break;
             case Value::TYPE_ENUM:
+                appendTemplate<dagbase::EnumValue>(value);
                 break;
             case Value::TYPE_PORT:
+                appendTemplate<dagbase::Port*>(value);
                 break;
             case Value::TYPE_UNKNOWN:
                 break;
@@ -121,14 +126,19 @@ namespace dagbase
                     *value = load<std::string*>(_indices[index].index);
                     break;
                 case Value::TYPE_VEC2:
+                    *value = load<dagbase::Vec2>(_indices[index].index);
                     break;
                 case Value::TYPE_OPAQUE:
+                    status.status = dagbase::Status::STATUS_NOT_IMPLEMENTED;
                     break;
                 case Value::TYPE_VECTOR:
+                    *value = load<std::vector<dagbase::Value>*>(_indices[index].index);
                     break;
                 case Value::TYPE_ENUM:
+                    *value = load<dagbase::EnumValue>(_indices[index].index);
                     break;
                 case Value::TYPE_PORT:
+                    *value = load<dagbase::Port*>(_indices[index].index);
                     break;
                 case Value::TYPE_UNKNOWN:
                     break;
