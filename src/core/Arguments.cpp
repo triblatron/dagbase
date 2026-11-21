@@ -62,83 +62,83 @@ namespace dagbase
                 appendTemplate<std::string*>(value);
                 break;
             case Value::TYPE_VEC2:
-                appendTemplate<dagbase::Vec2>(value);
+                appendTemplate<Vec2>(value);
                 break;
             case Value::TYPE_OPAQUE:
                 // Not supported.
                 break;
             case Value::TYPE_VECTOR:
-                appendTemplate<std::vector<dagbase::Value>*>(value);
+                appendTemplate<std::vector<Value>*>(value);
                 break;
             case Value::TYPE_ENUM:
-                appendTemplate<dagbase::EnumValue>(value);
+                appendTemplate<EnumValue>(value);
                 break;
             case Value::TYPE_PORT:
-                appendTemplate<dagbase::Port*>(value);
+                appendTemplate<Port*>(value);
                 break;
             case Value::TYPE_UNKNOWN:
                 break;
         }
     }
 
-    dagbase::Status Arguments::get(std::uint32_t index, Value *value) const
+    Status Arguments::get(std::uint32_t index, Value *value) const
     {
-        dagbase::Status status{dagbase::Status::STATUS_OK};
+        Status status{Status::STATUS_OK};
         if (value && index < _indices.size())
         {
             auto offset = _indices[index].index;
             switch (_indices[index].type)
             {
                 case Value::TYPE_UINT8:
-                    *value = load<std::uint8_t>(offset);//*std::launder(reinterpret_cast<const std::uint8_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint8_t>(offset);
                     break;
                 case Value::TYPE_INT8:
-                    *value = load<std::int8_t>(offset);//*std::launder(reinterpret_cast<const std::int8_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int8_t>(offset);
                     break;
                 case Value::TYPE_UINT16:
-                    *value = load<std::uint16_t>(offset);//*std::launder(reinterpret_cast<const std::uint16_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint16_t>(offset);
                     break;
                 case Value::TYPE_INT16:
-                    *value = load<std::int16_t>(offset);//*std::launder(reinterpret_cast<const std::int16_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int16_t>(offset);
                     break;
                 case Value::TYPE_UINT32:
-                    *value = load<std::uint32_t>(offset);//*std::launder(reinterpret_cast<const std::uint32_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint32_t>(offset);
                     break;
                 case Value::TYPE_INT32:
-                    *value = load<std::int32_t>(offset);//*std::launder(reinterpret_cast<const std::int32_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int32_t>(offset);
                     break;
                 case Value::TYPE_UINT64:
-                    *value = load<std::uint64_t>(offset);//*std::launder(reinterpret_cast<const std::uint64_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint64_t>(offset);
                     break;
                 case Value::TYPE_INT64:
-                    *value = load<std::int64_t>(offset);//*std::launder(reinterpret_cast<const std::int64_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int64_t>(offset);
                     break;
                 case Value::TYPE_FLOAT:
-                    *value = load<float>(offset);//*std::launder(reinterpret_cast<const float*>(_buffer.data() + _indices[index].index));
+                    *value = load<float>(offset);
                     break;
                 case Value::TYPE_DOUBLE:
-                    *value = load<double>(offset);//*std::launder(reinterpret_cast<const double*>(_buffer.data() + _indices[index].index));
+                    *value = load<double>(offset);
                     break;
                 case Value::TYPE_BOOL:
-                    *value = load<bool>(offset);//*std::launder(reinterpret_cast<const bool*>(_buffer.data() + _indices[index].index));
+                    *value = load<bool>(offset);
                     break;
                 case Value::TYPE_STRING:
                     *value = load<std::string*>(_indices[index].index);
                     break;
                 case Value::TYPE_VEC2:
-                    *value = load<dagbase::Vec2>(_indices[index].index);
+                    *value = load<Vec2>(_indices[index].index);
                     break;
                 case Value::TYPE_OPAQUE:
-                    status.status = dagbase::Status::STATUS_NOT_IMPLEMENTED;
+                    status.status = Status::STATUS_NOT_IMPLEMENTED;
                     break;
                 case Value::TYPE_VECTOR:
-                    *value = load<std::vector<dagbase::Value>*>(_indices[index].index);
+                    *value = load<std::vector<Value>*>(_indices[index].index);
                     break;
                 case Value::TYPE_ENUM:
-                    *value = load<dagbase::EnumValue>(_indices[index].index);
+                    *value = load<EnumValue>(_indices[index].index);
                     break;
                 case Value::TYPE_PORT:
-                    *value = load<dagbase::Port*>(_indices[index].index);
+                    *value = load<Port*>(_indices[index].index);
                     break;
                 case Value::TYPE_UNKNOWN:
                     break;
@@ -147,11 +147,11 @@ namespace dagbase
         }
         else if (index >= _indices.size())
         {
-            status.status = dagbase::Status::STATUS_ARGUMENT_OUT_OF_RANGE;
+            status.status = Status::STATUS_ARGUMENT_OUT_OF_RANGE;
         }
         else if (!value)
         {
-            status.status = dagbase::Status::STATUS_ARGUMENT_NULL;
+            status.status = Status::STATUS_ARGUMENT_NULL;
         }
     }
 }
