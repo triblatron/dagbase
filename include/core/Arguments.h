@@ -7,6 +7,7 @@
 #include "config/DagBaseExport.h"
 
 #include "core/Value.h"
+#include "core/Status.h"
 
 #include <cstdint>
 #include <cstddef>
@@ -24,7 +25,7 @@ namespace dagbase
 
         void append(const Value& value);
 
-        void get(std::uint32_t index, Value* value);
+        dagbase::Status get(std::uint32_t index, Value *value) const;
 
         std::size_t size() const
         {
@@ -65,6 +66,10 @@ namespace dagbase
             _indices.emplace_back(Index{offset, value.type()});
             _nextIndex = end;
         }
-
+        template<typename T>
+        const T& load(std::size_t offset) const
+        {
+            return *std::launder(reinterpret_cast<const T*>(_buffer.data() + offset));
+        }
     };
 }

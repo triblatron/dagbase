@@ -76,48 +76,49 @@ namespace dagbase
         }
     }
 
-    void Arguments::get(std::uint32_t index, Value *value)
+    dagbase::Status Arguments::get(std::uint32_t index, Value *value) const
     {
+        dagbase::Status status{dagbase::Status::STATUS_OK};
         if (value && index < _indices.size())
         {
+            auto offset = _indices[index].index;
             switch (_indices[index].type)
             {
                 case Value::TYPE_UINT8:
-                    *value = *std::launder(reinterpret_cast<std::uint8_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint8_t>(offset);//*std::launder(reinterpret_cast<const std::uint8_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_INT8:
-                    *value = *std::launder(reinterpret_cast<std::int8_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int8_t>(offset);//*std::launder(reinterpret_cast<const std::int8_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_UINT16:
-                    *value = *std::launder(reinterpret_cast<std::uint16_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint16_t>(offset);//*std::launder(reinterpret_cast<const std::uint16_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_INT16:
-                    *value = *std::launder(reinterpret_cast<std::int16_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int16_t>(offset);//*std::launder(reinterpret_cast<const std::int16_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_UINT32:
-                    *value = *std::launder(reinterpret_cast<std::uint32_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint32_t>(offset);//*std::launder(reinterpret_cast<const std::uint32_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_INT32:
-                    *value = *std::launder(reinterpret_cast<std::int32_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::int32_t>(offset);//*std::launder(reinterpret_cast<const std::int32_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_UINT64:
-                    *value = *std::launder(reinterpret_cast<std::uint64_t*>(_buffer.data() + _indices[index].index));
+                    *value = load<std::uint64_t>(offset);//*std::launder(reinterpret_cast<const std::uint64_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_INT64:
-                    *value = *std::launder(reinterpret_cast<std::int64_t*>(_buffer.data() + _indices[index].index));
-
+                    *value = load<std::int64_t>(offset);//*std::launder(reinterpret_cast<const std::int64_t*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_FLOAT:
-                    *value = *std::launder(reinterpret_cast<float*>(_buffer.data() + _indices[index].index));
+                    *value = load<float>(offset);//*std::launder(reinterpret_cast<const float*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_DOUBLE:
-                    *value = *std::launder(reinterpret_cast<double*>(_buffer.data() + _indices[index].index));
+                    *value = load<double>(offset);//*std::launder(reinterpret_cast<const double*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_BOOL:
-                    *value = *std::launder(reinterpret_cast<bool*>(_buffer.data() + _indices[index].index));
+                    *value = load<bool>(offset);//*std::launder(reinterpret_cast<const bool*>(_buffer.data() + _indices[index].index));
                     break;
                 case Value::TYPE_STRING:
-                    *value = *std::launder(reinterpret_cast<std::string**>(_buffer.data() + _indices[index].index));
+                    *value = load<std::string*>(_indices[index].index);
                     break;
                 case Value::TYPE_VEC2:
                     break;
@@ -133,6 +134,14 @@ namespace dagbase
                     break;
             }
 
+        }
+        else if (index >= _indices.size())
+        {
+            status.status = dagbase::Status::STATUS_ARGUMENT_OUT_OF_RANGE;
+        }
+        else if (!value)
+        {
+            status.status = dagbase::Status::STATUS_ARGUMENT_NULL;
         }
     }
 }
