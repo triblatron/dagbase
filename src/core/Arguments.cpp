@@ -16,8 +16,9 @@ namespace dagbase
         _buffer.resize(n);
     }
 
-    void Arguments::append(const Value &value)
+    Status Arguments::append(const Value &value)
     {
+        Status status{Status::STATUS_OK};
         std::size_t size=0;
         auto oldSize = _buffer.size();
         void* ptr = _buffer.data() + _nextIndex;
@@ -66,6 +67,7 @@ namespace dagbase
                 break;
             case Value::TYPE_OPAQUE:
                 // Not supported.
+                appendTemplate<void*>(value);
                 break;
             case Value::TYPE_VECTOR:
                 appendTemplate<std::vector<Value>*>(value);
@@ -79,6 +81,8 @@ namespace dagbase
             case Value::TYPE_UNKNOWN:
                 break;
         }
+
+        return status;
     }
 
     Status Arguments::get(std::uint32_t index, Value *value) const
@@ -129,7 +133,7 @@ namespace dagbase
                     *value = load<Vec2>(_indices[index].index);
                     break;
                 case Value::TYPE_OPAQUE:
-                    status.status = Status::STATUS_NOT_IMPLEMENTED;
+                    *value = load<void*>(_indices[index].index);
                     break;
                 case Value::TYPE_VECTOR:
                     *value = load<std::vector<Value>*>(_indices[index].index);
@@ -153,5 +157,7 @@ namespace dagbase
         {
             status.status = Status::STATUS_ARGUMENT_NULL;
         }
+
+        return status;
     }
 }
