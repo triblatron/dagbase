@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+/src/core/.idea/inspectionProfiles/Project_Default.xml
+/src/core/.idea/core.iml
+/src/core/.idea/editor.xml
+/src/core/.idea/modules.xml
+/src/core/.idea/vcs.xml
+/src/core/.idea/workspace.xml
