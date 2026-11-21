@@ -8,6 +8,8 @@
 #include "test/TestUtils.h"
 #include "util/enums.h"
 #include "core/Arguments.h"
+#include "core/TypeRegistry.h"
+#include "core/Types.h"
 
 #include <gtest/gtest.h>
 
@@ -429,6 +431,14 @@ struct ArgumentsCase
 class Arguments_testAppend : public ::testing::TestWithParam<std::tuple<const char*>>
 {
 public:
+    void SetUp()
+    {
+    }
+
+    void TearDown()
+    {
+    }
+
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfigVector(config, "cases", &_cases);

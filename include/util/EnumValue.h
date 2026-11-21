@@ -12,6 +12,7 @@
 
 namespace dagbase
 {
+    class ConfigurationElement;
     struct Type;
     class InputStream;
     class OutputStream;
@@ -83,6 +84,8 @@ namespace dagbase
         {
             return _value != other._value;
         }
+
+        void configure(dagbase::ConfigurationElement& config);
 
         OutputStream& writeToStream(OutputStream& str) const;
 

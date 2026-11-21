@@ -10,6 +10,7 @@
 #include "core/TypeRegistry.h"
 #include "io/InputStream.h"
 #include "io/OutputStream.h"
+#include "core/ConfigurationElement.h"
 
 #include <memory_resource>
 
@@ -30,7 +31,7 @@ namespace dagbase
 
     void EnumValue::set(const char *str)
     {
-        if (_type && _type->parse)
+        if (str && _type && _type->parse)
         {
             _value = _type->parse(str);
         }
@@ -53,6 +54,22 @@ namespace dagbase
         }
 
         return "<error>";
+    }
+
+    void EnumValue::configure(dagbase::ConfigurationElement &config)
+    {
+        Atom typeName;
+        ConfigurationElement::readConfig(config, "typeName", &typeName);
+        _type = TypeRegistry::getTypeRegistry().findType(typeName);
+
+        if (_type)
+        {
+            std::string value;
+
+            ConfigurationElement::readConfig(config, "value", &value);
+            if (!value.empty())
+                set(value.c_str());
+        }
     }
 
     OutputStream & EnumValue::writeToStream(OutputStream &str) const

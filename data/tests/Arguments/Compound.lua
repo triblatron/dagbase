@@ -22,14 +22,11 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_VEC2",
-				value=
-				{
-					x=3.0,
-					y=4.0,
-				},
+				valueType="TYPE_ENUM",
+				enumType="TestEnum",
+				value="TEST_FOO",
 			},
-			bufferSize=16,
+			bufferSize=24,
 		},
 		{
 			cmd="CMD_GET",
@@ -51,12 +48,9 @@ root=
 			value=
 			{
 				typeIndex="TYPE_VALUE",
-				valueType="TYPE_VEC2",
-				value=
-				{
-					x=3.0,
-					y=4.0,
-				},
+				valueType="TYPE_ENUM",
+				enumType="TestEnum",
+				value="TEST_FOO",
 			}
 		},
 	},
