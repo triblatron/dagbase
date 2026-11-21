@@ -190,6 +190,9 @@ INSTANTIATE_TEST_SUITE_P(Status, StatusCode_testRoundTrip, ::testing::Values(
     std::make_tuple("STATUS_DUPLICATE_OPCODE", dagbase::Status::STATUS_DUPLICATE_OPCODE),
     std::make_tuple("STATUS_UNKNOWN_OPCODE", dagbase::Status::STATUS_UNKNOWN_OPCODE),
     std::make_tuple("STATUS_EMPTY_STACK", dagbase::Status::STATUS_EMPTY_STACK),
+    std::make_tuple("STATUS_ARGUMENT_OUT_OF_RANGE", dagbase::Status::STATUS_ARGUMENT_OUT_OF_RANGE),
+    std::make_tuple("STATUS_ARGUMENT_NULL", dagbase::Status::STATUS_ARGUMENT_NULL),
+    std::make_tuple("STATUS_NOT_IMPLEMENTED", dagbase::Status::STATUS_NOT_IMPLEMENTED),
     std::make_tuple("STATUS_UNKNOWN", dagbase::Status::STATUS_UNKNOWN)
 ));
 

@@ -44,6 +44,12 @@ namespace dagbase
             STATUS_UNKNOWN_OPCODE,
             //! An undo or redo operation was attempted with an empty stack
             STATUS_EMPTY_STACK,
+            //! An input argument is too large or too small
+            STATUS_ARGUMENT_OUT_OF_RANGE,
+            //! A null was supplied when a valid pointer was expected
+            STATUS_ARGUMENT_NULL,
+            //! The operation is not currently implemented for the input arguments
+            STATUS_NOT_IMPLEMENTED,
             //! An initial invalid status.
             STATUS_UNKNOWN
         };
