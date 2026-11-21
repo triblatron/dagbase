@@ -473,3 +473,22 @@ INSTANTIATE_TEST_SUITE_P(Arguments, Arguments_testAppend, ::testing::Values(
     std::make_tuple("data/tests/Arguments/MixturePreallocated.lua"),
     std::make_tuple("data/tests/Arguments/Compound.lua")
     ));
+
+TEST(Arguments, testGetEmptyArguments)
+{
+    dagbase::Arguments sut;
+    dagbase::Value value;
+    auto actualStatus = sut.get(0,&value);
+    EXPECT_EQ(dagbase::Status{dagbase::Status::STATUS_ARGUMENT_OUT_OF_RANGE}, actualStatus);
+}
+
+TEST(Arguments, testGetInvalidArgument)
+{
+    dagbase::Arguments sut;
+    dagbase::Value value;
+    value = std::int64_t{1};
+    auto actualStatus =  sut.append(value);
+    ASSERT_EQ(dagbase::Status{dagbase::Status::STATUS_OK}, actualStatus);
+    actualStatus = sut.get(0,nullptr);
+    EXPECT_EQ(dagbase::Status(dagbase::Status::STATUS_ARGUMENT_NULL), actualStatus);
+}
