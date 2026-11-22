@@ -16,12 +16,13 @@ struct SlotArrayElement
     void configure(dagbase::ConfigurationElement& config)
     {
         dagbase::ConfigurationElement::readConfig(config, "i", &i);
+        dagbase::ConfigurationElement::readConfig(config, "sameType", &sameType);
         initial = i;
     }
 
     bool isSameType(const SlotArrayElement& other) const
     {
-        return true;
+        return sameType;
     }
 
     SlotArrayElement* clone()
@@ -36,6 +37,7 @@ struct SlotArrayElement
 
     int i{0};
     int initial{0};
+    bool sameType{true};
 };
 
 struct SlotArrayScriptItem
@@ -189,5 +191,6 @@ TEST_P(SlotArray_testScripted, testExpectedValue)
 
 INSTANTIATE_TEST_SUITE_P(SlotArray, SlotArray_testScripted, ::testing::Values(
     std::make_tuple("data/tests/SlotArray/AllocAndFree.lua"),
-    std::make_tuple("data/tests/SlotArray/AllocAfterFreeingInMiddle.lua")
+    std::make_tuple("data/tests/SlotArray/AllocAfterFreeingInMiddle.lua"),
+    std::make_tuple("data/tests/SlotArray/AllocDifferentTypeAfterFreeingInMiddle.lua")
     ));

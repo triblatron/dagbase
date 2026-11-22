@@ -140,7 +140,7 @@ namespace dagbase
         }
 
         //! Allocate an item, either by growing the array or using a free entry.
-        //! \note Runs in amortised constant time because an allocation may be necessary.
+        //! \note Runs in amortized constant time because an allocation may be necessary.
         //! \note Invalidates references if an allocation in the underlying array occurs.
         Item* alloc(T* ptr)
         {
@@ -156,10 +156,11 @@ namespace dagbase
             if (_data[_freeHead].item->isSameType(*ptr))
             {
                 _data[_freeHead].item->reset();
-                ptr = _data[_freeHead].item;
+                *_data[_freeHead].item = *ptr;
             }
             else
             {
+                delete _data[_freeHead].item;
                 new (&_data[_freeHead]) Item(ptr->clone());
             }
 

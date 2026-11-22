@@ -9,7 +9,10 @@ root=
 				index=0,
 				gen=1,
 			},
-			element=1,
+			element=
+			{
+				i=1,
+			},
 			assertions =
 			{
 				{
@@ -36,7 +39,10 @@ root=
 				index=0,
 				gen=1,
 			},
-			element=1,
+			element=
+			{
+				i=1,
+			},
 			exists=true,
 		},
 		{
@@ -55,6 +61,10 @@ root=
 				index=1,
 				gen=1,
 			},
+			element=
+			{
+				i=2,
+			},
 			assertions =
 			{
 				{
@@ -70,11 +80,28 @@ root=
 			},
 		},		
 		{
+			cmd="COMMAND_TRY_GET",
+			id=
+			{
+				index=1,
+				gen=1,
+			},
+			element=
+			{
+				i=2,
+			},
+			exists=true,
+		},
+		{
 			cmd="COMMAND_ALLOC",
 			id=
 			{
 				index=2,
 				gen=1,
+			},
+			element=
+			{
+				i=3,
 			},
 			assertions =
 			{
@@ -90,6 +117,19 @@ root=
 				},
 			},
 		},		
+		{
+			cmd="COMMAND_TRY_GET",
+			id=
+			{
+				index=2,
+				gen=1,
+			},
+			element=
+			{
+				i=3,
+			},
+			exists=true,
+		},
 		{
 			cmd="COMMAND_FREE",
 			id=
@@ -141,6 +181,10 @@ root=
 				index=1,
 				gen=2,
 			},
+			element=
+			{
+				i=4,
+			},
 			assertions =
 			{
 				{
@@ -161,6 +205,10 @@ root=
 			{
 				index=1,
 				gen=2,
+			},
+			element=
+			{
+				i=4,
 			},
 			exists=true,
 		},
