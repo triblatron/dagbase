@@ -501,6 +501,9 @@ namespace dagbase
                 case dagbase::Variant::TYPE_FUNCTION:
                     str << "<function>";
                     break;
+                case dagbase::Variant::TYPE_VALUE:
+                    str << std::get<dagbase::Value>(value.value().value());
+                    break;
                 default:
                     str << "<unknown>";
             }

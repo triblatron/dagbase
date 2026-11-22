@@ -148,18 +148,21 @@ namespace dagbase
                 return &_data.back();
             }
             auto lastIndex = _data[_freeHead].id.index;
-            new (&_data[_size]) Item(std::forward<Args>(args)...);
+            new (&_data[_freeHead]) Item(std::forward<Args>(args)...);
             _data[_freeHead].id.gen = _nextGen;
-            _data[_freeHead].id.index = _size;
+            _data[_freeHead].id.index = _freeHead;
+            auto retval = &_data[_freeHead];
             _freeHead = lastIndex;
-            return &_data[_size++];
+            ++_size;
+
+            return retval;
         }
 
         //! Deallocate an item, rendering identifiers to it invalid.
         //! \note This is accomplished by incrementing the generation counter.
         void free(Item* item)
         {
-            item->item.T::~T();
+            //item->item.T::~T();
 
             if (_freeHead == Ident::INVALID_INDEX)
             {

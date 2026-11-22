@@ -75,31 +75,31 @@ struct SlotMapScriptItem
             {
                 auto* item = sut.alloc(element);
                 auto actual = sut.id(item);
-                ASSERT_EQ(id, actual);
+                ASSERT_EQ(id, actual) << commandToString(cmd);
 
                 break;
             }
             case COMMAND_FREE:
             {
                 sut.free(&sut.get(id));
-                ASSERT_EQ(nullptr, sut.tryGet(id));
+                ASSERT_EQ(nullptr, sut.tryGet(id)) << commandToString(cmd);
 
                 break;
             }
             case COMMAND_TRY_GET:
             {
                 auto actual = sut.tryGet(id);
-                ASSERT_EQ(exists, actual!=nullptr);
+                ASSERT_EQ(exists, actual!=nullptr) << commandToString(cmd);
                 if (exists)
                 {
-                    ASSERT_EQ(element, actual->i);
+                    ASSERT_EQ(element, actual->i) << commandToString(cmd);
                 }
                 break;
             }
             case COMMAND_IS_VALID:
             {
                 auto actual = sut.isValid(id);
-                ASSERT_EQ(exists, actual);
+                ASSERT_EQ(exists, actual) << commandToString(cmd);
 
                 break;
             }
@@ -187,5 +187,6 @@ TEST_P(SlotMap_testScripted, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(SlotMap, SlotMap_testScripted, ::testing::Values(
-    std::make_tuple("data/tests/SlotMap/AllocAndFree.lua")
+    std::make_tuple("data/tests/SlotMap/AllocAndFree.lua"),
+    std::make_tuple("data/tests/SlotMap/AddAfterDeletingFromMiddle.lua")
     ));

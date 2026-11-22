@@ -61,7 +61,7 @@ namespace dagbase
 
                 break;
             case TYPE_STRING:
-                _value = new std::string();
+                _value = std::make_shared<std::string>();
 
                 break;
             case TYPE_VEC2:
@@ -97,6 +97,11 @@ namespace dagbase
         }
     }
 
+    Value::Value(ValueType value)
+    {
+        _value = std::move(value);
+    }
+
     Value::Value(const Value &other)
     {
         if (other.type() == TYPE_STRING && other.operator std::shared_ptr<std::string>())
@@ -121,6 +126,7 @@ namespace dagbase
 
     Value::~Value()
     {
+//        std::cerr << "Value::~Value()" << this << std::endl;
         if (type() == TYPE_VECTOR)
         {
             delete this->operator std::vector<Value>*();
@@ -134,7 +140,7 @@ namespace dagbase
 
         if (!fromType)
         {
-            _value = value.cast(Variant::TYPE_VALUE).as<Value>();
+            *this = value.cast(Variant::TYPE_VALUE).as<Value>();
         }
         else if (value.index() == Variant::TYPE_INTEGER)
         {
@@ -815,6 +821,12 @@ namespace dagbase
                 break;
             case Value::TYPE_UINT64:
                 str << std::get<std::uint64_t>(value.value());
+                break;
+            case Value::TYPE_FLOAT:
+                str << std::get<float>(value.value());
+                break;
+            case Value::TYPE_DOUBLE:
+                str << std::get<double>(value.value());
                 break;
             default:
                 break;

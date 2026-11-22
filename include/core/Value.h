@@ -100,12 +100,7 @@ namespace dagbase
             return false;
         }
 
-        explicit Value(ValueType value)
-	        :
-        _value(value)
-        {
-	        // Do nothing.
-        }
+        explicit Value(ValueType value);
 
         //! A constraint for the supported types.
         //! Certain template methods and operators can only be instantiated for types that satisfy it.
@@ -174,10 +169,10 @@ namespace dagbase
         }
 
         //! Convert to our variant, required for template ctor to compile.
-        operator ValueType() const
-        {
-            return _value;
-        }
+        // operator ValueType() const
+        // {
+        //     return _value;
+        // }
 
         Type type() const
         {
