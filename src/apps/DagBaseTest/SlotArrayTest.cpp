@@ -188,5 +188,6 @@ TEST_P(SlotArray_testScripted, testExpectedValue)
 }
 
 INSTANTIATE_TEST_SUITE_P(SlotArray, SlotArray_testScripted, ::testing::Values(
-    std::make_tuple("data/tests/SlotArray/AllocAndFree.lua")
+    std::make_tuple("data/tests/SlotArray/AllocAndFree.lua"),
+    std::make_tuple("data/tests/SlotArray/AllocAfterFreeingInMiddle.lua")
     ));

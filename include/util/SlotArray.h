@@ -160,13 +160,15 @@ namespace dagbase
             }
             else
             {
-                new (&_data[_size]) Item(ptr->clone());
+                new (&_data[_freeHead]) Item(ptr->clone());
             }
 
             _data[_freeHead].id.gen = _nextGen;
-            _data[_freeHead].id.index = _size;
+            _data[_freeHead].id.index = _freeHead;
+            auto retval = &_data[_freeHead];
             _freeHead = lastIndex;
-            return &_data[_size++];
+            ++_size;
+            return retval;
         }
 
         //! Deallocate an item, rendering identifiers to it invalid.
