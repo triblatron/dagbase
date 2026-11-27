@@ -305,13 +305,13 @@ INSTANTIATE_TEST_CASE_P(CommandSystem, CommandSystem_testLog, ::testing::Values(
     std::make_tuple(std::uint32_t{0}, std::pmr::vector<dagbase::Variant>{dagbase::Variant("GroupTyped"), dagbase::Variant("group1")}, "op(0,\"GroupTyped\",\"group1\")\n")
     ));
 
-class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
+class CommandSystem_testRecordAndPlayback : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
 {
 
 };
 
 
-TEST_P(CommandSystem_testPlayback, testExpectedResult)
+TEST_P(CommandSystem_testRecordAndPlayback, testExpectedResult)
 {
     auto path = std::get<0>(GetParam());
     auto value = std::get<1>(GetParam());
@@ -332,8 +332,29 @@ TEST_P(CommandSystem_testPlayback, testExpectedResult)
     assertComparison(value, actual, tolerance, op, path);
 }
 
-INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlayback, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testRecordAndPlayback, ::testing::Values(
     std::make_tuple("numCalls", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    ));
+
+class CommandSystem_testPlaybackLogFile : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Status>>
+{
+
+};
+
+TEST_P(CommandSystem_testPlaybackLogFile, testExpectedResult)
+{
+    auto filename = std::get<0>(GetParam());
+    auto status = std::get<1>(GetParam());
+    dagbase::CommandSystem sut;
+    std::ifstream str(filename);
+    ASSERT_TRUE(str);
+    auto actualStatus = sut.playback(str);
+    EXPECT_EQ(status, actualStatus);
+}
+
+INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlaybackLogFile, ::testing::Values(
+    std::make_tuple("data/tests/CommandSystem/LogSyntaxError.lua", dagbase::Status{dagbase::Status::STATUS_SYNTAX_ERROR}),
+    std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", dagbase::Status{dagbase::Status::STATUS_OK})
     ));
 
 struct ArgumentsCase
