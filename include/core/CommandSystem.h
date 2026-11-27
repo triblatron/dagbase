@@ -58,12 +58,12 @@ namespace dagbase
             _logStr = logStr;
         }
 
-        dagbase::Status log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args);
 
         dagbase::Status playback(const char* filename);
 
         dagbase::Variant find(std::string_view) const;
     private:
+        dagbase::Status log(std::uint32_t opcode, const std::pmr::vector<dagbase::Variant>& args);
         CommandMap _commands;
         CommandStack _undoStack;
         CommandStack _redoStack;

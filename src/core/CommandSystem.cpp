@@ -73,6 +73,7 @@ namespace dagbase
         if (auto it=_commands.find(opcode); it!=_commands.end())
         {
             auto cmd = it->second;
+            log(opcode, args);
             if (cmd->isLongRunning())
             {
                 auto item = _inFlightCommands.alloc(cmd);

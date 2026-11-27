@@ -291,9 +291,11 @@ TEST_P(CommandSystem_testLog, testExpectedResult)
     auto args = std::get<1>(GetParam());
     auto log = std::get<2>(GetParam());
     dagbase::CommandSystem sut;
+    sut.registerCommand(opcode, new TestCommand(true, true));
     std::ostringstream oss;
     sut.setLog(&oss);
-    auto actualStatus = sut.log(opcode, args);
+    std::pmr::vector<dagbase::Variant> results;
+    auto actualStatus = sut.makeItSo(opcode, args, &results);
     ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status) << "Got " << dagbase::Status::statusCodeToString(actualStatus.status);
     auto actualLog = oss.str();
     EXPECT_EQ(log, actualLog);
