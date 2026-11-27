@@ -13,9 +13,64 @@
 
 #include <fstream>
 
+class TestSystem
+{
+public:
+    TestSystem() = default;
+
+    TestSystem(const TestSystem& other)
+    {
+        _i = other._i;
+    }
+
+    bool equals(const TestSystem& other) const
+    {
+        return _i == other._i;
+    }
+
+    void reset()
+    {
+        _i = 0;
+    }
+
+    void increment()
+    {
+        ++_i;
+    }
+
+    void decrement()
+    {
+        --_i;
+    }
+
+    TestSystem* clone()
+    {
+        return new TestSystem(*this);
+    }
+
+    dagbase::Variant find(std::string_view path) const
+    {
+        dagbase::Variant retval;
+
+        retval = dagbase::findEndpoint(path, "i", _i);
+        if (retval.has_value())
+            return retval;
+
+        return {};
+    }
+private:
+    std::int64_t _i{0};
+};
 
 class TestCommand : public dagbase::Command
 {
+public:
+    enum Command : std::uint32_t
+    {
+        CMD_UNKNOWN,
+        CMD_INCREMENT,
+        CMD_DECREMENT
+    };
 public:
     explicit TestCommand(bool canUndo=true, bool instant=true)
         :
@@ -30,9 +85,18 @@ public:
 
     TestCommand(const TestCommand& other)
         :
-    Command(other)
+    dagbase::Command(other)
     {
+        _sys = other._sys;
         _instant = other._instant;
+        numCalls = other.numCalls;
+        numUndos = other.numUndos;
+        numResets = other.numResets;
+    }
+
+    void setSystem(TestSystem* sys)
+    {
+        _sys = sys;
     }
 
     dagbase::Status makeItSo(const std::pmr::vector<dagbase::Variant>& args, std::pmr::vector<dagbase::Variant>* results) override
@@ -40,6 +104,11 @@ public:
         dagbase::Status status;
 
         ++numCalls;
+
+        if (_sys)
+        {
+            _sys->increment();
+        }
 
         if (_instant || numCalls == 2)
         {
@@ -52,7 +121,7 @@ public:
 
     void reset() override
     {
-        Command::reset();
+        dagbase::Command::reset();
         numCalls = 0;
         numUndos = 0;
         ++numResets;
@@ -83,6 +152,13 @@ public:
         if (result.has_value())
             return result;
 
+        if (_sys)
+        {
+            result = dagbase::findInternal(path, "sys", _sys);
+            if (result.has_value())
+                return result;
+        }
+
         return {};
     }
 
@@ -101,6 +177,29 @@ public:
     {
         return new TestCommand(*this);
     }
+
+    static const char* commandToString(Command value)
+    {
+        switch (value)
+        {
+            ENUM_NAME(CMD_UNKNOWN)
+            ENUM_NAME(CMD_INCREMENT)
+            ENUM_NAME(CMD_DECREMENT)
+        }
+
+        return "<error>";
+    }
+
+    static Command parseCommand(const char* str)
+    {
+        TEST_ENUM(CMD_UNKNOWN, str)
+        TEST_ENUM(CMD_INCREMENT, str)
+        TEST_ENUM(CMD_DECREMENT, str)
+
+        return CMD_UNKNOWN;
+    }
+private:
+    TestSystem* _sys{nullptr};
 public:
     int numCalls{0};
     int numUndos{0};
@@ -117,7 +216,9 @@ struct CommandSystemCase
         CMD_EXECUTE,
         CMD_UNDO,
         CMD_REDO,
-        CMD_STEP
+        CMD_STEP,
+        CMD_RECORD,
+        CMD_PLAYBACK
     };
 
     void configure(dagbase::ConfigurationElement& config)
@@ -131,7 +232,7 @@ struct CommandSystemCase
         dagbase::ConfigurationElement::readConfig<dagbase::ConfigurationElement::RelOp>(config, "identOp", &dagbase::ConfigurationElement::parseRelOp, &identOp);
     }
 
-    void makeItSo(dagbase::CommandSystem& sut, dagbase::CommandSystem::CommandArray::Ident* ident)
+    void makeItSo(dagbase::CommandSystem& sut, dagbase::CommandSystem::CommandArray::Ident* ident, std::ostringstream** recordStr, std::istringstream** playbackStr, TestSystem* sys)
     {
         dagbase::Status actualStatus{dagbase::Status::STATUS_UNKNOWN};
         dagbase::CommandSystem::CommandArray::Ident actualIdent;
@@ -140,6 +241,7 @@ struct CommandSystemCase
             case CMD_REGISTER:
             {
                 auto command = new TestCommand(canUndo, instant);
+                command->setSystem(sys);
                 actualStatus = sut.registerCommand(opcode, command);
                 break;
             }
@@ -186,6 +288,27 @@ struct CommandSystemCase
                 sut.free(*ident);
                 break;
             }
+            case CMD_RECORD:
+            {
+                if (recordStr)
+                {
+                    *recordStr = new std::ostringstream();
+                    sut.setLog(*recordStr);
+                }
+                break;
+            }
+            case CMD_PLAYBACK:
+            {
+                if (recordStr && *recordStr && playbackStr && sys)
+                {
+                    *playbackStr = new std::istringstream((*recordStr)->str());
+                    auto sysClone = sys->clone();
+                    sys->reset();
+                    sut.playback(**playbackStr);
+                    EXPECT_TRUE(sysClone->equals(*sys));
+                }
+                break;
+            }
             default:
                 FAIL() << "Unhandled command " << commandToString(cmd);
                 break;
@@ -197,7 +320,7 @@ struct CommandSystemCase
         {
             for (const auto& a : assertions)
             {
-                a.makeItSo(*actualCommand, commandToString(cmd));
+                a.makeItSo(*actualCommand, *sys, commandToString(cmd));
             }
         }
 
@@ -213,6 +336,8 @@ struct CommandSystemCase
             ENUM_NAME(CMD_UNDO)
             ENUM_NAME(CMD_REDO)
             ENUM_NAME(CMD_STEP)
+            ENUM_NAME(CMD_RECORD)
+            ENUM_NAME(CMD_PLAYBACK)
         }
 
         return "<error>";
@@ -225,6 +350,8 @@ struct CommandSystemCase
         TEST_ENUM(CMD_UNDO, str)
         TEST_ENUM(CMD_REDO, str)
         TEST_ENUM(CMD_STEP, str)
+        TEST_ENUM(CMD_RECORD, str)
+        TEST_ENUM(CMD_PLAYBACK, str)
 
         return CMD_UNKNOWN;
     }
@@ -235,7 +362,7 @@ struct CommandSystemCase
     bool canUndo{true};
     bool instant{true};
     dagbase::ConfigurationElement::RelOp identOp{dagbase::ConfigurationElement::RELOP_UNKNOWN};
-    using AssertionArray = std::vector<Assertion<dagbase::Command>>;
+    using AssertionArray = std::vector<Assertion<dagbase::Command, TestSystem>>;
     AssertionArray assertions;
 };
 
@@ -252,13 +379,16 @@ public:
         dagbase::CommandSystem::CommandArray::Ident ident;
         for (auto testCase : _cases)
         {
-            testCase.makeItSo(_sut, &ident);
+            testCase.makeItSo(_sut, &ident, &_recordStr, &playbackStr, &_sys);
         }
     }
 protected:
     using CaseArray = std::vector<CommandSystemCase>;
     CaseArray _cases;
     dagbase::CommandSystem _sut;
+    std::ostringstream* _recordStr{nullptr};
+    std::istringstream* playbackStr{nullptr};
+    TestSystem _sys;
 };
 
 TEST_P(CommandSystem_testScripted, testExpectedResult)
@@ -277,7 +407,8 @@ INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testScripted, ::testing::V
     std::make_tuple("data/tests/CommandSystem/ExecuteSuccessful.lua"),
     std::make_tuple("data/tests/CommandSystem/ExecuteWithSideEffects.lua"),
     std::make_tuple("data/tests/CommandSystem/ExecuteLongRunning.lua"),
-    std::make_tuple("data/tests/CommandSystem/ExecuteMultipleInFlight.lua")
+    std::make_tuple("data/tests/CommandSystem/ExecuteMultipleInFlight.lua"),
+    std::make_tuple("data/tests/CommandSystem/RecordAndPlayback.lua")
     ));
 
 class CommandSystem_testLog : public ::testing::TestWithParam<std::tuple<std::uint32_t, std::pmr::vector<dagbase::Variant>, const char*>>

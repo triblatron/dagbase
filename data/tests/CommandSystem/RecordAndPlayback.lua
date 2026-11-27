@@ -1,0 +1,41 @@
+root=
+{
+	cases=
+	{
+		{
+			cmd="CMD_REGISTER",
+			opcode=0,
+			canUndo=true,
+			instant=true,
+			status=
+			{
+				statusCode="STATUS_OK",
+			}
+		},
+		{
+			cmd="CMD_RECORD",
+		},
+		{
+			cmd="CMD_EXECUTE",
+			opcode=0,
+			status=
+			{
+				statusCode="STATUS_OK",
+			},
+			assertions=
+			{
+				{
+					path="numCalls",
+					value=1,
+				},
+				{
+					path="i",
+					value=1,
+				},
+			}
+		},
+		{
+			cmd="CMD_PLAYBACK",
+		},
+	},
+}
