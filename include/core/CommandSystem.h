@@ -59,7 +59,7 @@ namespace dagbase
         }
 
 
-        dagbase::Status playback(const char* filename);
+        dagbase::Status playback(std::istream& str);
 
         dagbase::Variant find(std::string_view) const;
     private:

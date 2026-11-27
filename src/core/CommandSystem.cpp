@@ -164,16 +164,20 @@ namespace dagbase
         if (_logStr && (*_logStr))
         {
             (*_logStr) << "op(";
-            (*_logStr) << opcode << ',';
-            for (std::size_t i = 0; i < args.size(); ++i)
+            (*_logStr) << opcode;
+            if (!args.empty())
             {
-                if (args[i].index() == dagbase::Variant::TYPE_STRING)
-                    (*_logStr) << '\"';
-                (*_logStr) << args[i].toString();
-                if (args[i].index() == dagbase::Variant::TYPE_STRING)
-                    (*_logStr) << '\"';
-                if (i<args.size()-1)
-                    (*_logStr) << ',';
+                (*_logStr) << ',';
+                for (std::size_t i = 0; i < args.size(); ++i)
+                {
+                    if (args[i].index() == dagbase::Variant::TYPE_STRING)
+                        (*_logStr) << '\"';
+                    (*_logStr) << args[i].toString();
+                    if (args[i].index() == dagbase::Variant::TYPE_STRING)
+                        (*_logStr) << '\"';
+                    if (i<args.size()-1)
+                        (*_logStr) << ',';
+                }
             }
             (*_logStr) << ")\n";
             _logStr->flush();
@@ -181,9 +185,18 @@ namespace dagbase
         return dagbase::Status{Status::STATUS_OK};
     }
 
-    dagbase::Status CommandSystem::playback(const char* logFilename)
+    dagbase::Status CommandSystem::playback(std::istream& logStr)
     {
-        _lua.execute(logFilename);
+        std::string log;
+
+        logStr >> log;
+
+        _lua.eval(log.c_str());
+
+        if (!_lua.ok())
+        {
+            return dagbase::Status{Status::STATUS_SYNTAX_ERROR};
+        }
 
         return dagbase::Status{dagbase::Status::STATUS_OK};
     }

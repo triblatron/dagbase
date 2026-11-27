@@ -305,7 +305,7 @@ INSTANTIATE_TEST_CASE_P(CommandSystem, CommandSystem_testLog, ::testing::Values(
     std::make_tuple(std::uint32_t{0}, std::pmr::vector<dagbase::Variant>{dagbase::Variant("GroupTyped"), dagbase::Variant("group1")}, "op(0,\"GroupTyped\",\"group1\")\n")
     ));
 
-class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<const char*, const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
+class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<const char*, dagbase::Variant, double, dagbase::ConfigurationElement::RelOp>>
 {
 
 };
@@ -313,25 +313,27 @@ class CommandSystem_testPlayback : public ::testing::TestWithParam<std::tuple<co
 
 TEST_P(CommandSystem_testPlayback, testExpectedResult)
 {
-    auto logFilename = std::get<0>(GetParam());
-    auto path = std::get<1>(GetParam());
-    auto value = std::get<2>(GetParam());
-    auto tolerance = std::get<3>(GetParam());
-    auto op = std::get<4>(GetParam());
+    auto path = std::get<0>(GetParam());
+    auto value = std::get<1>(GetParam());
+    auto tolerance = std::get<2>(GetParam());
+    auto op = std::get<3>(GetParam());
     dagbase::CommandSystem sut;
     auto cmd = new TestCommand(true, true);
     sut.registerCommand(0, cmd);
+    std::ostringstream logStr;
+    sut.setLog(&logStr);
     std::pmr::vector<dagbase::Variant> results;
     auto actualStatus = sut.makeItSo(0, {}, &results);
     ASSERT_EQ(dagbase::Status::STATUS_OK, actualStatus.status);
 //    dagbase::Function func(lua.get(), "operation");
-    sut.playback(logFilename);
+    std::istringstream playbackStr(logStr.str());
+    sut.playback(playbackStr);
     auto actual = sut.find(path);
     assertComparison(value, actual, tolerance, op, path);
 }
 
 INSTANTIATE_TEST_SUITE_P(CommandSystem, CommandSystem_testPlayback, ::testing::Values(
-    std::make_tuple("data/tests/CommandSystem/TransactionLog.lua", "numCalls", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
+    std::make_tuple("numCalls", std::int64_t{1}, 0.0, dagbase::ConfigurationElement::RELOP_EQ)
     ));
 
 struct ArgumentsCase
